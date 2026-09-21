@@ -2,7 +2,7 @@
 
 A tiny digital room for quiet evenings.
 
-Open it late, pick a mood, sit for a bit, close it.
+Lo-fi and rain on a dark window. Open it late, pick a mood, sit for a bit, close it.
 No accounts, no backend, no notifications — just a dark little corner of the internet.
 
 ## Right now
