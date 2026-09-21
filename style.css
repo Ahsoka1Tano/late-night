@@ -1,0 +1,112 @@
+:root {
+  --bg-deep: #05060b;
+  --bg-soft: #0b0f1c;
+  --glow-a: #2a2f6b;
+  --glow-b: #123046;
+  --text: #e8eaf2;
+  --text-dim: #7d849c;
+  --accent: #8ea2ff;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* soft drifting night light */
+.aurora {
+  position: fixed;
+  inset: -30%;
+  z-index: -2;
+  background:
+    radial-gradient(38% 40% at 22% 28%, var(--glow-a) 0%, transparent 70%),
+    radial-gradient(42% 38% at 78% 70%, var(--glow-b) 0%, transparent 72%),
+    linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-soft) 100%);
+  filter: blur(40px) saturate(120%);
+  opacity: 0.75;
+  animation: drift 34s var(--ease) infinite alternate;
+  transition: background 1.2s ease;
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: radial-gradient(#fff 1px, transparent 1px);
+  background-size: 3px 3px;
+}
+
+@keyframes drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(2%, -2%, 0) scale(1.05); }
+  100% { transform: translate3d(-2%, 2%, 0) scale(1.02); }
+}
+
+.room {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10vh 24px;
+  text-align: center;
+}
+
+.intro {
+  animation: rise 1.4s var(--ease) both;
+}
+
+.clock {
+  font-size: 0.95rem;
+  letter-spacing: 0.4em;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 1.6rem;
+}
+
+.title {
+  font-size: clamp(2.6rem, 9vw, 5.5rem);
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  line-height: 1.05;
+  text-shadow: 0 0 40px rgba(142, 162, 255, 0.25);
+}
+
+.tagline {
+  margin-top: 1.2rem;
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  letter-spacing: 0.14em;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
