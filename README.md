@@ -2,6 +2,8 @@
 
 A tiny digital room for quiet evenings.
 
+**[Open it →](https://ahsoka1tano.github.io/late-night/)**
+
 Open it late, pick a mood, sit for a bit, close it.
 No accounts, no backend, no notifications — just a dark little corner of the internet.
 
