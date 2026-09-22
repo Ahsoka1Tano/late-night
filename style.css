@@ -34,7 +34,7 @@ body {
 .aurora {
   position: fixed;
   inset: -30%;
-  z-index: -2;
+  z-index: -3;
   background:
     radial-gradient(38% 40% at 22% 28%, var(--glow-a) 0%, transparent 70%),
     radial-gradient(42% 38% at 78% 70%, var(--glow-b) 0%, transparent 72%),
@@ -43,6 +43,20 @@ body {
   opacity: 0.75;
   animation: drift 34s var(--ease) infinite alternate;
   transition: background 1.2s ease;
+}
+
+/* rain falls behind the text, in front of the night light */
+.rain-layer {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.6s ease;
+}
+
+.rain-layer.is-on {
+  opacity: 1;
 }
 
 .grain {
