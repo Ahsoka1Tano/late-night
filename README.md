@@ -9,6 +9,7 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 
 - a slow night screen with a live clock
 - six atmospheres: Calm, Music, Focus, Rain, Space, Sleep
+- real rain falling past the window when the night calls for it
 - the room remembers the mood you left it in
 
 ## Running it

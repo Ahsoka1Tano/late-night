@@ -13,7 +13,7 @@ two rooms out of six, not the whole house.
 - [ ] keyboard shortcuts (1–6 for moods, space for play)
 
 ## Rain mood
-- [ ] animated rain layer: drops falling over the page
+- [x] animated rain layer: drops falling over the page
 - [ ] drops sliding down the "glass", with trails
 - [ ] blurred night-city lights behind the window (bokeh)
 - [ ] rain intensity: drizzle / steady / downpour
