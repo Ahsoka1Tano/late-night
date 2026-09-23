@@ -16,7 +16,7 @@ two rooms out of six, not the whole house.
 - [x] animated rain layer: drops falling over the page
 - [x] drops sliding down the "glass", with trails
 - [ ] window fog that slowly gathers at the edges (first pass done)
-- [ ] blurred night-city lights behind the window (bokeh)
+- [x] blurred night-city lights behind the window (bokeh)
 - [ ] rain intensity: drizzle / steady / downpour
 - [ ] rare, very soft distant lightning
 - [ ] rain sound loop, fading in with the visuals
