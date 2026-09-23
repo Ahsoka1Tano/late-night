@@ -216,4 +216,32 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
+
+/* --- the city drifts a little as you move --- */
+const city = document.querySelector(".city");
+let cityAimX = 0;
+let cityAimY = 0;
+let cityX = 0;
+let cityY = 0;
+let cityFrame = null;
+
+function easeCity() {
+  cityX += (cityAimX - cityX) * 0.045;
+  cityY += (cityAimY - cityY) * 0.045;
+  city.style.transform = `translate3d(${cityX.toFixed(2)}px, ${cityY.toFixed(2)}px, 0)`;
+
+  if (Math.abs(cityAimX - cityX) < 0.05 && Math.abs(cityAimY - cityY) < 0.05) {
+    cityFrame = null;
+    return;
+  }
+  cityFrame = requestAnimationFrame(easeCity);
+}
+
+window.addEventListener("pointermove", (e) => {
+  if (!calmEnough) return;
+  cityAimX = (e.clientX / window.innerWidth - 0.5) * -16;
+  cityAimY = (e.clientY / window.innerHeight - 0.5) * -9;
+  if (cityFrame === null) cityFrame = requestAnimationFrame(easeCity);
+});
+
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });
