@@ -55,6 +55,7 @@ const rainCtx = rainCanvas.getContext("2d");
 const calmEnough = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 let drops = [];
+let glassDrops = [];
 let rainFrame = null;
 
 function sizeRain() {
@@ -67,6 +68,9 @@ function sizeRain() {
 function seedDrops() {
   const count = Math.round(window.innerWidth / 9);
   drops = Array.from({ length: count }, () => spawnDrop(true));
+
+  const clinging = Math.round(window.innerWidth / 34);
+  glassDrops = Array.from({ length: clinging }, () => spawnGlassDrop(true));
 }
 
 function spawnDrop(scattered = false) {
@@ -80,6 +84,73 @@ function spawnDrop(scattered = false) {
     width: 0.5 + depth * 0.9,
     alpha: 0.08 + depth * 0.22,
   };
+}
+
+/* a fat drop that clings to the window, rests, then slides down leaving a trail */
+function spawnGlassDrop(scattered = false) {
+  return {
+    x: Math.random() * window.innerWidth,
+    y: scattered ? Math.random() * window.innerHeight : -20,
+    r: 1.8 + Math.random() * 3.4,
+    speed: 0,
+    hold: Math.round(Math.random() * 280),
+    trail: [],
+  };
+}
+
+function drawGlassDrop(d) {
+  // the trail it left on the glass, slowly drying
+  for (let i = d.trail.length - 1; i >= 0; i--) {
+    const t = d.trail[i];
+    t.alpha -= 0.009;
+    if (t.alpha <= 0) {
+      d.trail.splice(i, 1);
+      continue;
+    }
+    rainCtx.fillStyle = `rgba(200, 224, 255, ${t.alpha})`;
+    rainCtx.beginPath();
+    rainCtx.arc(t.x, t.y, t.r, 0, Math.PI * 2);
+    rainCtx.fill();
+  }
+
+  const glow = rainCtx.createRadialGradient(d.x - d.r * 0.3, d.y - d.r * 0.3, 0, d.x, d.y, d.r);
+  glow.addColorStop(0, "rgba(226, 240, 255, 0.5)");
+  glow.addColorStop(0.55, "rgba(170, 205, 240, 0.22)");
+  glow.addColorStop(1, "rgba(140, 180, 220, 0.04)");
+  rainCtx.fillStyle = glow;
+  rainCtx.beginPath();
+  rainCtx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+  rainCtx.fill();
+
+  if (d.hold > 0) {
+    d.hold--;
+    return;
+  }
+
+  d.speed += 0.05 + d.r * 0.012;
+  const before = d.y;
+  d.y += d.speed;
+
+  // leave a thin, uneven line of water behind
+  for (let y = before; y < d.y; y += 3) {
+    d.trail.push({
+      x: d.x + (Math.random() - 0.5) * 0.8,
+      y,
+      r: d.r * (0.18 + Math.random() * 0.14),
+      alpha: 0.13,
+    });
+  }
+
+  // the drop spends itself on the way down
+  if (d.r > 1.2) d.r -= 0.004;
+
+  // heavier drops run further; small ones stall again
+  if (d.speed > 0.6 && Math.random() < 0.012) {
+    d.speed = 0;
+    d.hold = 30 + Math.random() * 160;
+  }
+
+  if (d.y - d.r > window.innerHeight) Object.assign(d, spawnGlassDrop());
 }
 
 function drawRain() {
@@ -101,13 +172,15 @@ function drawRain() {
     if (d.y > window.innerHeight) drops[i] = spawnDrop();
   }
 
+  for (const d of glassDrops) drawGlassDrop(d);
+
   rainFrame = requestAnimationFrame(drawRain);
 }
 
 function startRain() {
   if (!calmEnough || rainFrame !== null) return;
   sizeRain();
-  if (!drops.length) seedDrops();
+  if (!drops.length || !glassDrops.length) seedDrops();
   rainCanvas.classList.add("is-on");
   rainFrame = requestAnimationFrame(drawRain);
 }
