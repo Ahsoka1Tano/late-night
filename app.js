@@ -202,4 +202,18 @@ window.addEventListener("resize", () => {
   seedDrops();
 });
 
+
+
+// no reason to keep it raining into an empty room
+document.addEventListener("visibilitychange", () => {
+  if (document.body.dataset.mood !== "rain") return;
+
+  if (document.hidden && rainFrame !== null) {
+    cancelAnimationFrame(rainFrame);
+    rainFrame = null;
+  } else if (!document.hidden) {
+    startRain();
+  }
+});
+
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });
