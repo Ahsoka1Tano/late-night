@@ -45,6 +45,84 @@ body {
   transition: background 1.2s ease;
 }
 
+/* the city on the other side of the glass, always out of focus */
+.city {
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  transition: opacity 2.4s ease;
+}
+
+body[data-mood="rain"] .city,
+body[data-mood="music"] .city {
+  opacity: 0.8;
+}
+
+.city::before,
+.city::after {
+  content: "";
+  position: absolute;
+  inset: -6%;
+  background-repeat: no-repeat;
+  will-change: transform;
+}
+
+.city::before {
+  filter: blur(10px);
+  background-image:
+    radial-gradient(circle 28.9px at 45.3% 73.9%, rgba(205, 168, 255, 0.34) 0%, transparent 100%),
+    radial-gradient(circle 18.7px at 45.3% 83.4%, rgba(255, 232, 196, 0.34) 0%, transparent 100%),
+    radial-gradient(circle 18.6px at 47.6% 75.6%, rgba(205, 168, 255, 0.34) 0%, transparent 100%),
+    radial-gradient(circle 27.3px at 30.7% 58.9%, rgba(255, 196, 128, 0.34) 0%, transparent 100%),
+    radial-gradient(circle 22.3px at 59.4% 68.7%, rgba(255, 232, 196, 0.34) 0%, transparent 100%),
+    radial-gradient(circle 27.6px at 64.7% 75.9%, rgba(255, 196, 128, 0.34) 0%, transparent 100%),
+    radial-gradient(circle 19.4px at 6.8% 62.1%, rgba(255, 196, 128, 0.34) 0%, transparent 100%),
+    radial-gradient(circle 24.3px at 77.3% 66.4%, rgba(255, 168, 120, 0.34) 0%, transparent 100%),
+    radial-gradient(circle 23.0px at 51.9% 76.5%, rgba(255, 196, 128, 0.34) 0%, transparent 100%),
+    radial-gradient(circle 30.0px at 45.8% 64.9%, rgba(255, 196, 128, 0.34) 0%, transparent 100%),
+    radial-gradient(circle 19.2px at 70.4% 66.1%, rgba(168, 208, 255, 0.34) 0%, transparent 100%),
+    radial-gradient(circle 17.5px at 3.9% 74.0%, rgba(255, 196, 128, 0.34) 0%, transparent 100%),
+    radial-gradient(circle 29.4px at 84.0% 68.4%, rgba(255, 196, 128, 0.34) 0%, transparent 100%);
+  animation: cityBreathe 19s ease-in-out infinite alternate;
+}
+
+.city::after {
+  filter: blur(16px);
+  opacity: 0.8;
+  background-image:
+    radial-gradient(circle 7.4px at 21.9% 88.9%, rgba(205, 168, 255, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 7.6px at 97.1% 66.7%, rgba(255, 168, 120, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 7.7px at 77.3% 61.3%, rgba(168, 208, 255, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 14.4px at 2.5% 67.2%, rgba(255, 168, 120, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 7.5px at 25.1% 54.2%, rgba(205, 168, 255, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 10.6px at 18.4% 73.5%, rgba(255, 168, 120, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 10.4px at 97.6% 82.3%, rgba(205, 168, 255, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 8.7px at 12.4% 67.7%, rgba(168, 208, 255, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 11.7px at 85.7% 90.9%, rgba(255, 196, 128, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 13.8px at 21.6% 66.6%, rgba(255, 232, 196, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 8.7px at 10.8% 91.6%, rgba(168, 208, 255, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 13.6px at 1.9% 75.6%, rgba(205, 168, 255, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 11.7px at 8.2% 53.8%, rgba(255, 168, 120, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 12.0px at 2.5% 65.5%, rgba(255, 168, 120, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 11.6px at 95.0% 70.3%, rgba(205, 168, 255, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 14.3px at 18.9% 56.5%, rgba(255, 232, 196, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 12.9px at 25.5% 58.0%, rgba(255, 232, 196, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 14.1px at 20.3% 89.9%, rgba(255, 232, 196, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 7.9px at 8.7% 52.0%, rgba(255, 232, 196, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 12.6px at 95.3% 60.0%, rgba(168, 208, 255, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 10.9px at 42.2% 88.0%, rgba(255, 232, 196, 0.24) 0%, transparent 100%),
+    radial-gradient(circle 7.6px at 18.2% 80.3%, rgba(255, 168, 120, 0.24) 0%, transparent 100%);
+  animation: cityBreathe 27s 2s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes cityBreathe {
+  from { opacity: 0.7; transform: translate3d(0, 0, 0); }
+  to   { opacity: 1; transform: translate3d(-1.2%, 0.6%, 0); }
+}
+
 /* rain falls behind the text, in front of the night light */
 .rain-layer {
   position: fixed;
