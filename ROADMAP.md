@@ -14,7 +14,8 @@ two rooms out of six, not the whole house.
 
 ## Rain mood
 - [x] animated rain layer: drops falling over the page
-- [ ] drops sliding down the "glass", with trails
+- [x] drops sliding down the "glass", with trails
+- [ ] window fog that slowly gathers at the edges (first pass done)
 - [ ] blurred night-city lights behind the window (bokeh)
 - [ ] rain intensity: drizzle / steady / downpour
 - [ ] rare, very soft distant lightning

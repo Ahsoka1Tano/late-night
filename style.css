@@ -204,6 +204,24 @@ body {
   opacity: 0;
 }
 
+/* condensation gathering at the top and bottom of the glass */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.8s ease;
+  background:
+    radial-gradient(75% 42% at 50% 100%, rgba(158, 196, 226, 0.1), transparent 72%),
+    radial-gradient(62% 38% at 50% 0%, rgba(158, 196, 226, 0.075), transparent 72%);
+}
+
+body[data-mood="rain"]::before {
+  opacity: 1;
+}
+
 /* the room darkens towards the edges, like a window at night */
 body::after {
   content: "";
