@@ -808,7 +808,16 @@ body.is-dozing .traces {
   opacity: 0 !important;
 }
 
-/* the clock hangs on a little longer than the rest */
+/* the clock keeps a little more presence than everything else */
 body.is-dozing .clock {
-  opacity: 1.6;
+  color: var(--text);
+}
+
+body.is-deeper .grain {
+  opacity: 0.015;
+}
+
+/* even the light moves slower once the room is asleep */
+body[data-mood="sleep"] .aurora {
+  animation-duration: 58s;
 }
