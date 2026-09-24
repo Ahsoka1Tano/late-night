@@ -351,12 +351,17 @@ let focusLeft = focusLength();
 let focusEndsAt = null;
 let focusTick = null;
 
+const BASE_TITLE = document.title;
+
 function paintFocus() {
   const left = Math.max(0, focusEndsAt ? focusEndsAt - Date.now() : focusLeft);
   const total = Math.ceil(left / 1000);
   const mm = String(Math.floor(total / 60)).padStart(2, "0");
   const ss = String(total % 60).padStart(2, "0");
   focusTime.textContent = `${mm}:${ss}`;
+
+  // so the session is still visible from another window
+  document.title = focusEndsAt ? `${mm}:${ss} — ${BASE_TITLE}` : BASE_TITLE;
 
   if (focusEndsAt && left <= 0) finishFocus();
 }
@@ -401,6 +406,7 @@ function finishFocus() {
   focusBlock.classList.remove("is-running");
   focusBlock.classList.add("is-done");
   focusTime.textContent = "00:00";
+  document.title = BASE_TITLE;
   focusNote.textContent = `that was ${focusMinutes} quiet minutes`;
 }
 
