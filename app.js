@@ -213,6 +213,7 @@ const rainSteps = document.querySelectorAll(".rain-step");
 function setRainLevel(level, { save = true } = {}) {
   if (!RAIN_LEVELS[level]) level = "steady";
   rainLevel = level;
+  document.body.dataset.rain = level;
 
   rainSteps.forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.rain === level);

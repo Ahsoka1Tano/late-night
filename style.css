@@ -300,6 +300,20 @@ body[data-mood="rain"]::before {
   opacity: 1;
 }
 
+/* the harder it comes down, the less of the city is left */
+body[data-mood="rain"][data-rain="drizzle"]::before {
+  opacity: 0.5;
+}
+
+body[data-mood="rain"][data-rain="drizzle"] .city {
+  opacity: 0.9;
+}
+
+body[data-mood="rain"][data-rain="downpour"] .city {
+  opacity: 0.5;
+  filter: blur(2px);
+}
+
 /* the room darkens towards the edges, like a window at night */
 body::after {
   content: "";
