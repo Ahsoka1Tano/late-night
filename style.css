@@ -357,7 +357,9 @@ body[data-mood="focus"] .aurora { opacity: 0.65; }
 
 /* --- how hard it rains --- */
 .rain-dial {
-  margin-top: 1.6rem;
+  margin-top: 0;
+  height: 0;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   gap: 4px;
@@ -368,6 +370,8 @@ body[data-mood="focus"] .aurora { opacity: 0.65; }
 }
 
 body[data-mood="rain"] .rain-dial {
+  margin-top: 1.6rem;
+  height: auto;
   opacity: 1;
   transform: none;
   pointer-events: auto;
@@ -461,7 +465,7 @@ body[data-mood="rain"] .rain-dial {
 
 /* --- focus --- */
 .focus {
-  margin-top: 2.2rem;
+  margin-top: 0;
   height: 0;
   opacity: 0;
   transform: translateY(8px);
@@ -471,6 +475,7 @@ body[data-mood="rain"] .rain-dial {
 }
 
 body[data-mood="focus"] .focus {
+  margin-top: 2.2rem;
   height: auto;
   opacity: 1;
   transform: none;
@@ -602,7 +607,7 @@ body[data-mood="focus"] .focus {
 
 /* --- the line for tonight --- */
 .tonight {
-  margin-top: 3.6rem;
+  margin-top: 3rem;
   max-width: 34ch;
   font-size: 0.84rem;
   line-height: 1.7;
