@@ -635,7 +635,7 @@ body[data-mood="focus"] .focus {
 /* --- tiny journal --- */
 .journal {
   margin-top: 3.4rem;
-  width: min(460px, 100%);
+  width: min(580px, 100%);
   animation: tonightIn 2.4s 2s var(--ease) forwards;
   opacity: 0;
 }
@@ -661,7 +661,7 @@ body[data-mood="focus"] .focus {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 13px;
+  padding: 7px 12px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.02);
@@ -704,7 +704,7 @@ body[data-mood="focus"] .focus {
 
 .journal-note {
   margin-top: 1.3rem;
-  width: 100%;
+  width: min(420px, 100%);
   padding: 9px 4px;
   border: 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
