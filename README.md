@@ -14,6 +14,7 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 - real rain falling past the window, with drops sliding down the glass
 - out-of-focus city lights behind it, drifting as you move
 - drizzle, steady or downpour — heavy rain blurs the city away
+- a 25 minute focus timer that lives inside the focus mood
 - the room remembers the mood you left it in
 
 ## Keys
@@ -22,6 +23,7 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 | --- | --- |
 | `1` … `6` | pick a mood |
 | `[` `]` | softer / harder rain |
+| `space` | start or pause the focus timer |
 
 ## Running it
 

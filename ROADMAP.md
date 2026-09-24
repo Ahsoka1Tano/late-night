@@ -11,7 +11,7 @@ two rooms out of six, not the whole house.
 - [x] mood selector with six atmospheres
 - [ ] smoother mood transitions, per-mood background details
 - [x] keyboard shortcuts: 1–6 for moods, [ ] for rain strength
-- [ ] space to play, once there is something to play
+- [x] space starts and pauses the focus timer
 
 ## Rain mood
 - [x] animated rain layer: drops falling over the page
@@ -30,7 +30,9 @@ two rooms out of six, not the whole house.
 
 ## Other moods
 - [ ] Calm: slow breathing light
-- [ ] Focus: 25:00 timer, presets 15 / 25 / 45 / 60, quiet finish instead of an alarm
+- [x] Focus: 25:00 timer with start / pause / reset
+- [ ] Focus: presets 15 / 25 / 45 / 60
+- [ ] Focus: a quieter finish than a blank 00:00
 - [ ] Space: drifting stars, a very slow parallax
 - [ ] Sleep: dimmed everything, screen fading out over time
 
