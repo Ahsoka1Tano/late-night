@@ -53,6 +53,13 @@ function setMood(mood, { save = true } = {}) {
   if (mood === "space") startStars();
   else stopStars();
 
+  if (mood === "sleep") {
+    scheduleDoze();
+  } else {
+    clearDoze();
+    document.body.classList.remove("is-dozing", "is-deeper");
+  }
+
   // a finished session is history once you leave the room
   if (mood !== "focus" && focusBlock.classList.contains("is-done")) resetFocus();
 
@@ -726,5 +733,43 @@ function stopStars() {
     if (starsFrame === null) starsCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
   }, 2000);
 }
+
+
+/* --- the room dozing off in the sleep mood --- */
+const DOZE_AFTER = 25000;
+const DEEPER_AFTER = 75000;
+
+let dozeTimers = [];
+let lastStir = 0;
+
+function clearDoze() {
+  dozeTimers.forEach(clearTimeout);
+  dozeTimers = [];
+}
+
+function scheduleDoze() {
+  clearDoze();
+  if (document.body.dataset.mood !== "sleep") return;
+
+  dozeTimers.push(
+    setTimeout(() => document.body.classList.add("is-dozing"), DOZE_AFTER),
+    setTimeout(() => document.body.classList.add("is-deeper"), DEEPER_AFTER)
+  );
+}
+
+function stirRoom() {
+  if (document.body.dataset.mood !== "sleep") return;
+
+  const wasDim = document.body.classList.contains("is-dozing");
+  if (!wasDim && Date.now() - lastStir < 1000) return;
+
+  lastStir = Date.now();
+  document.body.classList.remove("is-dozing", "is-deeper");
+  scheduleDoze();
+}
+
+["pointermove", "pointerdown", "keydown", "wheel", "touchstart"].forEach((event) => {
+  window.addEventListener(event, stirRoom, { passive: true });
+});
 
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });

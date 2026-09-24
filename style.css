@@ -779,3 +779,36 @@ body[data-mood="focus"] .focus {
   from { opacity: 0; }
   to   { opacity: 0.32; }
 }
+
+/* --- the room dozing off --- */
+.room {
+  transition: opacity 6s ease, filter 6s ease;
+}
+
+body.is-dozing .room {
+  opacity: 0.5;
+  filter: blur(0.3px);
+}
+
+body.is-deeper .room {
+  opacity: 0.18;
+  filter: blur(1px);
+}
+
+body.is-dozing .aurora {
+  opacity: 0.32;
+}
+
+body.is-deeper .aurora {
+  opacity: 0.16;
+}
+
+body.is-dozing .hint,
+body.is-dozing .traces {
+  opacity: 0 !important;
+}
+
+/* the clock hangs on a little longer than the rest */
+body.is-dozing .clock {
+  opacity: 1.6;
+}
