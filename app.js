@@ -30,7 +30,15 @@ function setMood(mood, { save = true } = {}) {
   document.body.dataset.mood = mood;
 
   moodButtons.forEach((btn) => {
-    btn.classList.toggle("is-active", btn.dataset.mood === mood);
+    const picked = btn.dataset.mood === mood;
+    btn.classList.toggle("is-active", picked);
+
+    // a short flare, so a keyboard pick is as visible as a click
+    if (picked && save) {
+      btn.classList.remove("just-picked");
+      void btn.offsetWidth;
+      btn.classList.add("just-picked");
+    }
   });
 
   moodLine.classList.add("is-fading");

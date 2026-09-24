@@ -437,3 +437,24 @@ body[data-mood="rain"] .rain-dial {
 @media (hover: none) {
   .hint { display: none; }
 }
+
+/* --- the flare on picking a mood --- */
+.mood.just-picked {
+  animation: picked 0.8s var(--ease);
+}
+
+.mood.just-picked .mood-icon {
+  animation: pickedIcon 0.8s var(--ease);
+}
+
+@keyframes picked {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
+  45%  { box-shadow: 0 0 50px -4px var(--accent); }
+  100% { box-shadow: 0 0 34px -8px var(--accent); }
+}
+
+@keyframes pickedIcon {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.22) translateY(-2px); }
+  100% { transform: scale(1); }
+}
