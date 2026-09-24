@@ -437,4 +437,37 @@ focusReset.addEventListener("click", resetFocus);
 
 setFocusLength(focusMinutes, { save: false });
 
+
+/* --- one line for tonight --- */
+const TONIGHT_LINES = [
+  "You don't need to rush tonight.",
+  "One small thing is enough.",
+  "The day is allowed to end unfinished.",
+  "Nothing is expected of you for the next hour.",
+  "Somewhere it is raining on an empty street.",
+  "Let the noise settle.",
+  "The city is asleep, mostly.",
+  "Leave tomorrow where it is.",
+  "Warm light, quiet room, nothing urgent.",
+  "You can close this and nothing breaks.",
+  "Slow is a fine speed.",
+  "Half the lights are off already.",
+  "Every window has someone behind it, winding down.",
+  "The rest of it can wait until it is light again.",
+];
+
+function today() {
+  const now = new Date();
+  return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+}
+
+// the same line all evening, a different one tomorrow
+function lineForDay(key) {
+  let hash = 0;
+  for (const ch of key) hash = (hash * 31 + ch.charCodeAt(0)) % 100000;
+  return TONIGHT_LINES[hash % TONIGHT_LINES.length];
+}
+
+document.getElementById("tonight").textContent = lineForDay(today());
+
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });

@@ -599,3 +599,30 @@ body[data-mood="focus"] .focus {
   opacity: 0.7;
   transform: none;
 }
+
+/* --- the line for tonight --- */
+.tonight {
+  margin-top: 3.6rem;
+  max-width: 34ch;
+  font-size: 0.84rem;
+  line-height: 1.7;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  opacity: 0;
+  animation: tonightIn 2.4s 1.4s var(--ease) forwards;
+}
+
+.tonight::before {
+  content: "";
+  display: block;
+  width: 26px;
+  height: 1px;
+  margin: 0 auto 1.4rem;
+  background: linear-gradient(90deg, transparent, var(--text-dim), transparent);
+  opacity: 0.6;
+}
+
+@keyframes tonightIn {
+  from { opacity: 0; transform: translateY(10px); filter: blur(4px); }
+  to   { opacity: 0.85; transform: none; filter: blur(0); }
+}
