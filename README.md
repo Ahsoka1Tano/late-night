@@ -14,7 +14,8 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 - real rain falling past the window, with drops sliding down the glass
 - out-of-focus city lights behind it, drifting as you move
 - drizzle, steady or downpour — heavy rain blurs the city away
-- a 25 minute focus timer that lives inside the focus mood
+- a focus timer that lives inside the focus mood: 15, 25, 45 or 60 minutes,
+  ending with a quiet line instead of an alarm
 - the room remembers the mood you left it in
 
 ## Keys

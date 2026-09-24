@@ -31,8 +31,8 @@ two rooms out of six, not the whole house.
 ## Other moods
 - [ ] Calm: slow breathing light
 - [x] Focus: 25:00 timer with start / pause / reset
-- [ ] Focus: presets 15 / 25 / 45 / 60
-- [ ] Focus: a quieter finish than a blank 00:00
+- [x] Focus: presets 15 / 25 / 45 / 60
+- [x] Focus: a quieter finish than a blank 00:00
 - [ ] Space: drifting stars, a very slow parallax
 - [ ] Sleep: dimmed everything, screen fading out over time
 
