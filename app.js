@@ -332,14 +332,21 @@ document.addEventListener("keydown", (e) => {
 
 
 /* --- focus --- */
-const FOCUS_LENGTH = 25 * 60 * 1000;
+const FOCUS_PRESETS = [15, 25, 45, 60];
+
+const savedMinutes = Number(localStorage.getItem("lateNight.focusMinutes"));
+let focusMinutes = FOCUS_PRESETS.includes(savedMinutes) ? savedMinutes : 25;
+
+function focusLength() {
+  return focusMinutes * 60 * 1000;
+}
 
 const focusBlock = document.getElementById("focus");
 const focusTime = document.getElementById("focus-time");
 const focusToggle = document.getElementById("focus-toggle");
 const focusReset = document.getElementById("focus-reset");
 
-let focusLeft = FOCUS_LENGTH;
+let focusLeft = focusLength();
 let focusEndsAt = null;
 let focusTick = null;
 
@@ -376,7 +383,7 @@ function resetFocus() {
   clearInterval(focusTick);
   focusTick = null;
   focusEndsAt = null;
-  focusLeft = FOCUS_LENGTH;
+  focusLeft = focusLength();
   focusToggle.textContent = "start";
   focusBlock.classList.remove("is-running", "is-done");
   paintFocus();
@@ -386,12 +393,30 @@ function finishFocus() {
   clearInterval(focusTick);
   focusTick = null;
   focusEndsAt = null;
-  focusLeft = FOCUS_LENGTH;
+  focusLeft = focusLength();
   focusToggle.textContent = "start";
   focusBlock.classList.remove("is-running");
   focusBlock.classList.add("is-done");
   focusTime.textContent = "00:00";
 }
+
+const focusPresets = document.querySelectorAll(".focus-preset");
+
+function setFocusLength(minutes, { save = true } = {}) {
+  if (!FOCUS_PRESETS.includes(minutes)) minutes = 25;
+  focusMinutes = minutes;
+
+  focusPresets.forEach((btn) => {
+    btn.classList.toggle("is-active", Number(btn.dataset.minutes) === minutes);
+  });
+
+  resetFocus();
+  if (save) localStorage.setItem("lateNight.focusMinutes", String(minutes));
+}
+
+focusPresets.forEach((btn) => {
+  btn.addEventListener("click", () => setFocusLength(Number(btn.dataset.minutes)));
+});
 
 focusToggle.addEventListener("click", () => {
   if (focusEndsAt) pauseFocus();
@@ -399,5 +424,7 @@ focusToggle.addEventListener("click", () => {
 });
 
 focusReset.addEventListener("click", resetFocus);
+
+setFocusLength(focusMinutes, { save: false });
 
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });
