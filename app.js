@@ -642,6 +642,45 @@ function seedStars() {
   });
 }
 
+// once in a long while, something crosses the sky
+let comet = null;
+
+function maybeComet() {
+  if (comet || Math.random() > 0.0009) return;
+
+  comet = {
+    x: Math.random() * window.innerWidth * 0.7,
+    y: Math.random() * window.innerHeight * 0.45,
+    vx: 4.5 + Math.random() * 3,
+    vy: 1.4 + Math.random() * 1.2,
+    life: 1,
+  };
+}
+
+function drawComet() {
+  if (!comet) return;
+
+  const tailX = comet.x - comet.vx * 14;
+  const tailY = comet.y - comet.vy * 14;
+  const trail = starsCtx.createLinearGradient(comet.x, comet.y, tailX, tailY);
+  trail.addColorStop(0, `rgba(226, 236, 255, ${0.75 * comet.life})`);
+  trail.addColorStop(1, "rgba(226, 236, 255, 0)");
+
+  starsCtx.strokeStyle = trail;
+  starsCtx.lineWidth = 1.4;
+  starsCtx.lineCap = "round";
+  starsCtx.beginPath();
+  starsCtx.moveTo(comet.x, comet.y);
+  starsCtx.lineTo(tailX, tailY);
+  starsCtx.stroke();
+
+  comet.x += comet.vx;
+  comet.y += comet.vy;
+  comet.life -= 0.009;
+
+  if (comet.life <= 0 || comet.x > window.innerWidth + 60) comet = null;
+}
+
 function drawStars() {
   starsClock += 16;
   starsCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -663,6 +702,9 @@ function drawStars() {
     }
   }
 
+  maybeComet();
+  drawComet();
+
   starsFrame = requestAnimationFrame(drawStars);
 }
 
@@ -679,6 +721,7 @@ function stopStars() {
   if (starsFrame === null) return;
   cancelAnimationFrame(starsFrame);
   starsFrame = null;
+  comet = null;
   setTimeout(() => {
     if (starsFrame === null) starsCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
   }, 2000);
