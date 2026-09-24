@@ -310,6 +310,14 @@ document.addEventListener("keydown", (e) => {
     return;
   }
 
+  if (document.body.dataset.mood === "focus" && (e.key === " " || e.code === "Space")) {
+    e.preventDefault();
+    if (focusEndsAt) pauseFocus();
+    else startFocus();
+    retireHint();
+    return;
+  }
+
   if (document.body.dataset.mood !== "rain") return;
 
   const step = e.key === "[" ? -1 : e.key === "]" ? 1 : 0;
@@ -337,7 +345,7 @@ let focusTick = null;
 
 function paintFocus() {
   const left = Math.max(0, focusEndsAt ? focusEndsAt - Date.now() : focusLeft);
-  const total = Math.round(left / 1000);
+  const total = Math.ceil(left / 1000);
   const mm = String(Math.floor(total / 60)).padStart(2, "0");
   const ss = String(total % 60).padStart(2, "0");
   focusTime.textContent = `${mm}:${ss}`;
