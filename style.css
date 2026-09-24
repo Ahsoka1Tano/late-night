@@ -340,3 +340,52 @@ body[data-mood="focus"] .aurora { opacity: 0.65; }
   .moods { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .mood { padding: 18px 8px 14px; }
 }
+
+/* --- how hard it rains --- */
+.rain-dial {
+  margin-top: 1.6rem;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.9s ease, transform 0.9s var(--ease);
+}
+
+body[data-mood="rain"] .rain-dial {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.rain-step {
+  appearance: none;
+  cursor: pointer;
+  padding: 7px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  transition: color 0.4s ease, background 0.4s ease;
+}
+
+.rain-step:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.rain-step:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.rain-step.is-active {
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}

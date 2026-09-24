@@ -54,6 +54,15 @@ const rainCanvas = document.getElementById("rain");
 const rainCtx = rainCanvas.getContext("2d");
 const calmEnough = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+// how hard it comes down: spacing between streaks, how fast, how many run down the glass
+const RAIN_LEVELS = {
+  drizzle:  { spacing: 20, speed: 0.72, alpha: 0.8, glass: 58 },
+  steady:   { spacing: 9,  speed: 1,    alpha: 1,   glass: 34 },
+  downpour: { spacing: 5,  speed: 1.32, alpha: 1.1, glass: 21 },
+};
+
+const savedRain = localStorage.getItem("lateNight.rain");
+let rainLevel = RAIN_LEVELS[savedRain] ? savedRain : "steady";
 let drops = [];
 let glassDrops = [];
 let rainFrame = null;
@@ -66,23 +75,26 @@ function sizeRain() {
 }
 
 function seedDrops() {
-  const count = Math.round(window.innerWidth / 9);
+  const level = RAIN_LEVELS[rainLevel];
+
+  const count = Math.round(window.innerWidth / level.spacing);
   drops = Array.from({ length: count }, () => spawnDrop(true));
 
-  const clinging = Math.round(window.innerWidth / 34);
+  const clinging = Math.round(window.innerWidth / level.glass);
   glassDrops = Array.from({ length: clinging }, () => spawnGlassDrop(true));
 }
 
 function spawnDrop(scattered = false) {
   // depth: 0 = far and faint, 1 = close and quick
   const depth = Math.random();
+  const level = RAIN_LEVELS[rainLevel];
   return {
     x: Math.random() * window.innerWidth,
     y: scattered ? Math.random() * window.innerHeight : -40,
-    length: 8 + depth * 22,
-    speed: 3 + depth * 9,
+    length: (8 + depth * 22) * (0.75 + level.speed * 0.3),
+    speed: (3 + depth * 9) * level.speed,
     width: 0.5 + depth * 0.9,
-    alpha: 0.08 + depth * 0.22,
+    alpha: (0.08 + depth * 0.22) * level.alpha,
   };
 }
 
@@ -195,6 +207,26 @@ function stopRain() {
     if (rainFrame === null) rainCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
   }, 1600);
 }
+
+const rainSteps = document.querySelectorAll(".rain-step");
+
+function setRainLevel(level, { save = true } = {}) {
+  if (!RAIN_LEVELS[level]) level = "steady";
+  rainLevel = level;
+
+  rainSteps.forEach((btn) => {
+    btn.classList.toggle("is-active", btn.dataset.rain === level);
+  });
+
+  if (drops.length) seedDrops();
+  if (save) localStorage.setItem("lateNight.rain", level);
+}
+
+rainSteps.forEach((btn) => {
+  btn.addEventListener("click", () => setRainLevel(btn.dataset.rain));
+});
+
+setRainLevel(rainLevel, { save: false });
 
 window.addEventListener("resize", () => {
   if (rainFrame === null) return;
