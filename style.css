@@ -123,6 +123,20 @@ body[data-mood="music"] .city {
   to   { opacity: 1; transform: translate3d(-1.2%, 0.6%, 0); }
 }
 
+/* the sky, only in the space mood */
+.stars-layer {
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+
+.stars-layer.is-on {
+  opacity: 1;
+}
+
 /* rain falls behind the text, in front of the night light */
 .rain-layer {
   position: fixed;

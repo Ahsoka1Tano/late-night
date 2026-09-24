@@ -50,6 +50,9 @@ function setMood(mood, { save = true } = {}) {
   if (mood === "rain") startRain();
   else stopRain();
 
+  if (mood === "space") startStars();
+  else stopStars();
+
   // a finished session is history once you leave the room
   if (mood !== "focus" && focusBlock.classList.contains("is-done")) resetFocus();
 
@@ -241,23 +244,36 @@ rainSteps.forEach((btn) => {
 setRainLevel(rainLevel, { save: false });
 
 window.addEventListener("resize", () => {
-  if (rainFrame === null) return;
-  sizeRain();
-  seedDrops();
+  if (rainFrame !== null) {
+    sizeRain();
+    seedDrops();
+  }
+  if (starsFrame !== null) {
+    sizeStars();
+    seedStars();
+  }
 });
 
 
 
-// no reason to keep it raining into an empty room
+// no reason to keep the weather running in an empty room
 document.addEventListener("visibilitychange", () => {
-  if (document.body.dataset.mood !== "rain") return;
+  const mood = document.body.dataset.mood;
 
-  if (document.hidden && rainFrame !== null) {
-    cancelAnimationFrame(rainFrame);
-    rainFrame = null;
-  } else if (!document.hidden) {
-    startRain();
+  if (document.hidden) {
+    if (rainFrame !== null) {
+      cancelAnimationFrame(rainFrame);
+      rainFrame = null;
+    }
+    if (starsFrame !== null) {
+      cancelAnimationFrame(starsFrame);
+      starsFrame = null;
+    }
+    return;
   }
+
+  if (mood === "rain") startRain();
+  if (mood === "space") startStars();
 });
 
 
@@ -591,5 +607,81 @@ function paintTraces() {
 
 countTonight();
 paintTraces();
+
+
+/* --- stars --- */
+const starsCanvas = document.getElementById("stars");
+const starsCtx = starsCanvas.getContext("2d");
+
+let stars = [];
+let starsFrame = null;
+let starsClock = 0;
+
+function sizeStars() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  starsCanvas.width = window.innerWidth * dpr;
+  starsCanvas.height = window.innerHeight * dpr;
+  starsCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function seedStars() {
+  const count = Math.round(window.innerWidth / 5);
+  stars = Array.from({ length: count }, () => {
+    // depth: 0 = far and still, 1 = near and drifting
+    const depth = Math.random();
+    return {
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: 0.4 + depth * 1.1,
+      drift: 0.015 + depth * 0.075,
+      base: 0.25 + depth * 0.5,
+      phase: Math.random() * Math.PI * 2,
+      blink: 0.0008 + Math.random() * 0.0022,
+      warm: Math.random() < 0.22,
+    };
+  });
+}
+
+function drawStars() {
+  starsClock += 16;
+  starsCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+  for (const s of stars) {
+    const flicker = 0.68 + 0.32 * Math.sin(starsClock * s.blink + s.phase);
+    const alpha = s.base * flicker;
+    starsCtx.fillStyle = s.warm
+      ? `rgba(255, 224, 190, ${alpha})`
+      : `rgba(206, 220, 255, ${alpha})`;
+    starsCtx.beginPath();
+    starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    starsCtx.fill();
+
+    s.x -= s.drift;
+    if (s.x < -2) {
+      s.x = window.innerWidth + 2;
+      s.y = Math.random() * window.innerHeight;
+    }
+  }
+
+  starsFrame = requestAnimationFrame(drawStars);
+}
+
+function startStars() {
+  if (!calmEnough || starsFrame !== null) return;
+  sizeStars();
+  if (!stars.length) seedStars();
+  starsCanvas.classList.add("is-on");
+  starsFrame = requestAnimationFrame(drawStars);
+}
+
+function stopStars() {
+  starsCanvas.classList.remove("is-on");
+  if (starsFrame === null) return;
+  cancelAnimationFrame(starsFrame);
+  starsFrame = null;
+  setTimeout(() => {
+    if (starsFrame === null) starsCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  }, 2000);
+}
 
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });
