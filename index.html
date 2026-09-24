@@ -60,6 +60,21 @@
     </div>
 
     <p class="tonight" id="tonight"></p>
+
+    <section class="journal" aria-label="Tonight's note">
+      <p class="journal-ask">How was today?</p>
+
+      <div class="journal-chips" id="journal-chips">
+        <button class="chip" data-day="good" type="button"><span>&#128578;</span> good</button>
+        <button class="chip" data-day="normal" type="button"><span>&#128528;</span> normal</button>
+        <button class="chip" data-day="tired" type="button"><span>&#128533;</span> tired</button>
+        <button class="chip" data-day="productive" type="button"><span>&#128293;</span> productive</button>
+        <button class="chip" data-day="quiet" type="button"><span>&#127769;</span> quiet</button>
+      </div>
+
+      <input class="journal-note" id="journal-note" type="text" maxlength="140"
+             placeholder="Tonight I&hellip;" autocomplete="off" spellcheck="false" />
+    </section>
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus</p>

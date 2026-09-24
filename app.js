@@ -470,4 +470,51 @@ function lineForDay(key) {
 
 document.getElementById("tonight").textContent = lineForDay(today());
 
+
+/* --- tiny journal --- */
+const journalChips = document.querySelectorAll(".chip");
+const journalNote = document.getElementById("journal-note");
+
+function readJournal() {
+  try {
+    return JSON.parse(localStorage.getItem("lateNight.journal")) || {};
+  } catch {
+    return {};
+  }
+}
+
+function writeJournal(entry) {
+  const all = readJournal();
+  all[today()] = { ...all[today()], ...entry };
+  localStorage.setItem("lateNight.journal", JSON.stringify(all));
+}
+
+function paintJournal() {
+  const entry = readJournal()[today()] || {};
+
+  journalChips.forEach((chip) => {
+    chip.classList.toggle("is-active", chip.dataset.day === entry.day);
+  });
+
+  if (entry.note) journalNote.value = entry.note;
+}
+
+journalChips.forEach((chip) => {
+  chip.addEventListener("click", () => {
+    const entry = readJournal()[today()] || {};
+    // clicking the same one again takes it back
+    const day = entry.day === chip.dataset.day ? null : chip.dataset.day;
+    writeJournal({ day });
+    paintJournal();
+  });
+});
+
+let noteTimer = null;
+journalNote.addEventListener("input", () => {
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(() => writeJournal({ note: journalNote.value.trim() }), 600);
+});
+
+paintJournal();
+
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });
