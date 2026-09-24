@@ -529,4 +529,50 @@ journalNote.addEventListener("input", () => {
 
 paintJournal();
 
+
+/* --- traces of the nights before --- */
+const traces = document.getElementById("traces");
+
+function readStats() {
+  try {
+    return JSON.parse(localStorage.getItem("lateNight.stats")) || {};
+  } catch {
+    return {};
+  }
+}
+
+function writeStats(stats) {
+  localStorage.setItem("lateNight.stats", JSON.stringify(stats));
+}
+
+function yesterday() {
+  const then = new Date(Date.now() - 86400000);
+  return `${then.getFullYear()}-${then.getMonth() + 1}-${then.getDate()}`;
+}
+
+function countTonight() {
+  const stats = readStats();
+  if (stats.lastNight === today()) return stats;
+
+  stats.nights = (stats.nights || 0) + 1;
+  stats.streak = stats.lastNight === yesterday() ? (stats.streak || 0) + 1 : 1;
+  stats.lastNight = today();
+
+  writeStats(stats);
+  return stats;
+}
+
+function paintTraces() {
+  const stats = readStats();
+  const parts = [];
+
+  parts.push(`${stats.nights || 1} ${stats.nights === 1 ? "night" : "nights"} here`);
+  if (stats.streak > 1) parts.push(`${stats.streak} in a row`);
+
+  traces.textContent = parts.join(" · ");
+}
+
+countTonight();
+paintTraces();
+
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });
