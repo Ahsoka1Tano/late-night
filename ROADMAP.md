@@ -33,7 +33,8 @@ two rooms out of six, not the whole house.
 - [x] Focus: 25:00 timer with start / pause / reset
 - [x] Focus: presets 15 / 25 / 45 / 60
 - [x] Focus: a quieter finish than a blank 00:00
-- [ ] Space: drifting stars, a very slow parallax
+- [x] Space: drifting stars, warm and cold, a rare shooting star
+- [ ] Space: parallax on the star field
 - [ ] Sleep: dimmed everything, screen fading out over time
 
 ## Ambient

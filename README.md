@@ -13,6 +13,7 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 - six atmospheres: Calm, Music, Focus, Rain, Space, Sleep
 - real rain falling past the window, with drops sliding down the glass
 - out-of-focus city lights behind it, drifting as you move
+- a slow star field in the space mood, and once in a long while something crosses it
 - drizzle, steady or downpour — heavy rain blurs the city away
 - a focus timer that lives inside the focus mood: 15, 25, 45 or 60 minutes,
   ending with a quiet line instead of an alarm
