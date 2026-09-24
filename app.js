@@ -474,6 +474,14 @@ document.getElementById("tonight").textContent = lineForDay(today());
 /* --- tiny journal --- */
 const journalChips = document.querySelectorAll(".chip");
 const journalNote = document.getElementById("journal-note");
+const journalKept = document.getElementById("journal-kept");
+let keptTimer = null;
+
+function flashKept() {
+  journalKept.classList.add("is-shown");
+  clearTimeout(keptTimer);
+  keptTimer = setTimeout(() => journalKept.classList.remove("is-shown"), 1800);
+}
 
 function readJournal() {
   try {
@@ -506,13 +514,17 @@ journalChips.forEach((chip) => {
     const day = entry.day === chip.dataset.day ? null : chip.dataset.day;
     writeJournal({ day });
     paintJournal();
+    if (day) flashKept();
   });
 });
 
 let noteTimer = null;
 journalNote.addEventListener("input", () => {
   clearTimeout(noteTimer);
-  noteTimer = setTimeout(() => writeJournal({ note: journalNote.value.trim() }), 600);
+  noteTimer = setTimeout(() => {
+    writeJournal({ note: journalNote.value.trim() });
+    flashKept();
+  }, 600);
 });
 
 paintJournal();

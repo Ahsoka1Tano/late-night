@@ -727,3 +727,19 @@ body[data-mood="focus"] .focus {
   outline: none;
   border-bottom-color: color-mix(in srgb, var(--accent) 55%, transparent);
 }
+
+.journal-kept {
+  margin-top: 0.7rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity 0.6s ease, transform 0.6s var(--ease);
+}
+
+.journal-kept.is-shown {
+  opacity: 0.55;
+  transform: none;
+}
