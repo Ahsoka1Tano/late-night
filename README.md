@@ -18,6 +18,7 @@ No accounts, no backend, no notifications — just a dark little corner of the i
   ending with a quiet line instead of an alarm
 - the countdown shows in the tab title, so it keeps you company from another window
 - one quiet line for tonight, the same all evening, a different one tomorrow
+- a tiny journal: how the day was, and one line about tonight
 - the room remembers the mood you left it in
 
 ## Keys
@@ -41,6 +42,9 @@ Then visit <http://localhost:5173>.
 ## Stack
 
 HTML, CSS, vanilla JS. On purpose.
+
+Nothing leaves the browser: the mood, the journal and the settings live in `localStorage`,
+there is no account, no server and nothing to sign up for.
 
 ## Roadmap
 
