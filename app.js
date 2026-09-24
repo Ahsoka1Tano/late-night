@@ -50,6 +50,9 @@ function setMood(mood, { save = true } = {}) {
   if (mood === "rain") startRain();
   else stopRain();
 
+  // a finished session is history once you leave the room
+  if (mood !== "focus" && focusBlock.classList.contains("is-done")) resetFocus();
+
   if (save) localStorage.setItem("lateNight.mood", mood);
 }
 
