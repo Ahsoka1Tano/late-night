@@ -10,7 +10,8 @@ two rooms out of six, not the whole house.
 - [x] night screen, live clock, typography
 - [x] mood selector with six atmospheres
 - [ ] smoother mood transitions, per-mood background details
-- [ ] keyboard shortcuts (1–6 for moods, space for play)
+- [x] keyboard shortcuts: 1–6 for moods, [ ] for rain strength
+- [ ] space to play, once there is something to play
 
 ## Rain mood
 - [x] animated rain layer: drops falling over the page

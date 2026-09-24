@@ -16,6 +16,13 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 - drizzle, steady or downpour — heavy rain blurs the city away
 - the room remembers the mood you left it in
 
+## Keys
+
+| key | what it does |
+| --- | --- |
+| `1` … `6` | pick a mood |
+| `[` `]` | softer / harder rain |
+
 ## Running it
 
 No build step. Open `index.html`, or serve the folder:
