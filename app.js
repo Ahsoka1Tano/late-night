@@ -408,6 +408,7 @@ function finishFocus() {
   focusTime.textContent = "00:00";
   document.title = BASE_TITLE;
   focusNote.textContent = `that was ${focusMinutes} quiet minutes`;
+  keepSession(focusMinutes);
 }
 
 const focusPresets = document.querySelectorAll(".focus-preset");
@@ -562,12 +563,25 @@ function countTonight() {
   return stats;
 }
 
+// only finished sessions count — pausing and walking away does not
+function keepSession(minutes) {
+  const stats = readStats();
+  stats.sessions = (stats.sessions || 0) + 1;
+  stats.minutes = (stats.minutes || 0) + minutes;
+  writeStats(stats);
+  paintTraces();
+}
+
 function paintTraces() {
   const stats = readStats();
   const parts = [];
 
   parts.push(`${stats.nights || 1} ${stats.nights === 1 ? "night" : "nights"} here`);
   if (stats.streak > 1) parts.push(`${stats.streak} in a row`);
+  if (stats.sessions) {
+    parts.push(`${stats.sessions} ${stats.sessions === 1 ? "session" : "sessions"}`);
+    parts.push(`${stats.minutes} minutes focused`);
+  }
 
   traces.textContent = parts.join(" · ");
 }
