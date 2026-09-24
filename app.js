@@ -322,4 +322,74 @@ document.addEventListener("keydown", (e) => {
   retireHint();
 });
 
+
+/* --- focus --- */
+const FOCUS_LENGTH = 25 * 60 * 1000;
+
+const focusBlock = document.getElementById("focus");
+const focusTime = document.getElementById("focus-time");
+const focusToggle = document.getElementById("focus-toggle");
+const focusReset = document.getElementById("focus-reset");
+
+let focusLeft = FOCUS_LENGTH;
+let focusEndsAt = null;
+let focusTick = null;
+
+function paintFocus() {
+  const left = Math.max(0, focusEndsAt ? focusEndsAt - Date.now() : focusLeft);
+  const total = Math.round(left / 1000);
+  const mm = String(Math.floor(total / 60)).padStart(2, "0");
+  const ss = String(total % 60).padStart(2, "0");
+  focusTime.textContent = `${mm}:${ss}`;
+
+  if (focusEndsAt && left <= 0) finishFocus();
+}
+
+function startFocus() {
+  focusEndsAt = Date.now() + focusLeft;
+  focusToggle.textContent = "pause";
+  focusBlock.classList.add("is-running");
+  focusBlock.classList.remove("is-done");
+  focusTick = setInterval(paintFocus, 250);
+  paintFocus();
+}
+
+function pauseFocus() {
+  focusLeft = Math.max(0, focusEndsAt - Date.now());
+  focusEndsAt = null;
+  clearInterval(focusTick);
+  focusTick = null;
+  focusToggle.textContent = "start";
+  focusBlock.classList.remove("is-running");
+  paintFocus();
+}
+
+function resetFocus() {
+  clearInterval(focusTick);
+  focusTick = null;
+  focusEndsAt = null;
+  focusLeft = FOCUS_LENGTH;
+  focusToggle.textContent = "start";
+  focusBlock.classList.remove("is-running", "is-done");
+  paintFocus();
+}
+
+function finishFocus() {
+  clearInterval(focusTick);
+  focusTick = null;
+  focusEndsAt = null;
+  focusLeft = FOCUS_LENGTH;
+  focusToggle.textContent = "start";
+  focusBlock.classList.remove("is-running");
+  focusBlock.classList.add("is-done");
+  focusTime.textContent = "00:00";
+}
+
+focusToggle.addEventListener("click", () => {
+  if (focusEndsAt) pauseFocus();
+  else startFocus();
+});
+
+focusReset.addEventListener("click", resetFocus);
+
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });

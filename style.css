@@ -458,3 +458,79 @@ body[data-mood="rain"] .rain-dial {
   40%  { transform: scale(1.22) translateY(-2px); }
   100% { transform: scale(1); }
 }
+
+/* --- focus --- */
+.focus {
+  margin-top: 2.2rem;
+  height: 0;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  overflow: hidden;
+  transition: opacity 0.9s ease, transform 0.9s var(--ease);
+}
+
+body[data-mood="focus"] .focus {
+  height: auto;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.focus-time {
+  font-size: clamp(3rem, 12vw, 5.2rem);
+  font-weight: 200;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  text-shadow: 0 0 46px color-mix(in srgb, var(--accent) 35%, transparent);
+  transition: opacity 0.8s ease, text-shadow 0.8s ease;
+}
+
+.focus.is-running .focus-time {
+  animation: focusBreath 4s ease-in-out infinite;
+}
+
+.focus.is-done .focus-time {
+  opacity: 0.35;
+  text-shadow: none;
+}
+
+.focus-controls {
+  margin-top: 0.6rem;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.focus-btn {
+  appearance: none;
+  cursor: pointer;
+  padding: 9px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  transition: color 0.4s ease, background 0.4s ease, border-color 0.4s ease;
+}
+
+.focus-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.focus-btn:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@keyframes focusBreath {
+  0%, 100% { text-shadow: 0 0 40px color-mix(in srgb, var(--accent) 28%, transparent); }
+  50%      { text-shadow: 0 0 60px color-mix(in srgb, var(--accent) 48%, transparent); }
+}
