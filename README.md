@@ -19,6 +19,8 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 - the countdown shows in the tab title, so it keeps you company from another window
 - one quiet line for tonight, the same all evening, a different one tomorrow
 - a tiny journal: how the day was, and one line about tonight
+- a faint line of traces at the bottom: nights here, evenings in a row,
+  finished sessions and minutes focused
 - the room remembers the mood you left it in
 
 ## Keys

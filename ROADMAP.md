@@ -46,8 +46,8 @@ two rooms out of six, not the whole house.
 - [x] everything stored in localStorage
 
 ## Traces
-- [ ] nights visited, focus sessions, minutes focused
-- [ ] gentle streak counter
+- [x] nights visited, focus sessions, minutes focused
+- [x] gentle streak counter
 
 ## Always
 - polish, animation, mobile, micro-interactions
