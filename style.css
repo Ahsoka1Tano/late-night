@@ -582,3 +582,20 @@ body[data-mood="focus"] .focus {
   opacity: 0.25;
   pointer-events: none;
 }
+
+/* --- the note left when a session ends --- */
+.focus-note {
+  margin-top: 1.1rem;
+  min-height: 1.2em;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 1.4s ease, transform 1.4s var(--ease);
+}
+
+.focus.is-done .focus-note {
+  opacity: 0.7;
+  transform: none;
+}

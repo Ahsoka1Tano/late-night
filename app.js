@@ -345,6 +345,7 @@ const focusBlock = document.getElementById("focus");
 const focusTime = document.getElementById("focus-time");
 const focusToggle = document.getElementById("focus-toggle");
 const focusReset = document.getElementById("focus-reset");
+const focusNote = document.getElementById("focus-note");
 
 let focusLeft = focusLength();
 let focusEndsAt = null;
@@ -365,6 +366,7 @@ function startFocus() {
   focusToggle.textContent = "pause";
   focusBlock.classList.add("is-running");
   focusBlock.classList.remove("is-done");
+  focusNote.textContent = "";
   focusTick = setInterval(paintFocus, 250);
   paintFocus();
 }
@@ -386,6 +388,7 @@ function resetFocus() {
   focusLeft = focusLength();
   focusToggle.textContent = "start";
   focusBlock.classList.remove("is-running", "is-done");
+  focusNote.textContent = "";
   paintFocus();
 }
 
@@ -398,6 +401,7 @@ function finishFocus() {
   focusBlock.classList.remove("is-running");
   focusBlock.classList.add("is-done");
   focusTime.textContent = "00:00";
+  focusNote.textContent = `that was ${focusMinutes} quiet minutes`;
 }
 
 const focusPresets = document.querySelectorAll(".focus-preset");
