@@ -41,7 +41,7 @@ two rooms out of six, not the whole house.
 - [ ] local audio loops with soft fade in/out
 
 ## Evening rituals
-- [ ] daily vibe line, one per night
+- [x] daily vibe line, one per night
 - [ ] tiny journal: a mood chip and one sentence
 - [ ] everything stored in localStorage
 

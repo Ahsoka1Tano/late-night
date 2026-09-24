@@ -17,6 +17,7 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 - a focus timer that lives inside the focus mood: 15, 25, 45 or 60 minutes,
   ending with a quiet line instead of an alarm
 - the countdown shows in the tab title, so it keeps you company from another window
+- one quiet line for tonight, the same all evening, a different one tomorrow
 - the room remembers the mood you left it in
 
 ## Keys
