@@ -13,6 +13,7 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 - six atmospheres: Calm, Music, Focus, Rain, Space, Sleep
 - real rain falling past the window, with drops sliding down the glass
 - out-of-focus city lights behind it, drifting as you move
+- drizzle, steady or downpour — heavy rain blurs the city away
 - the room remembers the mood you left it in
 
 ## Running it
