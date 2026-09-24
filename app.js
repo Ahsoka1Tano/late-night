@@ -277,4 +277,41 @@ window.addEventListener("pointermove", (e) => {
   if (cityFrame === null) cityFrame = requestAnimationFrame(easeCity);
 });
 
+
+/* --- keys --- */
+const RAIN_ORDER = ["drizzle", "steady", "downpour"];
+const hint = document.getElementById("hint");
+
+function retireHint() {
+  hint.classList.add("is-gone");
+  localStorage.setItem("lateNight.knowsKeys", "1");
+}
+
+if (localStorage.getItem("lateNight.knowsKeys")) hint.classList.add("is-gone");
+
+document.addEventListener("keydown", (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+  const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName || "");
+  if (typing) return;
+
+  const number = Number(e.key);
+  if (number >= 1 && number <= moodButtons.length) {
+    setMood(moodButtons[number - 1].dataset.mood);
+    retireHint();
+    return;
+  }
+
+  if (document.body.dataset.mood !== "rain") return;
+
+  const step = e.key === "[" ? -1 : e.key === "]" ? 1 : 0;
+  if (!step) return;
+
+  const next = RAIN_ORDER.indexOf(rainLevel) + step;
+  if (next < 0 || next >= RAIN_ORDER.length) return;
+
+  setRainLevel(RAIN_ORDER[next]);
+  retireHint();
+});
+
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });

@@ -403,3 +403,37 @@ body[data-mood="rain"] .rain-dial {
   color: var(--text);
   background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
+
+/* --- a quiet note about the keys --- */
+.hint {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  opacity: 0;
+  animation: hintIn 1.6s 3s var(--ease) forwards;
+  transition: opacity 0.8s ease;
+}
+
+.hint span {
+  color: var(--text);
+  opacity: 0.75;
+}
+
+.hint.is-gone {
+  opacity: 0;
+  animation: none;
+}
+
+@keyframes hintIn {
+  to { opacity: 0.45; }
+}
+
+/* nothing to press on a phone */
+@media (hover: none) {
+  .hint { display: none; }
+}
