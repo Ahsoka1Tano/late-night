@@ -864,3 +864,104 @@ body.is-deeper .grain {
 body[data-mood="sleep"] .aurora {
   animation-duration: 58s;
 }
+
+/* --- the tape deck --- */
+.player {
+  margin-top: 0;
+  height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.9s ease, transform 0.9s var(--ease);
+}
+
+body[data-mood="music"] .player {
+  margin-top: 2.2rem;
+  height: auto;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.player-play {
+  appearance: none;
+  cursor: pointer;
+  padding: 10px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  transition: color 0.4s ease, background 0.4s ease, border-color 0.4s ease,
+    box-shadow 0.6s ease;
+}
+
+.player-play:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.player-play:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.player.is-playing .player-play {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  box-shadow: 0 0 30px -10px var(--accent);
+}
+
+.player-meta {
+  text-align: left;
+}
+
+.player-title {
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.player-wave {
+  margin-top: 8px;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 14px;
+}
+
+.player-wave span {
+  width: 2px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--text-dim);
+  opacity: 0.5;
+  transition: height 0.6s var(--ease), opacity 0.6s ease;
+}
+
+.player.is-playing .player-wave span {
+  background: var(--accent);
+  opacity: 0.85;
+  animation: tapeWave 1.9s ease-in-out infinite;
+}
+
+.player.is-playing .player-wave span:nth-child(2n) { animation-duration: 2.6s; }
+.player.is-playing .player-wave span:nth-child(3n) { animation-duration: 1.5s; }
+.player.is-playing .player-wave span:nth-child(4n) { animation-delay: -0.7s; }
+.player.is-playing .player-wave span:nth-child(5n) { animation-delay: -1.3s; }
+
+@keyframes tapeWave {
+  0%, 100% { height: 3px; }
+  50%      { height: 13px; }
+}

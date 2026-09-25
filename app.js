@@ -53,6 +53,9 @@ function setMood(mood, { save = true } = {}) {
   if (mood === "space") startStars();
   else stopStars();
 
+  // the tape does not play on in a room you have left
+  if (mood !== "music" && tapeRunning) setTape(false);
+
   if (mood === "sleep") {
     scheduleDoze();
   } else {
@@ -771,5 +774,20 @@ function stirRoom() {
 ["pointermove", "pointerdown", "keydown", "wheel", "touchstart"].forEach((event) => {
   window.addEventListener(event, stirRoom, { passive: true });
 });
+
+
+/* --- the tape deck --- */
+const player = document.getElementById("player");
+const playerPlay = document.getElementById("player-play");
+
+let tapeRunning = false;
+
+function setTape(running) {
+  tapeRunning = running;
+  player.classList.toggle("is-playing", running);
+  playerPlay.textContent = running ? "pause" : "play";
+}
+
+playerPlay.addEventListener("click", () => setTape(!tapeRunning));
 
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });
