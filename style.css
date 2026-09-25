@@ -965,3 +965,34 @@ body[data-mood="music"] .player {
   0%, 100% { height: 3px; }
   50%      { height: 13px; }
 }
+
+.player-next {
+  appearance: none;
+  cursor: pointer;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  transition: color 0.4s ease, background 0.4s ease, border-color 0.4s ease;
+}
+
+.player-next:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.player-next:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.player-title {
+  max-width: 30ch;
+}

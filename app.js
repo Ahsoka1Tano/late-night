@@ -779,10 +779,12 @@ function stirRoom() {
 /* --- the tape deck --- */
 const player = document.getElementById("player");
 const playerPlay = document.getElementById("player-play");
+const playerNext = document.getElementById("player-next");
+const playerTitle = document.getElementById("player-title");
 
 let tapeRunning = false;
 let audioCtx = null;
-let tape = null;
+let synth = null;
 
 // three seconds of tape hiss with the occasional pop, looped forever
 function crackleBuffer(ctx) {
@@ -804,7 +806,7 @@ function crackleBuffer(ctx) {
   return buffer;
 }
 
-function buildTape() {
+function buildSynth() {
   const ctx = audioCtx;
 
   const master = ctx.createGain();
@@ -850,28 +852,138 @@ function buildTape() {
   return { master, sources: [...voices, wobble, crackle] };
 }
 
-function fadeTape(target, seconds) {
+function fadeSynth(target, seconds) {
   const now = audioCtx.currentTime;
-  const gain = tape.master.gain;
+  const gain = synth.master.gain;
   gain.cancelScheduledValues(now);
   gain.setValueAtTime(gain.value, now);
   gain.linearRampToValueAtTime(target, now + seconds);
 }
 
-function startTape() {
+function startSynth() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   audioCtx.resume();
-  if (!tape) tape = buildTape();
-  fadeTape(0.32, 2.5);
+  if (!synth) synth = buildSynth();
+  fadeSynth(0.32, 2.5);
 }
 
-function stopTape() {
-  if (!tape) return;
-  fadeTape(0, 1.4);
+function stopSynth() {
+  if (!synth) return;
+  fadeSynth(0, 1.4);
 
-  const ending = tape;
-  tape = null;
+  const ending = synth;
+  synth = null;
   setTimeout(() => ending.sources.forEach((node) => node.stop()), 1600);
+}
+
+/* real tapes, streamed straight from the Internet Archive */
+const TAPES = [
+  {
+    title: "lofi lion — tame the beast",
+    licence: "cc by 4.0",
+    src: "https://archive.org/download/lofi-lion-tame-the-beast/LofiLion-TameTheBeast.mp3",
+  },
+  {
+    title: "uplifting pills — soul asylum",
+    licence: "cc0",
+    src: "https://archive.org/download/ChillPills/Uplifting_Pills_-_Chill_Pill_19_-_Soul_Asylum.mp3",
+  },
+  {
+    title: "uplifting pills — morning miracles",
+    licence: "cc0",
+    src: "https://archive.org/download/ChillPills/Uplifting_Pills_-_Chill_Pill_11_-_Morning_Miracles_EB2B5A64-38DD-40B3-96EC-3266A9D177C6.mp3",
+  },
+  {
+    title: "uplifting pills — set sail",
+    licence: "cc0",
+    src: "https://archive.org/download/ChillPills/Uplifting_Pills_-_Chill_Pill_17_-_Set_Sail_D2807F1E-3361-4295-A40D-80EC6AC74033.mp3",
+  },
+];
+
+const TAPE_VOLUME = 0.55;
+
+let tapeIndex = Math.floor(Math.random() * TAPES.length);
+let tapeAudio = null;
+let fadeStep = null;
+let onSynth = false;
+
+function paintTape() {
+  const tape = TAPES[tapeIndex];
+  playerTitle.textContent = onSynth
+    ? "night tape · side a"
+    : `${tape.title} · ${tape.licence}`;
+}
+
+function fadeAudio(target, seconds) {
+  clearInterval(fadeStep);
+  const from = tapeAudio.volume;
+  const steps = Math.max(1, Math.round(seconds * 25));
+  let step = 0;
+
+  fadeStep = setInterval(() => {
+    step++;
+    tapeAudio.volume = Math.min(1, Math.max(0, from + (target - from) * (step / steps)));
+    if (step >= steps) {
+      clearInterval(fadeStep);
+      fadeStep = null;
+      if (target === 0) tapeAudio.pause();
+    }
+  }, 40);
+}
+
+function loadTape() {
+  if (!tapeAudio) {
+    tapeAudio = new Audio();
+    tapeAudio.preload = "none";
+    tapeAudio.volume = 0;
+
+    // if the archive is unreachable, the little synth takes over
+    tapeAudio.addEventListener("error", () => {
+      if (!tapeRunning) return;
+      onSynth = true;
+      paintTape();
+      startSynth();
+    });
+
+    tapeAudio.addEventListener("ended", nextTape);
+  }
+
+  tapeAudio.src = TAPES[tapeIndex].src;
+}
+
+function playTape() {
+  if (onSynth) {
+    startSynth();
+    return;
+  }
+
+  if (!tapeAudio || !tapeAudio.src) loadTape();
+  tapeAudio.play().catch(() => {
+    onSynth = true;
+    paintTape();
+    startSynth();
+  });
+  fadeAudio(TAPE_VOLUME, 2.5);
+}
+
+function pauseTape() {
+  if (onSynth) {
+    stopSynth();
+    return;
+  }
+  if (tapeAudio) fadeAudio(0, 1.2);
+}
+
+function nextTape() {
+  tapeIndex = (tapeIndex + 1) % TAPES.length;
+  paintTape();
+
+  if (onSynth || !tapeRunning) return;
+
+  loadTape();
+  tapeAudio.volume = 0;
+  tapeAudio.play().catch(() => {});
+  fadeAudio(TAPE_VOLUME, 2);
 }
 
 function setTape(running) {
@@ -879,10 +991,13 @@ function setTape(running) {
   player.classList.toggle("is-playing", running);
   playerPlay.textContent = running ? "pause" : "play";
 
-  if (running) startTape();
-  else stopTape();
+  if (running) playTape();
+  else pauseTape();
 }
 
 playerPlay.addEventListener("click", () => setTape(!tapeRunning));
+playerNext.addEventListener("click", nextTape);
+
+paintTape();
 
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });
