@@ -123,6 +123,39 @@ body[data-mood="music"] .city {
   to   { opacity: 1; transform: translate3d(-1.2%, 0.6%, 0); }
 }
 
+/* a slow breath of light, only in the calm mood */
+.breath {
+  position: fixed;
+  top: 38%;
+  left: 50%;
+  width: min(760px, 120vw);
+  aspect-ratio: 1;
+  z-index: -3;
+  pointer-events: none;
+  translate: -50% -50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent) 22%, transparent) 0%,
+    transparent 62%
+  );
+  filter: blur(34px);
+  opacity: 0;
+  transition: opacity 2.4s ease;
+}
+
+body[data-mood="calm"] .breath {
+  opacity: 1;
+  animation: breathe 13s ease-in-out infinite;
+}
+
+/* four counts in, a pause, six counts out */
+@keyframes breathe {
+  0%   { scale: 0.82; opacity: 0.45; }
+  32%  { scale: 1.08; opacity: 0.95; }
+  44%  { scale: 1.08; opacity: 0.92; }
+  100% { scale: 0.82; opacity: 0.45; }
+}
+
 /* the sky, only in the space mood */
 .stars-layer {
   position: fixed;
