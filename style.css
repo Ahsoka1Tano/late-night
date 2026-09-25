@@ -156,6 +156,16 @@ body[data-mood="calm"] .breath {
   100% { scale: 0.82; opacity: 0.45; }
 }
 
+/* the title breathes along with the light */
+body[data-mood="calm"] .title {
+  animation: titleBreath 13s ease-in-out infinite;
+}
+
+@keyframes titleBreath {
+  0%, 100% { text-shadow: 0 0 28px color-mix(in srgb, var(--accent) 16%, transparent); }
+  32%      { text-shadow: 0 0 62px color-mix(in srgb, var(--accent) 42%, transparent); }
+}
+
 /* the sky, only in the space mood */
 .stars-layer {
   position: fixed;
