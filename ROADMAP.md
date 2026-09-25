@@ -55,6 +55,7 @@ two rooms out of six, not the whole house.
 - [x] gentle streak counter
 
 ## Always
-- polish, animation, mobile, micro-interactions
+- polish, animation, micro-interactions
+- [x] a proper pass over the phone layout: wrapping, thumb-sized controls
 - new atmospheres and phrases
 - the occasional easter egg
