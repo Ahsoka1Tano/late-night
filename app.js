@@ -47,8 +47,13 @@ function setMood(mood, { save = true } = {}) {
     moodLine.classList.remove("is-fading");
   }, 300);
 
-  if (mood === "rain") startRain();
-  else stopRain();
+  if (mood === "rain") {
+    startRain();
+    startRainSound();
+  } else {
+    stopRain();
+    stopRainSound();
+  }
 
   if (mood === "space") startStars();
   else stopStars();
@@ -249,14 +254,13 @@ function setRainLevel(level, { save = true } = {}) {
   });
 
   if (drops.length) seedDrops();
+  tuneRainSound();
   if (save) localStorage.setItem("lateNight.rain", level);
 }
 
 rainSteps.forEach((btn) => {
   btn.addEventListener("click", () => setRainLevel(btn.dataset.rain));
 });
-
-setRainLevel(rainLevel, { save: false });
 
 window.addEventListener("resize", () => {
   if (rainFrame !== null) {
@@ -884,9 +888,14 @@ function synthLevel() {
   return tapeVolume * 0.58;
 }
 
-function startSynth() {
+function ensureAudio() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   audioCtx.resume();
+  return audioCtx;
+}
+
+function startSynth() {
+  ensureAudio();
   if (!synth) synth = buildSynth();
   fadeSynth(synthLevel(), 2.5);
 }
@@ -1132,5 +1141,122 @@ buildRadioDial();
 setVolume(tapeVolume, { save: false });
 setStation("tape");
 loadTapeRack();
+
+
+
+/* --- the sound of the rain, made out of noise --- */
+const RAIN_SOUND = {
+  drizzle: { level: 0.1, top: 1500 },
+  steady: { level: 0.19, top: 2300 },
+  downpour: { level: 0.3, top: 3300 },
+};
+
+const rainListen = document.getElementById("rain-listen");
+
+let rainSound = null;
+let rainAudible = localStorage.getItem("lateNight.rainSound") === "1";
+
+// brown noise: softer than white, and much closer to water
+function noiseBuffer(ctx, seconds = 4) {
+  const length = ctx.sampleRate * seconds;
+  const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  let last = 0;
+
+  for (let i = 0; i < length; i++) {
+    const white = Math.random() * 2 - 1;
+    last = (last + 0.021 * white) / 1.021;
+    data[i] = last * 3.4;
+  }
+
+  return buffer;
+}
+
+function buildRainSound() {
+  const ctx = audioCtx;
+
+  const master = ctx.createGain();
+  master.gain.value = 0;
+  master.connect(ctx.destination);
+
+  const source = ctx.createBufferSource();
+  source.buffer = noiseBuffer(ctx);
+  source.loop = true;
+
+  const away = ctx.createBiquadFilter();
+  away.type = "highpass";
+  away.frequency.value = 280;
+
+  const window_ = ctx.createBiquadFilter();
+  window_.type = "lowpass";
+  window_.frequency.value = RAIN_SOUND[rainLevel].top;
+  window_.Q.value = 0.4;
+
+  source.connect(away).connect(window_).connect(master);
+
+  // the rain comes in waves, like wind pushing it against the glass
+  const gust = ctx.createOscillator();
+  gust.frequency.value = 0.07;
+  const gustDepth = ctx.createGain();
+  gustDepth.gain.value = 520;
+  gust.connect(gustDepth).connect(window_.frequency);
+
+  source.start();
+  gust.start();
+
+  return { master, window: window_, sources: [source, gust] };
+}
+
+function paintRainSound() {
+  rainListen.classList.toggle("is-on", rainAudible);
+  rainListen.setAttribute("aria-pressed", String(rainAudible));
+  rainListen.textContent = rainAudible ? "listening" : "listen";
+}
+
+function tuneRainSound(seconds = 1.5) {
+  if (!rainSound) return;
+
+  const shape = RAIN_SOUND[rainLevel];
+  const now = audioCtx.currentTime;
+
+  rainSound.master.gain.cancelScheduledValues(now);
+  rainSound.master.gain.setValueAtTime(rainSound.master.gain.value, now);
+  rainSound.master.gain.linearRampToValueAtTime(shape.level, now + seconds);
+
+  rainSound.window.frequency.cancelScheduledValues(now);
+  rainSound.window.frequency.linearRampToValueAtTime(shape.top, now + seconds);
+}
+
+function startRainSound() {
+  if (!rainAudible || document.body.dataset.mood !== "rain") return;
+  ensureAudio();
+  if (!rainSound) rainSound = buildRainSound();
+  tuneRainSound(2.5);
+}
+
+function stopRainSound() {
+  if (!rainSound) return;
+
+  const now = audioCtx.currentTime;
+  rainSound.master.gain.cancelScheduledValues(now);
+  rainSound.master.gain.setValueAtTime(rainSound.master.gain.value, now);
+  rainSound.master.gain.linearRampToValueAtTime(0, now + 1.2);
+
+  const ending = rainSound;
+  rainSound = null;
+  setTimeout(() => ending.sources.forEach((node) => node.stop()), 1500);
+}
+
+rainListen.addEventListener("click", () => {
+  rainAudible = !rainAudible;
+  localStorage.setItem("lateNight.rainSound", rainAudible ? "1" : "0");
+  paintRainSound();
+
+  if (rainAudible) startRainSound();
+  else stopRainSound();
+});
+
+paintRainSound();
+setRainLevel(rainLevel, { save: false });
 
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });
