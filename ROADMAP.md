@@ -23,7 +23,8 @@ two rooms out of six, not the whole house.
 - [ ] rain sound loop, fading in with the visuals
 
 ## Music mood
-- [x] lo-fi player bar: play / pause, tape title, a small moving wave
+- [x] lo-fi player bar: play / pause, next, tape title, a small moving wave
+- [x] real tracks streamed from the Internet Archive, synth as a fallback
 - [x] tape hiss / vinyl crackle layer
 - [ ] a volume knob for the tape
 - [ ] separate volume for music and ambience
