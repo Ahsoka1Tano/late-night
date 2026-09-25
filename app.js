@@ -781,11 +781,106 @@ const player = document.getElementById("player");
 const playerPlay = document.getElementById("player-play");
 
 let tapeRunning = false;
+let audioCtx = null;
+let tape = null;
+
+// three seconds of tape hiss with the occasional pop, looped forever
+function crackleBuffer(ctx) {
+  const length = ctx.sampleRate * 3;
+  const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+
+  for (let i = 0; i < length; i++) {
+    data[i] += (Math.random() * 2 - 1) * 0.018;
+
+    if (Math.random() < 0.00028) {
+      const amp = 0.2 + Math.random() * 0.45;
+      for (let k = 0; k < 48 && i + k < length; k++) {
+        data[i + k] += amp * Math.exp(-k / 11) * (Math.random() * 2 - 1);
+      }
+    }
+  }
+
+  return buffer;
+}
+
+function buildTape() {
+  const ctx = audioCtx;
+
+  const master = ctx.createGain();
+  master.gain.value = 0;
+  master.connect(ctx.destination);
+
+  const warmth = ctx.createBiquadFilter();
+  warmth.type = "lowpass";
+  warmth.frequency.value = 620;
+  warmth.Q.value = 0.7;
+  warmth.connect(master);
+
+  // an Am7 left humming in the room
+  const voices = [110, 130.81, 164.81, 196].map((freq, i) => {
+    const osc = ctx.createOscillator();
+    osc.type = i % 2 ? "sine" : "triangle";
+    osc.frequency.value = freq;
+    osc.detune.value = (i - 1.5) * 7;
+
+    const level = ctx.createGain();
+    level.gain.value = 0.12;
+    osc.connect(level).connect(warmth);
+    osc.start();
+    return osc;
+  });
+
+  // the filter drifts, the way a tape never holds a steady speed
+  const wobble = ctx.createOscillator();
+  wobble.frequency.value = 0.045;
+  const wobbleDepth = ctx.createGain();
+  wobbleDepth.gain.value = 210;
+  wobble.connect(wobbleDepth).connect(warmth.frequency);
+  wobble.start();
+
+  const crackle = ctx.createBufferSource();
+  crackle.buffer = crackleBuffer(ctx);
+  crackle.loop = true;
+  const crackleLevel = ctx.createGain();
+  crackleLevel.gain.value = 0.35;
+  crackle.connect(crackleLevel).connect(master);
+  crackle.start();
+
+  return { master, sources: [...voices, wobble, crackle] };
+}
+
+function fadeTape(target, seconds) {
+  const now = audioCtx.currentTime;
+  const gain = tape.master.gain;
+  gain.cancelScheduledValues(now);
+  gain.setValueAtTime(gain.value, now);
+  gain.linearRampToValueAtTime(target, now + seconds);
+}
+
+function startTape() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  audioCtx.resume();
+  if (!tape) tape = buildTape();
+  fadeTape(0.32, 2.5);
+}
+
+function stopTape() {
+  if (!tape) return;
+  fadeTape(0, 1.4);
+
+  const ending = tape;
+  tape = null;
+  setTimeout(() => ending.sources.forEach((node) => node.stop()), 1600);
+}
 
 function setTape(running) {
   tapeRunning = running;
   player.classList.toggle("is-playing", running);
   playerPlay.textContent = running ? "pause" : "play";
+
+  if (running) startTape();
+  else stopTape();
 }
 
 playerPlay.addEventListener("click", () => setTape(!tapeRunning));
