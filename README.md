@@ -15,7 +15,7 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 - out-of-focus city lights behind it, drifting as you move
 - a slow star field in the space mood, and once in a long while something crosses it
 - a tape deck in the music mood: twenty hours of freely licensed tapes,
-  or Lofi Girl's own radio in her own player;
+  or five of Lofi Girl's radio channels in her own player;
   if a stream is out of reach, a small synth keeps the room humming
 - a calm mood that breathes: a slow glow in, a slower glow out
 - a sleep mood that dozes off on its own if you stop touching anything
@@ -56,8 +56,9 @@ Nothing is hosted here. The tape side streams from the Internet Archive:
 | Lofi Lion — Tame the Beast | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 | Uplifting Pills — Chill Pill 11, 17, 19 | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
 
-The radio side is [Lofi Girl](https://www.youtube.com/@LofiGirl)'s live stream,
-embedded with YouTube's own player.
+The radio side is [Lofi Girl](https://www.youtube.com/@LofiGirl)'s own live streams —
+lofi hip hop, lofi house, synthwave, summer lofi and deep sleep — embedded with
+YouTube's own player. Her stream ids change when she restarts a broadcast.
 
 The fallback hum is generated in the browser with the Web Audio API.
 

@@ -26,7 +26,7 @@ two rooms out of six, not the whole house.
 - [x] lo-fi player bar: play / pause, next, tape title, a small moving wave
 - [x] real tracks streamed from the Internet Archive, synth as a fallback
 - [x] a radio station: Lofi Girl's live stream
-- [ ] more radio stations: synthwave, lofi house, deep sleep
+- [x] more radio channels: lofi house, synthwave, summer lofi, deep sleep
 - [x] tape hiss / vinyl crackle layer
 - [ ] a volume knob for the tape
 - [ ] separate volume for music and ambience
