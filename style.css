@@ -1290,4 +1290,34 @@ body[data-station="radio"] .player-volume {
   .journal {
     margin-top: 2.4rem;
   }
+
+  /* everything here gets tapped with a thumb, not clicked with a cursor */
+  .focus-preset,
+  .focus-btn,
+  .player-play,
+  .player-next,
+  .station,
+  .radio-channel,
+  .rain-step,
+  .rain-listen,
+  .chip {
+    min-height: 40px;
+  }
+
+  .focus-preset,
+  .station,
+  .radio-channel {
+    padding-inline: 16px;
+  }
+
+  .player-volume input {
+    width: 108px;
+    height: 40px;
+  }
+
+  /* 16px keeps iOS from zooming in when the field is tapped */
+  .journal-note {
+    font-size: 16px;
+    padding-block: 12px;
+  }
 }
