@@ -36,6 +36,7 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 | `1` … `6` | pick a mood |
 | `[` `]` | softer / harder rain |
 | `space` | start or pause the focus timer |
+| `↑` `↓` | tape volume, in the music mood |
 
 ## Running it
 

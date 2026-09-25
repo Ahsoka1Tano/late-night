@@ -28,7 +28,7 @@ two rooms out of six, not the whole house.
 - [x] a radio station: Lofi Girl's live stream
 - [x] more radio channels: lofi house, synthwave, summer lofi, deep sleep
 - [x] tape hiss / vinyl crackle layer
-- [ ] a volume knob for the tape
+- [x] a volume knob for the tape, and arrow keys to match
 - [ ] separate volume for music and ambience
 - [ ] slow cassette animation while playing
 
