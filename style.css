@@ -1066,3 +1066,54 @@ body[data-mood="music"][data-station="radio"] .radio-frame {
   border-radius: 14px;
   box-shadow: 0 20px 60px -30px #000;
 }
+
+/* --- radio channels --- */
+.radio-dial {
+  height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+body[data-mood="music"][data-station="radio"] .radio-dial {
+  margin-top: 1.4rem;
+  height: auto;
+  opacity: 1;
+}
+
+.radio-channel {
+  appearance: none;
+  cursor: pointer;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.65;
+  transition: color 0.4s ease, background 0.4s ease, opacity 0.4s ease;
+}
+
+.radio-channel:hover {
+  color: var(--text);
+  opacity: 1;
+}
+
+.radio-channel:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.radio-channel.is-active {
+  color: var(--text);
+  opacity: 1;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}

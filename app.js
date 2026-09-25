@@ -788,6 +788,7 @@ const playerNext = document.getElementById("player-next");
 const playerTitle = document.getElementById("player-title");
 const stationButtons = document.querySelectorAll(".station");
 const radioFrame = document.getElementById("radio-frame");
+const radioDial = document.getElementById("radio-dial");
 
 let tapeRunning = false;
 let audioCtx = null;
@@ -997,18 +998,58 @@ function nextTape() {
   fadeAudio(TAPE_VOLUME, 2);
 }
 
-/* the other station: Lofi Girl's own stream, played in their own player.
-   They restart the broadcast now and then, which retires the old id. */
-const LOFI_GIRL = "rFZHOHl-L8A";
+/* the other side: Lofi Girl's own streams, played in her own player.
+   She restarts a broadcast now and then, which retires the old id. */
+const RADIOS = [
+  { key: "lofi", name: "lofi hip hop", id: "rFZHOHl-L8A" },
+  { key: "house", name: "lofi house", id: "3PFJ9SETS4M" },
+  { key: "synthwave", name: "synthwave", id: "4xDzrJKXOOY" },
+  { key: "summer", name: "summer lofi", id: "0muHFBSiybw" },
+  { key: "sleep", name: "deep sleep", id: "nI725iVsyoQ" },
+];
 
 let station = "tape";
+let radioKey = localStorage.getItem("lateNight.radio") || "lofi";
+
+function currentRadio() {
+  return RADIOS.find((r) => r.key === radioKey) || RADIOS[0];
+}
+
+function buildRadioDial() {
+  RADIOS.forEach((r) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "radio-channel";
+    btn.dataset.radio = r.key;
+    btn.textContent = r.name;
+    btn.addEventListener("click", () => setRadio(r.key));
+    radioDial.append(btn);
+  });
+}
+
+function paintRadioDial() {
+  radioDial.querySelectorAll(".radio-channel").forEach((btn) => {
+    btn.classList.toggle("is-active", btn.dataset.radio === radioKey);
+  });
+}
+
+function setRadio(key) {
+  radioKey = key;
+  localStorage.setItem("lateNight.radio", key);
+  paintRadioDial();
+
+  playerTitle.textContent = `lofi girl · ${currentRadio().name}`;
+  closeRadio();
+  openRadio();
+}
 
 function openRadio() {
   if (radioFrame.firstChild) return;
 
+  const radio = currentRadio();
   const frame = document.createElement("iframe");
-  frame.src = `https://www.youtube-nocookie.com/embed/${LOFI_GIRL}?autoplay=1&rel=0`;
-  frame.title = "Lofi Girl — lofi hip hop radio";
+  frame.src = `https://www.youtube-nocookie.com/embed/${radio.id}?autoplay=1&rel=0`;
+  frame.title = `Lofi Girl — ${radio.name} radio`;
   frame.allow = "autoplay; encrypted-media";
   frame.referrerPolicy = "strict-origin-when-cross-origin";
   frame.loading = "lazy";
@@ -1029,7 +1070,8 @@ function setStation(next) {
 
   if (next === "radio") {
     if (tapeRunning) setTape(false);
-    playerTitle.textContent = "lofi girl · live from their own player";
+    playerTitle.textContent = `lofi girl · ${currentRadio().name}`;
+    paintRadioDial();
     openRadio();
   } else {
     closeRadio();
@@ -1053,6 +1095,7 @@ function setTape(running) {
 playerPlay.addEventListener("click", () => setTape(!tapeRunning));
 playerNext.addEventListener("click", nextTape);
 
+buildRadioDial();
 setStation("tape");
 loadTapeRack();
 
