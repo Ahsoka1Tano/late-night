@@ -789,6 +789,7 @@ const playerTitle = document.getElementById("player-title");
 const stationButtons = document.querySelectorAll(".station");
 const radioFrame = document.getElementById("radio-frame");
 const radioDial = document.getElementById("radio-dial");
+const volumeSlider = document.getElementById("player-volume");
 
 let tapeRunning = false;
 let audioCtx = null;
@@ -868,11 +869,16 @@ function fadeSynth(target, seconds) {
   gain.linearRampToValueAtTime(target, now + seconds);
 }
 
+// the synth hum sits a little lower than a real track at the same setting
+function synthLevel() {
+  return tapeVolume * 0.58;
+}
+
 function startSynth() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   audioCtx.resume();
   if (!synth) synth = buildSynth();
-  fadeSynth(0.32, 2.5);
+  fadeSynth(synthLevel(), 2.5);
 }
 
 function stopSynth() {
@@ -912,7 +918,8 @@ async function loadTapeRack() {
   }
 }
 
-const TAPE_VOLUME = 0.55;
+const storedVolume = localStorage.getItem("lateNight.volume");
+let tapeVolume = storedVolume === null ? 0.55 : Math.min(1, Math.max(0, Number(storedVolume) || 0));
 
 let tapeIndex = Math.floor(Math.random() * TAPES.length);
 let tapeAudio = null;
@@ -975,7 +982,7 @@ function playTape() {
     paintTape();
     startSynth();
   });
-  fadeAudio(TAPE_VOLUME, 2.5);
+  fadeAudio(tapeVolume, 2.5);
 }
 
 function pauseTape() {
@@ -995,7 +1002,7 @@ function nextTape() {
   loadTape();
   tapeAudio.volume = 0;
   tapeAudio.play().catch(() => {});
-  fadeAudio(TAPE_VOLUME, 2);
+  fadeAudio(tapeVolume, 2);
 }
 
 /* the other side: Lofi Girl's own streams, played in her own player.
@@ -1092,10 +1099,27 @@ function setTape(running) {
   else pauseTape();
 }
 
+function setVolume(value, { save = true } = {}) {
+  tapeVolume = Math.min(1, Math.max(0, value));
+  volumeSlider.value = String(Math.round(tapeVolume * 100));
+
+  if (tapeAudio && !tapeAudio.paused) {
+    clearInterval(fadeStep);
+    fadeStep = null;
+    tapeAudio.volume = tapeVolume;
+  }
+
+  if (synth) fadeSynth(synthLevel(), 0.2);
+  if (save) localStorage.setItem("lateNight.volume", String(tapeVolume));
+}
+
+volumeSlider.addEventListener("input", () => setVolume(Number(volumeSlider.value) / 100));
+
 playerPlay.addEventListener("click", () => setTape(!tapeRunning));
 playerNext.addEventListener("click", nextTape);
 
 buildRadioDial();
+setVolume(tapeVolume, { save: false });
 setStation("tape");
 loadTapeRack();
 

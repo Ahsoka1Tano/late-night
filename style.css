@@ -1117,3 +1117,80 @@ body[data-mood="music"][data-station="radio"] .radio-dial {
   opacity: 1;
   background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
+
+/* --- how loud the tape is --- */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.player-volume {
+  display: flex;
+  align-items: center;
+  order: 3;
+}
+
+body[data-station="radio"] .player-volume {
+  display: none;
+}
+
+.player-volume input {
+  appearance: none;
+  width: 74px;
+  height: 14px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.player-volume input::-webkit-slider-runnable-track {
+  height: 1px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.player-volume input::-moz-range-track {
+  height: 1px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.player-volume input::-webkit-slider-thumb {
+  appearance: none;
+  width: 8px;
+  height: 8px;
+  margin-top: -3.5px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 40%, transparent);
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+.player-volume input::-moz-range-thumb {
+  width: 8px;
+  height: 8px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--text-dim);
+  transition: background 0.4s ease;
+}
+
+.player-volume input:hover::-webkit-slider-thumb,
+.player.is-playing .player-volume input::-webkit-slider-thumb {
+  background: var(--accent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.player-volume input:hover::-moz-range-thumb,
+.player.is-playing .player-volume input::-moz-range-thumb {
+  background: var(--accent);
+}
+
+.player-volume input:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 999px;
+}
