@@ -1,0 +1,112 @@
+{
+  "base": "https://archive.org/download/ChillPills/",
+  "tapes": [
+    {
+      "title": "uplifting pills — i will always return",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_1_-_I_Will_Always_Return.mp3"
+    },
+    {
+      "title": "uplifting pills — somewhere only we know",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_2_-_Somewhere_Only_We_Know.mp3"
+    },
+    {
+      "title": "uplifting pills — tawny days",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_3_-_Tawny_Days_EECDF721-63C0-47AA-9ACB-F03B159D6BC1.mp3"
+    },
+    {
+      "title": "uplifting pills — oblivion",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_4_-_Oblivion_9BE3BED5-58F3-4311-893C-542A483460B3.mp3"
+    },
+    {
+      "title": "uplifting pills — sunny side up",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_5_-_Sunny_Side_Up_1056CD9D-83CA-4B81-9FD7-F4B3B89B8E26.mp3"
+    },
+    {
+      "title": "uplifting pills — amazing day",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_6_-_Amazing_Day_91A7D138-00A9-4052-BC1E-A87A7F4B3DEA.mp3"
+    },
+    {
+      "title": "uplifting pills — oasis",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_7_-_Oasis_1CAC879E-F721-4D79-98FE-F11254C73C27.mp3"
+    },
+    {
+      "title": "uplifting pills — wish you were here",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_8_-_Wish_You_Were_Here_62C2CC06-98EA-4BB5-B9DB-29E60821BC72.mp3"
+    },
+    {
+      "title": "uplifting pills — reminiscenes",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_9_-_Reminiscenes_2567BFB7-3512-48AD-B422-26EE5C2AEAF0.mp3"
+    },
+    {
+      "title": "uplifting pills — new beginnings",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_10_-_New_Beginnings_0711CD74-C7DC-45C2-B5B0-62F595F7DCFA.mp3"
+    },
+    {
+      "title": "uplifting pills — morning miracles",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_11_-_Morning_Miracles_EB2B5A64-38DD-40B3-96EC-3266A9D177C6.mp3"
+    },
+    {
+      "title": "uplifting pills — island of the mind",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_12_-_Island_of_the_Mind_6F779460-24AC-47AB-AEC9-F7BE7C34DFDC.mp3"
+    },
+    {
+      "title": "uplifting pills — journeys of a dreamer",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_13_-_Journeys_of_a_Dreamer_F5F4E290-519C-4B74-B520-2466017EDCB3.mp3"
+    },
+    {
+      "title": "uplifting pills — yearning for the past",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_14_-_Yearning_for_the_Past_271C4D54-98B6-4EA2-A257-21C38D28D2C6.mp3"
+    },
+    {
+      "title": "uplifting pills — opalescent",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_15_-_Opalescent_D044C6D8-AAB9-4F4D-BAF7-2D4310913B85.mp3"
+    },
+    {
+      "title": "uplifting pills — wonderful life",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_16_-_Wonderful_Life_D60D0E64-239C-442F-8A2A-507CF9E42085.mp3"
+    },
+    {
+      "title": "uplifting pills — set sail",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_17_-_Set_Sail_D2807F1E-3361-4295-A40D-80EC6AC74033.mp3"
+    },
+    {
+      "title": "uplifting pills — lounge edition",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_18_-_Lounge_Edition_6B4CD8D7-80A9-4CF0-9C45-CF0F97F59A50.mp3"
+    },
+    {
+      "title": "uplifting pills — soul asylum",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_19_-_Soul_Asylum.mp3"
+    },
+    {
+      "title": "uplifting pills — umbrella",
+      "licence": "cc0",
+      "file": "Uplifting_Pills_-_Chill_Pill_21_-_Umbrella.mp3"
+    }
+  ],
+  "extra": [
+    {
+      "title": "lofi lion — tame the beast",
+      "licence": "cc by 4.0",
+      "url": "https://archive.org/download/lofi-lion-tame-the-beast/LofiLion-TameTheBeast.mp3"
+    }
+  ]
+}

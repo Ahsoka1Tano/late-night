@@ -877,28 +877,32 @@ function stopSynth() {
 }
 
 /* real tapes, streamed straight from the Internet Archive */
-const TAPES = [
+let TAPES = [
   {
     title: "lofi lion — tame the beast",
     licence: "cc by 4.0",
     src: "https://archive.org/download/lofi-lion-tame-the-beast/LofiLion-TameTheBeast.mp3",
   },
-  {
-    title: "uplifting pills — soul asylum",
-    licence: "cc0",
-    src: "https://archive.org/download/ChillPills/Uplifting_Pills_-_Chill_Pill_19_-_Soul_Asylum.mp3",
-  },
-  {
-    title: "uplifting pills — morning miracles",
-    licence: "cc0",
-    src: "https://archive.org/download/ChillPills/Uplifting_Pills_-_Chill_Pill_11_-_Morning_Miracles_EB2B5A64-38DD-40B3-96EC-3266A9D177C6.mp3",
-  },
-  {
-    title: "uplifting pills — set sail",
-    licence: "cc0",
-    src: "https://archive.org/download/ChillPills/Uplifting_Pills_-_Chill_Pill_17_-_Set_Sail_D2807F1E-3361-4295-A40D-80EC6AC74033.mp3",
-  },
 ];
+
+// the rest of the rack lives in tapes.json, so it can grow without touching the code
+async function loadTapeRack() {
+  try {
+    const rack = await fetch("tapes.json").then((r) => r.json());
+    const shelf = rack.tapes.map((t) => ({
+      title: t.title,
+      licence: t.licence,
+      src: rack.base + t.file,
+    }));
+    const extra = (rack.extra || []).map((t) => ({ ...t, src: t.url }));
+
+    TAPES = [...shelf, ...extra];
+    tapeIndex = Math.floor(Math.random() * TAPES.length);
+    if (!tapeRunning) paintTape();
+  } catch {
+    // the one built-in tape will do
+  }
+}
 
 const TAPE_VOLUME = 0.55;
 
@@ -999,5 +1003,6 @@ playerPlay.addEventListener("click", () => setTape(!tapeRunning));
 playerNext.addEventListener("click", nextTape);
 
 paintTape();
+loadTapeRack();
 
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });
