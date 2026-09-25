@@ -29,7 +29,7 @@ two rooms out of six, not the whole house.
 - [ ] slow cassette animation while playing
 
 ## Other moods
-- [ ] Calm: slow breathing light
+- [x] Calm: slow breathing light
 - [x] Focus: 25:00 timer with start / pause / reset
 - [x] Focus: presets 15 / 25 / 45 / 60
 - [x] Focus: a quieter finish than a blank 00:00
