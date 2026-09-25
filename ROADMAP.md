@@ -20,7 +20,7 @@ two rooms out of six, not the whole house.
 - [x] blurred night-city lights behind the window (bokeh)
 - [x] rain intensity: drizzle / steady / downpour
 - [ ] rare, very soft distant lightning
-- [x] rain sound, made of noise, following the intensity
+- [x] real rain recordings, one per intensity, synth kept as a fallback
 
 ## Music mood
 - [x] lo-fi player bar: play / pause, next, tape title, a small moving wave

@@ -20,8 +20,8 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 - a calm mood that breathes: a slow glow in, a slower glow out
 - a sleep mood that dozes off on its own if you stop touching anything
 - drizzle, steady or downpour — heavy rain blurs the city away
-- and you can hear it too: the rain sound is generated, not recorded,
-  and thickens as the rain does
+- and you can hear it too: a different recording for drizzle, steady rain
+  and a downpour with distant thunder
 - a focus timer that lives inside the focus mood: 15, 25, 45 or 60 minutes,
   ending with a quiet line instead of an alarm
 - the countdown shows in the tab title, so it keeps you company from another window
@@ -58,6 +58,7 @@ Nothing is hosted here. The tape side streams from the Internet Archive:
 | --- | --- |
 | Lofi Lion — Tame the Beast | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 | Uplifting Pills — Chill Pill 11, 17, 19 | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| Nature Sounds — Rain Sounds (the rain in the rain mood) | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
 
 The radio side is [Lofi Girl](https://www.youtube.com/@LofiGirl)'s own live streams —
 lofi hip hop, lofi house, synthwave, summer lofi and deep sleep — embedded with
