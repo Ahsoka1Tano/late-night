@@ -997,8 +997,9 @@ function nextTape() {
   fadeAudio(TAPE_VOLUME, 2);
 }
 
-/* the other station: Lofi Girl's own stream, played in their own player */
-const LOFI_GIRL = "jfKfPfyJRdk";
+/* the other station: Lofi Girl's own stream, played in their own player.
+   They restart the broadcast now and then, which retires the old id. */
+const LOFI_GIRL = "rFZHOHl-L8A";
 
 let station = "tape";
 
