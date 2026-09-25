@@ -352,6 +352,16 @@ document.addEventListener("keydown", (e) => {
     return;
   }
 
+  if (document.body.dataset.mood === "music" && station === "tape") {
+    const nudge = e.key === "ArrowUp" ? 0.05 : e.key === "ArrowDown" ? -0.05 : 0;
+    if (nudge) {
+      e.preventDefault();
+      setVolume(tapeVolume + nudge);
+      retireHint();
+      return;
+    }
+  }
+
   if (document.body.dataset.mood !== "rain") return;
 
   const step = e.key === "[" ? -1 : e.key === "]" ? 1 : 0;
