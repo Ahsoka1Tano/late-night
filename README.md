@@ -14,6 +14,8 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 - real rain falling past the window, with drops sliding down the glass
 - out-of-focus city lights behind it, drifting as you move
 - a slow star field in the space mood, and once in a long while something crosses it
+- a tape deck in the music mood: a warm chord, tape hiss and the odd pop,
+  all made in the browser, no audio files
 - a calm mood that breathes: a slow glow in, a slower glow out
 - a sleep mood that dozes off on its own if you stop touching anything
 - drizzle, steady or downpour — heavy rain blurs the city away
