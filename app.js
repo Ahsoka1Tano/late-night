@@ -53,8 +53,13 @@ function setMood(mood, { save = true } = {}) {
   if (mood === "space") startStars();
   else stopStars();
 
-  // the tape does not play on in a room you have left
-  if (mood !== "music" && tapeRunning) setTape(false);
+  // nothing plays on in a room you have left
+  if (mood !== "music") {
+    if (tapeRunning) setTape(false);
+    closeRadio();
+  } else if (station === "radio") {
+    openRadio();
+  }
 
   if (mood === "sleep") {
     scheduleDoze();
@@ -781,6 +786,8 @@ const player = document.getElementById("player");
 const playerPlay = document.getElementById("player-play");
 const playerNext = document.getElementById("player-next");
 const playerTitle = document.getElementById("player-title");
+const stationButtons = document.querySelectorAll(".station");
+const radioFrame = document.getElementById("radio-frame");
 
 let tapeRunning = false;
 let audioCtx = null;
@@ -990,6 +997,49 @@ function nextTape() {
   fadeAudio(TAPE_VOLUME, 2);
 }
 
+/* the other station: Lofi Girl's own stream, played in their own player */
+const LOFI_GIRL = "jfKfPfyJRdk";
+
+let station = "tape";
+
+function openRadio() {
+  if (radioFrame.firstChild) return;
+
+  const frame = document.createElement("iframe");
+  frame.src = `https://www.youtube-nocookie.com/embed/${LOFI_GIRL}?autoplay=1&rel=0`;
+  frame.title = "Lofi Girl — lofi hip hop radio";
+  frame.allow = "autoplay; encrypted-media";
+  frame.referrerPolicy = "strict-origin-when-cross-origin";
+  frame.loading = "lazy";
+  radioFrame.append(frame);
+}
+
+function closeRadio() {
+  radioFrame.replaceChildren();
+}
+
+function setStation(next) {
+  station = next;
+  document.body.dataset.station = next;
+
+  stationButtons.forEach((btn) => {
+    btn.classList.toggle("is-active", btn.dataset.station === next);
+  });
+
+  if (next === "radio") {
+    if (tapeRunning) setTape(false);
+    playerTitle.textContent = "lofi girl · live from their own player";
+    openRadio();
+  } else {
+    closeRadio();
+    paintTape();
+  }
+}
+
+stationButtons.forEach((btn) => {
+  btn.addEventListener("click", () => setStation(btn.dataset.station));
+});
+
 function setTape(running) {
   tapeRunning = running;
   player.classList.toggle("is-playing", running);
@@ -1002,7 +1052,7 @@ function setTape(running) {
 playerPlay.addEventListener("click", () => setTape(!tapeRunning));
 playerNext.addEventListener("click", nextTape);
 
-paintTape();
+setStation("tape");
 loadTapeRack();
 
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });
