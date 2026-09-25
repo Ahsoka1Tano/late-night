@@ -1252,3 +1252,42 @@ body[data-station="radio"] .player-volume {
   0%, 100% { box-shadow: 0 0 8px 0 var(--accent); }
   50%      { box-shadow: 0 0 16px 1px var(--accent); }
 }
+
+/* --- on a phone --- */
+@media (max-width: 560px) {
+  .player {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .player-meta {
+    order: 4;
+    width: 100%;
+    text-align: center;
+  }
+
+  .player-title {
+    max-width: none;
+  }
+
+  .player-wave {
+    justify-content: center;
+  }
+
+  .rain-dial {
+    flex-wrap: wrap;
+  }
+
+  .rain-listen {
+    margin-left: 0;
+  }
+
+  .focus-time {
+    letter-spacing: 0.04em;
+  }
+
+  .tonight,
+  .journal {
+    margin-top: 2.4rem;
+  }
+}
