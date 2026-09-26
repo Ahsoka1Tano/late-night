@@ -324,6 +324,17 @@ window.addEventListener("pointermove", (e) => {
   if (driftFrame === null) driftFrame = requestAnimationFrame(easeDrift);
 });
 
+// when you leave, everything settles back to where it was
+function settleDrift() {
+  if (!calmEnough) return;
+  driftAimX = 0;
+  driftAimY = 0;
+  if (driftFrame === null) driftFrame = requestAnimationFrame(easeDrift);
+}
+
+document.addEventListener("pointerleave", settleDrift);
+window.addEventListener("blur", settleDrift);
+
 
 /* --- keys --- */
 const RAIN_ORDER = ["drizzle", "steady", "downpour"];
