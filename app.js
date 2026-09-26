@@ -296,31 +296,32 @@ document.addEventListener("visibilitychange", () => {
 });
 
 
-/* --- the city drifts a little as you move --- */
+/* --- one slow drift, shared by the city lights and the sky --- */
 const city = document.querySelector(".city");
-let cityAimX = 0;
-let cityAimY = 0;
-let cityX = 0;
-let cityY = 0;
-let cityFrame = null;
 
-function easeCity() {
-  cityX += (cityAimX - cityX) * 0.045;
-  cityY += (cityAimY - cityY) * 0.045;
-  city.style.transform = `translate3d(${cityX.toFixed(2)}px, ${cityY.toFixed(2)}px, 0)`;
+let driftAimX = 0;
+let driftAimY = 0;
+let driftX = 0;
+let driftY = 0;
+let driftFrame = null;
 
-  if (Math.abs(cityAimX - cityX) < 0.05 && Math.abs(cityAimY - cityY) < 0.05) {
-    cityFrame = null;
+function easeDrift() {
+  driftX += (driftAimX - driftX) * 0.045;
+  driftY += (driftAimY - driftY) * 0.045;
+  city.style.transform = `translate3d(${driftX.toFixed(2)}px, ${driftY.toFixed(2)}px, 0)`;
+
+  if (Math.abs(driftAimX - driftX) < 0.05 && Math.abs(driftAimY - driftY) < 0.05) {
+    driftFrame = null;
     return;
   }
-  cityFrame = requestAnimationFrame(easeCity);
+  driftFrame = requestAnimationFrame(easeDrift);
 }
 
 window.addEventListener("pointermove", (e) => {
   if (!calmEnough) return;
-  cityAimX = (e.clientX / window.innerWidth - 0.5) * -16;
-  cityAimY = (e.clientY / window.innerHeight - 0.5) * -9;
-  if (cityFrame === null) cityFrame = requestAnimationFrame(easeCity);
+  driftAimX = (e.clientX / window.innerWidth - 0.5) * -16;
+  driftAimY = (e.clientY / window.innerHeight - 0.5) * -9;
+  if (driftFrame === null) driftFrame = requestAnimationFrame(easeDrift);
 });
 
 
@@ -659,6 +660,7 @@ function seedStars() {
     // depth: 0 = far and still, 1 = near and drifting
     const depth = Math.random();
     return {
+      depth,
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
       r: 0.4 + depth * 1.1,
@@ -717,11 +719,16 @@ function drawStars() {
   for (const s of stars) {
     const flicker = 0.68 + 0.32 * Math.sin(starsClock * s.blink + s.phase);
     const alpha = s.base * flicker;
+
+    // the near stars swing further than the far ones
+    const shiftX = driftX * (0.25 + s.depth * 1.5);
+    const shiftY = driftY * (0.25 + s.depth * 1.5);
+
     starsCtx.fillStyle = s.warm
       ? `rgba(255, 224, 190, ${alpha})`
       : `rgba(206, 220, 255, ${alpha})`;
     starsCtx.beginPath();
-    starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    starsCtx.arc(s.x + shiftX, s.y + shiftY, s.r, 0, Math.PI * 2);
     starsCtx.fill();
 
     s.x -= s.drift;
