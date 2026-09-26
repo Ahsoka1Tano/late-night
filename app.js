@@ -1183,6 +1183,11 @@ const AMBIENCE = {
     level: 0.4,
     name: "a fireplace, three hours of it",
   },
+  sleep: {
+    src: RAIN_ARCHIVE + "Light%20Gentle%20Rain%20Part%202.mp3",
+    level: 0.22,
+    name: "rain, far away",
+  },
 };
 
 const listenButton = document.getElementById("listen");
