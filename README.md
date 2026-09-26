@@ -13,7 +13,8 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 - six atmospheres: Calm, Music, Focus, Rain, Space, Sleep
 - real rain falling past the window, with drops sliding down the glass
 - out-of-focus city lights behind it, drifting as you move
-- a slow star field in the space mood, and once in a long while something crosses it
+- a slow star field in the space mood with real depth — near stars swing
+  further than far ones — and once in a long while something crosses it
 - a tape deck in the music mood: twenty hours of freely licensed tapes,
   or five of Lofi Girl's radio channels in her own player;
   if a stream is out of reach, a small synth keeps the room humming

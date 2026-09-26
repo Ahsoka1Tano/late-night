@@ -38,7 +38,7 @@ two rooms out of six, not the whole house.
 - [x] Focus: presets 15 / 25 / 45 / 60
 - [x] Focus: a quieter finish than a blank 00:00
 - [x] Space: drifting stars, warm and cold, a rare shooting star
-- [ ] Space: parallax on the star field
+- [x] Space: parallax on the star field
 - [x] Sleep: the room dozes off if you leave it alone
 
 ## Ambient
