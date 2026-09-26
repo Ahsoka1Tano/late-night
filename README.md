@@ -42,7 +42,7 @@ There is one more mood than the six you can see. It is not behind a button.
 | `1` … `6` | pick a mood |
 | `[` `]` | softer / harder rain |
 | `space` | start or pause the focus timer |
-| `↑` `↓` | tape volume, in the music mood |
+| `↑` `↓` | volume of whatever is playing: the tape in music, the room elsewhere |
 
 ## Running it
 
