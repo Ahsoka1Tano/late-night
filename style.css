@@ -401,11 +401,16 @@ body[data-mood="sleep"] { --glow-a: #14182c; --glow-b: #0b0d18; --accent: #5f6a9
 body[data-mood="sleep"] .aurora { opacity: 0.5; }
 body[data-mood="focus"] .aurora { opacity: 0.65; }
 
-/* one calm row of six once there is room */
+/* one calm row of six once there is room — seven, if you found the seventh */
 @media (min-width: 900px) {
   .moods {
     grid-template-columns: repeat(6, 1fr);
     width: min(860px, 100%);
+  }
+
+  body.knows-aurora .moods {
+    grid-template-columns: repeat(7, 1fr);
+    width: min(960px, 100%);
   }
 }
 
