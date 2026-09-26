@@ -20,6 +20,7 @@ const MOODS = {
   rain:  "The window is doing all the talking.",
   space: "Everything is quiet out there too.",
   sleep: "Slow down. The day is over.",
+  aurora: "Nobody else is awake to see this.",
 };
 
 const moodLine = document.getElementById("mood-line");
@@ -55,7 +56,7 @@ function setMood(mood, { save = true } = {}) {
     stopRainSound();
   }
 
-  if (mood === "space") startStars();
+  if (mood === "space" || mood === "aurora") startStars();
   else stopStars();
 
   // nothing plays on in a room you have left
@@ -292,7 +293,7 @@ document.addEventListener("visibilitychange", () => {
   }
 
   if (mood === "rain") startRain();
-  if (mood === "space") startStars();
+  if (mood === "space" || mood === "aurora") startStars();
 });
 
 
@@ -355,9 +356,12 @@ document.addEventListener("keydown", (e) => {
 
   const number = Number(e.key);
   if (number >= 1 && number <= moodButtons.length) {
-    setMood(moodButtons[number - 1].dataset.mood);
-    retireHint();
-    return;
+    const wanted = moodButtons[number - 1];
+    if (wanted.offsetParent !== null) {
+      setMood(wanted.dataset.mood);
+      retireHint();
+      return;
+    }
   }
 
   if (document.body.dataset.mood === "focus" && (e.key === " " || e.code === "Space")) {
@@ -1331,5 +1335,30 @@ rainListen.addEventListener("click", () => {
 
 paintRainSound();
 setRainLevel(rainLevel, { save: false });
+
+
+
+/* --- something left in the room for whoever pokes around --- */
+const SECRET_WORD = "moon";
+
+let typed = "";
+
+if (localStorage.getItem("lateNight.aurora") === "1") {
+  document.body.classList.add("knows-aurora");
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (/^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName || "")) return;
+  if (e.key.length !== 1) return;
+
+  typed = (typed + e.key.toLowerCase()).slice(-SECRET_WORD.length);
+  if (typed !== SECRET_WORD) return;
+
+  typed = "";
+  document.body.classList.add("knows-aurora");
+  localStorage.setItem("lateNight.aurora", "1");
+  setMood("aurora");
+});
 
 setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });

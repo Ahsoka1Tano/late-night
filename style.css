@@ -1323,3 +1323,55 @@ body[data-station="radio"] .player-volume {
     padding-block: 12px;
   }
 }
+
+/* --- the seventh mood, for whoever finds it --- */
+.mood-secret {
+  display: none;
+}
+
+body.knows-aurora .mood-secret {
+  display: flex;
+  animation: found 1.6s var(--ease);
+}
+
+@keyframes found {
+  0%   { opacity: 0; transform: translateY(10px) scale(0.94); filter: blur(6px); }
+  100% { opacity: 1; transform: none; filter: blur(0); }
+}
+
+body[data-mood="aurora"] {
+  --glow-a: #0d4a3d;
+  --glow-b: #16324f;
+  --accent: #7df0c4;
+}
+
+.veil {
+  position: fixed;
+  inset: -25%;
+  z-index: -3;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  filter: blur(58px);
+  background:
+    linear-gradient(104deg, transparent 18%, rgba(110, 240, 196, 0.34) 34%, transparent 48%),
+    linear-gradient(86deg, transparent 42%, rgba(126, 186, 255, 0.26) 58%, transparent 72%),
+    linear-gradient(120deg, transparent 58%, rgba(184, 134, 255, 0.2) 70%, transparent 84%);
+  transition: opacity 2.6s ease;
+}
+
+body[data-mood="aurora"] .veil {
+  opacity: 1;
+  animation: veilWave 27s ease-in-out infinite alternate;
+}
+
+@keyframes veilWave {
+  0%   { transform: translate3d(-4%, 2%, 0) skewY(-2deg) scaleY(1); }
+  50%  { transform: translate3d(2%, -3%, 0) skewY(3deg) scaleY(1.14); }
+  100% { transform: translate3d(5%, 1%, 0) skewY(-1deg) scaleY(0.96); }
+}
+
+/* the aurora keeps the sky it belongs to */
+body[data-mood="aurora"] .aurora {
+  opacity: 0.55;
+}
