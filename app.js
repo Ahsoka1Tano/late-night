@@ -1303,8 +1303,8 @@ function paintAmbience() {
   document.body.classList.toggle("is-listening", listening);
   listenButton.classList.toggle("is-on", listening);
   listenButton.setAttribute("aria-pressed", String(listening));
-  listenButton.textContent = listening ? "listening" : "listen";
-  ambienceName.textContent = listening && sound ? sound.name : "";
+  listenButton.textContent = listening ? "listening" : ambienceError ? "retry" : "listen";
+  ambienceName.textContent = listening && sound ? sound.name : ambienceError;
 }
 
 function fadeAmbience(target, seconds, andThen) {
@@ -1429,12 +1429,19 @@ function setRoomVolume(value, { save = true } = {}) {
 roomSlider.addEventListener("input", () => setRoomVolume(Number(roomSlider.value) / 100));
 
 listenButton.addEventListener("click", () => {
-  listening = !listening;
-  localStorage.setItem("lateNight.listen", listening ? "1" : "0");
-  paintAmbience();
+  if (listening) {
+    listening = false;
+    localStorage.setItem("lateNight.listen", "0");
+    paintAmbience();
+    stopAmbience();
+    return;
+  }
 
-  if (listening) startAmbience();
-  else stopAmbience();
+  ambienceError = "";
+  listening = true;
+  localStorage.setItem("lateNight.listen", "1");
+  paintAmbience();
+  startAmbience();
 });
 
 setRoomVolume(roomVolume, { save: false });
