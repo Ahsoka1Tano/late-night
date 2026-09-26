@@ -1145,7 +1145,8 @@ body[data-station="radio"] .player-volume {
   display: none;
 }
 
-.player-volume input {
+.player-volume input,
+.room-volume input {
   appearance: none;
   width: 74px;
   height: 14px;
@@ -1153,19 +1154,22 @@ body[data-station="radio"] .player-volume {
   cursor: pointer;
 }
 
-.player-volume input::-webkit-slider-runnable-track {
+.player-volume input::-webkit-slider-runnable-track,
+.room-volume input::-webkit-slider-runnable-track {
   height: 1px;
   border-radius: 1px;
   background: rgba(255, 255, 255, 0.16);
 }
 
-.player-volume input::-moz-range-track {
+.player-volume input::-moz-range-track,
+.room-volume input::-moz-range-track {
   height: 1px;
   border-radius: 1px;
   background: rgba(255, 255, 255, 0.16);
 }
 
-.player-volume input::-webkit-slider-thumb {
+.player-volume input::-webkit-slider-thumb,
+.room-volume input::-webkit-slider-thumb {
   appearance: none;
   width: 8px;
   height: 8px;
@@ -1176,7 +1180,8 @@ body[data-station="radio"] .player-volume {
   transition: background 0.4s ease, box-shadow 0.4s ease;
 }
 
-.player-volume input::-moz-range-thumb {
+.player-volume input::-moz-range-thumb,
+.room-volume input::-moz-range-thumb {
   width: 8px;
   height: 8px;
   border: 0;
@@ -1186,17 +1191,22 @@ body[data-station="radio"] .player-volume {
 }
 
 .player-volume input:hover::-webkit-slider-thumb,
-.player.is-playing .player-volume input::-webkit-slider-thumb {
+.player.is-playing .player-volume input::-webkit-slider-thumb,
+.room-volume input:hover::-webkit-slider-thumb,
+body.is-listening .room-volume input::-webkit-slider-thumb {
   background: var(--accent);
   box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
 .player-volume input:hover::-moz-range-thumb,
-.player.is-playing .player-volume input::-moz-range-thumb {
+.player.is-playing .player-volume input::-moz-range-thumb,
+.room-volume input:hover::-moz-range-thumb,
+body.is-listening .room-volume input::-moz-range-thumb {
   background: var(--accent);
 }
 
-.player-volume input:focus-visible {
+.player-volume input:focus-visible,
+.room-volume input:focus-visible {
   outline: 1px solid var(--accent);
   outline-offset: 4px;
   border-radius: 999px;
@@ -1316,7 +1326,8 @@ body[data-station="radio"] .player-volume {
     padding-inline: 16px;
   }
 
-  .player-volume input {
+  .player-volume input,
+  .room-volume input {
     width: 108px;
     height: 40px;
   }
@@ -1409,4 +1420,14 @@ body.has-ambience .ambience {
   text-transform: lowercase;
   color: var(--text-dim);
   opacity: 0.75;
+}
+
+/* the room knob only shows up once the room is actually heard */
+.room-volume {
+  display: none;
+  align-items: center;
+}
+
+body.is-listening .room-volume {
+  display: flex;
 }

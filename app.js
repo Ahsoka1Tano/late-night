@@ -1192,6 +1192,15 @@ const AMBIENCE = {
 
 const listenButton = document.getElementById("listen");
 const ambienceName = document.getElementById("ambience-name");
+const roomSlider = document.getElementById("room-volume");
+
+// one knob for the whole room, on top of each sound's own level
+const storedRoom = localStorage.getItem("lateNight.roomVolume");
+let roomVolume = storedRoom === null ? 1 : Math.min(1, Math.max(0, Number(storedRoom) || 0));
+
+function levelOf(sound) {
+  return sound.level * roomVolume;
+}
 
 let ambienceTrack = null;
 let ambienceFade = null;
@@ -1250,7 +1259,7 @@ function startNoiseRain() {
 
   const now = audioCtx.currentTime;
   noiseRain.master.gain.cancelScheduledValues(now);
-  noiseRain.master.gain.linearRampToValueAtTime(0.18, now + 2);
+  noiseRain.master.gain.linearRampToValueAtTime(0.18 * roomVolume, now + 2);
 }
 
 function stopNoiseRain() {
@@ -1270,6 +1279,7 @@ function paintAmbience() {
   const sound = ambienceFor(document.body.dataset.mood);
 
   document.body.classList.toggle("has-ambience", Boolean(sound));
+  document.body.classList.toggle("is-listening", listening);
   listenButton.classList.toggle("is-on", listening);
   listenButton.setAttribute("aria-pressed", String(listening));
   listenButton.textContent = listening ? "listening" : "listen";
@@ -1320,7 +1330,7 @@ function startAmbience() {
     onNoiseFallback = true;
     if (document.body.dataset.mood === "rain") startNoiseRain();
   });
-  fadeAmbience(sound.level, 2.5);
+  fadeAmbience(levelOf(sound), 2.5);
   paintAmbience();
 }
 
@@ -1348,16 +1358,32 @@ function swapAmbience() {
   }
 
   if (ambienceTrack.src === sound.src) {
-    fadeAmbience(sound.level, 1.2);
+    fadeAmbience(levelOf(sound), 1.2);
     return;
   }
 
   fadeAmbience(0, 0.8, () => {
     ambienceTrack.src = sound.src;
     ambienceTrack.play().catch(() => {});
-    fadeAmbience(sound.level, 1.4);
+    fadeAmbience(levelOf(sound), 1.4);
   });
 }
+
+function setRoomVolume(value, { save = true } = {}) {
+  roomVolume = Math.min(1, Math.max(0, value));
+  roomSlider.value = String(Math.round(roomVolume * 100));
+
+  const sound = ambienceFor(document.body.dataset.mood);
+  if (sound && ambienceTrack && !ambienceTrack.paused) {
+    clearInterval(ambienceFade);
+    ambienceFade = null;
+    ambienceTrack.volume = levelOf(sound);
+  }
+
+  if (save) localStorage.setItem("lateNight.roomVolume", String(roomVolume));
+}
+
+roomSlider.addEventListener("input", () => setRoomVolume(Number(roomSlider.value) / 100));
 
 listenButton.addEventListener("click", () => {
   listening = !listening;
@@ -1368,6 +1394,7 @@ listenButton.addEventListener("click", () => {
   else stopAmbience();
 });
 
+setRoomVolume(roomVolume, { save: false });
 paintAmbience();
 setRainLevel(rainLevel, { save: false });
 
