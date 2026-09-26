@@ -1199,12 +1199,12 @@ const AMBIENCE = {
     name: "rain, far away",
   },
   space: {
-    src: "https://opengameart.org/sites/default/files/empty_space.wav",
+    src: "./assets/floating-in-space.wav",
     level: 0.24,
     name: "floating in space",
   },
   aurora: {
-    src: "https://opengameart.org/sites/default/files/empty_space.wav",
+    src: "./assets/floating-in-space.wav",
     level: 0.2,
     name: "floating in space",
   },
@@ -1387,8 +1387,13 @@ function stopAmbience() {
 function swapAmbience() {
   paintAmbience();
 
-  const sound = ambienceFor(document.body.dataset.mood);
-  if (!listening || onNoiseFallback) return;
+  const mood = document.body.dataset.mood;
+  const sound = ambienceFor(mood);
+  if (onNoiseFallback && mood !== "rain") {
+    stopNoiseRain();
+    onNoiseFallback = false;
+  }
+  if (!listening) return;
 
   if (!sound) {
     stopAmbience();
@@ -1407,7 +1412,7 @@ function swapAmbience() {
 
   fadeAmbience(0, 0.8, () => {
     ambienceTrack.src = sound.src;
-    ambienceTrack.play().catch(() => {});
+    ambienceTrack.play().catch(handleAmbienceFailure);
     fadeAmbience(levelOf(sound), 1.4);
   });
 }
