@@ -369,11 +369,21 @@ document.addEventListener("keydown", (e) => {
     return;
   }
 
-  if (document.body.dataset.mood === "music" && station === "tape") {
-    const nudge = e.key === "ArrowUp" ? 0.05 : e.key === "ArrowDown" ? -0.05 : 0;
-    if (nudge) {
+  // the arrows turn whatever is playing in this room
+  const nudge = e.key === "ArrowUp" ? 0.05 : e.key === "ArrowDown" ? -0.05 : 0;
+  if (nudge) {
+    const mood = document.body.dataset.mood;
+
+    if (mood === "music" && station === "tape") {
       e.preventDefault();
       setVolume(tapeVolume + nudge);
+      retireHint();
+      return;
+    }
+
+    if (listening && ambienceFor(mood)) {
+      e.preventDefault();
+      setRoomVolume(roomVolume + nudge);
       retireHint();
       return;
     }
