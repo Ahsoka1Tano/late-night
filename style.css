@@ -1202,11 +1202,10 @@ body[data-station="radio"] .player-volume {
   border-radius: 999px;
 }
 
-/* --- the switch that lets the rain be heard --- */
-.rain-listen {
+/* --- the switch that lets the room be heard --- */
+.listen {
   appearance: none;
   cursor: pointer;
-  margin-left: 10px;
   padding: 7px 14px 7px 12px;
   display: inline-flex;
   align-items: center;
@@ -1223,7 +1222,7 @@ body[data-station="radio"] .player-volume {
   transition: color 0.4s ease, background 0.4s ease, border-color 0.4s ease;
 }
 
-.rain-listen::before {
+.listen::before {
   content: "";
   width: 5px;
   height: 5px;
@@ -1233,22 +1232,22 @@ body[data-station="radio"] .player-volume {
   transition: background 0.5s ease, opacity 0.5s ease, box-shadow 0.5s ease;
 }
 
-.rain-listen:hover {
+.listen:hover {
   color: var(--text);
   border-color: rgba(255, 255, 255, 0.16);
 }
 
-.rain-listen:focus-visible {
+.listen:focus-visible {
   outline: 1px solid var(--accent);
   outline-offset: 2px;
 }
 
-.rain-listen.is-on {
+.listen.is-on {
   color: var(--text);
   border-color: color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
-.rain-listen.is-on::before {
+.listen.is-on::before {
   background: var(--accent);
   opacity: 1;
   box-shadow: 0 0 10px 0 var(--accent);
@@ -1285,7 +1284,7 @@ body[data-station="radio"] .player-volume {
     flex-wrap: wrap;
   }
 
-  .rain-listen {
+  .listen {
     margin-left: 0;
   }
 
@@ -1306,7 +1305,7 @@ body[data-station="radio"] .player-volume {
   .station,
   .radio-channel,
   .rain-step,
-  .rain-listen,
+  .listen,
   .chip {
     min-height: 40px;
   }
@@ -1379,4 +1378,35 @@ body[data-mood="aurora"] .veil {
 /* the aurora keeps the sky it belongs to */
 body[data-mood="aurora"] .aurora {
   opacity: 0.55;
+}
+
+/* --- where the listen switch lives --- */
+.ambience {
+  margin-top: 0;
+  height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.8s ease, transform 0.8s var(--ease);
+}
+
+body.has-ambience .ambience {
+  margin-top: 1.5rem;
+  height: auto;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.ambience-name {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: lowercase;
+  color: var(--text-dim);
+  opacity: 0.75;
 }

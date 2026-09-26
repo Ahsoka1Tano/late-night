@@ -48,13 +48,10 @@ function setMood(mood, { save = true } = {}) {
     moodLine.classList.remove("is-fading");
   }, 300);
 
-  if (mood === "rain") {
-    startRain();
-    startRainSound();
-  } else {
-    stopRain();
-    stopRainSound();
-  }
+  if (mood === "rain") startRain();
+  else stopRain();
+
+  swapAmbience();
 
   if (mood === "space" || mood === "aurora") startStars();
   else stopStars();
@@ -255,7 +252,7 @@ function setRainLevel(level, { save = true } = {}) {
   });
 
   if (drops.length) seedDrops();
-  tuneRainSound();
+  swapAmbience();
   if (save) localStorage.setItem("lateNight.rain", level);
 }
 
@@ -1166,23 +1163,42 @@ loadTapeRack();
 
 
 
-/* --- the sound of the rain: real recordings, streamed from the archive --- */
+/* --- what the room sounds like: real recordings, streamed from the archive --- */
 const RAIN_ARCHIVE = "https://archive.org/download/relaxingrainsounds/";
 
-const RAIN_SOUND = {
-  drizzle: { file: "Light%20Gentle%20Rain%20Part%201.mp3", level: 0.4 },
-  steady: { file: "Rain%20Trickling%20Sounds%20Part%201.mp3", level: 0.55 },
-  downpour: { file: "Thunderstorm%20Out%20In%20The%20Fields.mp3", level: 0.7 },
+const RAIN_BY_STRENGTH = {
+  drizzle: { src: RAIN_ARCHIVE + "Light%20Gentle%20Rain%20Part%201.mp3", level: 0.4, name: "light gentle rain" },
+  steady: { src: RAIN_ARCHIVE + "Rain%20Trickling%20Sounds%20Part%201.mp3", level: 0.55, name: "rain trickling" },
+  downpour: { src: RAIN_ARCHIVE + "Thunderstorm%20Out%20In%20The%20Fields.mp3", level: 0.7, name: "thunderstorm in the fields" },
 };
 
-const rainListen = document.getElementById("rain-listen");
+const AMBIENCE = {
+  calm: {
+    src: "https://archive.org/download/ocean-sea-sounds/Gentle%20Ocean.mp3",
+    level: 0.45,
+    name: "gentle ocean",
+  },
+  focus: {
+    src: "https://archive.org/download/relaxingsounds/FIRE%202%203h%20Blazing%20Fireplace.mp3",
+    level: 0.4,
+    name: "a fireplace, three hours of it",
+  },
+};
 
-let rainTrack = null;
-let rainFade = null;
-let rainOnSynth = false;
-let rainAudible = localStorage.getItem("lateNight.rainSound") === "1";
+const listenButton = document.getElementById("listen");
+const ambienceName = document.getElementById("ambience-name");
 
-// brown noise, kept as a fallback for when the archive cannot be reached
+let ambienceTrack = null;
+let ambienceFade = null;
+let onNoiseFallback = false;
+let listening = localStorage.getItem("lateNight.listen") === "1";
+
+function ambienceFor(mood) {
+  if (mood === "rain") return RAIN_BY_STRENGTH[rainLevel];
+  return AMBIENCE[mood] || null;
+}
+
+// brown noise, kept only for when the archive cannot be reached
 function noiseBuffer(ctx, seconds = 4) {
   const length = ctx.sampleRate * seconds;
   const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
@@ -1198,142 +1214,156 @@ function noiseBuffer(ctx, seconds = 4) {
   return buffer;
 }
 
-let rainSynth = null;
+let noiseRain = null;
 
-function buildRainSynth() {
-  const ctx = audioCtx;
-
-  const master = ctx.createGain();
-  master.gain.value = 0;
-  master.connect(ctx.destination);
-
-  const source = ctx.createBufferSource();
-  source.buffer = noiseBuffer(ctx);
-  source.loop = true;
-
-  const away = ctx.createBiquadFilter();
-  away.type = "highpass";
-  away.frequency.value = 280;
-
-  const glass = ctx.createBiquadFilter();
-  glass.type = "lowpass";
-  glass.frequency.value = 2300;
-  glass.Q.value = 0.4;
-
-  source.connect(away).connect(glass).connect(master);
-  source.start();
-
-  return { master, sources: [source] };
-}
-
-function startRainSynth() {
+function startNoiseRain() {
   ensureAudio();
-  if (!rainSynth) rainSynth = buildRainSynth();
+
+  if (!noiseRain) {
+    const ctx = audioCtx;
+    const master = ctx.createGain();
+    master.gain.value = 0;
+    master.connect(ctx.destination);
+
+    const source = ctx.createBufferSource();
+    source.buffer = noiseBuffer(ctx);
+    source.loop = true;
+
+    const away = ctx.createBiquadFilter();
+    away.type = "highpass";
+    away.frequency.value = 280;
+
+    const glass = ctx.createBiquadFilter();
+    glass.type = "lowpass";
+    glass.frequency.value = 2300;
+    glass.Q.value = 0.4;
+
+    source.connect(away).connect(glass).connect(master);
+    source.start();
+    noiseRain = { master, sources: [source] };
+  }
+
   const now = audioCtx.currentTime;
-  rainSynth.master.gain.cancelScheduledValues(now);
-  rainSynth.master.gain.linearRampToValueAtTime(0.18, now + 2);
+  noiseRain.master.gain.cancelScheduledValues(now);
+  noiseRain.master.gain.linearRampToValueAtTime(0.18, now + 2);
 }
 
-function stopRainSynth() {
-  if (!rainSynth) return;
-  const now = audioCtx.currentTime;
-  rainSynth.master.gain.cancelScheduledValues(now);
-  rainSynth.master.gain.setValueAtTime(rainSynth.master.gain.value, now);
-  rainSynth.master.gain.linearRampToValueAtTime(0, now + 1);
+function stopNoiseRain() {
+  if (!noiseRain) return;
 
-  const ending = rainSynth;
-  rainSynth = null;
+  const now = audioCtx.currentTime;
+  noiseRain.master.gain.cancelScheduledValues(now);
+  noiseRain.master.gain.setValueAtTime(noiseRain.master.gain.value, now);
+  noiseRain.master.gain.linearRampToValueAtTime(0, now + 1);
+
+  const ending = noiseRain;
+  noiseRain = null;
   setTimeout(() => ending.sources.forEach((node) => node.stop()), 1300);
 }
 
-function paintRainSound() {
-  rainListen.classList.toggle("is-on", rainAudible);
-  rainListen.setAttribute("aria-pressed", String(rainAudible));
-  rainListen.textContent = rainAudible ? "listening" : "listen";
+function paintAmbience() {
+  const sound = ambienceFor(document.body.dataset.mood);
+
+  document.body.classList.toggle("has-ambience", Boolean(sound));
+  listenButton.classList.toggle("is-on", listening);
+  listenButton.setAttribute("aria-pressed", String(listening));
+  listenButton.textContent = listening ? "listening" : "listen";
+  ambienceName.textContent = listening && sound ? sound.name : "";
 }
 
-function fadeRain(target, seconds, andThen) {
-  clearInterval(rainFade);
-  const from = rainTrack.volume;
+function fadeAmbience(target, seconds, andThen) {
+  clearInterval(ambienceFade);
+  const from = ambienceTrack.volume;
   const steps = Math.max(1, Math.round(seconds * 25));
   let step = 0;
 
-  rainFade = setInterval(() => {
+  ambienceFade = setInterval(() => {
     step++;
-    rainTrack.volume = Math.min(1, Math.max(0, from + (target - from) * (step / steps)));
+    ambienceTrack.volume = Math.min(1, Math.max(0, from + (target - from) * (step / steps)));
     if (step >= steps) {
-      clearInterval(rainFade);
-      rainFade = null;
+      clearInterval(ambienceFade);
+      ambienceFade = null;
       if (andThen) andThen();
     }
   }, 40);
 }
 
-function startRainSound() {
-  if (!rainAudible || document.body.dataset.mood !== "rain") return;
+function startAmbience() {
+  const sound = ambienceFor(document.body.dataset.mood);
+  if (!listening || !sound) return;
 
-  if (rainOnSynth) {
-    startRainSynth();
+  if (onNoiseFallback) {
+    if (document.body.dataset.mood === "rain") startNoiseRain();
     return;
   }
 
-  if (!rainTrack) {
-    rainTrack = new Audio();
-    rainTrack.loop = true;
-    rainTrack.preload = "none";
-    rainTrack.volume = 0;
+  if (!ambienceTrack) {
+    ambienceTrack = new Audio();
+    ambienceTrack.loop = true;
+    ambienceTrack.preload = "none";
+    ambienceTrack.volume = 0;
 
-    // if the recording will not load, the old noise takes over
-    rainTrack.addEventListener("error", () => {
-      if (!rainAudible) return;
-      rainOnSynth = true;
-      startRainSynth();
+    ambienceTrack.addEventListener("error", () => {
+      if (!listening) return;
+      onNoiseFallback = true;
+      if (document.body.dataset.mood === "rain") startNoiseRain();
     });
   }
 
-  const shape = RAIN_SOUND[rainLevel];
-  if (!rainTrack.src.endsWith(shape.file)) rainTrack.src = RAIN_ARCHIVE + shape.file;
-
-  rainTrack.play().catch(() => {
-    rainOnSynth = true;
-    startRainSynth();
+  if (ambienceTrack.src !== sound.src) ambienceTrack.src = sound.src;
+  ambienceTrack.play().catch(() => {
+    onNoiseFallback = true;
+    if (document.body.dataset.mood === "rain") startNoiseRain();
   });
-  fadeRain(shape.level, 2.5);
+  fadeAmbience(sound.level, 2.5);
+  paintAmbience();
 }
 
-function stopRainSound() {
-  stopRainSynth();
-  if (!rainTrack || rainTrack.paused) return;
-  fadeRain(0, 1.2, () => rainTrack.pause());
+function stopAmbience() {
+  stopNoiseRain();
+  if (!ambienceTrack || ambienceTrack.paused) return;
+  fadeAmbience(0, 1.2, () => ambienceTrack.pause());
 }
 
-// a different recording for each strength, swapped without a gap of silence
-function tuneRainSound() {
-  if (!rainAudible || rainOnSynth || !rainTrack || rainTrack.paused) return;
+// swapping to another room's sound, without a gap of silence
+function swapAmbience() {
+  paintAmbience();
 
-  const shape = RAIN_SOUND[rainLevel];
-  if (rainTrack.src.endsWith(shape.file)) {
-    fadeRain(shape.level, 1.2);
+  const sound = ambienceFor(document.body.dataset.mood);
+  if (!listening || onNoiseFallback) return;
+
+  if (!sound) {
+    stopAmbience();
     return;
   }
 
-  fadeRain(0, 0.8, () => {
-    rainTrack.src = RAIN_ARCHIVE + shape.file;
-    rainTrack.play().catch(() => {});
-    fadeRain(shape.level, 1.4);
+  if (!ambienceTrack || ambienceTrack.paused) {
+    startAmbience();
+    return;
+  }
+
+  if (ambienceTrack.src === sound.src) {
+    fadeAmbience(sound.level, 1.2);
+    return;
+  }
+
+  fadeAmbience(0, 0.8, () => {
+    ambienceTrack.src = sound.src;
+    ambienceTrack.play().catch(() => {});
+    fadeAmbience(sound.level, 1.4);
   });
 }
 
-rainListen.addEventListener("click", () => {
-  rainAudible = !rainAudible;
-  localStorage.setItem("lateNight.rainSound", rainAudible ? "1" : "0");
-  paintRainSound();
+listenButton.addEventListener("click", () => {
+  listening = !listening;
+  localStorage.setItem("lateNight.listen", listening ? "1" : "0");
+  paintAmbience();
 
-  if (rainAudible) startRainSound();
-  else stopRainSound();
+  if (listening) startAmbience();
+  else stopAmbience();
 });
 
-paintRainSound();
+paintAmbience();
 setRainLevel(rainLevel, { save: false });
 
 
