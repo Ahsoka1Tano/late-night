@@ -23,7 +23,7 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 - drizzle, steady or downpour — heavy rain blurs the city away
 - and you can hear it too: every mood with a sound has a `listen` switch —
   rain on three settings, an ocean for calm, a fireplace for focus,
-  rain far away for sleep
+  rain far away for sleep, and a quiet space drone in Space and Aurora
 - a focus timer that lives inside the focus mood: 15, 25, 45 or 60 minutes,
   ending with a quiet line instead of an alarm
 - the countdown shows in the tab title, so it keeps you company from another window
@@ -70,7 +70,7 @@ The radio side is [Lofi Girl](https://www.youtube.com/@LofiGirl)'s own live stre
 lofi hip hop, lofi house, synthwave, summer lofi and deep sleep — embedded with
 YouTube's own player. Her stream ids change when she restarts a broadcast.
 
-The fallback hum is generated in the browser with the Web Audio API.
+The space ambience is streamed from [OpenGameArt](https://opengameart.org/content/floating-in-space), by Umplix (CC0). The fallback hum is generated in the browser with the Web Audio API.
 
 ## Stack
 
