@@ -70,7 +70,7 @@ The radio side is [Lofi Girl](https://www.youtube.com/@LofiGirl)'s own live stre
 lofi hip hop, lofi house, synthwave, summer lofi and deep sleep — embedded with
 YouTube's own player. Her stream ids change when she restarts a broadcast.
 
-The space ambience is streamed from [OpenGameArt](https://opengameart.org/content/floating-in-space), by Umplix (CC0). The fallback hum is generated in the browser with the Web Audio API.
+The space ambience is [Floating in Space](https://opengameart.org/content/floating-in-space) by Umplix (CC0), stored in the project so playback does not depend on OpenGameArt's file server.
 
 ## Stack
 
