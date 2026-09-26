@@ -1198,6 +1198,16 @@ const AMBIENCE = {
     level: 0.22,
     name: "rain, far away",
   },
+  space: {
+    src: "https://opengameart.org/sites/default/files/empty_space.wav",
+    level: 0.24,
+    name: "floating in space",
+  },
+  aurora: {
+    src: "https://opengameart.org/sites/default/files/empty_space.wav",
+    level: 0.2,
+    name: "floating in space",
+  },
 };
 
 const listenButton = document.getElementById("listen");
