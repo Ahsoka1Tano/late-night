@@ -1225,6 +1225,7 @@ function levelOf(sound) {
 let ambienceTrack = null;
 let ambienceFade = null;
 let onNoiseFallback = false;
+let ambienceError = "";
 let listening = localStorage.getItem("lateNight.listen") === "1";
 
 function ambienceFor(mood) {
@@ -1323,33 +1324,55 @@ function fadeAmbience(target, seconds, andThen) {
   }, 40);
 }
 
-function startAmbience() {
-  const sound = ambienceFor(document.body.dataset.mood);
-  if (!listening || !sound) return;
+function handleAmbienceFailure(error) {
+  if (!listening) return;
 
-  if (onNoiseFallback) {
-    if (document.body.dataset.mood === "rain") startNoiseRain();
+  const mood = document.body.dataset.mood;
+  if (error?.name === "NotAllowedError") {
+    listening = false;
+    localStorage.setItem("lateNight.listen", "0");
+    ambienceError = "tap listen to start";
+    paintAmbience();
     return;
   }
 
+  if (mood === "rain") {
+    onNoiseFallback = true;
+    startNoiseRain();
+    return;
+  }
+
+  listening = false;
+  localStorage.setItem("lateNight.listen", "0");
+  ambienceError = "recording unavailable";
+  paintAmbience();
+}
+
+function startAmbience() {
+  const mood = document.body.dataset.mood;
+  const sound = ambienceFor(mood);
+  if (!listening || !sound) return;
+
+  if (onNoiseFallback && mood !== "rain") {
+    stopNoiseRain();
+    onNoiseFallback = false;
+  }
+  if (onNoiseFallback) {
+    startNoiseRain();
+    return;
+  }
+
+  ambienceError = "";
   if (!ambienceTrack) {
     ambienceTrack = new Audio();
     ambienceTrack.loop = true;
     ambienceTrack.preload = "none";
     ambienceTrack.volume = 0;
-
-    ambienceTrack.addEventListener("error", () => {
-      if (!listening) return;
-      onNoiseFallback = true;
-      if (document.body.dataset.mood === "rain") startNoiseRain();
-    });
+    ambienceTrack.addEventListener("error", () => handleAmbienceFailure(ambienceTrack.error));
   }
 
   if (ambienceTrack.src !== sound.src) ambienceTrack.src = sound.src;
-  ambienceTrack.play().catch(() => {
-    onNoiseFallback = true;
-    if (document.body.dataset.mood === "rain") startNoiseRain();
-  });
+  ambienceTrack.play().catch(handleAmbienceFailure);
   fadeAmbience(levelOf(sound), 2.5);
   paintAmbience();
 }
