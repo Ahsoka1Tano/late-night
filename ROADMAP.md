@@ -58,4 +58,4 @@ two rooms out of six, not the whole house.
 - polish, animation, micro-interactions
 - [x] a proper pass over the phone layout: wrapping, thumb-sized controls
 - new atmospheres and phrases
-- the occasional easter egg
+- the occasional easter egg (one is in, go find it)

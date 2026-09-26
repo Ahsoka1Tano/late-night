@@ -32,6 +32,8 @@ No accounts, no backend, no notifications — just a dark little corner of the i
   finished sessions and minutes focused
 - the room remembers the mood you left it in
 
+There is one more mood than the six you can see. It is not behind a button.
+
 ## Keys
 
 | key | what it does |
