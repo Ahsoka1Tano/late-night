@@ -23,7 +23,8 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 - drizzle, steady or downpour — heavy rain blurs the city away
 - and you can hear it too: every mood with a sound has a `listen` switch —
   rain on three settings, an ocean for calm, a fireplace for focus,
-  rain far away for sleep, and a quiet space drone in Space and Aurora
+  rain far away for sleep, and a quiet space drone in Space and Aurora;
+  the switch shows when a recording is still tuning in
 - a focus timer that lives inside the focus mood: 15, 25, 45 or 60 minutes,
   ending with a quiet line instead of an alarm
 - the countdown shows in the tab title, so it keeps you company from another window
