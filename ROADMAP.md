@@ -19,7 +19,7 @@ two rooms out of six, not the whole house.
 - [ ] window fog that slowly gathers at the edges (first pass done)
 - [x] blurred night-city lights behind the window (bokeh)
 - [x] rain intensity: drizzle / steady / downpour
-- [ ] rare, very soft distant lightning
+- [x] rare, very soft distant lightning in the city glow
 - [x] real rain recordings, one per intensity, synth kept as a fallback
 
 ## Music mood
