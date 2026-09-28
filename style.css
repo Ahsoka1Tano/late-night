@@ -61,6 +61,18 @@ body[data-mood="music"] .city {
   opacity: 0.8;
 }
 
+body[data-mood="rain"] .city {
+  animation: distantLightning 42s linear infinite;
+}
+
+@keyframes distantLightning {
+  0%, 81%, 86%, 100% { filter: brightness(1); }
+  82% { filter: brightness(1.22); }
+  82.5% { filter: brightness(1); }
+  83.2% { filter: brightness(1.1); }
+  84.5% { filter: brightness(1); }
+}
+
 .city::before,
 .city::after {
   content: "";
