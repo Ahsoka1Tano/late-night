@@ -206,6 +206,30 @@ body[data-mood="calm"] .title {
   opacity: 1;
 }
 
+.window-fog {
+  position: fixed;
+  inset: -5%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  filter: blur(20px);
+  background:
+    radial-gradient(ellipse 30% 82% at 0% 50%, rgba(177, 217, 229, 0.24), transparent 76%),
+    radial-gradient(ellipse 30% 82% at 100% 50%, rgba(177, 217, 229, 0.2), transparent 76%),
+    radial-gradient(ellipse 60% 28% at 50% 0%, rgba(177, 217, 229, 0.14), transparent 78%),
+    radial-gradient(ellipse 60% 28% at 50% 100%, rgba(177, 217, 229, 0.16), transparent 78%);
+  transition: opacity 6s ease;
+}
+
+body[data-mood="rain"] .window-fog {
+  animation: fogGather 32s ease-in-out infinite alternate;
+}
+
+@keyframes fogGather {
+  from { opacity: 0.18; }
+  to { opacity: 0.42; }
+}
+
 .grain {
   position: fixed;
   inset: 0;
