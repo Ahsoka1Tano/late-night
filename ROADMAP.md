@@ -29,8 +29,8 @@ two rooms out of six, not the whole house.
 - [x] more radio channels: lofi house, synthwave, summer lofi, deep sleep
 - [x] tape hiss / vinyl crackle layer
 - [x] a volume knob for the tape, and arrow keys to match
-- [ ] separate volume for music and ambience
-- [ ] slow cassette animation while playing
+- [x] separate volume for music and ambience
+- [x] slow cassette reels turn while playing
 
 ## Other moods
 - [x] Calm: slow breathing light
