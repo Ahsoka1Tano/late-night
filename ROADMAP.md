@@ -9,7 +9,8 @@ two rooms out of six, not the whole house.
 ## Foundations
 - [x] night screen, live clock, typography
 - [x] mood selector with six atmospheres
-- [ ] smoother mood transitions, per-mood background details
+- [x] smoother palette transitions between moods
+- [ ] per-mood background details
 - [x] keyboard shortcuts: 1–6 for moods, [ ] for rain strength
 - [x] space starts and pauses the focus timer
 
