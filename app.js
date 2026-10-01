@@ -25,6 +25,7 @@ const MOODS = {
 
 const moodLine = document.getElementById("mood-line");
 const moodButtons = document.querySelectorAll(".mood");
+let moodLineTimer = null;
 
 function setMood(mood, { save = true } = {}) {
   if (!MOODS[mood]) mood = "calm";
@@ -42,10 +43,12 @@ function setMood(mood, { save = true } = {}) {
     }
   });
 
+  clearTimeout(moodLineTimer);
   moodLine.classList.add("is-fading");
-  setTimeout(() => {
+  moodLineTimer = setTimeout(() => {
     moodLine.textContent = MOODS[mood];
     moodLine.classList.remove("is-fading");
+    moodLineTimer = null;
   }, 300);
 
   if (mood === "rain") startRain();
