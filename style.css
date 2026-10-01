@@ -1,3 +1,21 @@
+@property --glow-a {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #2a2f6b;
+}
+
+@property --glow-b {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #123046;
+}
+
+@property --accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #8ea2ff;
+}
+
 :root {
   --bg-deep: #05060b;
   --bg-soft: #0b0f1c;
