@@ -34,6 +34,7 @@ function setMood(mood, { save = true } = {}) {
   moodButtons.forEach((btn) => {
     const picked = btn.dataset.mood === mood;
     btn.classList.toggle("is-active", picked);
+    btn.setAttribute("aria-pressed", String(picked));
 
     // a short flare, so a keyboard pick is as visible as a click
     if (picked && save) {
