@@ -418,6 +418,7 @@ function focusLength() {
 
 const focusBlock = document.getElementById("focus");
 const focusTime = document.getElementById("focus-time");
+const focusProgress = document.getElementById("focus-progress");
 const focusToggle = document.getElementById("focus-toggle");
 const focusReset = document.getElementById("focus-reset");
 const focusNote = document.getElementById("focus-note");
@@ -434,6 +435,9 @@ function paintFocus() {
   const mm = String(Math.floor(total / 60)).padStart(2, "0");
   const ss = String(total % 60).padStart(2, "0");
   focusTime.textContent = `${mm}:${ss}`;
+  const progress = Math.min(1, Math.max(0, 1 - left / focusLength()));
+  focusProgress.style.setProperty("--progress", progress);
+  focusProgress.setAttribute("aria-valuenow", String(Math.round(progress * 100)));
 
   // so the session is still visible from another window
   document.title = focusEndsAt ? `${mm}:${ss} — ${BASE_TITLE}` : BASE_TITLE;

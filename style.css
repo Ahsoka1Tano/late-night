@@ -614,6 +614,28 @@ body[data-mood="focus"] .focus {
   animation: focusBreath 4s ease-in-out infinite;
 }
 
+.focus-progress {
+  width: min(190px, 55vw);
+  height: 2px;
+  margin: 0.45rem auto 0;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  opacity: 0.72;
+}
+
+.focus-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 30%, white));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 70%, transparent);
+  transform: scaleX(var(--progress, 0));
+  transform-origin: left center;
+  transition: transform 0.35s linear;
+}
+
 .focus.is-done .focus-time {
   opacity: 0.35;
   text-shadow: none;
