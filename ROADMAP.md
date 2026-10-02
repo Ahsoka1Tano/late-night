@@ -37,6 +37,7 @@ two rooms out of six, not the whole house.
 - [x] Calm: slow breathing light
 - [x] Focus: 25:00 timer with start / pause / reset
 - [x] Focus: presets 15 / 25 / 45 / 60
+- [x] Focus: a soft progress line follows the session
 - [x] Focus: a quieter finish than a blank 00:00
 - [x] Space: drifting stars, warm and cold, a rare shooting star
 - [x] Space: parallax on the star field

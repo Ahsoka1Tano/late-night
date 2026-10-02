@@ -26,7 +26,7 @@ No accounts, no backend, no notifications — just a dark little corner of the i
   rain far away for sleep, and a quiet space drone in Space and Aurora;
   the switch shows when a recording is still tuning in
 - a focus timer that lives inside the focus mood: 15, 25, 45 or 60 minutes,
-  ending with a quiet line instead of an alarm
+  ending with a quiet line instead of an alarm, with a soft progress line
 - the countdown shows in the tab title, so it keeps you company from another window
 - one quiet line for tonight, the same all evening, a different one tomorrow
 - a tiny journal: how the day was, and one line about tonight
