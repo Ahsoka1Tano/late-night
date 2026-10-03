@@ -582,7 +582,9 @@ function paintJournal() {
   const entry = readJournal()[today()] || {};
 
   journalChips.forEach((chip) => {
-    chip.classList.toggle("is-active", chip.dataset.day === entry.day);
+    const picked = chip.dataset.day === entry.day;
+    chip.classList.toggle("is-active", picked);
+    chip.setAttribute("aria-pressed", String(picked));
   });
 
   if (entry.note) journalNote.value = entry.note;
