@@ -868,6 +868,17 @@ body[data-mood="focus"] .focus {
   border-bottom-color: color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
+.journal-count {
+  display: block;
+  width: min(420px, 100%);
+  margin: 0.35rem auto 0;
+  color: var(--text-dim);
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  opacity: 0.45;
+  text-align: right;
+}
+
 .journal-kept {
   margin-top: 0.7rem;
   font-size: 0.62rem;

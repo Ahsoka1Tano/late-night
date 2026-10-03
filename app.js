@@ -554,6 +554,7 @@ document.getElementById("tonight").textContent = lineForDay(today());
 /* --- tiny journal --- */
 const journalChips = document.querySelectorAll(".chip");
 const journalNote = document.getElementById("journal-note");
+const journalCount = document.getElementById("journal-count");
 const journalKept = document.getElementById("journal-kept");
 let keptTimer = null;
 
@@ -585,6 +586,7 @@ function paintJournal() {
   });
 
   if (entry.note) journalNote.value = entry.note;
+  journalCount.textContent = `${journalNote.value.length} / ${journalNote.maxLength}`;
 }
 
 journalChips.forEach((chip) => {
@@ -600,6 +602,7 @@ journalChips.forEach((chip) => {
 
 let noteTimer = null;
 journalNote.addEventListener("input", () => {
+  journalCount.textContent = `${journalNote.value.length} / ${journalNote.maxLength}`;
   clearTimeout(noteTimer);
   noteTimer = setTimeout(() => {
     writeJournal({ note: journalNote.value.trim() });
