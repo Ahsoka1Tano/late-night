@@ -50,6 +50,7 @@ two rooms out of six, not the whole house.
 ## Evening rituals
 - [x] daily vibe line, one per night
 - [x] tiny journal: a mood chip and one sentence
+- [x] journal: a discreet character count and accessible mood selection
 - [x] everything stored in localStorage
 
 ## Traces
