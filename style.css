@@ -855,6 +855,10 @@ body[data-mood="focus"] .focus {
   font-weight: 300;
   letter-spacing: 0.04em;
   text-align: center;
+  line-height: 1.6;
+  resize: vertical;
+  min-height: 5em;
+  max-height: 14em;
   transition: border-color 0.5s ease;
 }
 
@@ -885,6 +889,7 @@ body[data-mood="focus"] .focus {
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--text-dim);
+  min-height: 1.2em;
   opacity: 0;
   transform: translateY(-3px);
   transition: opacity 0.6s ease, transform 0.6s var(--ease);
@@ -893,6 +898,13 @@ body[data-mood="focus"] .focus {
 .journal-kept.is-shown {
   opacity: 0.55;
   transform: none;
+}
+
+.journal-kept.is-error {
+  opacity: 1;
+  color: var(--accent);
+  text-transform: none;
+  letter-spacing: 0.04em;
 }
 
 /* --- what the nights add up to --- */
@@ -1468,12 +1480,14 @@ body.is-listening .room-volume input::-moz-range-thumb {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    align-items: baseline;
   }
 
   .journal-count {
     width: auto;
     margin: 0;
     text-align: left;
+    flex-shrink: 0;
   }
 
   .journal-kept {

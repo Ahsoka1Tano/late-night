@@ -30,6 +30,7 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 - the countdown shows in the tab title, so it keeps you company from another window
 - one quiet line for tonight, the same all evening, a different one tomorrow
 - a tiny journal with thumb-sized mood chips on phones and a quiet character count
+  — notes wrap across lines and save immediately, together with the selected emotion
 - a faint line of traces at the bottom: nights here, evenings in a row,
   finished sessions and minutes focused
 - the room remembers the mood you left it in
@@ -54,6 +55,32 @@ python -m http.server 5173
 ```
 
 Then visit <http://localhost:5173>.
+
+## Journal
+
+Write up to 140 characters, including line breaks. Each edit saves the note and
+emotion together on this device. If saving fails, the draft stays in the editor
+with a visible message; editing again or leaving the field retries the save.
+Unreadable stored notes are never silently replaced with an empty journal.
+
+When you return to the tab after midnight, the editor opens the new day once the
+previous draft is saved. A note being written across midnight stays with the
+evening it began. Localhost and the published site have separate journals.
+
+## Browser checks (optional)
+
+These checks use isolated browser profiles and sample notes. They cover immediate
+reload, fast emotion changes, storage failures, midnight and a 320px screen.
+The website itself needs no dependencies or build step.
+
+```bash
+npm install --no-save --package-lock=false playwright
+npx playwright install chromium
+node --test checks/journal.test.cjs
+```
+
+To use an installed Edge instead, set `PLAYWRIGHT_CHANNEL=msedge`. A separately
+installed Playwright can be selected with `PLAYWRIGHT_MODULE` (its module path).
 
 ## The tapes
 

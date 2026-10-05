@@ -52,6 +52,8 @@ two rooms out of six, not the whole house.
 - [x] tiny journal: a mood chip and one sentence
 - [x] journal: a discreet character count and accessible mood selection
 - [x] journal: thumb-sized mobile chips and a compact note status
+- [x] journal: multiline notes, immediate saves and visible storage errors
+- [x] browser regressions for journal saving, midnight and narrow screens
 - [x] everything stored in localStorage
 
 ## Traces

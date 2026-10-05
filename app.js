@@ -556,63 +556,109 @@ const journalChips = document.querySelectorAll(".chip");
 const journalNote = document.getElementById("journal-note");
 const journalCount = document.getElementById("journal-count");
 const journalKept = document.getElementById("journal-kept");
+const journalMoods = new Set(Array.from(journalChips, (chip) => chip.dataset.day));
+let journalDate = today();
+let journalMood = null;
+let journalDirty = false;
 let keptTimer = null;
 
-function flashKept() {
-  journalKept.classList.add("is-shown");
+function showJournalStatus(message, failed = false) {
   clearTimeout(keptTimer);
-  keptTimer = setTimeout(() => journalKept.classList.remove("is-shown"), 1800);
+  journalKept.textContent = message;
+  journalKept.classList.toggle("is-error", failed);
+  journalKept.classList.add("is-shown");
+  if (!failed) keptTimer = setTimeout(() => journalKept.classList.remove("is-shown"), 2200);
 }
 
 function readJournal() {
+  const raw = localStorage.getItem("lateNight.journal");
+  if (raw === null) return {};
+  const entries = JSON.parse(raw);
+  if (!entries || typeof entries !== "object" || Array.isArray(entries)) {
+    throw new Error("Unreadable journal");
+  }
+  return entries;
+}
+
+// Save the note and mood together, before another click can repaint the editor.
+function saveJournal() {
   try {
-    return JSON.parse(localStorage.getItem("lateNight.journal")) || {};
+    const all = readJournal();
+    if (journalNote.value.trim() || journalMood) {
+      all[journalDate] = { note: journalNote.value, day: journalMood };
+    } else {
+      delete all[journalDate];
+    }
+    localStorage.setItem("lateNight.journal", JSON.stringify(all));
+    journalDirty = false;
+    showJournalStatus("saved on this device");
+    return true;
   } catch {
-    return {};
+    showJournalStatus("couldn't save · keep this tab open", true);
+    return false;
   }
 }
 
-function writeJournal(entry) {
-  const all = readJournal();
-  all[today()] = { ...all[today()], ...entry };
-  localStorage.setItem("lateNight.journal", JSON.stringify(all));
-}
-
 function paintJournal() {
-  const entry = readJournal()[today()] || {};
-
   journalChips.forEach((chip) => {
-    const picked = chip.dataset.day === entry.day;
+    const picked = chip.dataset.day === journalMood;
     chip.classList.toggle("is-active", picked);
     chip.setAttribute("aria-pressed", String(picked));
   });
-
-  if (entry.note) journalNote.value = entry.note;
   journalCount.textContent = `${journalNote.value.length} / ${journalNote.maxLength}`;
+}
+
+function restoreJournal(date = journalDate) {
+  try {
+    const entry = readJournal()[date];
+    journalDate = date;
+    journalNote.value = typeof entry?.note === "string" ? entry.note : "";
+    journalMood = journalMoods.has(entry?.day) ? entry.day : null;
+    clearTimeout(keptTimer);
+    journalKept.textContent = "";
+    journalKept.classList.remove("is-shown", "is-error");
+  } catch {
+    showJournalStatus("saved notes unavailable · keep this tab open", true);
+    return false;
+  }
+  paintJournal();
+  return true;
 }
 
 journalChips.forEach((chip) => {
   chip.addEventListener("click", () => {
-    const entry = readJournal()[today()] || {};
     // clicking the same one again takes it back
-    const day = entry.day === chip.dataset.day ? null : chip.dataset.day;
-    writeJournal({ day });
+    journalMood = journalMood === chip.dataset.day ? null : chip.dataset.day;
+    journalDirty = true;
     paintJournal();
-    if (day) flashKept();
+    saveJournal();
   });
 });
 
-let noteTimer = null;
 journalNote.addEventListener("input", () => {
-  journalCount.textContent = `${journalNote.value.length} / ${journalNote.maxLength}`;
-  clearTimeout(noteTimer);
-  noteTimer = setTimeout(() => {
-    writeJournal({ note: journalNote.value.trim() });
-    flashKept();
-  }, 600);
+  journalDirty = true;
+  paintJournal();
+  saveJournal();
 });
 
-paintJournal();
+// Retry a failed write on blur; a late-night draft keeps its original date.
+journalNote.addEventListener("blur", () => {
+  if (journalDirty) saveJournal();
+});
+window.addEventListener("pagehide", () => {
+  if (journalDirty) saveJournal();
+});
+
+function refreshJournalDay() {
+  if (document.hidden || today() === journalDate) return;
+  if (journalDirty && !saveJournal()) return;
+  if (!restoreJournal(today())) return;
+  document.getElementById("tonight").textContent = lineForDay(journalDate);
+}
+
+document.addEventListener("visibilitychange", refreshJournalDay);
+window.addEventListener("focus", refreshJournalDay);
+restoreJournal();
 
 
 /* --- traces of the nights before --- */
