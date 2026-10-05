@@ -1457,6 +1457,10 @@ body.is-listening .room-volume input::-moz-range-thumb {
     padding-inline: 16px;
   }
 
+  .chip {
+    min-height: 44px;
+  }
+
   .player-volume input,
   .room-volume input {
     width: 108px;
