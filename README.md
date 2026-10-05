@@ -37,6 +37,15 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 
 There is one more mood than the six you can see. It is not behind a button.
 
+## Lo-fi + rain
+
+Choose **Music**, press **play** on the tape (or start a Lofi Girl radio), then
+**add real rain**. Music and weather have independent volume sliders. Drizzle,
+steady rain and downpour work here too; changing weather leaves the music alone.
+Your weather choice is remembered. Browsers may require **listen** after a reload.
+If a rain recording is unavailable, **retry** appears; rain is never replaced by
+generated noise. The recordings need an internet connection.
+
 ## Keys
 
 | key | what it does |

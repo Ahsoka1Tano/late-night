@@ -74,12 +74,12 @@ body {
   transition: opacity 2.4s ease;
 }
 
-body[data-mood="rain"] .city,
+body.has-rain .city,
 body[data-mood="music"] .city {
   opacity: 0.8;
 }
 
-body[data-mood="rain"] .city {
+body.has-rain .city {
   animation: distantLightning 42s linear infinite;
 }
 
@@ -239,7 +239,7 @@ body[data-mood="calm"] .title {
   transition: opacity 6s ease;
 }
 
-body[data-mood="rain"] .window-fog {
+body.has-rain .window-fog {
   animation: fogGather 32s ease-in-out infinite alternate;
 }
 
@@ -410,20 +410,20 @@ body::before {
     radial-gradient(62% 38% at 50% 0%, rgba(158, 196, 226, 0.075), transparent 72%);
 }
 
-body[data-mood="rain"]::before {
+body.has-rain::before {
   opacity: 1;
 }
 
 /* the harder it comes down, the less of the city is left */
-body[data-mood="rain"][data-rain="drizzle"]::before {
+body.has-rain[data-rain="drizzle"]::before {
   opacity: 0.5;
 }
 
-body[data-mood="rain"][data-rain="drizzle"] .city {
+body.has-rain[data-rain="drizzle"] .city {
   opacity: 0.9;
 }
 
-body[data-mood="rain"][data-rain="downpour"] .city {
+body.has-rain[data-rain="downpour"] .city {
   opacity: 0.5;
   filter: blur(2px);
 }
@@ -440,7 +440,7 @@ body::after {
   transition: opacity 1.6s ease;
 }
 
-body[data-mood="rain"]::after,
+body.has-rain::after,
 body[data-mood="sleep"]::after {
   opacity: 1;
 }
@@ -475,6 +475,41 @@ body[data-mood="focus"] .aurora { opacity: 0.65; }
 }
 
 /* --- how hard it rains --- */
+.weather-mix { display: none; }
+body[data-mood="music"] .weather-mix {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  width: min(680px, 100%);
+  padding: 24px;
+  margin: 0 0 24px;
+  border: 1px solid #c98dff26;
+  border-radius: 20px;
+  background: linear-gradient(115deg, #60388025, #122f432b);
+}
+.mix-eyebrow { font-size: 9px; letter-spacing: .22em; color: #bca7d6; }
+.weather-mix h2 { font-size: clamp(17px, 3vw, 23px); font-weight: 400; margin: 8px 0; }
+.weather-mix p:last-child { font-size: 12px; line-height: 1.7; color: #a4a0b7; }
+#music-rain {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  min-height: 44px;
+  border: 1px solid #b9a4d050;
+  border-radius: 999px;
+  background: #ffffff06;
+  color: #dfceef;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background .3s, border-color .3s;
+}
+#music-rain:hover, #music-rain[aria-pressed="true"] { background: #8fb9d31e; border-color: #9cc9df88; }
+#music-rain:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+@media (max-width: 560px) {
+  body[data-mood="music"] .weather-mix { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px; }
+}
+
 .rain-dial {
   margin-top: 0;
   height: 0;
@@ -488,7 +523,7 @@ body[data-mood="focus"] .aurora { opacity: 0.65; }
   transition: opacity 0.9s ease, transform 0.9s var(--ease);
 }
 
-body[data-mood="rain"] .rain-dial {
+body.has-rain .rain-dial {
   margin-top: 1.6rem;
   height: auto;
   opacity: 1;

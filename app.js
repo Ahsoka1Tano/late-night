@@ -26,6 +26,17 @@ const MOODS = {
 const moodLine = document.getElementById("mood-line");
 const moodButtons = document.querySelectorAll(".mood");
 let moodLineTimer = null;
+let musicRainEnabled = localStorage.getItem("lateNight.musicRain") === "1";
+
+function isRainScene(mood = document.body.dataset.mood) {
+  return mood === "rain" || (mood === "music" && musicRainEnabled);
+}
+
+function paintWeather() {
+  document.body.classList.toggle("has-rain", isRainScene());
+  if (isRainScene()) startRain();
+  else stopRain();
+}
 
 function setMood(mood, { save = true } = {}) {
   if (!MOODS[mood]) mood = "calm";
@@ -52,8 +63,7 @@ function setMood(mood, { save = true } = {}) {
     moodLineTimer = null;
   }, 300);
 
-  if (mood === "rain") startRain();
-  else stopRain();
+  paintWeather();
 
   swapAmbience();
 
@@ -293,7 +303,7 @@ document.addEventListener("visibilitychange", () => {
     return;
   }
 
-  if (mood === "rain") startRain();
+  if (isRainScene(mood)) startRain();
   if (mood === "space" || mood === "aurora") startStars();
 });
 
@@ -393,7 +403,7 @@ document.addEventListener("keydown", (e) => {
     }
   }
 
-  if (document.body.dataset.mood !== "rain") return;
+  if (!isRainScene()) return;
 
   const step = e.key === "[" ? -1 : e.key === "]" ? 1 : 0;
   if (!step) return;
@@ -1369,77 +1379,14 @@ function levelOf(sound) {
 
 let ambienceTrack = null;
 let ambienceFade = null;
-let onNoiseFallback = false;
+let ambienceRequest = 0;
 let ambienceError = "";
 let ambienceLoading = false;
 let listening = localStorage.getItem("lateNight.listen") === "1";
 
 function ambienceFor(mood) {
-  if (mood === "rain") return RAIN_BY_STRENGTH[rainLevel];
+  if (isRainScene(mood)) return RAIN_BY_STRENGTH[rainLevel];
   return AMBIENCE[mood] || null;
-}
-
-// brown noise, kept only for when the archive cannot be reached
-function noiseBuffer(ctx, seconds = 4) {
-  const length = ctx.sampleRate * seconds;
-  const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  let last = 0;
-
-  for (let i = 0; i < length; i++) {
-    const white = Math.random() * 2 - 1;
-    last = (last + 0.021 * white) / 1.021;
-    data[i] = last * 3.4;
-  }
-
-  return buffer;
-}
-
-let noiseRain = null;
-
-function startNoiseRain() {
-  ensureAudio();
-
-  if (!noiseRain) {
-    const ctx = audioCtx;
-    const master = ctx.createGain();
-    master.gain.value = 0;
-    master.connect(ctx.destination);
-
-    const source = ctx.createBufferSource();
-    source.buffer = noiseBuffer(ctx);
-    source.loop = true;
-
-    const away = ctx.createBiquadFilter();
-    away.type = "highpass";
-    away.frequency.value = 280;
-
-    const glass = ctx.createBiquadFilter();
-    glass.type = "lowpass";
-    glass.frequency.value = 2300;
-    glass.Q.value = 0.4;
-
-    source.connect(away).connect(glass).connect(master);
-    source.start();
-    noiseRain = { master, sources: [source] };
-  }
-
-  const now = audioCtx.currentTime;
-  noiseRain.master.gain.cancelScheduledValues(now);
-  noiseRain.master.gain.linearRampToValueAtTime(0.18 * roomVolume, now + 2);
-}
-
-function stopNoiseRain() {
-  if (!noiseRain) return;
-
-  const now = audioCtx.currentTime;
-  noiseRain.master.gain.cancelScheduledValues(now);
-  noiseRain.master.gain.setValueAtTime(noiseRain.master.gain.value, now);
-  noiseRain.master.gain.linearRampToValueAtTime(0, now + 1);
-
-  const ending = noiseRain;
-  noiseRain = null;
-  setTimeout(() => ending.sources.forEach((node) => node.stop()), 1300);
 }
 
 function paintAmbience() {
@@ -1454,15 +1401,17 @@ function paintAmbience() {
   ambienceName.textContent = ambienceLoading ? "tuning in…" : listening && sound ? sound.name : ambienceError;
 }
 
+// Every playback attempt owns its callbacks. Leaving a mood invalidates them.
 function fadeAmbience(target, seconds, andThen) {
   clearInterval(ambienceFade);
-  const from = ambienceTrack.volume;
+  const track = ambienceTrack;
+  if (!track) return;
+  const from = track.volume;
   const steps = Math.max(1, Math.round(seconds * 25));
   let step = 0;
-
   ambienceFade = setInterval(() => {
     step++;
-    ambienceTrack.volume = Math.min(1, Math.max(0, from + (target - from) * (step / steps)));
+    track.volume = Math.min(1, Math.max(0, from + (target - from) * step / steps));
     if (step >= steps) {
       clearInterval(ambienceFade);
       ambienceFade = null;
@@ -1471,113 +1420,68 @@ function fadeAmbience(target, seconds, andThen) {
   }, 40);
 }
 
-function handleAmbienceFailure(error) {
+function handleAmbienceFailure(error, request) {
+  if (request !== ambienceRequest || !listening) return;
+  ++ambienceRequest;
+  clearInterval(ambienceFade);
+  ambienceTrack?.pause();
   ambienceLoading = false;
-  if (!listening) return;
-
-  const mood = document.body.dataset.mood;
-  if (error?.name === "NotAllowedError") {
-    listening = false;
-    localStorage.setItem("lateNight.listen", "0");
-    ambienceError = "tap listen to start";
-    paintAmbience();
-    return;
-  }
-
-  if (mood === "rain") {
-    onNoiseFallback = true;
-    startNoiseRain();
-    paintAmbience();
-    return;
-  }
-
   listening = false;
   localStorage.setItem("lateNight.listen", "0");
-  ambienceError = "recording unavailable";
+  ambienceError = error?.name === "NotAllowedError"
+    ? "tap listen to start" : "recording unavailable · tap retry";
   paintAmbience();
-}
-
-function playAmbienceTrack() {
-  ambienceLoading = true;
-  paintAmbience();
-  ambienceTrack.play().then(() => {
-    ambienceLoading = false;
-    paintAmbience();
-  }).catch(handleAmbienceFailure);
 }
 
 function startAmbience() {
-  const mood = document.body.dataset.mood;
-  const sound = ambienceFor(mood);
+  const sound = ambienceFor(document.body.dataset.mood);
   if (!listening || !sound) return;
-
-  if (onNoiseFallback && mood !== "rain") {
-    stopNoiseRain();
-    onNoiseFallback = false;
-  }
-  if (onNoiseFallback) {
-    startNoiseRain();
-    return;
-  }
-
-  ambienceError = "";
-  if (!ambienceTrack) {
-    ambienceTrack = new Audio();
+  const request = ++ambienceRequest;
+  clearInterval(ambienceFade);
+  const src = new URL(sound.src, document.baseURI).href;
+  if (!ambienceTrack || ambienceTrack.src !== src) {
+    if (ambienceTrack) {
+      ambienceTrack.onerror = null;
+      ambienceTrack.pause();
+    }
+    ambienceTrack = new Audio(src);
     ambienceTrack.loop = true;
     ambienceTrack.preload = "none";
     ambienceTrack.volume = 0;
-    ambienceTrack.addEventListener("error", () => handleAmbienceFailure(ambienceTrack.error));
   }
-
-  if (ambienceTrack.src !== sound.src) ambienceTrack.src = sound.src;
-  playAmbienceTrack();
-  fadeAmbience(levelOf(sound), 2.5);
+  const track = ambienceTrack;
+  ambienceError = "";
+  ambienceLoading = track.paused;
+  track.onerror = () => handleAmbienceFailure(track.error, request);
   paintAmbience();
+  track.play().then(() => {
+    if (request !== ambienceRequest) return;
+    ambienceLoading = false;
+    fadeAmbience(levelOf(ambienceFor(document.body.dataset.mood)), 1.4);
+    paintAmbience();
+  }).catch(error => handleAmbienceFailure(error, request));
 }
 
 function stopAmbience() {
+  ++ambienceRequest;
   ambienceLoading = false;
-  stopNoiseRain();
-  if (!ambienceTrack || ambienceTrack.paused) {
-    paintAmbience();
-    return;
+  ambienceError = "";
+  clearInterval(ambienceFade);
+  if (ambienceTrack) {
+    ambienceTrack.onerror = null;
+    // Cancel a pending play immediately; otherwise it could start after leaving.
+    if (ambienceTrack.paused || ambienceTrack.readyState < 3) ambienceTrack.pause();
+    else {
+      const track = ambienceTrack;
+      fadeAmbience(0, 0.6, () => track.pause());
+    }
   }
-  fadeAmbience(0, 1.2, () => ambienceTrack.pause());
   paintAmbience();
 }
 
-// swapping to another room's sound, without a gap of silence
 function swapAmbience() {
-  paintAmbience();
-
-  const mood = document.body.dataset.mood;
-  const sound = ambienceFor(mood);
-  if (onNoiseFallback && mood !== "rain") {
-    stopNoiseRain();
-    onNoiseFallback = false;
-  }
-  if (!listening) return;
-
-  if (!sound) {
-    stopAmbience();
-    return;
-  }
-
-  if (!ambienceTrack || ambienceTrack.paused) {
-    startAmbience();
-    return;
-  }
-
-  if (ambienceTrack.src === sound.src) {
-    fadeAmbience(levelOf(sound), 1.2);
-    return;
-  }
-
-  fadeAmbience(0, 0.8, () => {
-    ambienceTrack.src = sound.src;
-    playAmbienceTrack();
-    fadeAmbience(levelOf(sound), 1.4);
-  });
+  if (listening && ambienceFor(document.body.dataset.mood)) startAmbience();
+  else stopAmbience();
 }
 
 function setRoomVolume(value, { save = true } = {}) {
@@ -1612,6 +1516,24 @@ listenButton.addEventListener("click", () => {
   paintAmbience();
   startAmbience();
 });
+
+const musicRainButton = document.getElementById("music-rain");
+function paintMusicRain() {
+  musicRainButton.setAttribute("aria-pressed", String(musicRainEnabled));
+  musicRainButton.replaceChildren(document.createTextNode(musicRainEnabled ? "rain is here −" : "add real rain ＋"));
+}
+musicRainButton.addEventListener("click", () => {
+  musicRainEnabled = !musicRainEnabled;
+  localStorage.setItem("lateNight.musicRain", musicRainEnabled ? "1" : "0");
+  if (musicRainEnabled) {
+    listening = true;
+    localStorage.setItem("lateNight.listen", "1");
+  }
+  paintMusicRain();
+  paintWeather();
+  swapAmbience();
+});
+paintMusicRain();
 
 setRoomVolume(roomVolume, { save: false });
 paintAmbience();

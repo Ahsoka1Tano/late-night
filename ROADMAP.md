@@ -21,7 +21,7 @@ two rooms out of six, not the whole house.
 - [x] blurred night-city lights behind the window (bokeh)
 - [x] rain intensity: drizzle / steady / downpour
 - [x] rare, very soft distant lightning in the city glow
-- [x] real rain recordings, one per intensity, synth kept as a fallback
+- [x] real rain recordings, one per intensity, with an honest retry when unavailable
 
 ## Music mood
 - [x] lo-fi player bar: play / pause, next, tape title, a small moving wave
@@ -32,6 +32,8 @@ two rooms out of six, not the whole house.
 - [x] a volume knob for the tape, and arrow keys to match
 - [x] separate volume for music and ambience
 - [x] slow cassette reels turn while playing
+- [x] lo-fi + real rain: simultaneous layers, independent volume, remembered weather
+- [x] weather changes preserve radio playback; stale recording errors are ignored
 
 ## Other moods
 - [x] Calm: slow breathing light
