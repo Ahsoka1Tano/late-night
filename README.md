@@ -67,10 +67,16 @@ When you return to the tab after midnight, the editor opens the new day once the
 previous draft is saved. A note being written across midnight stays with the
 evening it began. Localhost and the published site have separate journals.
 
+Open **previous nights** below the editor to read older notes and emotions.
+The newest evenings appear first, seven at a time; **older nights** reveals the
+next seven. Today's draft stays in the editor. Existing notes use their original
+local dates, and browsing the history never edits them.
+
 ## Browser checks (optional)
 
 These checks use isolated browser profiles and sample notes. They cover immediate
-reload, fast emotion changes, storage failures, midnight and a 320px screen.
+reload, fast emotion changes, storage failures, midnight, history ordering and
+pagination, safe rendering of note text, and mobile and desktop layouts.
 The website itself needs no dependencies or build step.
 
 ```bash

@@ -311,6 +311,7 @@ body[data-mood="rain"] .window-fog {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
@@ -905,6 +906,110 @@ body[data-mood="focus"] .focus {
   color: var(--accent);
   text-transform: none;
   letter-spacing: 0.04em;
+}
+
+/* A small drawer for the evenings before this one. */
+.journal-history {
+  width: min(420px, 100%);
+  margin: 1.4rem auto 0;
+  text-align: left;
+  font-size: 0.78rem;
+}
+
+.journal-history summary {
+  cursor: pointer;
+  width: fit-content;
+  margin-inline: auto;
+  padding: 12px;
+  color: var(--text-dim);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  transition: color 0.25s ease;
+}
+
+.journal-history summary:hover,
+.journal-history[open] summary {
+  color: var(--text);
+}
+
+.journal-history summary:focus-visible,
+.journal-older:focus-visible,
+.journal-entry:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.journal-history-body {
+  padding: 10px 4px 0;
+}
+
+.journal-history-note {
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.journal-history-list {
+  list-style: none;
+}
+
+.journal-entry {
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.journal-entry-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  color: var(--text-dim);
+  font-size: 0.68rem;
+}
+
+.journal-entry-mood {
+  color: var(--accent);
+}
+
+.journal-entry-note {
+  margin-top: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.journal-older {
+  display: block;
+  min-height: 44px;
+  margin: 12px auto 0;
+  padding: 10px 18px;
+  font: inherit;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.journal-older:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.journal-older[hidden] {
+  display: none;
+}
+
+body.is-reading-journal .hint {
+  display: none;
 }
 
 /* --- what the nights add up to --- */

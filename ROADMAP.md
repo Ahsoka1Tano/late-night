@@ -54,6 +54,8 @@ two rooms out of six, not the whole house.
 - [x] journal: thumb-sized mobile chips and a compact note status
 - [x] journal: multiline notes, immediate saves and visible storage errors
 - [x] browser regressions for journal saving, midnight and narrow screens
+- [x] previous nights: dated notes and emotions, newest first, seven at a time
+- [x] history: keyboard navigation, safe text rendering and mobile layout checks
 - [x] everything stored in localStorage
 
 ## Traces

@@ -353,7 +353,7 @@ document.addEventListener("keydown", (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
 
   const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName || "");
-  if (typing) return;
+  if (typing || document.activeElement?.closest(".journal-history")) return;
 
   const number = Number(e.key);
   if (number >= 1 && number <= moodButtons.length) {
@@ -556,6 +556,11 @@ const journalChips = document.querySelectorAll(".chip");
 const journalNote = document.getElementById("journal-note");
 const journalCount = document.getElementById("journal-count");
 const journalKept = document.getElementById("journal-kept");
+const journalHistory = document.getElementById("journal-history");
+const journalHistoryList = document.getElementById("journal-history-list");
+const journalHistoryNote = document.getElementById("journal-history-note");
+const journalOlder = document.getElementById("journal-older");
+let journalHistoryLimit = 7;
 const journalMoods = new Set(Array.from(journalChips, (chip) => chip.dataset.day));
 let journalDate = today();
 let journalMood = null;
@@ -654,11 +659,92 @@ function refreshJournalDay() {
   if (journalDirty && !saveJournal()) return;
   if (!restoreJournal(today())) return;
   document.getElementById("tonight").textContent = lineForDay(journalDate);
+  if (journalHistory.open) renderJournalHistory();
 }
 
 document.addEventListener("visibilitychange", refreshJournalDay);
 window.addEventListener("focus", refreshJournalDay);
 restoreJournal();
+
+// Old keys are deliberately kept as YYYY-M-D; compare dates, not strings.
+function journalEntryDate(key) {
+  const match = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(key);
+  if (!match) return null;
+  const [, year, month, day] = match.map(Number);
+  const date = new Date(year, month - 1, day, 12);
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day ? date : null;
+}
+
+function renderJournalHistory() {
+  journalHistoryList.replaceChildren();
+  journalOlder.hidden = true;
+  let nights;
+  try {
+    const currentDate = journalEntryDate(journalDate);
+    nights = Object.entries(readJournal()).map(([key, entry]) => ({
+      date: journalEntryDate(key),
+      note: typeof entry?.note === "string" ? entry.note : "",
+      mood: journalMoods.has(entry?.day) ? entry.day : null,
+    })).filter(entry => entry.date && entry.date < currentDate && (entry.note.trim() || entry.mood))
+      .sort((a, b) => b.date - a.date);
+  } catch {
+    journalHistoryNote.textContent = "Saved nights couldn't be read. Close and reopen this list to retry.";
+    return;
+  }
+
+  if (!nights.length) {
+    journalHistoryNote.textContent = "Past notes will appear here after your next evening.";
+    return;
+  }
+
+  const shown = nights.slice(0, journalHistoryLimit);
+  const dateFormat = new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "numeric" });
+  shown.forEach(entry => {
+    const item = document.createElement("li");
+    item.className = "journal-entry";
+    item.tabIndex = -1;
+    const heading = document.createElement("div");
+    heading.className = "journal-entry-heading";
+    const time = document.createElement("time");
+    time.dateTime = `${entry.date.getFullYear()}-${String(entry.date.getMonth() + 1).padStart(2, "0")}-${String(entry.date.getDate()).padStart(2, "0")}`;
+    time.textContent = dateFormat.format(entry.date);
+    heading.append(time);
+    if (entry.mood) {
+      const mood = document.createElement("span");
+      mood.className = "journal-entry-mood";
+      mood.textContent = Array.from(journalChips).find(chip => chip.dataset.day === entry.mood).textContent.trim();
+      heading.append(mood);
+    }
+    item.append(heading);
+    if (entry.note.trim()) {
+      const note = document.createElement("p");
+      note.className = "journal-entry-note";
+      note.textContent = entry.note;
+      item.append(note);
+    }
+    journalHistoryList.append(item);
+  });
+  journalHistoryNote.textContent = `${shown.length} of ${nights.length} saved ${nights.length === 1 ? "evening" : "evenings"} · on this device`;
+  journalOlder.hidden = shown.length === nights.length;
+}
+
+journalHistory.addEventListener("toggle", () => {
+  document.body.classList.toggle("is-reading-journal", journalHistory.open);
+  if (!journalHistory.open) return;
+  journalHistoryLimit = 7;
+  renderJournalHistory();
+});
+
+journalOlder.addEventListener("click", () => {
+  const previousCount = journalHistoryList.children.length;
+  journalHistoryLimit += 7;
+  renderJournalHistory();
+  journalHistoryList.children[previousCount]?.focus();
+});
+
+window.addEventListener("storage", event => {
+  if ((event.key === "lateNight.journal" || event.key === null) && journalHistory.open) renderJournalHistory();
+});
 
 
 /* --- traces of the nights before --- */

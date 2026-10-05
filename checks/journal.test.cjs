@@ -53,6 +53,7 @@ async function openRoom(t, entries = {}, viewport = { width: 1280, height: 900 }
     key: KEY, value: typeof entries === 'string' ? entries : JSON.stringify(entries),
   });
   await page.reload();
+  await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('.journal')).opacity) > 0.5);
   return page;
 }
 
@@ -133,6 +134,8 @@ test('returning after midnight opens a new evening and preserves the previous no
   const saved = await entries(page);
   assert.equal(saved[DAY].note, 'Before midnight.');
   assert.equal(saved['2026-10-6'].note, 'After midnight.');
+  await openHistory(page);
+  assert.equal(await page.locator('.journal-entry-note').textContent(), 'Before midnight.');
 });
 
 test('a long note wraps within a 320px phone viewport', async t => {
@@ -141,4 +144,123 @@ test('a long note wraps within a 320px phone viewport', async t => {
   const sizes = await page.locator('#journal-note').evaluate(el => ({ width: el.clientWidth, scroll: el.scrollWidth }));
   assert.ok(sizes.scroll <= sizes.width + 1, 'note wraps without horizontal scrolling');
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'page fits the phone');
+});
+
+async function openHistory(page) {
+  await page.locator('#journal-history summary').click();
+  await page.waitForFunction(() => document.getElementById('journal-history-note').textContent.length > 0);
+}
+
+test('history orders legacy date keys chronologically and includes emotion-only evenings', async t => {
+  const page = await openRoom(t, {
+    '2026-9-30': { note: 'September.', day: null },
+    '2026-10-2': { note: 'October.', day: 'normal' },
+    '2026-1-10': { note: 'January.', day: null },
+    '2026-10-4': { note: '', day: 'quiet' },
+    [DAY]: { note: 'Tonight is still in the editor.', day: 'good' },
+    '2026-10-6': { note: 'Not a past night.', day: null },
+    '2026-2-30': { note: 'Invalid date.', day: null },
+    'not-a-date': { note: 'Ignore this.', day: null },
+    '2026-10-3': { note: 42, day: 'unknown' },
+    '2026-10-1': null,
+  });
+  await page.locator('#journal-history summary').focus();
+  await page.locator('#journal-history summary').press('Enter');
+  await page.waitForFunction(() => document.querySelectorAll('.journal-entry').length === 4);
+  assert.deepEqual(await page.locator('.journal-entry time').evaluateAll(nodes => nodes.map(node => node.dateTime)),
+    ['2026-10-04', '2026-10-02', '2026-09-30', '2026-01-10']);
+  assert.match(await page.locator('.journal-entry-mood').first().textContent(), /quiet/);
+  assert.equal(await page.locator('#journal-note').inputValue(), 'Tonight is still in the editor.');
+});
+
+test('history pages through older evenings and moves keyboard focus to the new entries', async t => {
+  const saved = Object.fromEntries(Array.from({ length: 10 }, (_, i) => [`2026-9-${i + 1}`, { note: `Night ${i + 1}`, day: null }]));
+  const page = await openRoom(t, saved);
+  await openHistory(page);
+  assert.equal(await page.locator('.journal-entry').count(), 7);
+  await page.locator('#journal-older').click();
+  assert.equal(await page.locator('.journal-entry').count(), 10);
+  assert.equal(await page.locator('#journal-older').isVisible(), false);
+  assert.equal(await page.evaluate(() => document.activeElement.querySelector('time').dateTime), '2026-09-03');
+  await page.locator('#journal-history summary').click();
+  await openHistory(page);
+  await page.waitForFunction(() => document.querySelectorAll('.journal-entry').length === 7);
+  assert.deepEqual(await entries(page), saved, 'browsing does not modify stored notes');
+});
+
+test('empty and unreadable history give different messages and recover on reopening', async t => {
+  const page = await openRoom(t);
+  await openHistory(page);
+  assert.match(await page.locator('#journal-history-note').textContent(), /Past notes will appear/);
+  await page.locator('#journal-history summary').click();
+  await page.evaluate(key => localStorage.setItem(key, '{invalid'), KEY);
+  await openHistory(page);
+  await page.waitForFunction(() => document.getElementById('journal-history-note').textContent.includes("couldn't"));
+  assert.equal(await page.locator('.journal-entry').count(), 0);
+  await page.locator('#journal-history summary').click();
+  await page.evaluate(key => localStorage.setItem(key, JSON.stringify({ '2026-10-4': { note: 'Recovered.' } })), KEY);
+  await openHistory(page);
+  await page.locator('.journal-entry-note').waitFor();
+  assert.equal(await page.locator('.journal-entry-note').textContent(), 'Recovered.');
+});
+
+test('history renders note text safely and fits mobile and desktop layouts', async t => {
+  const note = '<img src=x onerror="window.journalInjected=true">\n' + 'x'.repeat(90);
+  const saved = {
+    '2026-10-4': { note, day: 'quiet' },
+    '2026-10-2': { note: 'Rain on the window.\nFinished one small thing.', day: 'productive' },
+    '2026-9-30': { note: '', day: 'tired' },
+  };
+  for (const width of [320, 1280]) {
+    const page = await openRoom(t, saved, { width, height: 900 });
+    await openHistory(page);
+    assert.equal(await page.locator('.journal-entry-note').first().textContent(), note);
+    assert.equal(await page.locator('.journal-entry img').count(), 0);
+    assert.equal(await page.evaluate(() => window.journalInjected), undefined);
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    if (process.env.JOURNAL_PREVIEW_DIR) {
+      await page.locator('#journal-history summary').click();
+      await page.evaluate(key => {
+        const saved = JSON.parse(localStorage.getItem(key));
+        saved['2026-10-4'].note = 'A cup of tea, rain outside.\nLeft tomorrow for tomorrow.';
+        localStorage.setItem(key, JSON.stringify(saved));
+      }, KEY);
+      await openHistory(page);
+      await page.locator('.journal').screenshot({ animations: 'disabled', path: path.join(process.env.JOURNAL_PREVIEW_DIR, `journal-${width}.png`) });
+    }
+  }
+});
+
+test('Space opens history in Focus mood without starting the timer', async t => {
+  const page = await openRoom(t, { '2026-10-4': { note: 'A quiet night.' } });
+  await page.locator('[data-mood="focus"]').click();
+  await page.locator('#journal-history summary').focus();
+  await page.locator('#journal-history summary').press('Space');
+  await page.locator('.journal-entry').waitFor();
+  assert.equal(await page.locator('#focus-toggle').textContent(), 'start');
+  assert.equal(await page.locator('#hint').isVisible(), false);
+  await page.locator('#journal-history summary').press('Space');
+  await page.waitForFunction(() => !document.body.classList.contains('is-reading-journal'));
+  assert.equal(await page.locator('#hint').isVisible(), true);
+});
+
+test('a storage read failure at midnight does not move an unsaved draft to the wrong day', async t => {
+  const page = await openRoom(t, { [DAY]: { note: 'Original evening.', day: 'quiet' } });
+  await page.evaluate(() => {
+    const original = Storage.prototype.getItem;
+    window.rejectJournalReads = true;
+    Storage.prototype.getItem = function (key) {
+      if (key === 'lateNight.journal' && window.rejectJournalReads) throw new Error('unavailable');
+      return original.call(this, key);
+    };
+  });
+  await page.clock.setSystemTime(new Date('2026-10-06T00:05:00+03:00'));
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await page.locator('#journal-note').fill('Draft still belongs to the fifth.');
+  await page.evaluate(() => {
+    window.rejectJournalReads = false;
+    window.dispatchEvent(new Event('focus'));
+  });
+  assert.equal((await entries(page))[DAY].note, 'Draft still belongs to the fifth.');
+  assert.equal(await page.locator('#journal-note').inputValue(), '');
 });
