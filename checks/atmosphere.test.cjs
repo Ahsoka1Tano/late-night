@@ -65,7 +65,7 @@ async function openRoom(t, width = 1280, motion = 'reduce') {
   });
   await page.clock.install();
   await page.goto(origin);
-  await page.locator('[data-mood="music"]').click();
+  await page.locator('.mood[data-mood="music"]').click();
   return page;
 }
 
@@ -119,7 +119,7 @@ test('a late rejection from a previous room cannot stop the current recording', 
   await page.evaluate(() => { window.deferAudio = true; });
   await page.locator('#music-rain').click();
   await page.evaluate(() => { window.oldTrack = ambienceTrack; window.deferAudio = false; });
-  await page.locator('[data-mood="calm"]').click();
+  await page.locator('.mood[data-mood="calm"]').click();
   await page.evaluate(() => window.oldTrack.rejectPlay(new Error('late network failure')));
   assert.equal(await page.locator('#listen').textContent(), 'listening');
   assert.match(await page.evaluate(() => ambienceTrack.src), /Ocean/);
@@ -134,31 +134,25 @@ test('music mix fits a narrow screen and rain shortcuts work with music', async 
 });
 
 
-test('window seat preserves both playing layers and restores focus, scroll and weather canvas', async t => {
+
+test('the window, player and journal belong to the initial room without an entry button', async t => {
   const page = await openRoom(t);
+  assert.equal(await page.locator('#window-view').isVisible(), true);
+  assert.equal(await page.locator('#window-open, #window-close').count(), 0);
+  assert.equal(await page.locator('#player-play').isVisible(), true);
+  assert.equal(await page.locator('#window-outside #rain').count(), 1);
+  assert.equal(await page.locator('[inert]').count(), 0);
   await page.locator('#player-play').click();
   await page.locator('#music-rain').click();
   await page.clock.runFor(2000);
-  await page.locator('#window-open').click();
-  assert.equal(await page.locator('#window-close').evaluate(el => el === document.activeElement), true);
-  assert.equal(await page.locator('#journal-note').evaluate(el => el.closest('[inert]') !== null), true);
-  assert.equal(await page.locator('#window-outside #rain').count(), 1);
+  await page.locator('#journal-note').fill('An evening in one room.');
   assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length), 2);
-  await page.keyboard.press('1');
-  assert.equal(await page.locator('body').getAttribute('data-mood'), 'music');
-  await page.locator('#window-play').click();
-  await page.clock.runFor(1400);
-  assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length), 1);
-  await page.keyboard.press('Escape');
-  assert.equal(await page.locator('#window-view').isVisible(), false);
-  assert.equal(await page.locator('#window-open').evaluate(el => el === document.activeElement), true);
-  assert.equal(await page.locator('body > #rain').count(), 1);
-  assert.equal(await page.locator('.room [inert]').count(), 0);
+  await page.reload();
+  assert.equal(await page.locator('#journal-note').inputValue(), 'An evening in one room.');
 });
 
 test('the desk lamp remembers its position and the clock stays live', async t => {
   const page = await openRoom(t);
-  await page.locator('#window-open').click();
   await page.locator('#desk-lamp').click();
   assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'), 'false');
   const oldTime = await page.locator('#window-clock').textContent();
@@ -166,74 +160,79 @@ test('the desk lamp remembers its position and the clock stays live', async t =>
   assert.notEqual(await page.locator('#window-clock').textContent(), oldTime);
   assert.equal(await page.locator('#window-clock').textContent(), await page.locator('#clock').textContent());
   await page.reload();
-  await page.locator('#window-open').click();
   assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'), 'false');
 });
 
-test('official radio stays visible, clickable and keeps its iframe in the window seat', async t => {
+test('all six moods keep the same room and expose only their relevant controls', async t => {
+  const page = await openRoom(t);
+  for (const mood of ['calm', 'music', 'focus', 'rain', 'space', 'sleep']) {
+    await page.locator('.mood[data-mood="' + mood + '"]').click();
+    assert.equal(await page.locator('#window-view').isVisible(), true);
+    assert.equal(await page.locator('#player-play').isVisible(), mood === 'music');
+    assert.equal(await page.locator('#focus-toggle').isVisible(), mood === 'focus');
+    assert.equal(await page.locator('#music-rain').isVisible(), mood === 'music');
+    assert.equal(await page.locator('#rain-dial').isVisible(), mood === 'rain');
+    assert.equal(await page.locator('#radio-frame').isVisible(), false);
+  }
+});
+
+test('the official radio stays on the desk while weather and lamp change', async t => {
   const page = await openRoom(t);
   await page.locator('[data-station="radio"]').click();
   await page.locator('#radio-frame iframe').evaluate(el => { el.dataset.original = 'yes'; });
-  await page.locator('#window-open').click();
+  await page.locator('#music-rain').click();
+  await page.locator('#desk-lamp').click();
   const frame = page.locator('#radio-frame iframe');
+  await frame.scrollIntoViewIfNeeded();
   assert.equal(await frame.getAttribute('data-original'), 'yes');
   assert.equal(await frame.isVisible(), true);
   assert.equal(await frame.evaluate(el => {
     const r = el.getBoundingClientRect();
     return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2) === el;
   }), true);
-  assert.equal(await frame.evaluate(el => !!el.closest('[inert]')), false);
-  await page.locator('#window-close').click();
-  assert.equal(await frame.getAttribute('data-original'), 'yes');
 });
 
-test('window controls fit desktop, narrow phone and landscape, including radio', async t => {
-  for (const viewport of [{width:1280,height:900}, {width:320,height:640}, {width:844,height:390}]) {
+test('the entire room fits desktop, narrow phone and landscape without clipped controls', async t => {
+  for (const viewport of [{width:1440,height:1000}, {width:320,height:640}, {width:844,height:390}]) {
     const page = await openRoom(t, viewport.width);
     await page.setViewportSize(viewport);
     await page.locator('#music-rain').click();
-    await page.locator('#window-open').click();
-    for (const id of ['window-close', 'window-play', 'window-rain', 'window-listen', 'desk-lamp']) {
-      const box = await page.locator('#' + id).boundingBox();
-      assert.ok(box && box.x >= 0 && box.y >= 0 && box.x + box.width <= viewport.width && box.y + box.height <= viewport.height, id + ' fits ' + viewport.width);
+    for (const id of ['player-play', 'player-volume', 'music-rain', 'listen', 'desk-lamp', 'journal-note']) {
+      const target = page.locator('#' + id);
+      await target.scrollIntoViewIfNeeded();
+      const box = await target.boundingBox();
+      assert.ok(box && box.x >= 0 && box.x + box.width <= viewport.width, id + ' fits ' + viewport.width);
     }
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+    await page.evaluate(() => scrollTo(0,0));
     if (process.env.ATMOSPHERE_PREVIEW_DIR) {
-      await page.screenshot({ path: path.join(process.env.ATMOSPHERE_PREVIEW_DIR, 'window-' + viewport.width + '.png'), animations: 'disabled' });
+      await page.screenshot({ path: path.join(process.env.ATMOSPHERE_PREVIEW_DIR, 'room-' + viewport.width + '.png'), fullPage: true, animations: 'disabled' });
     }
-    await page.locator('#window-close').click();
     await page.locator('[data-station="radio"]').click();
-    await page.locator('#window-open').click();
     const frame = await page.locator('#radio-frame').boundingBox();
-    const close = await page.locator('#window-close').boundingBox();
-    assert.ok(frame.y >= close.y + close.height, 'radio does not cover exit');
-    assert.ok(frame.x >= 0 && frame.x + frame.width <= viewport.width && frame.y + frame.height <= viewport.height);
+    assert.ok(frame.x >= 0 && frame.x + frame.width <= viewport.width && frame.width >= 200);
   }
 });
 
-
-test('animated rain keeps drawing inside the window and returns to the main room', async t => {
+test('animated rain stays in the window and stops when the weather changes', async t => {
   const page = await openRoom(t, 1280, 'no-preference');
   await page.locator('#music-rain').click();
-  await page.locator('#window-open').click();
   await page.clock.runFor(1800);
   assert.equal(await page.locator('#rain').evaluate(el => el.classList.contains('is-on')), true);
   assert.ok(await page.evaluate(() => rainFrame !== null && drops.length > 0));
   assert.equal(await page.locator('#window-outside #rain').count(), 1);
-  if (process.env.ATMOSPHERE_PREVIEW_DIR) {
-    await page.screenshot({ path: path.join(process.env.ATMOSPHERE_PREVIEW_DIR, 'window-rain.png') });
-  }
-  await page.locator('#window-close').click();
-  await page.locator('[data-mood="calm"]').click();
+  await page.locator('.mood[data-mood="calm"]').click();
   assert.equal(await page.evaluate(() => rainFrame), null);
 });
 
-test('Space opens the window invitation in Focus without starting the timer', async t => {
+test('keyboard moods and the focus timer stay available in the room', async t => {
   const page = await openRoom(t);
-  await page.locator('[data-mood="focus"]').click();
-  await page.locator('#window-open').focus();
+  await page.locator('#desk-lamp').focus();
+  await page.keyboard.press('3');
+  assert.equal(await page.locator('body').getAttribute('data-mood'), 'focus');
+  await page.locator('#focus-toggle').focus();
   await page.keyboard.press('Space');
-  assert.equal(await page.locator('#window-view').isVisible(), true);
+  assert.equal(await page.locator('#focus-toggle').textContent(), 'pause');
+  await page.locator('#focus-reset').click();
   assert.equal(await page.locator('#focus-toggle').textContent(), 'start');
-  await page.keyboard.press('Escape');
 });

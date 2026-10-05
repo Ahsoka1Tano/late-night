@@ -9,15 +9,16 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 
 ![The window seat: rain, a late city and a warm desk lamp](assets/window-seat.png)
 
-## The window seat
+## One little room
 
-Choose a mood, then **Take the window seat**. The controls give way to a night
-city, a live clock, clouds, a passing train and a cup of tea. Click the desk lamp
-to turn its warm light off or on; the room remembers your choice.
+The window is the home screen. Pick a mood above it: the city, lamp, clock and
+weather share the page with your music controls. On a wide screen the player sits
+beside the window; on a phone it sits below. There is no separate view to enter.
+Click the lamp to change its warm light. Your last mood and lamp choice are remembered.
+New visitors arrive in Music; audio starts only after a user action or browser permission.
 
-Music and ambience continue playing. Tape and rain controls stay within reach,
-and the official radio player stays visible when you're listening to Lofi Girl.
-**Back to the room** or **Esc** returns to your place. Reduced motion is respected.
+The journal and previous nights are just below the room. The official Lofi Girl
+player stays on the desk while you change the rain or the lamp.
 
 ## Right now
 
@@ -110,8 +111,8 @@ To use an installed Edge instead, set `PLAYWRIGHT_CHANNEL=msedge`. A separately
 installed Playwright can be selected with `PLAYWRIGHT_MODULE` (its module path).
 
 Atmosphere checks cover simultaneous layers, independent volume, recording errors,
-weather persistence, window controls, keyboard access, radio continuity and layouts
-at 320, 844 and 1280 pixels. They use a deterministic media double, so they do not
+weather persistence, the unified room, keyboard access, radio continuity and layouts
+at 320, 844 and 1440 pixels. They use a deterministic media double, so they do not
 prove availability or audibility of external recordings. Set `ATMOSPHERE_PREVIEW_DIR`
 to an existing folder to save screenshots.
 

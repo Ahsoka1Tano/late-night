@@ -67,7 +67,8 @@ two rooms out of six, not the whole house.
 ## Always
 - [x] the window seat: illustrated night city, live clock, rain and passing train
 - [x] interactive desk lamp, warm room light and a steaming cup
-- [x] immersive audio controls, visible official radio, keyboard return and mobile layouts
+- [x] one continuous room: window, mood controls, audio and journal on the same page
+- [x] visible official radio, accessible inactive panels and responsive desk layout
 - [ ] another view from the window: rooftops, mountains or the last café open
 - polish, animation, micro-interactions
 - [x] a proper pass over the phone layout: wrapping, thumb-sized controls

@@ -37,6 +37,7 @@ function isRainScene(mood = document.body.dataset.mood) {
 
 function paintWeather() {
   document.body.classList.toggle("has-rain", isRainScene());
+  document.getElementById("rain-dial").hidden = !isRainScene();
   if (isRainScene()) startRain();
   else stopRain();
 }
@@ -44,6 +45,15 @@ function paintWeather() {
 function setMood(mood, { save = true } = {}) {
   if (!MOODS[mood]) mood = "calm";
   document.body.dataset.mood = mood;
+  document.getElementById("desk-title").textContent = {
+    calm: "A softer pace.", music: "Let the evening play.", focus: "One thing at a time.",
+    rain: "Weather for staying in.", space: "A little further away.", sleep: "Let the day go.", aurora: "An unexpected sky.",
+  }[mood];
+  document.getElementById("player").hidden = mood !== "music";
+  document.getElementById("weather-mix").hidden = mood !== "music";
+  document.getElementById("focus").hidden = mood !== "focus";
+  document.getElementById("radio-dial").hidden = mood !== "music" || station !== "radio";
+  document.getElementById("radio-frame").hidden = mood !== "music" || station !== "radio";
 
   moodButtons.forEach((btn) => {
     const picked = btn.dataset.mood === mood;
@@ -364,7 +374,6 @@ if (localStorage.getItem("lateNight.knowsKeys")) hint.classList.add("is-gone");
 
 document.addEventListener("keydown", (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
-  if (document.body.classList.contains("is-window-view")) return;
 
   const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName || "");
   if (typing || document.activeElement?.closest(".journal-history")) return;
@@ -1278,6 +1287,8 @@ function closeRadio() {
 function setStation(next) {
   station = next;
   document.body.dataset.station = next;
+  radioFrame.hidden = document.body.dataset.mood !== "music" || next !== "radio";
+  radioDial.hidden = radioFrame.hidden;
 
   stationButtons.forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.station === next);
@@ -1398,6 +1409,7 @@ function paintAmbience() {
   const sound = ambienceFor(document.body.dataset.mood);
 
   document.body.classList.toggle("has-ambience", Boolean(sound));
+  document.getElementById("ambience").hidden = !sound;
   document.body.classList.toggle("is-listening", listening);
   listenButton.classList.toggle("is-loading", ambienceLoading);
   listenButton.classList.toggle("is-on", listening);
@@ -1546,18 +1558,9 @@ setRainLevel(rainLevel, { save: false });
 
 
 
-/* --- the window seat: another view of the same room, with the same audio --- */
+/* --- the room's window and desk lamp --- */
 const windowView = document.getElementById("window-view");
-const windowOpen = document.getElementById("window-open");
-const windowClose = document.getElementById("window-close");
-const windowPlay = document.getElementById("window-play");
-const windowRain = document.getElementById("window-rain");
-const windowListen = document.getElementById("window-listen");
-const windowTrack = document.getElementById("window-track");
 const deskLamp = document.getElementById("desk-lamp");
-let windowScroll = 0;
-let windowInert = [];
-const canvasHomes = [rainCanvas, starsCanvas].map(node => ({ node, parent: node.parentNode, next: node.nextSibling }));
 
 // Fixed silhouettes keep the view familiar each time you come back.
 [["skyline-far", [35, 52, 43, 73, 46, 59, 92, 66, 42, 77, 53, 64, 38, 82, 50, 67]],
@@ -1571,61 +1574,6 @@ const canvasHomes = [rainCanvas, starsCanvas].map(node => ({ node, parent: node.
     row.append(building);
   });
 });
-
-function paintWindowControls() {
-  const music = document.body.dataset.mood === "music";
-  windowPlay.hidden = !music || station !== "tape";
-  windowPlay.textContent = tapeRunning ? "pause tape" : "play tape";
-  windowRain.hidden = !music;
-  windowRain.textContent = musicRainEnabled ? "rain on" : "add rain";
-  windowRain.setAttribute("aria-pressed", String(musicRainEnabled));
-  windowListen.hidden = !ambienceFor(document.body.dataset.mood);
-  windowListen.textContent = ambienceLoading ? "loading…" : listening ? "mute ambience" : ambienceError ? "retry ambience" : "listen";
-  windowListen.setAttribute("aria-pressed", String(listening));
-  windowTrack.textContent = ambienceError || (music ? playerTitle.textContent : listening ? ambienceName.textContent : "the city is keeping you company");
-}
-
-function enterWindow() {
-  if (!windowView.hidden) return;
-  windowScroll = window.scrollY;
-  windowInert = [...document.querySelector(".room").children].map(node => ({ node, inert: node.inert }));
-  windowInert.forEach(({ node }) => {
-    // Keep the official radio visible and interactive, in its original DOM node.
-    if (node !== radioFrame) node.inert = true;
-  });
-  canvasHomes.forEach(({ node }) => document.getElementById("window-outside").append(node));
-  windowView.hidden = false;
-  document.body.classList.add("is-window-view");
-  paintWindowControls();
-  windowClose.focus({ preventScroll: true });
-}
-
-function leaveWindow() {
-  if (windowView.hidden) return;
-  windowView.hidden = true;
-  document.body.classList.remove("is-window-view");
-  canvasHomes.forEach(({ node, parent, next }) => parent.insertBefore(node, next));
-  windowInert.forEach(({ node, inert }) => { node.inert = inert; });
-  window.scrollTo({ top: windowScroll, behavior: "instant" });
-  windowOpen.focus({ preventScroll: true });
-}
-
-windowOpen.addEventListener("click", enterWindow);
-windowClose.addEventListener("click", leaveWindow);
-windowPlay.addEventListener("click", () => { setTape(!tapeRunning); paintWindowControls(); });
-windowRain.addEventListener("click", () => { musicRainButton.click(); paintWindowControls(); });
-windowListen.addEventListener("click", () => { listenButton.click(); paintWindowControls(); });
-document.addEventListener("keydown", event => {
-  if (event.key === "Escape" && !windowView.hidden) {
-    event.preventDefault();
-    leaveWindow();
-  }
-});
-
-const windowObserver = new MutationObserver(() => {
-  if (!windowView.hidden) paintWindowControls();
-});
-[playerTitle, playerPlay, ambienceName, listenButton].forEach(node => windowObserver.observe(node, { childList: true }));
 
 function setDeskLamp(on) {
   windowView.classList.toggle("lamp-off", !on);
@@ -1662,4 +1610,4 @@ document.addEventListener("keydown", (e) => {
   setMood("aurora");
 });
 
-setMood(localStorage.getItem("lateNight.mood") || "calm", { save: false });
+setMood(localStorage.getItem("lateNight.mood") || "music", { save: false });

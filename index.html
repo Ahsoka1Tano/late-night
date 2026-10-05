@@ -17,18 +17,15 @@
   <div class="city" aria-hidden="true"></div>
   <div class="breath" aria-hidden="true"></div>
   <div class="veil" aria-hidden="true"></div>
-  <canvas class="stars-layer" id="stars" aria-hidden="true"></canvas>
-  <canvas class="rain-layer" id="rain" aria-hidden="true"></canvas>
   <div class="window-fog" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
 
   <main class="room">
     <header class="intro">
+      <div><h1 class="title">LATE NIGHT<span aria-hidden="true">.</span></h1>
+        <p class="tagline">a little corner of the night</p></div>
       <p class="clock" id="clock">--:--</p>
-      <h1 class="title">LATE&nbsp;NIGHT</h1>
-      <p class="tagline">a tiny room for quiet evenings</p>
     </header>
-
     <section class="moods" aria-label="Choose a mood">
       <button class="mood" data-mood="calm" type="button" aria-pressed="false"><span class="mood-icon">&#127769;</span><span class="mood-name">Calm</span></button>
       <button class="mood" data-mood="music" type="button" aria-pressed="false"><span class="mood-icon">&#127911;</span><span class="mood-name">Music</span></button>
@@ -39,50 +36,34 @@
       <button class="mood mood-secret" data-mood="aurora" type="button" aria-pressed="false"><span class="mood-icon">&#10024;</span><span class="mood-name">Aurora</span></button>
     </section>
 
-    <p class="mood-line" id="mood-line"></p>
 
-    <button class="window-invitation" id="window-open" type="button">
-      <span class="window-preview" aria-hidden="true"><i></i></span>
-      <span class="window-invitation-copy"><small>A ROOM WITH A VIEW</small>
-        <strong>Take the window seat <span aria-hidden="true">↗</span></strong>
-        <span>A city that stays awake. A little room that's yours.</span></span>
-    </button>
-
-    <section class="weather-mix" aria-label="Music and weather">
-      <div><p class="mix-eyebrow">MAKE YOURSELF AT HOME</p><h2>Lo-fi. With a chance of rain.</h2>
-        <p>Put a tape on. Let the weather keep you company.</p></div>
-      <button id="music-rain" type="button" aria-pressed="false">add real rain <span aria-hidden="true">＋</span></button>
-    </section>
-
-    <div class="ambience" id="ambience">
-      <button class="listen" id="listen" type="button" aria-pressed="false">listen</button>
-      <label class="room-volume">
-        <span class="visually-hidden">Room volume</span>
-        <input type="range" id="room-volume" min="0" max="100" step="1" value="100" />
-      </label>
-      <span class="ambience-name" id="ambience-name" role="status"></span>
+    <div class="evening-layout">
+      <section class="window-view" id="window-view" aria-label="Your night window">
+    <div class="window-outside" id="window-outside">
+      <canvas class="stars-layer" id="stars" aria-hidden="true"></canvas>
+      <canvas class="rain-layer" id="rain" aria-hidden="true"></canvas>
+      <div class="window-moon" aria-hidden="true"></div>
+      <div class="window-clouds" aria-hidden="true"></div>
+      <div class="skyline skyline-far" id="skyline-far" aria-hidden="true"></div>
+      <div class="skyline skyline-near" id="skyline-near" aria-hidden="true"></div>
+      <div class="night-train" aria-hidden="true"></div>
+      <div class="window-crossbar" aria-hidden="true"></div>
+      <div class="window-time"><p>NO PLACE TO BE. NOTHING TO PROVE.</p>
+        <time id="window-clock">--:--</time><p>let the city carry on.</p></div>
     </div>
+    <div class="window-sill" aria-hidden="true"></div>
+    <div class="desk-glow" aria-hidden="true"></div>
+    <button class="desk-lamp" id="desk-lamp" type="button" aria-label="Desk lamp" aria-pressed="true">
+      <span class="lamp-shade"></span><span class="lamp-stem"></span><span class="lamp-base"></span>
+    </button>
+    <div class="window-cup" aria-hidden="true"><span></span><span></span><span></span></div>
 
-    <section class="focus" id="focus" aria-label="Focus timer">
-      <div class="focus-presets" id="focus-presets" aria-label="Session length">
-        <button class="focus-preset" data-minutes="15" type="button">15</button>
-        <button class="focus-preset" data-minutes="25" type="button">25</button>
-        <button class="focus-preset" data-minutes="45" type="button">45</button>
-        <button class="focus-preset" data-minutes="60" type="button">60</button>
-      </div>
+        <p class="scene-signature"><span class="scene-dot" aria-hidden="true"></span><span id="scene-caption">THE CITY IS KEEPING YOU COMPANY</span></p>
+      </section>
 
-      <p class="focus-time" id="focus-time">25:00</p>
-      <div class="focus-progress" id="focus-progress" role="progressbar" aria-label="Focus session progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-        <span aria-hidden="true"></span>
-      </div>
-      <div class="focus-controls">
-        <button class="focus-btn" id="focus-toggle" type="button">start</button>
-        <button class="focus-btn" id="focus-reset" type="button">reset</button>
-      </div>
-
-      <p class="focus-note" id="focus-note"></p>
-    </section>
-
+      <aside class="room-desk" aria-label="In your room">
+        <header class="desk-heading"><p class="desk-kicker">MAKE YOURSELF AT HOME</p>
+          <h2 id="desk-title">Slow evenings.</h2><p class="mood-line" id="mood-line"></p></header>
     <div class="player" id="player" aria-label="Lo-fi player">
       <button class="player-play" id="player-play" type="button">play</button>
       <button class="player-next" id="player-next" type="button">next</button>
@@ -111,14 +92,54 @@
     <div class="radio-dial" id="radio-dial" aria-label="Radio channels"></div>
     <div class="radio-frame" id="radio-frame" aria-label="Lofi Girl radio"></div>
 
+
+    <section class="focus" id="focus" aria-label="Focus timer">
+      <div class="focus-presets" id="focus-presets" aria-label="Session length">
+        <button class="focus-preset" data-minutes="15" type="button">15</button>
+        <button class="focus-preset" data-minutes="25" type="button">25</button>
+        <button class="focus-preset" data-minutes="45" type="button">45</button>
+        <button class="focus-preset" data-minutes="60" type="button">60</button>
+      </div>
+
+      <p class="focus-time" id="focus-time">25:00</p>
+      <div class="focus-progress" id="focus-progress" role="progressbar" aria-label="Focus session progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <span aria-hidden="true"></span>
+      </div>
+      <div class="focus-controls">
+        <button class="focus-btn" id="focus-toggle" type="button">start</button>
+        <button class="focus-btn" id="focus-reset" type="button">reset</button>
+      </div>
+
+      <p class="focus-note" id="focus-note"></p>
+    </section>
+
+
+        <section class="weather-mix" id="weather-mix" aria-label="Music and weather">
+          <div><h3>Rain at the window</h3><p>A real recording. Your own volume.</p></div>
+          <button id="music-rain" type="button" aria-pressed="false">add real rain ＋</button>
+        </section>
+    <div class="ambience" id="ambience">
+      <button class="listen" id="listen" type="button" aria-pressed="false">listen</button>
+      <label class="room-volume">
+        <span class="visually-hidden">Room volume</span>
+        <input type="range" id="room-volume" min="0" max="100" step="1" value="100" />
+      </label>
+      <span class="ambience-name" id="ambience-name" role="status"></span>
+    </div>
+
+
     <div class="rain-dial" id="rain-dial" aria-label="How hard it rains">
       <button class="rain-step" data-rain="drizzle" type="button">drizzle</button>
       <button class="rain-step" data-rain="steady" type="button">steady</button>
       <button class="rain-step" data-rain="downpour" type="button">downpour</button>
     </div>
 
-    <p class="tonight" id="tonight"></p>
 
+      </aside>
+    </div>
+    <div class="evening-notes">
+      <div class="night-thought"><p class="desk-kicker">A MOMENT BEFORE TOMORROW</p>
+        <p class="tonight" id="tonight"></p><p class="traces" id="traces"></p></div>
     <section class="journal" aria-label="Tonight's note">
       <p class="journal-ask">How was today?</p>
 
@@ -148,42 +169,11 @@
       </details>
     </section>
 
-    <p class="traces" id="traces"></p>
+
+    </div>
   </main>
 
-  <section class="window-view" id="window-view" aria-label="The window seat" hidden>
-    <div class="window-toolbar">
-      <span>LATE NIGHT <span class="window-location">/ THE WINDOW SEAT</span></span>
-      <button id="window-close" type="button">back to the room <span aria-hidden="true">↙</span></button>
-    </div>
-    <div class="window-outside" id="window-outside">
-      <div class="window-moon" aria-hidden="true"></div>
-      <div class="window-clouds" aria-hidden="true"></div>
-      <div class="skyline skyline-far" id="skyline-far" aria-hidden="true"></div>
-      <div class="skyline skyline-near" id="skyline-near" aria-hidden="true"></div>
-      <div class="night-train" aria-hidden="true"></div>
-      <div class="window-crossbar" aria-hidden="true"></div>
-      <div class="window-time"><p>NO PLACE TO BE. NOTHING TO PROVE.</p>
-        <time id="window-clock">--:--</time><p>let the city carry on.</p></div>
-    </div>
-    <div class="window-sill" aria-hidden="true"></div>
-    <div class="desk-glow" aria-hidden="true"></div>
-    <button class="desk-lamp" id="desk-lamp" type="button" aria-label="Desk lamp" aria-pressed="true">
-      <span class="lamp-shade"></span><span class="lamp-stem"></span><span class="lamp-base"></span>
-    </button>
-    <div class="window-cup" aria-hidden="true"><span></span><span></span><span></span></div>
-    <div class="window-bottom">
-      <div class="window-now"><p>HERE, FOR A LITTLE WHILE</p><span id="window-track">the city is keeping you company</span></div>
-      <div class="window-controls">
-        <button id="window-play" type="button" hidden>play tape</button>
-        <button id="window-rain" type="button" aria-pressed="false" hidden>add rain</button>
-        <button id="window-listen" type="button" aria-pressed="false" hidden>listen</button>
-      </div>
-    </div>
-  </section>
-
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-
   <script src="app.js"></script>
 </body>
 </html>
