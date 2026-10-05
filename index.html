@@ -41,6 +41,13 @@
 
     <p class="mood-line" id="mood-line"></p>
 
+    <button class="window-invitation" id="window-open" type="button">
+      <span class="window-preview" aria-hidden="true"><i></i></span>
+      <span class="window-invitation-copy"><small>A ROOM WITH A VIEW</small>
+        <strong>Take the window seat <span aria-hidden="true">↗</span></strong>
+        <span>A city that stays awake. A little room that's yours.</span></span>
+    </button>
+
     <section class="weather-mix" aria-label="Music and weather">
       <div><p class="mix-eyebrow">MAKE YOURSELF AT HOME</p><h2>Lo-fi. With a chance of rain.</h2>
         <p>Put a tape on. Let the weather keep you company.</p></div>
@@ -143,6 +150,37 @@
 
     <p class="traces" id="traces"></p>
   </main>
+
+  <section class="window-view" id="window-view" aria-label="The window seat" hidden>
+    <div class="window-toolbar">
+      <span>LATE NIGHT <span class="window-location">/ THE WINDOW SEAT</span></span>
+      <button id="window-close" type="button">back to the room <span aria-hidden="true">↙</span></button>
+    </div>
+    <div class="window-outside" id="window-outside">
+      <div class="window-moon" aria-hidden="true"></div>
+      <div class="window-clouds" aria-hidden="true"></div>
+      <div class="skyline skyline-far" id="skyline-far" aria-hidden="true"></div>
+      <div class="skyline skyline-near" id="skyline-near" aria-hidden="true"></div>
+      <div class="night-train" aria-hidden="true"></div>
+      <div class="window-crossbar" aria-hidden="true"></div>
+      <div class="window-time"><p>NO PLACE TO BE. NOTHING TO PROVE.</p>
+        <time id="window-clock">--:--</time><p>let the city carry on.</p></div>
+    </div>
+    <div class="window-sill" aria-hidden="true"></div>
+    <div class="desk-glow" aria-hidden="true"></div>
+    <button class="desk-lamp" id="desk-lamp" type="button" aria-label="Desk lamp" aria-pressed="true">
+      <span class="lamp-shade"></span><span class="lamp-stem"></span><span class="lamp-base"></span>
+    </button>
+    <div class="window-cup" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="window-bottom">
+      <div class="window-now"><p>HERE, FOR A LITTLE WHILE</p><span id="window-track">the city is keeping you company</span></div>
+      <div class="window-controls">
+        <button id="window-play" type="button" hidden>play tape</button>
+        <button id="window-rain" type="button" aria-pressed="false" hidden>add rain</button>
+        <button id="window-listen" type="button" aria-pressed="false" hidden>listen</button>
+      </div>
+    </div>
+  </section>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
 

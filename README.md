@@ -7,6 +7,18 @@ A tiny digital room for quiet evenings.
 Open it late, pick a mood, sit for a bit, close it.
 No accounts, no backend, no notifications — just a dark little corner of the internet.
 
+![The window seat: rain, a late city and a warm desk lamp](assets/window-seat.png)
+
+## The window seat
+
+Choose a mood, then **Take the window seat**. The controls give way to a night
+city, a live clock, clouds, a passing train and a cup of tea. Click the desk lamp
+to turn its warm light off or on; the room remembers your choice.
+
+Music and ambience continue playing. Tape and rain controls stay within reach,
+and the official radio player stays visible when you're listening to Lofi Girl.
+**Back to the room** or **Esc** returns to your place. Reduced motion is respected.
+
 ## Right now
 
 - a slow night screen with a live clock
@@ -91,11 +103,17 @@ The website itself needs no dependencies or build step.
 ```bash
 npm install --no-save --package-lock=false playwright
 npx playwright install chromium
-node --test checks/journal.test.cjs
+node --test checks/journal.test.cjs checks/atmosphere.test.cjs
 ```
 
 To use an installed Edge instead, set `PLAYWRIGHT_CHANNEL=msedge`. A separately
 installed Playwright can be selected with `PLAYWRIGHT_MODULE` (its module path).
+
+Atmosphere checks cover simultaneous layers, independent volume, recording errors,
+weather persistence, window controls, keyboard access, radio continuity and layouts
+at 320, 844 and 1280 pixels. They use a deterministic media double, so they do not
+prove availability or audibility of external recordings. Set `ATMOSPHERE_PREVIEW_DIR`
+to an existing folder to save screenshots.
 
 ## The tapes
 

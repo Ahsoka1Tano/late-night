@@ -1,12 +1,15 @@
 /* Late Night — a tiny digital room for quiet evenings. */
 
 const clockEl = document.getElementById("clock");
+const windowClock = document.getElementById("window-clock");
 
 function tick() {
   const now = new Date();
   const hh = String(now.getHours()).padStart(2, "0");
   const mm = String(now.getMinutes()).padStart(2, "0");
   clockEl.textContent = `${hh}:${mm}`;
+  windowClock.textContent = clockEl.textContent;
+  windowClock.dateTime = `${hh}:${mm}`;
 }
 
 tick();
@@ -361,6 +364,7 @@ if (localStorage.getItem("lateNight.knowsKeys")) hint.classList.add("is-gone");
 
 document.addEventListener("keydown", (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (document.body.classList.contains("is-window-view")) return;
 
   const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName || "");
   if (typing || document.activeElement?.closest(".journal-history")) return;
@@ -375,7 +379,8 @@ document.addEventListener("keydown", (e) => {
     }
   }
 
-  if (document.body.dataset.mood === "focus" && (e.key === " " || e.code === "Space")) {
+  if (document.body.dataset.mood === "focus" && (e.key === " " || e.code === "Space")
+      && !document.activeElement?.closest("button, summary, select")) {
     e.preventDefault();
     if (focusEndsAt) pauseFocus();
     else startFocus();
@@ -1541,6 +1546,98 @@ setRainLevel(rainLevel, { save: false });
 
 
 
+/* --- the window seat: another view of the same room, with the same audio --- */
+const windowView = document.getElementById("window-view");
+const windowOpen = document.getElementById("window-open");
+const windowClose = document.getElementById("window-close");
+const windowPlay = document.getElementById("window-play");
+const windowRain = document.getElementById("window-rain");
+const windowListen = document.getElementById("window-listen");
+const windowTrack = document.getElementById("window-track");
+const deskLamp = document.getElementById("desk-lamp");
+let windowScroll = 0;
+let windowInert = [];
+const canvasHomes = [rainCanvas, starsCanvas].map(node => ({ node, parent: node.parentNode, next: node.nextSibling }));
+
+// Fixed silhouettes keep the view familiar each time you come back.
+[["skyline-far", [35, 52, 43, 73, 46, 59, 92, 66, 42, 77, 53, 64, 38, 82, 50, 67]],
+ ["skyline-near", [45, 66, 34, 80, 54, 46, 70, 38, 60, 86, 48, 62]]].forEach(([id, heights]) => {
+  const row = document.getElementById(id);
+  heights.forEach((height, index) => {
+    const building = document.createElement("span");
+    building.style.setProperty("--height", `${height}%`);
+    building.style.setProperty("--width", String(2 + index % 3));
+    building.style.setProperty("--lights", index % 3 === 0 ? "#e4ac716b" : "#99c6e637");
+    row.append(building);
+  });
+});
+
+function paintWindowControls() {
+  const music = document.body.dataset.mood === "music";
+  windowPlay.hidden = !music || station !== "tape";
+  windowPlay.textContent = tapeRunning ? "pause tape" : "play tape";
+  windowRain.hidden = !music;
+  windowRain.textContent = musicRainEnabled ? "rain on" : "add rain";
+  windowRain.setAttribute("aria-pressed", String(musicRainEnabled));
+  windowListen.hidden = !ambienceFor(document.body.dataset.mood);
+  windowListen.textContent = ambienceLoading ? "loading…" : listening ? "mute ambience" : ambienceError ? "retry ambience" : "listen";
+  windowListen.setAttribute("aria-pressed", String(listening));
+  windowTrack.textContent = ambienceError || (music ? playerTitle.textContent : listening ? ambienceName.textContent : "the city is keeping you company");
+}
+
+function enterWindow() {
+  if (!windowView.hidden) return;
+  windowScroll = window.scrollY;
+  windowInert = [...document.querySelector(".room").children].map(node => ({ node, inert: node.inert }));
+  windowInert.forEach(({ node }) => {
+    // Keep the official radio visible and interactive, in its original DOM node.
+    if (node !== radioFrame) node.inert = true;
+  });
+  canvasHomes.forEach(({ node }) => document.getElementById("window-outside").append(node));
+  windowView.hidden = false;
+  document.body.classList.add("is-window-view");
+  paintWindowControls();
+  windowClose.focus({ preventScroll: true });
+}
+
+function leaveWindow() {
+  if (windowView.hidden) return;
+  windowView.hidden = true;
+  document.body.classList.remove("is-window-view");
+  canvasHomes.forEach(({ node, parent, next }) => parent.insertBefore(node, next));
+  windowInert.forEach(({ node, inert }) => { node.inert = inert; });
+  window.scrollTo({ top: windowScroll, behavior: "instant" });
+  windowOpen.focus({ preventScroll: true });
+}
+
+windowOpen.addEventListener("click", enterWindow);
+windowClose.addEventListener("click", leaveWindow);
+windowPlay.addEventListener("click", () => { setTape(!tapeRunning); paintWindowControls(); });
+windowRain.addEventListener("click", () => { musicRainButton.click(); paintWindowControls(); });
+windowListen.addEventListener("click", () => { listenButton.click(); paintWindowControls(); });
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && !windowView.hidden) {
+    event.preventDefault();
+    leaveWindow();
+  }
+});
+
+const windowObserver = new MutationObserver(() => {
+  if (!windowView.hidden) paintWindowControls();
+});
+[playerTitle, playerPlay, ambienceName, listenButton].forEach(node => windowObserver.observe(node, { childList: true }));
+
+function setDeskLamp(on) {
+  windowView.classList.toggle("lamp-off", !on);
+  deskLamp.setAttribute("aria-pressed", String(on));
+}
+setDeskLamp(localStorage.getItem("lateNight.deskLamp") !== "0");
+deskLamp.addEventListener("click", () => {
+  const on = deskLamp.getAttribute("aria-pressed") !== "true";
+  setDeskLamp(on);
+  localStorage.setItem("lateNight.deskLamp", on ? "1" : "0");
+});
+
 /* --- something left in the room for whoever pokes around --- */
 const SECRET_WORD = "moon";
 
@@ -1552,6 +1649,7 @@ if (localStorage.getItem("lateNight.aurora") === "1") {
 
 document.addEventListener("keydown", (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (!windowView.hidden) return;
   if (/^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName || "")) return;
   if (e.key.length !== 1) return;
 

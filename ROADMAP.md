@@ -65,6 +65,10 @@ two rooms out of six, not the whole house.
 - [x] gentle streak counter
 
 ## Always
+- [x] the window seat: illustrated night city, live clock, rain and passing train
+- [x] interactive desk lamp, warm room light and a steaming cup
+- [x] immersive audio controls, visible official radio, keyboard return and mobile layouts
+- [ ] another view from the window: rooftops, mountains or the last café open
 - polish, animation, micro-interactions
 - [x] a proper pass over the phone layout: wrapping, thumb-sized controls
 - new atmospheres and phrases
