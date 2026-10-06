@@ -1839,6 +1839,36 @@ body[data-mood="space"] .window-outside, body[data-mood="aurora"] .window-outsid
   animation: last-train 64s linear -8s infinite;
 }
 .night-train img { display: block; width: 100%; height: auto; }
+.railway-bridge {
+  position: absolute;
+  bottom: calc(5% - 33px);
+  left: 0;
+  width: 100%;
+  height: 38px;
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity 2s;
+}
+.railway-bridge svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.bridge-piers { fill: #111b2b; }
+.bridge-braces { fill: none; stroke: #243046; stroke-width: 3; }
+.bridge-deck { fill: #111a28; }
+.bridge-rail { fill: none; stroke: #6f7a88; stroke-opacity: .55; stroke-width: 1.5; }
+.train-beam {
+  position: absolute;
+  top: 59%;
+  left: 96%;
+  width: 65px;
+  height: 18px;
+  background: linear-gradient(90deg, #f7deac26, #f7deac00);
+  clip-path: polygon(0 44%, 100% 0, 100% 100%, 0 56%);
+  filter: blur(2px);
+  pointer-events: none;
+}
+body[data-mood="space"] .railway-bridge,
+body[data-mood="aurora"] .railway-bridge { opacity: .08; }
+body[data-mood="aurora"] .night-train { opacity: 0; }
+body[data-mood="sleep"] .railway-bridge { opacity: .3; }
 @keyframes last-train {
   0%, 6% { left: calc(-1 * var(--train-width) - 30px); }
   38%, 100% { left: calc(100% + 30px); }

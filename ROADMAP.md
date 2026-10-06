@@ -90,6 +90,7 @@ avoid changes whose only purpose is filling a day.
 - [x] individual apartment lights slowly change; Sleep puts the neighbours to bed
 - [x] city life pauses in hidden tabs, Space and reduced motion
 - [x] occasional flight across the window and softly glowing rooftop beacons
+- [x] a detailed four-car night express on an elevated railway, with warm windows and a headlight
 - [x] visible official radio, accessible inactive panels and responsive desk layout
 - [ ] another view from the window: rooftops, mountains or the last café open
 - polish, animation, micro-interactions

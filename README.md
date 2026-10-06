@@ -30,6 +30,9 @@ bed. In Sleep, the lights only go out. The city rests in a hidden tab and respec
 reduced motion, including changes to that preference while the room is open.
 Every so often a small aircraft crosses the sky; faint rooftop beacons keep it
 company. Those details rest with the city; aircraft disappear from the space and sleep sky.
+The night express has four carriages, warm compartment windows and a softly lit
+cab. It crosses an elevated railway in front of the skyline, then leaves the view
+quiet for a while. Its first pass begins shortly after opening the room.
 
 ## Right now
 
