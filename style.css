@@ -1828,17 +1828,21 @@ body[data-mood="space"] .window-outside, body[data-mood="aurora"] .window-outsid
   border-top: 2px solid #db9690aa;
 }
 .night-train {
+  --train-width: clamp(250px, 62%, 440px);
   position: absolute;
-  bottom: 4%;
-  left: -30%;
-  width: 25%;
-  height: 5px;
-  border-bottom: 2px solid #111522;
-  background: repeating-linear-gradient(90deg, #e5c49b 0 4px, #333144 4px 9px);
-  box-shadow: 0 1px 10px #dcbb8666;
-  animation: last-train 48s linear infinite;
+  bottom: calc(5% + 3px);
+  left: calc(-1 * var(--train-width) - 30px);
+  width: var(--train-width);
+  height: auto;
+  z-index: 2;
+  pointer-events: none;
+  animation: last-train 64s linear -8s infinite;
 }
-@keyframes last-train { 0%, 30% { transform: translateX(0); } 75%, 100% { transform: translateX(550%); } }
+.night-train img { display: block; width: 100%; height: auto; }
+@keyframes last-train {
+  0%, 6% { left: calc(-1 * var(--train-width) - 30px); }
+  38%, 100% { left: calc(100% + 30px); }
+}
 .window-crossbar { position: absolute; inset: 0; z-index: 4; pointer-events: none; box-shadow: inset 0 0 65px #070c2566; }
 .window-crossbar::before { content: ""; position: absolute; height: 100%; width: 10px; left: 62%; background: #121824; border-right: 1px solid #8491a329; box-shadow: 4px 0 10px #0004; }
 .window-crossbar::after { content: ""; position: absolute; width: 100%; height: 7px; top: 68%; background: #111722; border-top: 1px solid #8491a322; }

@@ -15,6 +15,7 @@ const files = new Map([
   ['/style.css', ['style.css', 'text/css']],
   ['/tapes.json', ['tapes.json', 'application/json']],
   ['/moon.svg', ['moon.svg', 'image/svg+xml']],
+  ['/assets/night-express.svg', ['assets/night-express.svg', 'image/svg+xml']],
 ]);
 let server, browser, origin;
 
