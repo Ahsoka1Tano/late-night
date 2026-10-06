@@ -282,3 +282,49 @@ test('the hidden sky can still be discovered from the unified room', async t => 
   assert.equal(await page.locator('body').getAttribute('data-mood'), 'aurora');
   assert.equal(await page.locator('.mood[data-mood="aurora"]').isVisible(), true);
 });
+
+
+async function litApartments(page) {
+  return page.locator('#skyline-near .apartment-window').evaluateAll(lights => lights.map(light => light.classList.contains('is-lit')));
+}
+
+test('the city changes one apartment at a time and Sleep only turns lights off', async t => {
+  const page = await openRoom(t, 1280, 'no-preference');
+  const before = await litApartments(page);
+  await page.clock.runFor(10000);
+  const after = await litApartments(page);
+  assert.equal(after.filter((lit, index) => lit !== before[index]).length, 1);
+  await page.locator('.mood[data-mood="sleep"]').click();
+  const sleepy = await litApartments(page);
+  await page.clock.runFor(10000);
+  const later = await litApartments(page);
+  assert.equal(later.filter(Boolean).length, sleepy.filter(Boolean).length - 1);
+  assert.equal(later.some((lit, index) => lit && !sleepy[index]), false);
+});
+
+test('city life pauses in a hidden tab, Space and when reduced motion changes', async t => {
+  const page = await openRoom(t, 1280, 'no-preference');
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, value: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  const hidden = await litApartments(page);
+  await page.clock.runFor(20000);
+  assert.deepEqual(await litApartments(page), hidden);
+  await page.evaluate(() => {
+    delete document.hidden;
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await page.clock.runFor(10000);
+  assert.notDeepEqual(await litApartments(page), hidden);
+  await page.locator('.mood[data-mood="space"]').click();
+  const space = await litApartments(page);
+  await page.clock.runFor(20000);
+  assert.deepEqual(await litApartments(page), space);
+  await page.locator('.mood[data-mood="music"]').click();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.waitForFunction(() => document.body.classList.contains('city-is-paused'));
+  const still = await litApartments(page);
+  await page.clock.runFor(20000);
+  assert.deepEqual(await litApartments(page), still);
+});

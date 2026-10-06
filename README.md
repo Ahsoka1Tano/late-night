@@ -25,6 +25,9 @@ The same button pauses both. Individual controls still adjust each layer, and
 your volume settings are preserved. In Radio, use the official player's controls.
 The room's sky follows your mood: warmer for Focus, cooler with Rain, quieter
 for Sleep, with the city fading into the stars in Space.
+Apartment windows glow unevenly: somebody switches a light on, somebody goes to
+bed. In Sleep, the lights only go out. The city rests in a hidden tab and respects
+reduced motion, including changes to that preference while the room is open.
 
 ## Right now
 

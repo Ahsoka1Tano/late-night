@@ -1789,9 +1789,30 @@ body[data-mood="space"] .window-outside, body[data-mood="aurora"] .window-outsid
   content: "";
   position: absolute;
   inset: 10px 7px 0;
-  background: repeating-linear-gradient(0deg, transparent 0 11px, #141b30 11px 20px), repeating-linear-gradient(90deg, var(--lights) 0 3px, transparent 3px 12px);
+  background: linear-gradient(90deg, #ffffff03, transparent);
   opacity: .7;
 }
+
+.apartment-lights {
+  position: absolute;
+  inset: 10px 7px 5px;
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--floors), minmax(0, 1fr));
+  gap: 7px 5px;
+  pointer-events: none;
+}
+.apartment-window {
+  width: min(4px, 100%);
+  min-height: 0;
+  justify-self: center;
+  background: #799ab0;
+  opacity: .06;
+  transition: opacity 2.8s ease, box-shadow 2.8s ease;
+}
+.apartment-window.is-lit { opacity: .65; box-shadow: 0 0 5px #9bc6e62b; }
+.apartment-window.is-warm { background: #e7b67e; }
+.apartment-window.is-warm.is-lit { opacity: .85; box-shadow: 0 0 7px #e7b67e35; }
 .skyline > span:nth-child(3n)::after {
   content: "";
   position: absolute;

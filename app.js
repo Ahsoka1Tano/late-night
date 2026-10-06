@@ -52,6 +52,7 @@ function paintWeather() {
 function setMood(mood, { save = true } = {}) {
   if (!MOODS[mood]) mood = "calm";
   document.body.dataset.mood = mood;
+  syncCityLife();
   document.getElementById("desk-title").textContent = {
     calm: "A softer pace.", music: "Let the evening play.", focus: "One thing at a time.",
     rain: "Weather for staying in.", space: "A little further away.", sleep: "Let the day go.", aurora: "An unexpected sky.",
@@ -1569,7 +1570,11 @@ setRainLevel(rainLevel, { save: false });
 const windowView = document.getElementById("window-view");
 const deskLamp = document.getElementById("desk-lamp");
 
-// Fixed silhouettes keep the view familiar each time you come back.
+const neighbourWindows = [];
+const cityMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+let cityLightsTimer = null;
+
+// Fixed silhouettes and unevenly lit apartments keep the city familiar.
 [["skyline-far", [35, 52, 43, 73, 46, 59, 92, 66, 42, 77, 53, 64, 38, 82, 50, 67]],
  ["skyline-near", [45, 66, 34, 80, 54, 46, 70, 38, 60, 86, 48, 62]]].forEach(([id, heights]) => {
   const row = document.getElementById(id);
@@ -1578,9 +1583,46 @@ const deskLamp = document.getElementById("desk-lamp");
     building.style.setProperty("--height", `${height}%`);
     building.style.setProperty("--width", String(2 + index % 3));
     building.style.setProperty("--lights", index % 3 === 0 ? "#e4ac716b" : "#99c6e637");
+    const columns = 2 + index % 3;
+    const floors = Math.max(3, Math.round(height / 12));
+    const apartments = document.createElement("span");
+    apartments.className = "apartment-lights";
+    apartments.style.setProperty("--columns", String(columns));
+    apartments.style.setProperty("--floors", String(floors));
+    for (let flat = 0; flat < columns * floors; flat++) {
+      const light = document.createElement("i");
+      light.className = "apartment-window";
+      // A stable mix of warm, cool and dark windows instead of an office grid.
+      const seed = (flat * 17 + index * 23 + height) % 11;
+      light.classList.toggle("is-lit", seed < 4);
+      if (seed === 1) light.classList.add("is-warm");
+      apartments.append(light);
+      if (id === "skyline-near") neighbourWindows.push(light);
+    }
+    building.append(apartments);
     row.append(building);
   });
 });
+
+function syncCityLife() {
+  clearTimeout(cityLightsTimer);
+  cityLightsTimer = null;
+  const mood = document.body.dataset.mood;
+  const paused = document.hidden || cityMotion.matches || mood === "space" || mood === "aurora";
+  document.body.classList.toggle("city-is-paused", paused);
+  if (paused) return;
+  cityLightsTimer = setTimeout(() => {
+    const candidates = document.body.dataset.mood === "sleep"
+      ? neighbourWindows.filter(light => light.classList.contains("is-lit")) : neighbourWindows;
+    if (candidates.length) {
+      const light = candidates[Math.floor(Math.random() * candidates.length)];
+      light.classList.toggle("is-lit");
+    }
+    syncCityLife();
+  }, 6500 + Math.random() * 3500);
+}
+document.addEventListener("visibilitychange", syncCityLife);
+cityMotion.addEventListener("change", syncCityLife);
 
 function setDeskLamp(on) {
   windowView.classList.toggle("lamp-off", !on);
