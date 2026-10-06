@@ -84,6 +84,11 @@ generated noise. The recordings need an internet connection.
 
 ## Running it
 
+Before publishing changed CSS, JavaScript or the train artwork, run
+`node scripts/refresh-assets.cjs` and commit the updated `index.html`. The URLs
+include a content fingerprint so browsers fetch the matching assets after an update.
+The site still runs directly, without a build step.
+
 No build step. Open `index.html`, or serve the folder:
 
 ```bash
