@@ -204,6 +204,9 @@ test('the entire room fits desktop, narrow phone and landscape without clipped c
       assert.ok(box && box.x >= 0 && box.x + box.width <= viewport.width, id + ' fits ' + viewport.width);
     }
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+    assert.ok(await page.locator('#skyline-near .apartment-window.is-lit').evaluateAll(lights =>
+      lights.some(light => { const box = light.getBoundingClientRect(); return box.width > 0 && box.height > 0; })
+    ), 'apartment lights remain visible in narrow buildings');
     await page.evaluate(() => scrollTo(0,0));
     if (process.env.ATMOSPHERE_PREVIEW_DIR) {
       await page.screenshot({ path: path.join(process.env.ATMOSPHERE_PREVIEW_DIR, 'room-' + viewport.width + '.png'), fullPage: true, animations: 'disabled' });

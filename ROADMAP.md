@@ -89,6 +89,7 @@ avoid changes whose only purpose is filling a day.
 - [x] the same sky changes warmth, light and city visibility with the chosen mood
 - [x] individual apartment lights slowly change; Sleep puts the neighbours to bed
 - [x] city life pauses in hidden tabs, Space and reduced motion
+- [x] occasional flight across the window and softly glowing rooftop beacons
 - [x] visible official radio, accessible inactive panels and responsive desk layout
 - [ ] another view from the window: rooftops, mountains or the last café open
 - polish, animation, micro-interactions

@@ -28,6 +28,8 @@ for Sleep, with the city fading into the stars in Space.
 Apartment windows glow unevenly: somebody switches a light on, somebody goes to
 bed. In Sleep, the lights only go out. The city rests in a hidden tab and respects
 reduced motion, including changes to that preference while the room is open.
+Every so often a small aircraft crosses the sky; faint rooftop beacons keep it
+company. Those details rest with the city; aircraft disappear from the space and sleep sky.
 
 ## Right now
 

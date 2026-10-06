@@ -1813,6 +1813,10 @@ body[data-mood="space"] .window-outside, body[data-mood="aurora"] .window-outsid
 .apartment-window.is-lit { opacity: .65; box-shadow: 0 0 5px #9bc6e62b; }
 .apartment-window.is-warm { background: #e7b67e; }
 .apartment-window.is-warm.is-lit { opacity: .85; box-shadow: 0 0 7px #e7b67e35; }
+@media (max-width: 760px) {
+  .apartment-lights { inset: 8px 2px 3px; gap: 4px 2px; }
+  .apartment-window { width: min(2px, 100%); }
+}
 .skyline > span:nth-child(3n)::after {
   content: "";
   position: absolute;
@@ -2028,3 +2032,49 @@ body[data-mood="space"] .skyline-far, body[data-mood="aurora"] .skyline-far { op
 body[data-mood="space"] .night-train, body[data-mood="sleep"] .night-train { opacity: 0; }
 body[data-mood="sleep"] .skyline { opacity: .25; }
 body[data-mood="sleep"] .window-moon { opacity: .5; }
+
+/* Somewhere overhead, the last flight home. The rest of the sky stays quiet. */
+.night-flight {
+  position: absolute;
+  top: 28%;
+  left: -8%;
+  width: 23px;
+  height: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transform: rotate(-9deg);
+  animation: flight-home 96s linear -9s infinite;
+}
+.night-flight svg { display: block; width: 100%; height: 100%; fill: #a9b6c26b; }
+.night-flight span {
+  position: absolute;
+  right: 1px;
+  top: 5px;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #ece1cf;
+  box-shadow: 0 0 5px #ece1cf9c, -11px 2px 0 #bc787b;
+}
+@keyframes flight-home {
+  0%, 5% { left: -8%; top: 30%; opacity: 0; }
+  8% { opacity: .65; }
+  26% { left: 108%; top: 14%; opacity: .65; }
+  27%, 100% { left: 108%; top: 14%; opacity: 0; }
+}
+.skyline > span:nth-child(3n)::after { animation: rooftop-light 7s ease-in-out infinite; }
+.skyline > span:nth-child(6n)::after { animation-delay: -3s; }
+@keyframes rooftop-light {
+  0%, 100% { border-top-color: #b7727533; }
+  50% { border-top-color: #df9997b3; }
+}
+.city-is-paused .night-flight,
+.city-is-paused .night-train,
+.city-is-paused .skyline > span::after { animation-play-state: paused; }
+body[data-mood="space"] .night-flight,
+body[data-mood="aurora"] .night-flight,
+body[data-mood="sleep"] .night-flight { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .night-flight { display: none; }
+  .skyline > span::after { animation: none !important; }
+}
