@@ -20,6 +20,12 @@ New visitors arrive in Music; audio starts only after a user action or browser p
 The journal and previous nights are just below the room. The official Lofi Girl
 player stays on the desk while you change the rain or the lamp.
 
+Press **lo-fi + rain** at the window to start a tape and real rain together.
+The same button pauses both. Individual controls still adjust each layer, and
+your volume settings are preserved. In Radio, use the official player's controls.
+The room's sky follows your mood: warmer for Focus, cooler with Rain, quieter
+for Sleep, with the city fading into the stars in Space.
+
 ## Right now
 
 - a slow night screen with a live clock

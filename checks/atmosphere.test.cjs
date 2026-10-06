@@ -197,7 +197,7 @@ test('the entire room fits desktop, narrow phone and landscape without clipped c
     const page = await openRoom(t, viewport.width);
     await page.setViewportSize(viewport);
     await page.locator('#music-rain').click();
-    for (const id of ['player-play', 'player-volume', 'music-rain', 'listen', 'desk-lamp', 'journal-note']) {
+    for (const id of ['evening-toggle', 'player-play', 'player-volume', 'music-rain', 'listen', 'desk-lamp', 'journal-note']) {
       const target = page.locator('#' + id);
       await target.scrollIntoViewIfNeeded();
       const box = await target.boundingBox();
@@ -235,4 +235,50 @@ test('keyboard moods and the focus timer stay available in the room', async t =>
   assert.equal(await page.locator('#focus-toggle').textContent(), 'pause');
   await page.locator('#focus-reset').click();
   assert.equal(await page.locator('#focus-toggle').textContent(), 'start');
+});
+
+
+test('one window gesture starts and pauses both layers while preserving volume and journal', async t => {
+  const page = await openRoom(t);
+  await page.locator('#journal-note').fill('A small night.');
+  await page.evaluate(() => { setVolume(.32); setRoomVolume(.45); });
+  await page.locator('.mood[data-mood="calm"]').click();
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(3000);
+  assert.equal(await page.locator('body').getAttribute('data-mood'), 'music');
+  assert.equal(await page.locator('#evening-toggle').getAttribute('aria-pressed'), 'true');
+  assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length), 2);
+  assert.equal(await page.evaluate(() => tapeVolume), .32);
+  assert.equal(await page.evaluate(() => roomVolume), .45);
+  assert.equal(await page.locator('#journal-note').inputValue(), 'A small night.');
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(1500);
+  assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length), 0);
+  assert.equal(await page.locator('#evening-toggle').getAttribute('aria-pressed'), 'false');
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(3000);
+  assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length), 2);
+});
+
+test('the combined switch follows individual controls and stays out of the official radio', async t => {
+  const page = await openRoom(t);
+  await page.locator('#evening-toggle').click();
+  await page.locator('#listen').click();
+  assert.equal(await page.locator('#evening-toggle').getAttribute('aria-pressed'), 'false');
+  await page.locator('#listen').click();
+  await page.waitForFunction(() => document.getElementById('evening-toggle').getAttribute('aria-pressed') === 'true');
+  await page.locator('#player-play').click();
+  assert.equal(await page.locator('#evening-toggle').getAttribute('aria-pressed'), 'false');
+  await page.locator('[data-station="radio"]').click();
+  assert.equal(await page.locator('#evening-toggle').isVisible(), false);
+  await page.locator('[data-station="tape"]').click();
+  assert.equal(await page.locator('#evening-toggle').isVisible(), true);
+});
+
+test('the hidden sky can still be discovered from the unified room', async t => {
+  const page = await openRoom(t);
+  await page.locator('#desk-lamp').focus();
+  await page.keyboard.type('moon');
+  assert.equal(await page.locator('body').getAttribute('data-mood'), 'aurora');
+  assert.equal(await page.locator('.mood[data-mood="aurora"]').isVisible(), true);
 });

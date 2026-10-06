@@ -1967,3 +1967,43 @@ body[data-mood="music"] .room-desk .weather-mix { width: 100%; padding: 20px 0 0
 @media (prefers-reduced-motion: reduce) {
   .night-train, .window-cup > span { display: none; }
 }
+/* One gesture to settle in, without leaving the window. */
+.scene-footer { position: absolute; left: 7%; right: 7%; bottom: 5%; display: flex; align-items: center; justify-content: space-between; gap: 16px; z-index: 7; }
+.scene-footer .scene-signature { position: static; min-width: 0; max-width: 50%; }
+.evening-toggle { flex-shrink: 0; min-height: 44px; padding: 11px 17px; border: 1px solid #bba2d05c; border-radius: 999px; color: #e9dced; background: #67507836; font: inherit; font-size: 12px; cursor: pointer; transition: background .3s, border-color .3s; }
+.evening-toggle:hover { background: #83689b55; border-color: #d9c1ed99; }
+.evening-toggle[aria-pressed="true"] { background: #42394e55; color: #cebedc; }
+.evening-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+@media (max-width: 1050px) {
+  .scene-footer { left: 6%; right: 6%; gap: 12px; }
+  .scene-footer .scene-signature { font-size: 7px; letter-spacing: .1em; }
+  .evening-toggle { padding: 10px 12px; font-size: 11px; }
+}
+@media (max-width: 400px) {
+  .scene-footer { left: 7%; right: 7%; bottom: 4%; }
+  .scene-footer .scene-signature { max-width: 42%; }
+  .scene-dot { display: none; }
+  .evening-toggle { font-size: 10px; padding: 10px; }
+}
+
+/* The same room takes on the chosen mood. */
+@property --sky-top { syntax: "<color>"; inherits: true; initial-value: #101729; }
+@property --sky-bottom { syntax: "<color>"; inherits: true; initial-value: #666078; }
+@property --horizon { syntax: "<color>"; inherits: true; initial-value: #d6958552; }
+body { transition: --glow-a 2s, --glow-b 2s, --accent 1.2s; }
+.window-view { transition: --sky-top 2s, --sky-bottom 2s, --horizon 2s; }
+body .window-outside { background: radial-gradient(ellipse at 63% 100%, var(--horizon), transparent 58%), linear-gradient(180deg, var(--sky-top), var(--sky-bottom)); }
+body[data-mood="space"] .window-outside, body[data-mood="aurora"] .window-outside { background: radial-gradient(ellipse at 30% 40%, var(--horizon), transparent 60%), linear-gradient(var(--sky-top), var(--sky-bottom)); }
+body[data-mood="calm"] .window-view { --sky-top: #142336; --sky-bottom: #43566d; --horizon: #7fa7b733; }
+body[data-mood="focus"] .window-view { --sky-top: #231a23; --sky-bottom: #6e4b48; --horizon: #d39b6e44; }
+body.has-rain .window-view { --sky-top: #111d31; --sky-bottom: #364760; --horizon: #9b95c144; }
+body[data-mood="space"] .window-view { --sky-top: #080a1f; --sky-bottom: #252048; --horizon: #633d7852; }
+body[data-mood="aurora"] .window-view { --sky-top: #0d1627; --sky-bottom: #274953; --horizon: #7cad9777; }
+body[data-mood="sleep"] .window-view { --sky-top: #0c1020; --sky-bottom: #272d45; --horizon: #63698c22; }
+.window-moon, .skyline, .night-train { transition: opacity 2s; }
+body.has-rain .window-moon { opacity: .28; }
+body[data-mood="space"] .skyline-near, body[data-mood="aurora"] .skyline-near { opacity: .18; }
+body[data-mood="space"] .skyline-far, body[data-mood="aurora"] .skyline-far { opacity: .08; }
+body[data-mood="space"] .night-train, body[data-mood="sleep"] .night-train { opacity: 0; }
+body[data-mood="sleep"] .skyline { opacity: .25; }
+body[data-mood="sleep"] .window-moon { opacity: .5; }

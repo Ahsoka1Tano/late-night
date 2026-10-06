@@ -38,6 +38,13 @@ function isRainScene(mood = document.body.dataset.mood) {
 function paintWeather() {
   document.body.classList.toggle("has-rain", isRainScene());
   document.getElementById("rain-dial").hidden = !isRainScene();
+  const mood = document.body.dataset.mood;
+  document.getElementById("scene-caption").textContent = mood === "music" && musicRainEnabled
+    ? "TAPES INSIDE. RAIN OUTSIDE."
+    : { calm: "A SOFTER LIGHT. A SLOWER NIGHT.", music: "THE CITY IS KEEPING YOU COMPANY",
+        focus: "JUST YOU AND ONE SMALL THING", rain: "NOWHERE ELSE YOU NEED TO BE",
+        space: "THE CITY FALLS AWAY", sleep: "THE LAST LIGHTS ARE GOING OUT",
+        aurora: "SOMETHING QUIETLY EXTRAORDINARY" }[mood];
   if (isRainScene()) startRain();
   else stopRain();
 }
@@ -1586,6 +1593,45 @@ deskLamp.addEventListener("click", () => {
   localStorage.setItem("lateNight.deskLamp", on ? "1" : "0");
 });
 
+/* One deliberate gesture starts both layers; nothing autoplays on first visit. */
+const eveningToggle = document.getElementById("evening-toggle");
+function eveningIsPlaying() {
+  return document.body.dataset.mood === "music" && station === "tape"
+    && tapeRunning && musicRainEnabled && listening;
+}
+function paintEveningToggle() {
+  const playing = eveningIsPlaying();
+  eveningToggle.hidden = document.body.dataset.mood === "music" && station === "radio";
+  eveningToggle.textContent = playing ? "Ⅱ pause the evening" : "▶ lo-fi + rain";
+  eveningToggle.setAttribute("aria-pressed", String(playing));
+  eveningToggle.setAttribute("aria-label", playing ? "Pause the tape and rain together" : "Play a lo-fi tape and real rain together");
+}
+eveningToggle.addEventListener("click", () => {
+  if (eveningIsPlaying()) {
+    setTape(false);
+    listening = false;
+    localStorage.setItem("lateNight.listen", "0");
+    stopAmbience();
+  } else {
+    musicRainEnabled = true;
+    listening = true;
+    localStorage.setItem("lateNight.musicRain", "1");
+    localStorage.setItem("lateNight.listen", "1");
+    paintMusicRain();
+    setStation("tape");
+    setMood("music");
+    if (!tapeRunning) setTape(true);
+  }
+  paintEveningToggle();
+});
+// Also follow individual controls, recording failures and keyboard mood changes.
+const eveningObserver = new MutationObserver(paintEveningToggle);
+eveningObserver.observe(document.body, { attributes: true, attributeFilter: ["data-mood", "data-station"] });
+eveningObserver.observe(player, { attributes: true, attributeFilter: ["class"] });
+eveningObserver.observe(listenButton, { attributes: true, attributeFilter: ["aria-pressed"] });
+eveningObserver.observe(musicRainButton, { attributes: true, attributeFilter: ["aria-pressed"] });
+paintEveningToggle();
+
 /* --- something left in the room for whoever pokes around --- */
 const SECRET_WORD = "moon";
 
@@ -1597,7 +1643,6 @@ if (localStorage.getItem("lateNight.aurora") === "1") {
 
 document.addEventListener("keydown", (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
-  if (!windowView.hidden) return;
   if (/^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName || "")) return;
   if (e.key.length !== 1) return;
 
