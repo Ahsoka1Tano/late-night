@@ -332,3 +332,32 @@ test('city life pauses in a hidden tab, Space and when reduced motion changes', 
   await page.clock.runFor(20000);
   assert.deepEqual(await litApartments(page), still);
 });
+
+
+test('choosing a paused tape remembers it without starting audio', async t => {
+ const page = await openRoom(t);
+ await page.waitForFunction(() => document.querySelectorAll('#tape-choice option').length > 1);
+ const src = await page.locator('#tape-choice option').nth(1).getAttribute('value');
+ await page.locator('#tape-choice').selectOption(src);
+ assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length), 0);
+ await page.reload();
+ await page.waitForFunction(() => document.querySelectorAll('#tape-choice option').length > 1);
+ assert.equal(await page.locator('#tape-choice').inputValue(), src);
+ await page.locator('#player-play').click();
+ assert.equal(await page.evaluate(() => tapeAudio.src), src);
+});
+
+test('choosing a playing tape replaces only the music and preserves the rain', async t => {
+ const page = await openRoom(t);
+ await page.waitForFunction(() => document.querySelectorAll('#tape-choice option').length > 1);
+ await page.locator('#evening-toggle').click();
+ await page.clock.runFor(3000);
+ await page.evaluate(() => { window.originalRain = ambienceTrack; window.originalTape = tapeAudio; });
+ const src = await page.locator('#tape-choice option').nth(2).getAttribute('value');
+ await page.locator('#tape-choice').selectOption(src);
+ await page.clock.runFor(3000);
+ assert.equal(await page.evaluate(() => window.originalTape.paused), true);
+ assert.equal(await page.evaluate(() => ambienceTrack === window.originalRain && !ambienceTrack.paused), true);
+ assert.equal(await page.evaluate(() => tapeAudio.src), src);
+ assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length), 2);
+});

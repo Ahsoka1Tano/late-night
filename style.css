@@ -2118,3 +2118,7 @@ body[data-mood="sleep"] .night-flight { display: none; }
   .night-flight { display: none; }
   .skyline > span::after { animation: none !important; }
 }
+.tape-shelf { grid-row: 4; grid-column: 1 / -1; min-width: 0; padding-top: 10px; }
+.tape-shelf label { display: block; margin-bottom: 10px; color: #a19aaf; font-size: 8px; letter-spacing: .16em; }
+#tape-choice { display: block; width: 100%; min-height: 44px; padding: 10px 30px 10px 12px; border: 1px solid #b0b8d02b; border-radius: 10px; background: #161a27; color: #d5c9df; font: inherit; font-size: 11px; color-scheme: dark; cursor: pointer; }
+#tape-choice:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }

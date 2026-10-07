@@ -66,6 +66,10 @@ There is one more mood than the six you can see. It is not behind a button.
 
 ## Lo-fi + rain
 
+In Tape, **pick a tape for tonight** lets you choose a recording by name. The room
+remembers your selection. Choosing another tape while playing changes only the
+music; choosing one while paused leaves it paused. Rain and volume stay as you set them.
+
 Choose **Music**, press **play** on the tape (or start a Lofi Girl radio), then
 **add real rain**. Music and weather have independent volume sliders. Drizzle,
 steady rain and downpour work here too; changing weather leaves the music alone.

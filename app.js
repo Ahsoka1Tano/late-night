@@ -1135,9 +1135,23 @@ async function loadTapeRack() {
     }));
     const extra = (rack.extra || []).map((t) => ({ ...t, src: t.url }));
 
-    TAPES = [...shelf, ...extra];
-    tapeIndex = Math.floor(Math.random() * TAPES.length);
-    if (!tapeRunning) paintTape();
+    const current = TAPES[tapeIndex];
+    const rackTapes = [...shelf, ...extra];
+    if (!rackTapes.length) return;
+    if ((tapeRunning || tapeAudio || rememberedTape() === current.src)
+        && !rackTapes.some(tape => tape.src === current.src)) rackTapes.unshift(current);
+    TAPES = rackTapes;
+    const wanted = tapeRunning ? current.src : rememberedTape();
+    const restored = TAPES.findIndex(tape => tape.src === wanted);
+    tapeIndex = restored >= 0 ? restored : Math.floor(Math.random() * TAPES.length);
+    if (!tapeRunning && TAPES[tapeIndex].src !== current.src) {
+      ++tapeRequest;
+      clearInterval(fadeStep);
+      tapeAudio?.pause();
+      tapeAudio = null;
+    }
+    paintTapeShelf();
+    if (!tapeRunning && station === "tape") paintTape();
   } catch {
     // the one built-in tape will do
   }
@@ -1150,6 +1164,43 @@ let tapeIndex = Math.floor(Math.random() * TAPES.length);
 let tapeAudio = null;
 let fadeStep = null;
 let onSynth = false;
+let tapeRequest = 0;
+const tapeShelf = document.getElementById("tape-shelf");
+const tapeChoice = document.getElementById("tape-choice");
+
+function rememberedTape() {
+  try { return localStorage.getItem("lateNight.tape"); } catch { return null; }
+}
+function rememberTape() {
+  try { localStorage.setItem("lateNight.tape", TAPES[tapeIndex].src); } catch { /* Playback still works. */ }
+}
+function paintTapeShelf() {
+  tapeChoice.replaceChildren();
+  TAPES.forEach(tape => {
+    const option = document.createElement("option");
+    option.value = tape.src;
+    option.textContent = tape.title;
+    tapeChoice.append(option);
+  });
+  tapeChoice.value = TAPES[tapeIndex].src;
+}
+function chooseTape(src) {
+  const index = TAPES.findIndex(tape => tape.src === src);
+  if (index < 0) return;
+  ++tapeRequest;
+  clearInterval(fadeStep);
+  if (tapeAudio) tapeAudio.pause();
+  tapeAudio = null;
+  if (onSynth) stopSynth();
+  onSynth = false;
+  tapeIndex = index;
+  rememberTape();
+  paintTapeShelf();
+  paintTape();
+  if (tapeRunning) playTape();
+}
+tapeChoice.addEventListener("change", () => chooseTape(tapeChoice.value));
+paintTapeShelf();
 
 function paintTape() {
   const tape = TAPES[tapeIndex];
@@ -1182,20 +1233,22 @@ function loadTape() {
     tapeAudio.volume = 0;
 
     // if the archive is unreachable, the little synth takes over
+    const track = tapeAudio;
     tapeAudio.addEventListener("error", () => {
-      if (!tapeRunning) return;
+      if (track !== tapeAudio || !tapeRunning) return;
       onSynth = true;
       paintTape();
       startSynth();
     });
 
-    tapeAudio.addEventListener("ended", nextTape);
+    tapeAudio.addEventListener("ended", () => { if (track === tapeAudio && tapeRunning) nextTape(); });
   }
 
   tapeAudio.src = TAPES[tapeIndex].src;
 }
 
 function playTape() {
+  const request = ++tapeRequest;
   if (onSynth) {
     startSynth();
     return;
@@ -1203,6 +1256,7 @@ function playTape() {
 
   if (!tapeAudio || !tapeAudio.src) loadTape();
   tapeAudio.play().catch(() => {
+    if (request !== tapeRequest || !tapeRunning) return;
     onSynth = true;
     paintTape();
     startSynth();
@@ -1211,6 +1265,7 @@ function playTape() {
 }
 
 function pauseTape() {
+  ++tapeRequest;
   if (onSynth) {
     stopSynth();
     return;
@@ -1219,15 +1274,7 @@ function pauseTape() {
 }
 
 function nextTape() {
-  tapeIndex = (tapeIndex + 1) % TAPES.length;
-  paintTape();
-
-  if (onSynth || !tapeRunning) return;
-
-  loadTape();
-  tapeAudio.volume = 0;
-  tapeAudio.play().catch(() => {});
-  fadeAudio(tapeVolume, 2);
+  chooseTape(TAPES[(tapeIndex + 1) % TAPES.length].src);
 }
 
 /* the other side: Lofi Girl's own streams, played in her own player.
@@ -1297,6 +1344,7 @@ function setStation(next) {
   document.body.dataset.station = next;
   radioFrame.hidden = document.body.dataset.mood !== "music" || next !== "radio";
   radioDial.hidden = radioFrame.hidden;
+  tapeShelf.hidden = next !== "tape";
 
   stationButtons.forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.station === next);
