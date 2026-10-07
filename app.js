@@ -383,7 +383,7 @@ if (localStorage.getItem("lateNight.knowsKeys")) hint.classList.add("is-gone");
 document.addEventListener("keydown", (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
 
-  const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName || "");
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "");
   if (typing || document.activeElement?.closest(".journal-history")) return;
 
   const number = Number(e.key);
@@ -1167,6 +1167,18 @@ let onSynth = false;
 let tapeRequest = 0;
 const tapeShelf = document.getElementById("tape-shelf");
 const tapeChoice = document.getElementById("tape-choice");
+const tapeKeep = document.getElementById("tape-keep");
+const tapeFilter = document.getElementById("tape-filter");
+const tapeKeptNote = document.getElementById("tape-kept-note");
+let savedTapesOnly = false;
+const keptTapes = new Set(readKeptTapes());
+
+function readKeptTapes() {
+  try {
+    const value = JSON.parse(localStorage.getItem("lateNight.keptTapes") || "[]");
+    return Array.isArray(value) ? value.filter(src => typeof src === "string") : [];
+  } catch { return []; }
+}
 
 function rememberedTape() {
   try { return localStorage.getItem("lateNight.tape"); } catch { return null; }
@@ -1175,14 +1187,24 @@ function rememberTape() {
   try { localStorage.setItem("lateNight.tape", TAPES[tapeIndex].src); } catch { /* Playback still works. */ }
 }
 function paintTapeShelf() {
+  const count = TAPES.filter(tape => keptTapes.has(tape.src)).length;
+  if (!count) savedTapesOnly = false;
   tapeChoice.replaceChildren();
   TAPES.forEach(tape => {
+    if (savedTapesOnly && !keptTapes.has(tape.src) && tape.src !== TAPES[tapeIndex].src) return;
     const option = document.createElement("option");
     option.value = tape.src;
-    option.textContent = tape.title;
+    option.textContent = `${keptTapes.has(tape.src) ? "♥ " : ""}${tape.title}`;
     tapeChoice.append(option);
   });
   tapeChoice.value = TAPES[tapeIndex].src;
+  const kept = keptTapes.has(TAPES[tapeIndex].src);
+  tapeKeep.textContent = kept ? "♥ kept" : "♡ keep";
+  tapeKeep.setAttribute("aria-pressed", String(kept));
+  tapeKeep.setAttribute("aria-label", kept ? "Remove this tape from saved tapes" : "Save this tape");
+  tapeFilter.textContent = `saved tapes · ${count}`;
+  tapeFilter.disabled = count === 0;
+  tapeFilter.setAttribute("aria-pressed", String(savedTapesOnly));
 }
 function chooseTape(src) {
   const index = TAPES.findIndex(tape => tape.src === src);
@@ -1194,12 +1216,29 @@ function chooseTape(src) {
   if (onSynth) stopSynth();
   onSynth = false;
   tapeIndex = index;
+  tapeKeptNote.textContent = "";
   rememberTape();
   paintTapeShelf();
   paintTape();
   if (tapeRunning) playTape();
 }
 tapeChoice.addEventListener("change", () => chooseTape(tapeChoice.value));
+tapeKeep.addEventListener("click", () => {
+  const src = TAPES[tapeIndex].src;
+  if (keptTapes.has(src)) keptTapes.delete(src);
+  else keptTapes.add(src);
+  try {
+    localStorage.setItem("lateNight.keptTapes", JSON.stringify([...keptTapes]));
+    tapeKeptNote.textContent = keptTapes.has(src) ? "kept on this device" : "removed from saved tapes";
+  } catch {
+    tapeKeptNote.textContent = "changes kept for this visit · device storage unavailable";
+  }
+  paintTapeShelf();
+});
+tapeFilter.addEventListener("click", () => {
+  savedTapesOnly = !savedTapesOnly;
+  paintTapeShelf();
+});
 paintTapeShelf();
 
 function paintTape() {
@@ -1274,7 +1313,9 @@ function pauseTape() {
 }
 
 function nextTape() {
-  chooseTape(TAPES[(tapeIndex + 1) % TAPES.length].src);
+  const shelf = savedTapesOnly ? TAPES.filter(tape => keptTapes.has(tape.src)) : TAPES;
+  const current = shelf.findIndex(tape => tape.src === TAPES[tapeIndex].src);
+  if (shelf.length) chooseTape(shelf[(current + 1) % shelf.length].src);
 }
 
 /* the other side: Lofi Girl's own streams, played in her own player.
@@ -1733,7 +1774,7 @@ if (localStorage.getItem("lateNight.aurora") === "1") {
 
 document.addEventListener("keydown", (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
-  if (/^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName || "")) return;
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "")) return;
   if (e.key.length !== 1) return;
 
   typed = (typed + e.key.toLowerCase()).slice(-SECRET_WORD.length);

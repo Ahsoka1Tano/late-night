@@ -41,6 +41,9 @@ avoid changes whose only purpose is filling a day.
 - [x] real rain recordings, one per intensity, with an honest retry when unavailable
 
 ## Music mood
+- [x] choose a recording by name and remember the selected tape between visits
+- [x] save favourite tapes locally and let Next cycle through the saved collection
+- [x] changing recordings preserves rain; late playback failures cannot replace a new tape
 - [x] lo-fi player bar: play / pause, next, tape title, a small moving wave
 - [x] real tracks streamed from the Internet Archive, synth as a fallback
 - [x] a radio station: Lofi Girl's live stream

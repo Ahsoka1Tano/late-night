@@ -361,3 +361,41 @@ test('choosing a playing tape replaces only the music and preserves the rain', a
  assert.equal(await page.evaluate(() => tapeAudio.src), src);
  assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length), 2);
 });
+
+
+test('saved tapes persist, filter without playback, and Next follows the saved shelf', async t => {
+ const page = await openRoom(t);
+ await page.waitForFunction(() => document.querySelectorAll('#tape-choice option').length > 2);
+ const values = await page.locator('#tape-choice option').evaluateAll(options => options.slice(0,2).map(option => option.value));
+ for (const src of values) {
+  await page.locator('#tape-choice').selectOption(src);
+  await page.locator('#tape-keep').click();
+ }
+ await page.reload();
+ await page.waitForFunction(() => document.getElementById('tape-filter').textContent.includes('2'));
+ await page.locator('#tape-filter').click();
+ assert.equal(await page.locator('#tape-choice option').count(), 2);
+ assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length), 0);
+ await page.locator('#player-next').click();
+ assert.equal(await page.locator('#tape-choice').inputValue(), values[0]);
+ await page.locator('#tape-keep').click();
+ await page.locator('#player-next').click();
+ assert.equal(await page.locator('#tape-choice').inputValue(), values[1]);
+ await page.locator('#tape-keep').click();
+ assert.equal(await page.locator('#tape-filter').isDisabled(), true);
+ assert.ok(await page.locator('#tape-choice option').count() > 2);
+});
+
+test('a late rejected play from an old tape cannot start synthetic fallback', async t => {
+ const page = await openRoom(t);
+ await page.waitForFunction(() => document.querySelectorAll('#tape-choice option').length > 2);
+ await page.evaluate(() => { window.deferAudio = true; });
+ await page.locator('#player-play').click();
+ await page.evaluate(() => { window.oldTape = tapeAudio; window.deferAudio = false; });
+ const src = await page.locator('#tape-choice option').nth(1).getAttribute('value');
+ await page.locator('#tape-choice').selectOption(src);
+ await page.evaluate(() => window.oldTape.rejectPlay(new Error('late failure')));
+ assert.equal(await page.evaluate(() => onSynth), false);
+ assert.equal(await page.evaluate(() => tapeAudio.src), src);
+ assert.equal(await page.evaluate(() => audioCtx), null);
+});
