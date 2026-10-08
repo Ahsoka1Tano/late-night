@@ -95,7 +95,9 @@ avoid changes whose only purpose is filling a day.
 - [x] occasional flight across the window and softly glowing rooftop beacons
 - [x] a detailed four-car night express on an elevated railway, with warm windows and a headlight
 - [x] visible official radio, accessible inactive panels and responsive desk layout
-- [ ] another view from the window: rooftops, mountains or the last café open
+- [x] another view from the window: moonlit mountains and a quiet lake
+- [x] the landscape is remembered independently of mood and audio playback
+- [ ] a third view: rooftops or the last café open
 - polish, animation, micro-interactions
 - [x] a proper pass over the phone layout: wrapping, thumb-sized controls
 - new atmospheres and phrases

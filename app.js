@@ -30,6 +30,8 @@ const moodLine = document.getElementById("mood-line");
 const moodButtons = document.querySelectorAll(".mood");
 let moodLineTimer = null;
 let musicRainEnabled = localStorage.getItem("lateNight.musicRain") === "1";
+let windowScene = "city";
+try { if (localStorage.getItem("lateNight.view") === "mountains") windowScene = "mountains"; } catch { /* Keep the city. */ }
 
 function isRainScene(mood = document.body.dataset.mood) {
   return mood === "rain" || (mood === "music" && musicRainEnabled);
@@ -38,15 +40,24 @@ function isRainScene(mood = document.body.dataset.mood) {
 function paintWeather() {
   document.body.classList.toggle("has-rain", isRainScene());
   document.getElementById("rain-dial").hidden = !isRainScene();
+  paintSceneCaption();
+  if (isRainScene()) startRain();
+  else stopRain();
+}
+
+function paintSceneCaption() {
   const mood = document.body.dataset.mood;
+  if (windowScene === "mountains") {
+    document.getElementById("scene-caption").textContent = isRainScene()
+      ? "RAIN ON THE GLASS. PEAKS IN THE DISTANCE." : "A LITTLE FURTHER FROM EVERYTHING.";
+    return;
+  }
   document.getElementById("scene-caption").textContent = mood === "music" && musicRainEnabled
     ? "TAPES INSIDE. RAIN OUTSIDE."
     : { calm: "A SOFTER LIGHT. A SLOWER NIGHT.", music: "THE CITY IS KEEPING YOU COMPANY",
         focus: "JUST YOU AND ONE SMALL THING", rain: "NOWHERE ELSE YOU NEED TO BE",
         space: "THE CITY FALLS AWAY", sleep: "THE LAST LIGHTS ARE GOING OUT",
         aurora: "SOMETHING QUIETLY EXTRAORDINARY" }[mood];
-  if (isRainScene()) startRain();
-  else stopRain();
 }
 
 function setMood(mood, { save = true } = {}) {
@@ -1697,7 +1708,7 @@ function syncCityLife() {
   clearTimeout(cityLightsTimer);
   cityLightsTimer = null;
   const mood = document.body.dataset.mood;
-  const paused = document.hidden || cityMotion.matches || mood === "space" || mood === "aurora";
+  const paused = document.hidden || cityMotion.matches || windowScene !== "city" || mood === "space" || mood === "aurora";
   document.body.classList.toggle("city-is-paused", paused);
   if (paused) return;
   cityLightsTimer = setTimeout(() => {
@@ -1712,6 +1723,24 @@ function syncCityLife() {
 }
 document.addEventListener("visibilitychange", syncCityLife);
 cityMotion.addEventListener("change", syncCityLife);
+
+function setWindowScene(scene, { save = true } = {}) {
+  windowScene = scene === "mountains" ? "mountains" : "city";
+  document.body.dataset.view = windowScene;
+  document.querySelectorAll(".view-switch button").forEach(button => {
+    button.setAttribute("aria-pressed", String(button.dataset.view === windowScene));
+  });
+  windowView.setAttribute("aria-label", windowScene === "mountains" ? "Your mountain window" : "Your night city window");
+  document.getElementById("window-whisper").textContent = windowScene === "mountains" ? "let the world wait." : "let the city carry on.";
+  paintSceneCaption();
+  syncCityLife();
+  if (save) {
+    try { localStorage.setItem("lateNight.view", windowScene); } catch { /* The current view still works. */ }
+  }
+}
+document.querySelectorAll(".view-switch button").forEach(button => {
+  button.addEventListener("click", () => setWindowScene(button.dataset.view));
+});
 
 function setDeskLamp(on) {
   windowView.classList.toggle("lamp-off", !on);
@@ -1786,4 +1815,5 @@ document.addEventListener("keydown", (e) => {
   setMood("aurora");
 });
 
+setWindowScene(windowScene, { save: false });
 setMood(localStorage.getItem("lateNight.mood") || "music", { save: false });

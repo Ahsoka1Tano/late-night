@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=c68b8450f71e" />
+  <link rel="stylesheet" href="style.css?v=bfa7386e1be2" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -39,11 +39,33 @@
 
     <div class="evening-layout">
       <section class="window-view" id="window-view" aria-label="Your night window">
+        <div class="view-switch" aria-label="View from the window">
+          <span>THE VIEW</span><div>
+            <button type="button" data-view="city" aria-pressed="true">City</button>
+            <button type="button" data-view="mountains" aria-pressed="false">Mountains</button>
+          </div>
+        </div>
     <div class="window-outside" id="window-outside">
       <canvas class="stars-layer" id="stars" aria-hidden="true"></canvas>
       <canvas class="rain-layer" id="rain" aria-hidden="true"></canvas>
       <div class="window-moon" aria-hidden="true"></div>
       <div class="window-clouds" aria-hidden="true"></div>
+      <div class="mountain-view" aria-hidden="true">
+        <svg viewBox="0 0 1200 500" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="ridge-far" x2="0" y2="1"><stop stop-color="#777b9b"/><stop offset="1" stop-color="#313e60"/></linearGradient>
+            <linearGradient id="ridge-near" x2="0" y2="1"><stop stop-color="#374663"/><stop offset="1" stop-color="#14263f"/></linearGradient>
+            <g id="night-pine"><path d="M0 0l-12 24h7l-14 21h12l-17 25H-3v12h6V70h21L7 45h12L5 24h7Z" fill="#0d1b2d"/></g>
+          </defs>
+          <path d="M0 246 78 205 124 230 223 120 272 155 349 88 420 170 485 140 565 215 650 112 706 144 798 42 849 83 902 169 965 125 1050 205 1108 150 1200 228V500H0Z" fill="url(#ridge-far)"/>
+          <path d="m223 120-37 67 37-18 18 20 15-41zm126-32-31 67 30-22 22 15 18-11zm449-46-53 79 40-19 17 17 18-10 28 34-27-60Z" fill="#b8bbd0" opacity=".42"/>
+          <path d="M0 352 90 282 143 305 243 216 324 273 398 198 471 271 526 255 613 324 694 250 753 274 851 165 914 246 979 224 1082 313 1162 261 1200 289V500H0Z" fill="url(#ridge-near)"/>
+          <path d="m398 198-28 63 31-23 21 16 20-3zm453-33-38 74 39-30 24 17 24-4Z" fill="#8f9bb5" opacity=".3"/>
+          <path d="M0 412Q100 348 203 397T401 389T625 416T856 378T1081 390T1200 383V500H0Z" fill="#17273d"/>
+          <g opacity=".9"><use href="#night-pine" x="23" y="400"/><use href="#night-pine" x="57" y="414"/><use href="#night-pine" x="103" y="396"/><use href="#night-pine" x="154" y="419"/><use href="#night-pine" x="1003" y="418"/><use href="#night-pine" x="1055" y="393"/><use href="#night-pine" x="1096" y="405"/><use href="#night-pine" x="1157" y="380"/><use href="#night-pine" x="1190" y="411"/></g>
+        </svg>
+      </div>
+      <div class="mountain-lake" aria-hidden="true"></div>
       <div class="night-flight" aria-hidden="true">
         <svg viewBox="0 0 32 16"><path d="M2 7 12 6 8 1 11 1 19 6 29 7 31 8 29 9 19 10 11 15 8 15 12 10 2 9Z" /></svg>
         <span></span>
@@ -61,7 +83,7 @@
       <div class="night-train" aria-hidden="true"><span class="train-beam"></span><img src="assets/night-express.svg?v=042f6ba1a95c" alt="" width="660" height="80" /></div>
       <div class="window-crossbar" aria-hidden="true"></div>
       <div class="window-time"><p>NO PLACE TO BE. NOTHING TO PROVE.</p>
-        <time id="window-clock">--:--</time><p>let the city carry on.</p></div>
+        <time id="window-clock">--:--</time><p id="window-whisper">let the city carry on.</p></div>
     </div>
     <div class="window-sill" aria-hidden="true"></div>
     <div class="desk-glow" aria-hidden="true"></div>
@@ -198,6 +220,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=44b25946af7c"></script>
+  <script src="app.js?v=179a3431339e"></script>
 </body>
 </html>

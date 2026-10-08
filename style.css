@@ -2130,3 +2130,26 @@ body[data-mood="sleep"] .night-flight { display: none; }
 .tape-tools button:disabled { opacity: .4; cursor: default; }
 .tape-kept-note { margin-top: 8px; font-size: 10px; color: #aba0b7; line-height: 1.6; }
 .tape-kept-note:empty { display: none; }
+/* A different view, from the same little room. */
+.view-switch { position: absolute; top: 12px; left: 7%; right: 7%; z-index: 8; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.view-switch > span { font-size: 8px; letter-spacing: .18em; color: #938b9f; }
+.view-switch > div { display: flex; gap: 3px; padding: 3px; border: 1px solid #b0b8d01a; border-radius: 999px; background: #10131d; }
+.view-switch button { min-height: 36px; padding: 8px 14px; border: 0; border-radius: 999px; background: none; color: #a29aae; font: inherit; font-size: 10px; cursor: pointer; }
+.view-switch button[aria-pressed='true'] { background: #a698bc20; color: #e1d7ec; }
+.view-switch button:hover { color: #e1d7ec; }
+.view-switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.window-outside { top: 13%; }
+.mountain-view { position: absolute; inset: auto 0 0; height: 57%; z-index: 1; opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity 1.8s ease, transform 2.4s ease; }
+.mountain-view svg { display: block; width: 100%; height: 100%; }
+.mountain-lake { position: absolute; inset: auto 0 0; height: 14%; z-index: 2; opacity: 0; background: linear-gradient(#2e4058, #15263c); pointer-events: none; transition: opacity 1.8s; }
+body[data-view='mountains'] .mountain-view { opacity: 1; transform: none; }
+body[data-view='mountains'] .mountain-lake { opacity: 1; }
+body[data-view='mountains'] .skyline,
+body[data-view='mountains'] .night-train,
+body[data-view='mountains'] .railway-bridge { opacity: 0; pointer-events: none; }
+body[data-view='mountains'] .night-flight { display: none; }
+@media (max-width: 760px) {
+ .window-outside { top: 17%; }
+ .view-switch { top: 9px; }
+ .view-switch button { min-height: 38px; padding: 8px 12px; }
+}

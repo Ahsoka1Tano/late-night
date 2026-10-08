@@ -399,3 +399,47 @@ test('a late rejected play from an old tape cannot start synthetic fallback', as
  assert.equal(await page.evaluate(() => tapeAudio.src), src);
  assert.equal(await page.evaluate(() => audioCtx), null);
 });
+
+
+test('changing the window view preserves music, rain, notes and the official radio', async t => {
+ const page = await openRoom(t);
+ await page.locator('#evening-toggle').click();
+ await page.clock.runFor(3000);
+ await page.locator('#journal-note').fill('Looking beyond the city.');
+ await page.evaluate(() => { window.viewTape = tapeAudio; window.viewRain = ambienceTrack; });
+ await page.locator('.view-switch [data-view="mountains"]').click();
+ assert.equal(await page.evaluate(() => tapeAudio === window.viewTape && ambienceTrack === window.viewRain), true);
+ assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length), 2);
+ assert.equal(await page.locator('body').getAttribute('data-mood'), 'music');
+ assert.equal(await page.locator('#journal-note').inputValue(), 'Looking beyond the city.');
+ await page.locator('[data-station="radio"]').click();
+ await page.locator('#radio-frame iframe').evaluate(el => { el.dataset.viewContinuity = 'yes'; });
+ await page.locator('.view-switch [data-view="city"]').click();
+ assert.equal(await page.locator('#radio-frame iframe').getAttribute('data-view-continuity'), 'yes');
+});
+
+test('the mountain view is remembered and changing moods does not change it', async t => {
+ const page = await openRoom(t);
+ await page.locator('.view-switch [data-view="mountains"]').click();
+ await page.reload();
+ assert.equal(await page.locator('body').getAttribute('data-view'), 'mountains');
+ assert.equal(await page.locator('.view-switch [data-view="mountains"]').getAttribute('aria-pressed'), 'true');
+ await page.locator('.mood[data-mood="focus"]').click();
+ assert.equal(await page.locator('body').getAttribute('data-view'), 'mountains');
+ assert.equal(await page.locator('#focus-toggle').isVisible(), true);
+});
+
+test('both window views fit narrow phones and desktop without covering the clock', async t => {
+ for (const width of [320,1280]) {
+  const page = await openRoom(t,width);
+  await page.locator('.view-switch [data-view="mountains"]').click();
+  const controls = await page.locator('.view-switch').boundingBox();
+  const clock = await page.locator('.window-time').boundingBox();
+  assert.ok(controls.x >= 0 && controls.x + controls.width <= width);
+  assert.ok(controls.y + controls.height <= clock.y, 'view controls stay above the clock');
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  if (process.env.ATMOSPHERE_PREVIEW_DIR) {
+   await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'mountains-'+width+'.png'),animations:'disabled'});
+  }
+ }
+});

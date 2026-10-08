@@ -11,6 +11,10 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 
 ## One little room
 
+Use **The view → City / Mountains** above the window to choose the landscape.
+The room remembers it separately from your mood. Changing the view preserves
+playing music, real rain, the radio, your timer and journal.
+
 The window is the home screen. Pick a mood above it: the city, lamp, clock and
 weather share the page with your music controls. On a wide screen the player sits
 beside the window; on a phone it sits below. There is no separate view to enter.
