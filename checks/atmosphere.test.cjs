@@ -443,3 +443,23 @@ test('both window views fit narrow phones and desktop without covering the clock
   }
  }
 });
+
+
+test('mountain stars follow the weather and reduced motion without starting audio', async t => {
+ const page = await openRoom(t,1280,'no-preference');
+ await page.locator('.view-switch [data-view="mountains"]').click();
+ assert.equal(await page.evaluate(() => starsFrame !== null), true);
+ assert.equal(await page.evaluate(() => cityLightsTimer), null);
+ assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length), 0);
+ await page.locator('#music-rain').click();
+ assert.equal(await page.evaluate(() => starsFrame), null);
+ await page.locator('#music-rain').click();
+ assert.equal(await page.evaluate(() => starsFrame !== null), true);
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.waitForFunction(() => starsFrame === null);
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.waitForFunction(() => starsFrame !== null);
+ await page.locator('.view-switch [data-view="city"]').click();
+ assert.equal(await page.evaluate(() => starsFrame), null);
+ assert.equal(await page.locator('body').getAttribute('data-view'),'city');
+});

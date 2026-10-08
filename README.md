@@ -14,6 +14,11 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 Use **The view → City / Mountains** above the window to choose the landscape.
 The room remembers it separately from your mood. Changing the view preserves
 playing music, real rain, the radio, your timer and journal.
+The mountain window has layered snowy ridges, a pine shore, low mist and moonlight
+on the lake. Stars appear in clear weather and fade when rain arrives. The scene
+respects reduced motion and pauses its movement in a hidden tab.
+
+![The mountain window](assets/mountain-window.png)
 
 The window is the home screen. Pick a mood above it: the city, lamp, clock and
 weather share the page with your music controls. On a wide screen the player sits

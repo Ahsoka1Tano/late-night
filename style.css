@@ -2153,3 +2153,19 @@ body[data-view='mountains'] .night-flight { display: none; }
  .view-switch { top: 9px; }
  .view-switch button { min-height: 38px; padding: 8px 12px; }
 }
+/* Moonlight on the lake, with a low veil of mist along the shore. */
+.mountain-lake::before { content: ''; position: absolute; inset: 0 7% 0 61%; background: repeating-linear-gradient(0deg, transparent 0 4px, #c9c8dd55 4px 5px, transparent 5px 8px); mask-image: radial-gradient(ellipse 50% 85% at 50% 0, #0008, transparent 80%); opacity: .65; animation: lake-shimmer 17s ease-in-out infinite alternate; }
+.mountain-lake::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent 0 6px, #91a3bb0a 6px 7px); }
+.mountain-shore { position: absolute; bottom: 7%; left: 0; width: 100%; height: 15%; z-index: 2; opacity: 0; pointer-events: none; transition: opacity 1.8s; }
+.mountain-shore svg { display: block; width: 100%; height: 100%; }
+.mountain-mist { position: absolute; bottom: 12%; left: -15%; width: 130%; height: 22%; z-index: 2; opacity: 0; pointer-events: none; background: radial-gradient(ellipse 65% 22% at 45% 52%, #a5afc635, transparent 75%), radial-gradient(ellipse 35% 12% at 78% 65%, #b5c1d026, transparent 80%); filter: blur(6px); transition: opacity 2s; animation: valley-mist 36s ease-in-out infinite alternate; }
+body[data-view='mountains'] .mountain-shore { opacity: 1; }
+body[data-view='mountains'] .mountain-mist { opacity: .75; }
+body[data-view='mountains'] .stars-layer { mask-image: linear-gradient(#000 0 35%, transparent 62%); }
+body[data-view='mountains'].has-rain .mountain-lake::before { opacity: .15; }
+body[data-view='mountains'].has-rain .mountain-mist { opacity: 1; }
+body[data-view='city'] .mountain-lake::before, body[data-view='city'] .mountain-mist { animation-play-state: paused; }
+.city-is-hidden .mountain-lake::before, .city-is-hidden .mountain-mist { animation-play-state: paused; }
+@keyframes lake-shimmer { from { transform: translateX(-2%) scaleX(.9); } to { transform: translateX(3%) scaleX(1.1); } }
+@keyframes valley-mist { from { transform: translateX(-3%); } to { transform: translateX(3%); } }
+@media (prefers-reduced-motion: reduce) { .mountain-lake::before, .mountain-mist { animation: none !important; } }

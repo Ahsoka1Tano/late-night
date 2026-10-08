@@ -37,12 +37,21 @@ function isRainScene(mood = document.body.dataset.mood) {
   return mood === "rain" || (mood === "music" && musicRainEnabled);
 }
 
+function hasStarSky(mood = document.body.dataset.mood) {
+  return mood === "space" || mood === "aurora" || (windowScene === "mountains" && !isRainScene(mood));
+}
+function syncWindowSky() {
+  if (!document.hidden && !cityMotion.matches && hasStarSky()) startStars();
+  else stopStars();
+}
+
 function paintWeather() {
   document.body.classList.toggle("has-rain", isRainScene());
   document.getElementById("rain-dial").hidden = !isRainScene();
   paintSceneCaption();
   if (isRainScene()) startRain();
   else stopRain();
+  syncWindowSky();
 }
 
 function paintSceneCaption() {
@@ -98,9 +107,6 @@ function setMood(mood, { save = true } = {}) {
   paintWeather();
 
   swapAmbience();
-
-  if (mood === "space" || mood === "aurora") startStars();
-  else stopStars();
 
   // nothing plays on in a room you have left
   if (mood !== "music") {
@@ -336,7 +342,7 @@ document.addEventListener("visibilitychange", () => {
   }
 
   if (isRainScene(mood)) startRain();
-  if (mood === "space" || mood === "aurora") startStars();
+  syncWindowSky();
 });
 
 
@@ -955,7 +961,7 @@ function drawStars() {
 }
 
 function startStars() {
-  if (!calmEnough || starsFrame !== null) return;
+  if (cityMotion.matches || starsFrame !== null) return;
   sizeStars();
   if (!stars.length) seedStars();
   starsCanvas.classList.add("is-on");
@@ -1706,6 +1712,7 @@ let cityLightsTimer = null;
 
 function syncCityLife() {
   clearTimeout(cityLightsTimer);
+  document.body.classList.toggle("city-is-hidden", document.hidden);
   cityLightsTimer = null;
   const mood = document.body.dataset.mood;
   const paused = document.hidden || cityMotion.matches || windowScene !== "city" || mood === "space" || mood === "aurora";
@@ -1722,7 +1729,7 @@ function syncCityLife() {
   }, 6500 + Math.random() * 3500);
 }
 document.addEventListener("visibilitychange", syncCityLife);
-cityMotion.addEventListener("change", syncCityLife);
+cityMotion.addEventListener("change", () => { syncCityLife(); syncWindowSky(); });
 
 function setWindowScene(scene, { save = true } = {}) {
   windowScene = scene === "mountains" ? "mountains" : "city";
@@ -1734,6 +1741,7 @@ function setWindowScene(scene, { save = true } = {}) {
   document.getElementById("window-whisper").textContent = windowScene === "mountains" ? "let the world wait." : "let the city carry on.";
   paintSceneCaption();
   syncCityLife();
+  syncWindowSky();
   if (save) {
     try { localStorage.setItem("lateNight.view", windowScene); } catch { /* The current view still works. */ }
   }
