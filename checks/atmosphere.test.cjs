@@ -490,3 +490,39 @@ test('changing desk lighting preserves the view, tape and real rain', async t =>
  assert.equal(await page.locator('body').getAttribute('data-view'),'mountains');
  assert.equal(await page.locator('body').getAttribute('data-mood'),'music');
 });
+
+
+test('the dimmer changes visible lamp light, restores its level and keeps an off lamp off', async t => {
+ const page = await openRoom(t);
+ await page.locator('.light-tones [data-light="moon"]').click();
+ await page.locator('#light-brightness').fill('35');
+ await page.locator('.desk-glow').evaluate(el => el.getAnimations().forEach(animation => animation.finish()));
+ assert.equal(await page.locator('#light-level').textContent(),'35%');
+ assert.ok(Math.abs(await page.locator('.desk-glow').evaluate(el => Number(getComputedStyle(el).opacity)) - .35) < .001);
+ await page.locator('#desk-lamp').click();
+ assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'),'false');
+ await page.locator('.desk-glow').evaluate(el => el.getAnimations().forEach(animation => animation.finish()));
+ assert.equal(await page.locator('.desk-glow').evaluate(el => getComputedStyle(el).opacity),'0');
+ await page.reload();
+ assert.equal(await page.locator('#light-brightness').inputValue(),'35');
+ assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'),'false');
+ assert.equal(await page.locator('#window-view').getAttribute('data-light'),'moon');
+ await page.locator('#light-brightness').fill('80');
+ assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'),'true');
+ assert.equal(await page.locator('#light-level').textContent(),'80%');
+});
+
+test('light controls fit a narrow phone and remain usable with the keyboard', async t => {
+ const page = await openRoom(t,320);
+ const slider = page.locator('#light-brightness');
+ await slider.scrollIntoViewIfNeeded();
+ const box = await slider.boundingBox();
+ assert.ok(box.x >= 0 && box.x + box.width <= 320);
+ await slider.focus();
+ await page.keyboard.press('ArrowLeft');
+ assert.equal(await slider.inputValue(),'69');
+ assert.equal(await page.locator('body').getAttribute('data-mood'),'music');
+ if (process.env.ATMOSPHERE_PREVIEW_DIR) {
+  await page.locator('.room-light').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'desk-light-320.png'),animations:'disabled'});
+ }
+});

@@ -87,6 +87,8 @@ avoid changes whose only purpose is filling a day.
 ## Always
 - [x] the window seat: illustrated night city, live clock, rain and passing train
 - [x] interactive desk lamp, warm room light and a steaming cup
+- [x] remembered amber, moon and dim lamp tones
+- [x] keyboard-accessible brightness control and a faint lamp reflection in the glass
 - [x] one continuous room: window, mood controls, audio and journal on the same page
 - [x] start and pause a lo-fi tape with real rain directly at the window
 - [x] the same sky changes warmth, light and city visibility with the chosen mood

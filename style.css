@@ -2189,3 +2189,12 @@ body[data-view='city'] .mountain-lake::before, body[data-view='city'] .mountain-
 .light-tones button[aria-pressed='true'] { color: #e6d9ed; border-color: #bca5d06b; background: #c98dff0f; }
 .light-tones button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .room-light > p { margin-top: 11px; font-size: 10px; color: #968ba3; line-height: 1.6; }
+/* A dimmer for the actual lamp, including its faint reflection in the glass. */
+.desk-glow { opacity: calc(var(--light-multiplier) * var(--lamp-strength, 1)); }
+.lamp-shade { filter: brightness(calc(.6 + var(--lamp-strength, 1) * .4)); }
+.lamp-reflection { position: absolute; bottom: 3%; left: 3%; width: 85px; height: 115px; z-index: 2; opacity: calc(var(--lamp-strength, 1) * var(--light-multiplier) * .12); pointer-events: none; background: radial-gradient(ellipse 55% 25% at 50% 38%, var(--lamp-edge), transparent 85%); filter: blur(6px); transition: opacity 1s; }
+.lamp-off .lamp-reflection { opacity: 0; }
+.light-brightness { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; color: #a79cae; font-size: 10px; }
+.light-brightness output { color: #c2b4ce; font-variant-numeric: tabular-nums; }
+.light-slider { display: block; width: 100%; height: 36px; margin-top: 4px; accent-color: #baa2cc; cursor: pointer; }
+.light-slider:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 8px; }

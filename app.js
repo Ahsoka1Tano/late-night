@@ -1786,6 +1786,28 @@ function setLightTone(tone, { save = true, turnOn = true } = {}) {
 lightButtons.forEach(button => button.addEventListener("click", () => setLightTone(button.dataset.light)));
 setLightTone(lightTone, { save: false, turnOn: false });
 
+const lightSlider = document.getElementById("light-brightness");
+const lightLevel = document.getElementById("light-level");
+let lightStrength = 70;
+try {
+  const saved = localStorage.getItem("lateNight.lightStrength");
+  if (saved !== null && Number.isFinite(Number(saved))) lightStrength = Math.min(100, Math.max(10, Number(saved)));
+} catch { /* Use the gentle default. */ }
+function setLightStrength(value, { save = true, turnOn = true } = {}) {
+  lightStrength = Number.isFinite(value) ? Math.min(100, Math.max(10, value)) : 70;
+  windowView.style.setProperty("--lamp-strength", String(lightStrength / 100));
+  lightSlider.value = String(lightStrength);
+  lightLevel.value = `${lightStrength}%`;
+  lightSlider.setAttribute("aria-valuetext", `${lightStrength} percent`);
+  if (turnOn) setDeskLamp(true);
+  if (save) {
+    rememberLight("lateNight.lightStrength", lightStrength);
+    if (turnOn) rememberLight("lateNight.deskLamp", "1");
+  }
+}
+lightSlider.addEventListener("input", () => setLightStrength(Number(lightSlider.value)));
+setLightStrength(lightStrength, { save: false, turnOn: false });
+
 /* One deliberate gesture starts both layers; nothing autoplays on first visit. */
 const eveningToggle = document.getElementById("evening-toggle");
 function eveningIsPlaying() {

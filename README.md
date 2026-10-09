@@ -24,6 +24,10 @@ The window is the home screen. Pick a mood above it: the city, lamp, clock and
 weather share the page with your music controls. On a wide screen the player sits
 beside the window; on a phone it sits below. There is no separate view to enter.
 Click the lamp to change its warm light. Your last mood and lamp choice are remembered.
+In **Desk light**, choose **amber**, **moon** or **dim**, then adjust brightness.
+The lamp's glow, shade and faint reflection follow your settings. Choosing a tone
+or moving the dimmer turns the light on; clicking the lamp switches it off again.
+Tone, brightness and the off state are remembered independently of your mood and view.
 New visitors arrive in Music; audio starts only after a user action or browser permission.
 
 The journal and previous nights are just below the room. The official Lofi Girl
