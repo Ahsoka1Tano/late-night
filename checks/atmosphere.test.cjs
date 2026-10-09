@@ -463,3 +463,30 @@ test('mountain stars follow the weather and reduced motion without starting audi
  assert.equal(await page.evaluate(() => starsFrame), null);
  assert.equal(await page.locator('body').getAttribute('data-view'),'city');
 });
+
+
+test('desk light tone survives reload and preserves the switched-off lamp', async t => {
+ const page = await openRoom(t);
+ await page.locator('.light-tones [data-light="moon"]').click();
+ await page.locator('#desk-lamp').click();
+ await page.reload();
+ assert.equal(await page.locator('#window-view').getAttribute('data-light'),'moon');
+ assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'),'false');
+ assert.equal(await page.locator('.light-tones [data-light="moon"]').getAttribute('aria-pressed'),'true');
+ await page.locator('.light-tones [data-light="dim"]').click();
+ assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'),'true');
+ assert.equal(await page.locator('#light-state').textContent(),'dim · on');
+});
+
+test('changing desk lighting preserves the view, tape and real rain', async t => {
+ const page = await openRoom(t);
+ await page.locator('#evening-toggle').click();
+ await page.clock.runFor(3000);
+ await page.locator('.view-switch [data-view="mountains"]').click();
+ await page.evaluate(() => { window.lightTape = tapeAudio; window.lightRain = ambienceTrack; });
+ await page.locator('.light-tones [data-light="moon"]').click();
+ assert.equal(await page.evaluate(() => tapeAudio === window.lightTape && ambienceTrack === window.lightRain),true);
+ assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length),2);
+ assert.equal(await page.locator('body').getAttribute('data-view'),'mountains');
+ assert.equal(await page.locator('body').getAttribute('data-mood'),'music');
+});

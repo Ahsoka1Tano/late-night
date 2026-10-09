@@ -1675,6 +1675,17 @@ setRainLevel(rainLevel, { save: false });
 /* --- the room's window and desk lamp --- */
 const windowView = document.getElementById("window-view");
 const deskLamp = document.getElementById("desk-lamp");
+const lightState = document.getElementById("light-state");
+const lightButtons = document.querySelectorAll(".light-tones button");
+let lightTone = "amber";
+try {
+  const saved = localStorage.getItem("lateNight.lightTone");
+  if (["amber", "moon", "dim"].includes(saved)) lightTone = saved;
+} catch { /* The lamp still works without device storage. */ }
+
+function rememberLight(key, value) {
+  try { localStorage.setItem(key, String(value)); } catch { /* Keep this visit's light. */ }
+}
 
 const neighbourWindows = [];
 const cityMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -1753,13 +1764,27 @@ document.querySelectorAll(".view-switch button").forEach(button => {
 function setDeskLamp(on) {
   windowView.classList.toggle("lamp-off", !on);
   deskLamp.setAttribute("aria-pressed", String(on));
+  lightState.textContent = `${lightTone} · ${on ? "on" : "off"}`;
 }
 setDeskLamp(localStorage.getItem("lateNight.deskLamp") !== "0");
 deskLamp.addEventListener("click", () => {
   const on = deskLamp.getAttribute("aria-pressed") !== "true";
   setDeskLamp(on);
-  localStorage.setItem("lateNight.deskLamp", on ? "1" : "0");
+  rememberLight("lateNight.deskLamp", on ? "1" : "0");
 });
+
+function setLightTone(tone, { save = true, turnOn = true } = {}) {
+  lightTone = ["amber", "moon", "dim"].includes(tone) ? tone : "amber";
+  windowView.dataset.light = lightTone;
+  lightButtons.forEach(button => button.setAttribute("aria-pressed", String(button.dataset.light === lightTone)));
+  setDeskLamp(turnOn || deskLamp.getAttribute("aria-pressed") === "true");
+  if (save) {
+    rememberLight("lateNight.lightTone", lightTone);
+    if (turnOn) rememberLight("lateNight.deskLamp", "1");
+  }
+}
+lightButtons.forEach(button => button.addEventListener("click", () => setLightTone(button.dataset.light)));
+setLightTone(lightTone, { save: false, turnOn: false });
 
 /* One deliberate gesture starts both layers; nothing autoplays on first visit. */
 const eveningToggle = document.getElementById("evening-toggle");

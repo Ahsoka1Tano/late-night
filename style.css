@@ -2169,3 +2169,23 @@ body[data-view='city'] .mountain-lake::before, body[data-view='city'] .mountain-
 @keyframes lake-shimmer { from { transform: translateX(-2%) scaleX(.9); } to { transform: translateX(3%) scaleX(1.1); } }
 @keyframes valley-mist { from { transform: translateX(-3%); } to { transform: translateX(3%); } }
 @media (prefers-reduced-motion: reduce) { .mountain-lake::before, .mountain-mist { animation: none !important; } }
+/* The small pool of light that makes the desk feel like home. */
+@property --lamp-glow { syntax: '<color>'; inherits: true; initial-value: #eeaf6936; }
+@property --lamp-edge { syntax: '<color>'; inherits: true; initial-value: #ffdfac; }
+.window-view { --lamp-glow: #eeaf6936; --lamp-edge: #ffdfac; --lamp-left: #685848; --lamp-centre: #bda782; --lamp-right: #796552; --light-multiplier: 1; transition: --sky-top 2s, --sky-bottom 2s, --horizon 2s, --lamp-glow 1.2s, --lamp-edge 1.2s; }
+.window-view[data-light='moon'] { --lamp-glow: #94bded38; --lamp-edge: #d4e6ff; --lamp-left: #4b5b73; --lamp-centre: #a3b6d0; --lamp-right: #596b86; }
+.window-view[data-light='dim'] { --lamp-glow: #cf915d30; --lamp-edge: #ad8869; --lamp-left: #463d35; --lamp-centre: #806e59; --lamp-right: #554737; --light-multiplier: .35; }
+.desk-glow { background: radial-gradient(ellipse at 50% 60%, var(--lamp-glow), transparent 65%); opacity: var(--light-multiplier); }
+.lamp-shade { background: linear-gradient(100deg, var(--lamp-left), var(--lamp-centre) 50%, var(--lamp-right)); border-bottom-color: var(--lamp-edge); }
+.room-light { margin-top: 24px; padding-top: 22px; border-top: 1px solid #b0b8d01a; }
+.light-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.light-heading h3 { font-size: 13px; font-weight: 400; color: #c8c3d2; }
+.light-heading > span { font-size: 10px; color: #968ba3; }
+.light-tones { display: flex; gap: 5px; margin-top: 13px; }
+.light-tones button { display: flex; align-items: center; justify-content: center; gap: 7px; flex: 1; min-height: 44px; padding: 8px 9px; border: 1px solid #b0b8d026; border-radius: 999px; color: #a9a0b7; background: #ffffff03; font: inherit; font-size: 10px; cursor: pointer; }
+.light-tones button i { width: 6px; height: 6px; flex-shrink: 0; border-radius: 50%; background: #e4b886; box-shadow: 0 0 6px #e4b88644; }
+.light-tones button[data-light='moon'] i { background: #b6d5f8; box-shadow: 0 0 6px #b6d5f844; }
+.light-tones button[data-light='dim'] i { background: #91795f; box-shadow: none; }
+.light-tones button[aria-pressed='true'] { color: #e6d9ed; border-color: #bca5d06b; background: #c98dff0f; }
+.light-tones button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.room-light > p { margin-top: 11px; font-size: 10px; color: #968ba3; line-height: 1.6; }
