@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=4aefcc9f8e80" />
+  <link rel="stylesheet" href="style.css?v=adee497e2fd1" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -27,7 +27,9 @@
       <p class="clock" id="clock">--:--</p>
     </header>
     <section class="evening-scenes" aria-label="Ready-made evenings">
-      <div class="scenes-heading"><div><p class="desk-kicker">MAKE TONIGHT YOURS</p><h2>Where should tonight take you?</h2></div></div>
+      <div class="scenes-heading"><div><p class="desk-kicker">MAKE TONIGHT YOURS</p><h2>Where should tonight take you?</h2></div>
+        <div class="scenes-actions"><button id="keep-evening" type="button">＋ keep this evening</button><button id="forget-evening" type="button" hidden>forget saved setup</button></div>
+      </div>
       <div class="scene-cards">
         <button class="scene-card" data-evening="records" type="button" aria-pressed="false">
           <span class="scene-art art-records" aria-hidden="true"><i></i></span>
@@ -40,6 +42,10 @@
         <button class="scene-card" data-evening="lastlight" type="button" aria-pressed="false">
           <span class="scene-art art-lastlight" aria-hidden="true"><i></i></span>
           <span class="scene-card-copy"><small>03 / WIND DOWN</small><strong>The last light</strong><span>Distant rain · quiet peaks · dim lamp</span><em>let the day go ↗</em></span>
+        </button>
+        <button class="scene-card" data-evening="personal" type="button" aria-pressed="false" hidden>
+          <span class="scene-art art-personal" aria-hidden="true"><i></i></span>
+          <span class="scene-card-copy"><small>04 / YOUR CORNER</small><strong>Your evening</strong><span id="personal-recipe">Your own view, weather and light.</span><em>come back here ↗</em></span>
         </button>
       </div>
       <p class="scene-status" id="scene-status" role="status"></p>
@@ -256,6 +262,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=daed57075a49"></script>
+  <script src="app.js?v=5ed7b5ca4de3"></script>
 </body>
 </html>

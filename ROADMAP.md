@@ -1,6 +1,6 @@
 # Roadmap
 
-Not a plan, more of a direction. One small thing per evening.
+Not a plan, more of a direction. One coherent improvement per evening; some are substantial.
 
 Six moods, each eventually with its own life. The Rain and Music ones get the most love —
 rain on the glass and a lo-fi hum are the nicest things to sit inside — but they stay
@@ -20,8 +20,9 @@ visible improvement or a worthwhile repair; this direction can change as the roo
 - Week 7: smoother everyday use — keyboard navigation, touch controls, reduced motion and performance.
 - Week 8: revisit the whole room — visual coherence, sound balance, documentation and a rare secret.
 
-Keep the stack small. Ship two or three meaningful commits for a completed session;
-avoid changes whose only purpose is filling a day.
+Keep the stack small. Make enough meaningful commits to describe the completed work;
+the number can vary. Prefer noticeable, complete improvements over changes whose
+only purpose is filling a day.
 
 ## Foundations
 - [x] night screen, live clock, typography
@@ -70,6 +71,9 @@ avoid changes whose only purpose is filling a day.
 - [ ] local audio loops with soft fade in/out
 
 ## Evening rituals
+- [x] illustrated launch cards for rainy records, a mountain hideaway and the last light
+- [x] a personal saved evening: mood, view, weather, lighting and sound intent
+- [x] scene restoration preserves notes and off/paused states; storage failures keep the previous setup
 - [x] daily vibe line, one per night
 - [x] tiny journal: a mood chip and one sentence
 - [x] journal: a discreet character count and accessible mood selection

@@ -2216,10 +2216,22 @@ body[data-view='city'] .mountain-lake::before, body[data-view='city'] .mountain-
 .scene-art::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg,transparent 60%,#151b2a 60% 65%,transparent 65%),linear-gradient(transparent 69%,#151b2a 69% 73%,transparent 73%); }
 .art-records i { position: absolute; inset: 0; background: repeating-linear-gradient(104deg,transparent 0 10px,#b9c7dd33 10px 11px,transparent 11px 20px); }
 .art-hideaway { background: radial-gradient(circle at 76% 22%,#d7dfef 0 5px,transparent 6px),linear-gradient(#102133,#394d62); }
-.art-hideaway::before,.art-lastlight::before { inset: 45% 0 0; background: #23384c; clip-path: polygon(0 45%,24% 10%,36% 29%,60% 0,80% 31%,100% 16%,100% 100%,0 100%); }
+.art-hideaway::before,.art-lastlight::before { inset: 40% 0 0; background: #62768e; clip-path: polygon(0 45%,24% 10%,36% 29%,60% 0,80% 31%,100% 16%,100% 100%,0 100%); }
 .art-hideaway i { position: absolute; width: 2px; height: 2px; top: 14%; left: 20%; border-radius: 50%; background: #d0d8e9; box-shadow: 26px 13px #d0d8e988,5px 27px #d0d8e966,44px -4px #d0d8e988; }
 .art-lastlight { background: radial-gradient(ellipse at 15% 100%,#c2926455,transparent 65%),linear-gradient(#101424,#2e324b); }
 .art-lastlight::before { background: #171e30; }
 .scene-status { min-height: 1.5em; margin-top: 10px; color: #b6a6c5; font-size: 11px; line-height: 1.5; }
 @media(max-width:1000px) { .scene-card { gap: 11px; padding: 11px; } .scene-art { flex-basis: 60px; height: 104px; } }
 @media(max-width:600px) { .scene-cards { gap: 7px; } .scene-card { flex-direction: column; align-items: stretch; padding: 8px; gap: 10px; } .scene-art { flex-basis: auto; width: 100%; height: 66px; border-width: 3px; } .scene-card-copy { gap: 6px; } .scene-card-copy small { display: none; } .scene-card-copy strong { font-size: 13px; min-height: 34px; } .scene-card-copy > span { font-size: 9px; } .scene-card-copy em { font-size: 9px; } }
+.scenes-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.scenes-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.scenes-actions button { min-height: 44px; border: 1px solid #bca5d03b; border-radius: 999px; padding: 10px 17px; background: #bca5d009; color: #d4bfdc; font: inherit; font-size: 11px; cursor: pointer; }
+.scenes-actions button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.scenes-actions #forget-evening { min-height: 30px; border: 0; background: none; color: #9889a6; font-size: 10px; padding: 4px 10px; }
+.scene-cards.has-personal { grid-template-columns: repeat(4,minmax(0,1fr)); }
+.art-personal { background: radial-gradient(circle at 76% 22%,#e3d6ee 0 5px,transparent 6px),linear-gradient(#281d3b,#655474); }
+.art-personal i { position: absolute; left: 8%; bottom: 9%; width: 17px; height: 22px; background: #d3b084; clip-path: polygon(25% 0,75% 0,100% 48%,54% 48%,54% 95%,90% 95%,90% 100%,10% 100%,10% 95%,46% 95%,46% 48%,0 48%); }
+[data-personal-view='mountains'] .art-personal::before { clip-path: polygon(0 45%,24% 10%,36% 29%,60% 0,80% 31%,100% 16%,100% 100%,0 100%); }
+@media(min-width:1001px) { .has-personal .scene-card { flex-direction: column; align-items: stretch; } .has-personal .scene-art { flex-basis: auto; width: 100%; height: 86px; } }
+@media(max-width:1000px) { .scene-cards.has-personal { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width:600px) { .scenes-heading { align-items: flex-start; flex-direction: column; gap: 14px; } .scenes-actions { align-items: flex-start; flex-direction: row; flex-wrap: wrap; gap: 8px; } .has-personal .scene-card { flex-direction: row; align-items: center; } .has-personal .scene-art { flex: 0 0 42px; height: 80px; } .has-personal .scene-card-copy strong { font-size: 12px; } }

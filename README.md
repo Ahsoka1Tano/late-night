@@ -9,6 +9,25 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 
 ![The window seat: rain, a late city and a warm desk lamp](assets/window-seat.png)
 
+## Choose an evening
+
+The illustrated cards at the top set up a whole evening with one click:
+
+- **Rainy records**: a lo-fi tape, real steady rain, the city and amber light.
+- **Mountain hideaway**: a lo-fi tape, clear mountain skies and moon-coloured light.
+- **The last light**: Sleep, distant recorded rain, mountains and a dim lamp.
+
+Choosing a card starts its sounds. You can then change any dial; the selected
+card loses its highlight when the setup no longer matches. Existing notes remain.
+
+**Keep this evening** saves your current mood, view, weather, light and sound
+choices on this device. **Your evening** restores that setup, including an off
+lamp and a paused tape. Saving again replaces the saved setup. **Forget saved setup**
+removes that shortcut without changing the room or stopping playback.
+The selected tape is still managed separately by the tape shelf.
+
+![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
+
 ## One little room
 
 Use **The view → City / Mountains** above the window to choose the landscape.

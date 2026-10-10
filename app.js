@@ -1854,6 +1854,55 @@ const EVENING_SCENES = {
   lastlight: { name: "The last light", mood: "sleep", view: "mountains", rainOn: false, rain: "drizzle", light: "dim", strength: 20, lamp: true, ambience: true },
 };
 const sceneStatus = document.getElementById("scene-status");
+const personalCard = document.querySelector('[data-evening="personal"]');
+const forgetEvening = document.getElementById("forget-evening");
+let personalScene = readPersonalScene();
+
+function readPersonalScene() {
+  try {
+    const value = JSON.parse(localStorage.getItem("lateNight.personalScene") || "null");
+    if (!value || typeof value !== "object" || Array.isArray(value)
+        || !["calm", "music", "focus", "rain", "space", "sleep", "aurora"].includes(value.mood)
+        || !["city", "mountains"].includes(value.view) || !["amber", "moon", "dim"].includes(value.light)
+        || !RAIN_ORDER.includes(value.rain) || !Number.isFinite(value.strength)
+        || value.strength < 10 || value.strength > 100
+        || ["rainOn", "lamp", "ambience", "playTape"].some(key => typeof value[key] !== "boolean")) return null;
+    return { name: "Your evening", mood: value.mood, view: value.view, light: value.light,
+      rain: value.rain, strength: value.strength, rainOn: value.rainOn, lamp: value.lamp,
+      ambience: value.ambience, playTape: value.playTape,
+      station: value.station === "radio" ? "radio" : "tape",
+      radio: RADIOS.some(radio => radio.key === value.radio) ? value.radio : RADIOS[0].key };
+  } catch { return null; }
+}
+function paintPersonalScene() {
+  personalCard.hidden = !personalScene;
+  forgetEvening.hidden = !personalScene;
+  document.querySelector(".scene-cards").classList.toggle("has-personal", Boolean(personalScene));
+  if (!personalScene) return;
+  document.getElementById("personal-recipe").textContent = `${personalScene.view} · ${personalScene.mood} · ${personalScene.light} light`;
+  personalCard.dataset.personalView = personalScene.view;
+}
+document.getElementById("keep-evening").addEventListener("click", () => {
+  const snapshot = { name: "Your evening", mood: document.body.dataset.mood, view: windowScene,
+    rainOn: musicRainEnabled, rain: rainLevel, light: lightTone, strength: lightStrength,
+    lamp: deskLamp.getAttribute("aria-pressed") === "true", ambience: listening,
+    playTape: tapeRunning, station, radio: radioKey };
+  try { localStorage.setItem("lateNight.personalScene", JSON.stringify(snapshot)); }
+  catch { sceneStatus.textContent = "Couldn't keep this evening on this device."; return; }
+  personalScene = snapshot;
+  paintPersonalScene();
+  paintSceneCards();
+  sceneStatus.textContent = "Your evening is kept on this device. Keep again to replace it.";
+});
+forgetEvening.addEventListener("click", () => {
+  try { localStorage.removeItem("lateNight.personalScene"); }
+  catch { sceneStatus.textContent = "Couldn't remove the saved setup on this device."; return; }
+  personalScene = null;
+  paintPersonalScene();
+  document.getElementById("keep-evening").focus();
+  sceneStatus.textContent = "Saved setup forgotten. The room is still yours to adjust.";
+});
+paintPersonalScene();
 
 function storeEveningSetting(key, value) {
   try { localStorage.setItem(key, String(value)); } catch { /* Apply the scene for this visit. */ }
@@ -1874,25 +1923,35 @@ function applyEveningScene(scene) {
   setDeskLamp(scene.lamp);
   storeEveningSetting("lateNight.deskLamp", scene.lamp ? "1" : "0");
   setMood(scene.mood);
+  if (scene.mood === "music" && scene.station === "radio") {
+    radioKey = scene.radio;
+    storeEveningSetting("lateNight.radio", radioKey);
+    setStation("radio");
+  }
   listening = scene.ambience;
   storeEveningSetting("lateNight.listen", listening ? "1" : "0");
   swapAmbience();
-  if (scene.mood === "music") setTape(true);
+  if (scene.mood === "music" && station === "tape" && scene.playTape !== false) setTape(true);
   sceneStatus.textContent = `${scene.name} · make yourself at home.`;
   paintSceneCards();
 }
 function paintSceneCards() {
   document.querySelectorAll(".scene-card").forEach(button => {
-    const scene = EVENING_SCENES[button.dataset.evening];
+    const scene = button.dataset.evening === "personal" ? personalScene : EVENING_SCENES[button.dataset.evening];
+    if (!scene) { button.setAttribute("aria-pressed", "false"); return; }
     const matches = document.body.dataset.mood === scene.mood && windowScene === scene.view
       && musicRainEnabled === scene.rainOn && rainLevel === scene.rain && lightTone === scene.light
-      && lightStrength === scene.strength && (deskLamp.getAttribute("aria-pressed") === "true") === scene.lamp;
+      && lightStrength === scene.strength && (deskLamp.getAttribute("aria-pressed") === "true") === scene.lamp
+      && (scene.mood !== "music" || station === (scene.station || "tape"));
     button.setAttribute("aria-pressed", String(matches));
   });
 }
-document.querySelectorAll(".scene-card").forEach(button => button.addEventListener("click", () => applyEveningScene(EVENING_SCENES[button.dataset.evening])));
+document.querySelectorAll(".scene-card").forEach(button => button.addEventListener("click", () => {
+  const scene = button.dataset.evening === "personal" ? personalScene : EVENING_SCENES[button.dataset.evening];
+  if (scene) applyEveningScene(scene);
+}));
 const sceneObserver = new MutationObserver(paintSceneCards);
-sceneObserver.observe(document.body, { attributes: true, attributeFilter: ["data-mood", "data-view", "data-rain"] });
+sceneObserver.observe(document.body, { attributes: true, attributeFilter: ["data-mood", "data-view", "data-rain", "data-station"] });
 sceneObserver.observe(windowView, { attributes: true, attributeFilter: ["data-light", "style"] });
 sceneObserver.observe(deskLamp, { attributes: true, attributeFilter: ["aria-pressed"] });
 sceneObserver.observe(musicRainButton, { attributes: true, attributeFilter: ["aria-pressed"] });

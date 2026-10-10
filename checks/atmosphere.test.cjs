@@ -558,3 +558,69 @@ test('manual lighting changes make the ready-made scene stop looking selected', 
  await page.waitForFunction(() => document.querySelector('[data-evening="records"]').getAttribute('aria-pressed') === 'false');
  assert.equal(await page.locator('#light-brightness').inputValue(),'60');
 });
+
+
+test('your evening restores a saved mountain setup, dimmer and off lamp without starting a paused tape', async t => {
+ const page = await openRoom(t);
+ await page.locator('.view-switch [data-view="mountains"]').click();
+ await page.locator('.light-tones [data-light="moon"]').click();
+ await page.locator('#light-brightness').fill('37');
+ await page.locator('#desk-lamp').click();
+ await page.locator('#keep-evening').click();
+ await page.locator('[data-evening="records"]').click();
+ await page.reload();
+ assert.equal(await page.locator('[data-evening="personal"]').isVisible(),true);
+ await page.locator('[data-evening="personal"]').click();
+ await page.clock.runFor(3000);
+ assert.equal(await page.locator('body').getAttribute('data-view'),'mountains');
+ assert.equal(await page.locator('#window-view').getAttribute('data-light'),'moon');
+ assert.equal(await page.locator('#light-brightness').inputValue(),'37');
+ assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'),'false');
+ assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length),0);
+});
+
+test('saving failures preserve the previous saved evening and forgetting it leaves playback alone', async t => {
+ const page = await openRoom(t);
+ await page.locator('[data-evening="records"]').click();
+ await page.locator('#keep-evening').click();
+ const kept = await page.evaluate(() => localStorage.getItem('lateNight.personalScene'));
+ await page.evaluate(() => {
+  const original = Storage.prototype.setItem;
+  Storage.prototype.setItem = function(key,value) {if(key === 'lateNight.personalScene')throw new Error('quota');return original.call(this,key,value)};
+ });
+ await page.locator('[data-evening="hideaway"]').click();
+ await page.locator('#keep-evening').click();
+ assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.personalScene')),kept);
+ assert.match(await page.locator('#scene-status').textContent(),/Couldn't keep/);
+ await page.clock.runFor(3000);
+ await page.evaluate(() => {window.forgetTape = tapeAudio;});
+ await page.locator('#forget-evening').click();
+ assert.equal(await page.locator('[data-evening="personal"]').isVisible(),false);
+ assert.equal(await page.evaluate(() => tapeAudio === window.forgetTape && !tapeAudio.paused),true);
+ assert.equal(await page.locator('#keep-evening').evaluate(el => el === document.activeElement),true);
+});
+
+test('corrupted saved scene is ignored without overwriting it', async t => {
+ const page = await openRoom(t);
+ await page.evaluate(() => localStorage.setItem('lateNight.personalScene','{broken'));
+ await page.reload();
+ assert.equal(await page.locator('[data-evening="personal"]').isVisible(),false);
+ assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.personalScene')),'{broken');
+});
+
+test('illustrated evening cards fit phones, tablets and desktop with a saved scene', async t => {
+ for (const width of [320,768,1440]) {
+  const page = await openRoom(t,width);
+  await page.locator('#keep-evening').click();
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
+  for(const key of ['records','hideaway','lastlight','personal']) {
+   const box = await page.locator('[data-evening="'+key+'"]').boundingBox();
+   assert.ok(box.x >= 0 && box.x + box.width <= width,key + ' fits ' + width);
+  }
+  await page.evaluate(() => scrollTo(0,0));
+  if(process.env.ATMOSPHERE_PREVIEW_DIR) {
+   await page.screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'evenings-'+width+'.png'),fullPage:true,animations:'disabled'});
+   if(width === 1440)await page.locator('.evening-scenes').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'evening-scenes.png'),animations:'disabled'});
+  }
+ }
+});
