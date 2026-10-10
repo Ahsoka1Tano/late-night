@@ -526,3 +526,35 @@ test('light controls fit a narrow phone and remain usable with the keyboard', as
   await page.locator('.room-light').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'desk-light-320.png'),animations:'disabled'});
  }
 });
+
+
+test('ready-made evenings apply distinct views, weather, lighting and sound layers', async t => {
+ const page = await openRoom(t);
+ await page.locator('#journal-note').fill('Keep my note through each scene.');
+ for (const [key,mood,view,tone,strength,sounds] of [
+  ['records','music','city','amber','70',2],
+  ['hideaway','music','mountains','moon','45',1],
+  ['lastlight','sleep','mountains','dim','20',1],
+ ]) {
+  await page.locator('[data-evening="'+key+'"]').click();
+  await page.clock.runFor(3000);
+  assert.equal(await page.locator('body').getAttribute('data-mood'),mood);
+  assert.equal(await page.locator('body').getAttribute('data-view'),view);
+  assert.equal(await page.locator('#window-view').getAttribute('data-light'),tone);
+  assert.equal(await page.locator('#light-brightness').inputValue(),strength);
+  assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length),sounds);
+  assert.equal(await page.locator('[data-evening="'+key+'"]').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.locator('#journal-note').inputValue(),'Keep my note through each scene.');
+ }
+ await page.reload();
+ assert.equal(await page.locator('body').getAttribute('data-view'),'mountains');
+ assert.equal(await page.locator('#window-view').getAttribute('data-light'),'dim');
+});
+
+test('manual lighting changes make the ready-made scene stop looking selected', async t => {
+ const page = await openRoom(t);
+ await page.locator('[data-evening="records"]').click();
+ await page.locator('#light-brightness').fill('60');
+ await page.waitForFunction(() => document.querySelector('[data-evening="records"]').getAttribute('aria-pressed') === 'false');
+ assert.equal(await page.locator('#light-brightness').inputValue(),'60');
+});

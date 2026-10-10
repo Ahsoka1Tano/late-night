@@ -1847,6 +1847,56 @@ eveningObserver.observe(listenButton, { attributes: true, attributeFilter: ["ari
 eveningObserver.observe(musicRainButton, { attributes: true, attributeFilter: ["aria-pressed"] });
 paintEveningToggle();
 
+/* --- a whole evening, chosen with one deliberate gesture --- */
+const EVENING_SCENES = {
+  records: { name: "Rainy records", mood: "music", view: "city", rainOn: true, rain: "steady", light: "amber", strength: 70, lamp: true, ambience: true },
+  hideaway: { name: "Mountain hideaway", mood: "music", view: "mountains", rainOn: false, rain: "drizzle", light: "moon", strength: 45, lamp: true, ambience: false },
+  lastlight: { name: "The last light", mood: "sleep", view: "mountains", rainOn: false, rain: "drizzle", light: "dim", strength: 20, lamp: true, ambience: true },
+};
+const sceneStatus = document.getElementById("scene-status");
+
+function storeEveningSetting(key, value) {
+  try { localStorage.setItem(key, String(value)); } catch { /* Apply the scene for this visit. */ }
+}
+function applyEveningScene(scene) {
+  // Finish changing the room before starting its new recording.
+  if (tapeRunning) setTape(false);
+  listening = false;
+  stopAmbience();
+  setStation("tape");
+  musicRainEnabled = scene.rainOn;
+  storeEveningSetting("lateNight.musicRain", musicRainEnabled ? "1" : "0");
+  paintMusicRain();
+  setRainLevel(scene.rain);
+  setWindowScene(scene.view);
+  setLightTone(scene.light);
+  setLightStrength(scene.strength);
+  setDeskLamp(scene.lamp);
+  storeEveningSetting("lateNight.deskLamp", scene.lamp ? "1" : "0");
+  setMood(scene.mood);
+  listening = scene.ambience;
+  storeEveningSetting("lateNight.listen", listening ? "1" : "0");
+  swapAmbience();
+  if (scene.mood === "music") setTape(true);
+  sceneStatus.textContent = `${scene.name} · make yourself at home.`;
+  paintSceneCards();
+}
+function paintSceneCards() {
+  document.querySelectorAll(".scene-card").forEach(button => {
+    const scene = EVENING_SCENES[button.dataset.evening];
+    const matches = document.body.dataset.mood === scene.mood && windowScene === scene.view
+      && musicRainEnabled === scene.rainOn && rainLevel === scene.rain && lightTone === scene.light
+      && lightStrength === scene.strength && (deskLamp.getAttribute("aria-pressed") === "true") === scene.lamp;
+    button.setAttribute("aria-pressed", String(matches));
+  });
+}
+document.querySelectorAll(".scene-card").forEach(button => button.addEventListener("click", () => applyEveningScene(EVENING_SCENES[button.dataset.evening])));
+const sceneObserver = new MutationObserver(paintSceneCards);
+sceneObserver.observe(document.body, { attributes: true, attributeFilter: ["data-mood", "data-view", "data-rain"] });
+sceneObserver.observe(windowView, { attributes: true, attributeFilter: ["data-light", "style"] });
+sceneObserver.observe(deskLamp, { attributes: true, attributeFilter: ["aria-pressed"] });
+sceneObserver.observe(musicRainButton, { attributes: true, attributeFilter: ["aria-pressed"] });
+
 /* --- something left in the room for whoever pokes around --- */
 const SECRET_WORD = "moon";
 
