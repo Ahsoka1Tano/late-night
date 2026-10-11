@@ -649,3 +649,59 @@ test('a drink ritual does not restart the playing tape or rain', async t => {
  assert.equal(await page.evaluate(()=>tapeAudio===window.drinkTape&&ambienceTrack===window.drinkRain),true);
  assert.equal(await page.evaluate(()=>window.media.filter(a=>!a.paused).length),2);
 });
+
+
+test('a cup cools over five minutes and warming it restores fresh steam', async t => {
+ const page = await openRoom(t);
+ assert.equal(await page.locator('#window-cup').getAttribute('data-heat'),'fresh');
+ await page.clock.fastForward(120000);
+ assert.equal(await page.locator('#window-cup').getAttribute('data-heat'),'warm');
+ await page.clock.fastForward(180000);
+ assert.equal(await page.locator('#window-cup').getAttribute('data-heat'),'cool');
+ await page.locator('#window-cup').click();
+ await page.locator('#cup-warm').click();
+ assert.equal(await page.locator('#window-cup').getAttribute('data-heat'),'fresh');
+ assert.match(await page.locator('#cup-note').textContent(),/Freshly poured/);
+});
+
+test('returning to a hidden tab catches up with cup cooling using real elapsed time', async t => {
+ const page = await openRoom(t);
+ const now = await page.evaluate(()=>Date.now());
+ await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'))});
+ await page.clock.setSystemTime(new Date(now+600000));
+ await page.evaluate(()=>{delete document.hidden;document.dispatchEvent(new Event('visibilitychange'))});
+ assert.equal(await page.locator('#window-cup').getAttribute('data-heat'),'cool');
+});
+
+test('a personal evening remembers coffee and older saved scenes still restore', async t => {
+ const page = await openRoom(t);
+ await page.locator('#window-cup').click();
+ await page.locator('.drink-choices [data-drink="coffee"]').click();
+ await page.locator('#cup-close').click();
+ await page.locator('#keep-evening').click();
+ await page.locator('[data-evening="records"]').click();
+ assert.equal(await page.locator('#window-cup').getAttribute('data-drink'),'tea');
+ await page.reload();
+ await page.locator('[data-evening="personal"]').click();
+ assert.equal(await page.locator('#window-cup').getAttribute('data-drink'),'coffee');
+ await page.evaluate(()=>{const value=JSON.parse(localStorage.getItem('lateNight.personalScene'));delete value.drink;localStorage.setItem('lateNight.personalScene',JSON.stringify(value))});
+ await page.reload();
+ assert.equal(await page.locator('[data-evening="personal"]').isVisible(),true);
+ await page.locator('[data-evening="personal"]').click();
+ assert.equal(await page.locator('#window-cup').getAttribute('data-drink'),'coffee');
+});
+
+test('the cup and drink controls stay accessible inside desktop and narrow phone scenes', async t => {
+ for(const width of [320,1280]) {
+  const page = await openRoom(t,width);
+  const cup=await page.locator('#window-cup').boundingBox();
+  assert.ok(cup.width>=44&&cup.height>=44);
+  await page.locator('#window-cup').click();
+  const scene=await page.locator('#window-view').boundingBox();
+  const panel=await page.locator('#cup-ritual').boundingBox();
+  assert.ok(panel.x>=scene.x&&panel.x+panel.width<=scene.x+scene.width);
+  assert.ok(panel.y>=scene.y&&panel.y+panel.height<=scene.y+scene.height);
+  assert.equal(await page.locator('.cup-steam > i').first().isVisible(),false,'reduced motion hides the animated steam');
+  if(process.env.ATMOSPHERE_PREVIEW_DIR)await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'cup-'+width+'.png'),animations:'disabled'});
+ }
+});

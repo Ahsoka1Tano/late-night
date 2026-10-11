@@ -91,6 +91,8 @@ only purpose is filling a day.
 ## Always
 - [x] the window seat: illustrated night city, live clock, rain and passing train
 - [x] interactive desk lamp, warm room light and a steaming cup
+- [x] interactive tea / coffee cup with remembered choice and accessible controls
+- [x] gradual cooling, a warming ritual, hidden-tab catch-up and saved-scene compatibility
 - [x] remembered amber, moon and dim lamp tones
 - [x] keyboard-accessible brightness control and a faint lamp reflection in the glass
 - [x] one continuous room: window, mood controls, audio and journal on the same page

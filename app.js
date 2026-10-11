@@ -1854,15 +1854,16 @@ const cupNote = document.getElementById("cup-note");
 const cupCaption = document.getElementById("cup-caption");
 const drinkChoices = document.querySelectorAll(".drink-choices button");
 let drink = "tea";
+let cupPouredAt = Date.now();
+let cupHeatTimer = null;
 try { if (localStorage.getItem("lateNight.drink") === "coffee") drink = "coffee"; } catch { /* Tea is fine. */ }
 
 function setDrink(value, { save = true } = {}) {
   drink = value === "coffee" ? "coffee" : "tea";
   cupButton.dataset.drink = drink;
-  cupButton.setAttribute("aria-label", `${drink === "tea" ? "Tea" : "Coffee"}. Open drink controls`);
-  cupCaption.textContent = drink;
   drinkChoices.forEach(button => button.setAttribute("aria-pressed", String(button.dataset.drink === drink)));
-  cupNote.textContent = drink === "tea" ? "Tea by the window. Take your time." : "Coffee, and nowhere else to be.";
+  if (save) cupPouredAt = Date.now();
+  paintCupHeat();
   if (save) {
     try { localStorage.setItem("lateNight.drink", drink); } catch { /* Keep the drink for this visit. */ }
   }
@@ -1885,11 +1886,38 @@ document.addEventListener("keydown", event => {
 });
 setDrink(drink, { save: false });
 
+function paintCupHeat() {
+  clearTimeout(cupHeatTimer);
+  cupHeatTimer = null;
+  const elapsed = Math.max(0, Date.now() - cupPouredAt);
+  const heat = elapsed < 120000 ? "fresh" : elapsed < 300000 ? "warm" : "cool";
+  cupButton.dataset.heat = heat;
+  cupCaption.textContent = `${drink} · ${heat === "fresh" ? "hot" : heat}`;
+  cupButton.setAttribute("aria-label", `${drink === "tea" ? "Tea" : "Coffee"}, ${heat === "fresh" ? "hot" : heat}. Open drink controls`);
+  cupNote.textContent = heat === "fresh" ? "Freshly poured. Stay a little."
+    : heat === "warm" ? "Still warm. Take your time." : "Getting cool. A little more warmth?";
+  if (!document.hidden && heat !== "cool") {
+    const next = heat === "fresh" ? 120000 : 300000;
+    cupHeatTimer = setTimeout(paintCupHeat, Math.max(1, cupPouredAt + next - Date.now()));
+  }
+}
+document.getElementById("cup-warm").addEventListener("click", () => {
+  cupPouredAt = Date.now();
+  paintCupHeat();
+  cupButton.classList.remove("just-poured");
+  void cupButton.offsetWidth;
+  cupButton.classList.add("just-poured");
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) { clearTimeout(cupHeatTimer); cupHeatTimer = null; }
+  else paintCupHeat();
+});
+
 /* --- a whole evening, chosen with one deliberate gesture --- */
 const EVENING_SCENES = {
-  records: { name: "Rainy records", mood: "music", view: "city", rainOn: true, rain: "steady", light: "amber", strength: 70, lamp: true, ambience: true },
-  hideaway: { name: "Mountain hideaway", mood: "music", view: "mountains", rainOn: false, rain: "drizzle", light: "moon", strength: 45, lamp: true, ambience: false },
-  lastlight: { name: "The last light", mood: "sleep", view: "mountains", rainOn: false, rain: "drizzle", light: "dim", strength: 20, lamp: true, ambience: true },
+  records: { name: "Rainy records", mood: "music", view: "city", rainOn: true, rain: "steady", light: "amber", strength: 70, lamp: true, ambience: true, drink: "tea" },
+  hideaway: { name: "Mountain hideaway", mood: "music", view: "mountains", rainOn: false, rain: "drizzle", light: "moon", strength: 45, lamp: true, ambience: false, drink: "coffee" },
+  lastlight: { name: "The last light", mood: "sleep", view: "mountains", rainOn: false, rain: "drizzle", light: "dim", strength: 20, lamp: true, ambience: true, drink: "tea" },
 };
 const sceneStatus = document.getElementById("scene-status");
 const personalCard = document.querySelector('[data-evening="personal"]');
@@ -1907,7 +1935,7 @@ function readPersonalScene() {
         || ["rainOn", "lamp", "ambience", "playTape"].some(key => typeof value[key] !== "boolean")) return null;
     return { name: "Your evening", mood: value.mood, view: value.view, light: value.light,
       rain: value.rain, strength: value.strength, rainOn: value.rainOn, lamp: value.lamp,
-      ambience: value.ambience, playTape: value.playTape,
+      ambience: value.ambience, playTape: value.playTape, drink: ["tea", "coffee"].includes(value.drink) ? value.drink : null,
       station: value.station === "radio" ? "radio" : "tape",
       radio: RADIOS.some(radio => radio.key === value.radio) ? value.radio : RADIOS[0].key };
   } catch { return null; }
@@ -1917,14 +1945,14 @@ function paintPersonalScene() {
   forgetEvening.hidden = !personalScene;
   document.querySelector(".scene-cards").classList.toggle("has-personal", Boolean(personalScene));
   if (!personalScene) return;
-  document.getElementById("personal-recipe").textContent = `${personalScene.view} · ${personalScene.mood} · ${personalScene.light} light`;
+  document.getElementById("personal-recipe").textContent = `${personalScene.view} · ${personalScene.mood} · ${personalScene.light} light${personalScene.drink ? ` · ${personalScene.drink}` : ""}`;
   personalCard.dataset.personalView = personalScene.view;
 }
 document.getElementById("keep-evening").addEventListener("click", () => {
   const snapshot = { name: "Your evening", mood: document.body.dataset.mood, view: windowScene,
     rainOn: musicRainEnabled, rain: rainLevel, light: lightTone, strength: lightStrength,
     lamp: deskLamp.getAttribute("aria-pressed") === "true", ambience: listening,
-    playTape: tapeRunning, station, radio: radioKey };
+    playTape: tapeRunning, station, radio: radioKey, drink };
   try { localStorage.setItem("lateNight.personalScene", JSON.stringify(snapshot)); }
   catch { sceneStatus.textContent = "Couldn't keep this evening on this device."; return; }
   personalScene = snapshot;
@@ -1959,6 +1987,7 @@ function applyEveningScene(scene) {
   setLightTone(scene.light);
   setLightStrength(scene.strength);
   setDeskLamp(scene.lamp);
+  if (scene.drink) setDrink(scene.drink);
   storeEveningSetting("lateNight.deskLamp", scene.lamp ? "1" : "0");
   setMood(scene.mood);
   if (scene.mood === "music" && scene.station === "radio") {
@@ -1980,7 +2009,7 @@ function paintSceneCards() {
     const matches = document.body.dataset.mood === scene.mood && windowScene === scene.view
       && musicRainEnabled === scene.rainOn && rainLevel === scene.rain && lightTone === scene.light
       && lightStrength === scene.strength && (deskLamp.getAttribute("aria-pressed") === "true") === scene.lamp
-      && (scene.mood !== "music" || station === (scene.station || "tape"));
+      && (scene.mood !== "music" || station === (scene.station || "tape")) && (!scene.drink || scene.drink === drink);
     button.setAttribute("aria-pressed", String(matches));
   });
 }
@@ -1993,6 +2022,7 @@ sceneObserver.observe(document.body, { attributes: true, attributeFilter: ["data
 sceneObserver.observe(windowView, { attributes: true, attributeFilter: ["data-light", "style"] });
 sceneObserver.observe(deskLamp, { attributes: true, attributeFilter: ["aria-pressed"] });
 sceneObserver.observe(musicRainButton, { attributes: true, attributeFilter: ["aria-pressed"] });
+sceneObserver.observe(cupButton, { attributes: true, attributeFilter: ["data-drink"] });
 
 /* --- something left in the room for whoever pokes around --- */
 const SECRET_WORD = "moon";

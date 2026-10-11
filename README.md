@@ -28,6 +28,19 @@ The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
 
+## A drink by the window
+
+Click the cup to choose **tea** or **coffee**. The glaze and small emblem change,
+and your choice is remembered. A freshly poured drink steams, settles after two
+minutes and cools after five. **Warm it up** brings the steam back. Returning
+after a hidden tab catches up with the elapsed time.
+
+The ritual leaves music and rain playing. Escape closes the controls and returns
+focus to the cup. Reduced motion hides the moving steam. **Your evening** can keep
+your drink too; previously saved setups still work.
+
+![A drink by the window](assets/drink-ritual.png)
+
 ## One little room
 
 Use **The view → City / Mountains** above the window to choose the landscape.

@@ -2260,3 +2260,13 @@ body[data-view='city'] .mountain-lake::before, body[data-view='city'] .mountain-
 .cup-ritual button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .cup-ritual p { margin-top: 14px; color: #b4a6bb; font-size: 11px; line-height: 1.7; }
 @media(max-width:760px) { .window-cup { width: 68px; height: 60px; transform: none; right: 14%; } .cup-ritual { right: 7%; width: min(230px,86%); padding: 15px; } }
+/* The cup cools quietly while the evening carries on. */
+.cup-steam { opacity: 1; transition: opacity 3s; }
+[data-heat='warm'] .cup-steam { opacity: .45; }
+[data-heat='cool'] .cup-steam { opacity: 0; }
+[data-heat='cool'] .cup-steam > i { animation-play-state: paused; }
+.city-is-hidden .cup-steam > i { animation-play-state: paused; }
+.cup-warm { width: 100%; min-height: 44px; margin-top: 14px; border: 1px solid #c4ad8660; border-radius: 999px; background: #c4ad8610; color: #e3d0af; font: inherit; font-size: 12px; cursor: pointer; }
+.just-poured .cup-body { animation: cup-settle .8s ease; }
+@keyframes cup-settle { 0% { transform: translateY(-4px) rotate(-3deg); } 55% { transform: translateY(0) rotate(1deg); } 100% { transform: none; } }
+@media(max-width:760px) { .cup-ritual { top: 15%; bottom: auto; max-height: 80%; overflow-y: auto; } }
