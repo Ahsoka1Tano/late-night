@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=adee497e2fd1" />
+  <link rel="stylesheet" href="style.css?v=f96826fef7a0" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -121,7 +121,16 @@
     <button class="desk-lamp" id="desk-lamp" type="button" aria-label="Desk lamp" aria-pressed="true">
       <span class="lamp-shade"></span><span class="lamp-stem"></span><span class="lamp-base"></span>
     </button>
-    <div class="window-cup" aria-hidden="true"><span></span><span></span><span></span></div>
+    <button class="window-cup" id="window-cup" type="button" aria-label="Tea. Open drink controls" aria-expanded="false" aria-controls="cup-ritual">
+      <span class="cup-steam" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="cup-body" aria-hidden="true"><svg class="cup-mark" viewBox="0 0 24 24"><path class="tea-mark" d="M5 17C3 7 13 3 20 4c0 10-6 17-15 13Zm0 0L16 8"/><g class="coffee-mark"><ellipse cx="12" cy="12" rx="6" ry="9" transform="rotate(30 12 12)"/><path d="M15 5c-8 6 3 8-6 14"/></g></svg></span>
+      <span class="cup-caption" id="cup-caption" aria-hidden="true">tea</span>
+    </button>
+    <section class="cup-ritual" id="cup-ritual" role="dialog" aria-label="A drink by the window" hidden>
+      <div class="cup-heading"><h3>A little warmth.</h3><button id="cup-close" type="button" aria-label="Close drink controls">×</button></div>
+      <div class="drink-choices" aria-label="Choose a drink"><button type="button" data-drink="tea" aria-pressed="true">tea</button><button type="button" data-drink="coffee" aria-pressed="false">coffee</button></div>
+      <p id="cup-note" role="status">A moment by the window.</p>
+    </section>
 
         <div class="scene-footer">
           <p class="scene-signature"><span class="scene-dot" aria-hidden="true"></span><span id="scene-caption">THE CITY IS KEEPING YOU COMPANY</span></p>
@@ -262,6 +271,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=5ed7b5ca4de3"></script>
+  <script src="app.js?v=9470e1574faf"></script>
 </body>
 </html>

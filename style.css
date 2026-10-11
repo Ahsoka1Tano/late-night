@@ -1891,10 +1891,10 @@ body[data-mood="sleep"] .railway-bridge { opacity: .3; }
 .lamp-off .desk-glow { opacity: 0; }
 .lamp-off .lamp-shade { filter: brightness(.38) saturate(.5); }
 .window-cup { position: absolute; bottom: 23.8%; right: 21%; z-index: 6; width: 51px; height: 42px; border-radius: 3px 3px 18px 18px; background: linear-gradient(110deg, #8c7981, #4a454f 60%, #302c38); border-top: 4px solid #b4a0a5; box-shadow: 0 9px 8px #0008; }
-.window-cup::after { content: ""; position: absolute; right: -17px; top: 4px; width: 20px; height: 23px; border: 5px solid #48414b; border-left: 0; border-radius: 0 50% 50% 0; }
-.window-cup > span { position: absolute; bottom: 40px; left: 12px; width: 15px; height: 45px; border-left: 2px solid #ddd1d52b; border-radius: 50%; filter: blur(2px); animation: tea-steam 7s ease-in-out infinite; }
-.window-cup > span:nth-child(2) { left: 24px; animation-delay: -3s; }
-.window-cup > span:nth-child(3) { left: 33px; animation-delay: -5s; }
+.cup-body::after { content: ""; position: absolute; right: -17px; top: 4px; width: 20px; height: 23px; border: 5px solid #48414b; border-left: 0; border-radius: 0 50% 50% 0; }
+.cup-steam > i { position: absolute; bottom: 40px; left: 12px; width: 15px; height: 45px; border-left: 2px solid #ddd1d52b; border-radius: 50%; filter: blur(2px); animation: tea-steam 7s ease-in-out infinite; }
+.cup-steam > i:nth-child(2) { left: 24px; animation-delay: -3s; }
+.cup-steam > i:nth-child(3) { left: 33px; animation-delay: -5s; }
 @keyframes tea-steam { 0% { opacity: 0; transform: translateY(10px) scale(.7); } 35% { opacity: .7; } 100% { opacity: 0; transform: translate(-10px, -30px) scale(1.3); } }
 /* --- one room, from the first screen --- */
 [hidden] { display: none !important; }
@@ -2030,7 +2030,7 @@ body[data-mood="music"] .room-desk .weather-mix { width: 100%; padding: 20px 0 0
   .room-desk .player-title { font-size: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .night-train, .window-cup > span { display: none; }
+  .night-train, .cup-steam > i { display: none; }
 }
 /* One gesture to settle in, without leaving the window. */
 .scene-footer { position: absolute; left: 7%; right: 7%; bottom: 5%; display: flex; align-items: center; justify-content: space-between; gap: 16px; z-index: 7; }
@@ -2235,3 +2235,28 @@ body[data-view='city'] .mountain-lake::before, body[data-view='city'] .mountain-
 @media(min-width:1001px) { .has-personal .scene-card { flex-direction: column; align-items: stretch; } .has-personal .scene-art { flex-basis: auto; width: 100%; height: 86px; } }
 @media(max-width:1000px) { .scene-cards.has-personal { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media(max-width:600px) { .scenes-heading { align-items: flex-start; flex-direction: column; gap: 14px; } .scenes-actions { align-items: flex-start; flex-direction: row; flex-wrap: wrap; gap: 8px; } .has-personal .scene-card { flex-direction: row; align-items: center; } .has-personal .scene-art { flex: 0 0 42px; height: 80px; } .has-personal .scene-card-copy strong { font-size: 12px; } }
+/* A real object in the room, with a small ritual behind it. */
+.window-cup { --cup-glaze: #647a73; --cup-dark: #293f3a; --cup-rim: #a8bab0; width: 76px; height: 64px; padding: 0; background: none; border: 0; border-radius: 8px; box-shadow: none; cursor: pointer; transform: none; }
+.window-cup[data-drink='coffee'] { --cup-glaze: #ad8267; --cup-dark: #5a4039; --cup-rim: #d3b69e; }
+.cup-body { position: absolute; bottom: 4px; left: 4px; width: 53px; height: 46px; border-radius: 5px 5px 19px 19px; border-top: 4px solid var(--cup-rim); background: linear-gradient(110deg,var(--cup-glaze),var(--cup-dark) 76%); box-shadow: 0 8px 8px #0008,inset 4px 0 10px #ffffff08; }
+.cup-body::after { top: 6px; right: -19px; width: 22px; height: 24px; border-color: var(--cup-dark); }
+.cup-body::before { content: ''; position: absolute; top: -6px; left: 0; width: 100%; height: 8px; border-radius: 50%; background: #332824; border: 2px solid var(--cup-rim); }
+.cup-mark { position: absolute; width: 22px; height: 22px; left: 15px; top: 9px; fill: none; stroke: #e4dbc0; stroke-width: 1.1; opacity: .6; }
+.coffee-mark { display: none; }
+[data-drink='coffee'] .tea-mark { display: none; }
+[data-drink='coffee'] .coffee-mark { display: initial; }
+.cup-steam { position: absolute; inset: 0; pointer-events: none; }
+.cup-steam > i { bottom: 50px; }
+.cup-caption { position: absolute; top: 100%; left: 0; width: 100%; margin-top: 4px; color: #9c97aa; font-size: 9px; letter-spacing: .08em; }
+.window-cup:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+.window-cup:hover .cup-body { box-shadow: 0 8px 8px #0008,0 0 18px #d8c6a21a; }
+.cup-ritual { position: absolute; right: 7%; bottom: calc(22% + 85px); width: 230px; z-index: 9; padding: 18px; border: 1px solid #bba5ce50; border-radius: 17px; background: #151924f5; box-shadow: 0 15px 45px #0008; }
+.cup-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.cup-heading h3 { font-size: 16px; font-weight: 400; color: #e3d9e7; }
+.cup-heading button { width: 36px; height: 36px; border: 0; border-radius: 50%; background: #ffffff05; color: #bdaacb; font: inherit; font-size: 21px; cursor: pointer; }
+.drink-choices { display: flex; gap: 8px; margin-top: 12px; }
+.drink-choices button { flex: 1; min-height: 44px; border: 1px solid #a898b738; border-radius: 999px; background: none; color: #b6a9c1; font: inherit; font-size: 12px; cursor: pointer; }
+.drink-choices button[aria-pressed='true'] { background: #baa2cc1a; border-color: #baa2cc88; color: #e3d6ed; }
+.cup-ritual button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.cup-ritual p { margin-top: 14px; color: #b4a6bb; font-size: 11px; line-height: 1.7; }
+@media(max-width:760px) { .window-cup { width: 68px; height: 60px; transform: none; right: 14%; } .cup-ritual { right: 7%; width: min(230px,86%); padding: 15px; } }

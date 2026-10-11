@@ -1847,6 +1847,44 @@ eveningObserver.observe(listenButton, { attributes: true, attributeFilter: ["ari
 eveningObserver.observe(musicRainButton, { attributes: true, attributeFilter: ["aria-pressed"] });
 paintEveningToggle();
 
+/* --- a drink by the window --- */
+const cupButton = document.getElementById("window-cup");
+const cupRitual = document.getElementById("cup-ritual");
+const cupNote = document.getElementById("cup-note");
+const cupCaption = document.getElementById("cup-caption");
+const drinkChoices = document.querySelectorAll(".drink-choices button");
+let drink = "tea";
+try { if (localStorage.getItem("lateNight.drink") === "coffee") drink = "coffee"; } catch { /* Tea is fine. */ }
+
+function setDrink(value, { save = true } = {}) {
+  drink = value === "coffee" ? "coffee" : "tea";
+  cupButton.dataset.drink = drink;
+  cupButton.setAttribute("aria-label", `${drink === "tea" ? "Tea" : "Coffee"}. Open drink controls`);
+  cupCaption.textContent = drink;
+  drinkChoices.forEach(button => button.setAttribute("aria-pressed", String(button.dataset.drink === drink)));
+  cupNote.textContent = drink === "tea" ? "Tea by the window. Take your time." : "Coffee, and nowhere else to be.";
+  if (save) {
+    try { localStorage.setItem("lateNight.drink", drink); } catch { /* Keep the drink for this visit. */ }
+  }
+}
+function closeCupRitual() {
+  cupRitual.hidden = true;
+  cupButton.setAttribute("aria-expanded", "false");
+  cupButton.focus({ preventScroll: true });
+}
+cupButton.addEventListener("click", () => {
+  if (!cupRitual.hidden) { closeCupRitual(); return; }
+  cupRitual.hidden = false;
+  cupButton.setAttribute("aria-expanded", "true");
+  document.querySelector(`.drink-choices [data-drink="${drink}"]`).focus({ preventScroll: true });
+});
+document.getElementById("cup-close").addEventListener("click", closeCupRitual);
+drinkChoices.forEach(button => button.addEventListener("click", () => setDrink(button.dataset.drink)));
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && !cupRitual.hidden) { event.preventDefault(); closeCupRitual(); }
+});
+setDrink(drink, { save: false });
+
 /* --- a whole evening, chosen with one deliberate gesture --- */
 const EVENING_SCENES = {
   records: { name: "Rainy records", mood: "music", view: "city", rainOn: true, rain: "steady", light: "amber", strength: 70, lamp: true, ambience: true },

@@ -624,3 +624,28 @@ test('illustrated evening cards fit phones, tablets and desktop with a saved sce
   }
  }
 });
+
+
+test('cup controls remember the drink and return keyboard focus on Escape', async t => {
+ const page = await openRoom(t);
+ await page.locator('#window-cup').click();
+ assert.equal(await page.locator('#cup-ritual').isVisible(),true);
+ assert.equal(await page.locator('.drink-choices [data-drink="tea"]').evaluate(el=>el===document.activeElement),true);
+ await page.locator('.drink-choices [data-drink="coffee"]').click();
+ await page.keyboard.press('Escape');
+ assert.equal(await page.locator('#cup-ritual').isVisible(),false);
+ assert.equal(await page.locator('#window-cup').evaluate(el=>el===document.activeElement),true);
+ await page.reload();
+ assert.equal(await page.locator('#window-cup').getAttribute('data-drink'),'coffee');
+});
+
+test('a drink ritual does not restart the playing tape or rain', async t => {
+ const page = await openRoom(t);
+ await page.locator('#evening-toggle').click();
+ await page.clock.runFor(3000);
+ await page.evaluate(()=>{window.drinkTape=tapeAudio;window.drinkRain=ambienceTrack});
+ await page.locator('#window-cup').click();
+ await page.locator('.drink-choices [data-drink="coffee"]').click();
+ assert.equal(await page.evaluate(()=>tapeAudio===window.drinkTape&&ambienceTrack===window.drinkRain),true);
+ assert.equal(await page.evaluate(()=>window.media.filter(a=>!a.paused).length),2);
+});
