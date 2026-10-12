@@ -2297,3 +2297,5 @@ body .window-view[data-sky='afterglow'] { --sky-top: #221b2f; --sky-bottom: #715
 .meteor-button { min-height: 44px; width: 100%; margin-top: 18px; padding: 10px; border: 1px solid #c3a9de55; border-radius: 999px; background: #c3a9de0b; color: #d0bfde; font: inherit; font-size: 11px; cursor: pointer; }
 .meteor-button:disabled { opacity: .4; cursor: default; }
 .meteor-note { color: #a499ad; font-size: 10px; line-height: 1.6; margin-top: 10px; }
+[data-personal-sky='midnight'] .art-personal { background: radial-gradient(circle at 76% 22%,#d4dce9 0 5px,transparent 6px),linear-gradient(#080e1f,#202e46); }
+[data-personal-sky='afterglow'] .art-personal { background: radial-gradient(circle at 76% 22%,#efddc4 0 5px,transparent 6px),linear-gradient(#221b2f,#71566e); }

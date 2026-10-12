@@ -1962,8 +1962,8 @@ paintMeteorControls();
 
 /* --- a whole evening, chosen with one deliberate gesture --- */
 const EVENING_SCENES = {
-  records: { name: "Rainy records", mood: "music", view: "city", rainOn: true, rain: "steady", light: "amber", strength: 70, lamp: true, ambience: true, drink: "tea" },
-  hideaway: { name: "Mountain hideaway", mood: "music", view: "mountains", rainOn: false, rain: "drizzle", light: "moon", strength: 45, lamp: true, ambience: false, drink: "coffee" },
+  records: { name: "Rainy records", mood: "music", view: "city", rainOn: true, rain: "steady", light: "amber", strength: 70, lamp: true, ambience: true, drink: "tea", sky: "mood", moon: "full" },
+  hideaway: { name: "Mountain hideaway", mood: "music", view: "mountains", rainOn: false, rain: "drizzle", light: "moon", strength: 45, lamp: true, ambience: false, drink: "coffee", sky: "midnight", moon: "crescent" },
   lastlight: { name: "The last light", mood: "sleep", view: "mountains", rainOn: false, rain: "drizzle", light: "dim", strength: 20, lamp: true, ambience: true, drink: "tea" },
 };
 const sceneStatus = document.getElementById("scene-status");
@@ -1982,6 +1982,7 @@ function readPersonalScene() {
         || ["rainOn", "lamp", "ambience", "playTape"].some(key => typeof value[key] !== "boolean")) return null;
     return { name: "Your evening", mood: value.mood, view: value.view, light: value.light,
       rain: value.rain, strength: value.strength, rainOn: value.rainOn, lamp: value.lamp,
+      sky: SKY_PALETTES.includes(value.sky) ? value.sky : null, moon: MOON_SHAPES.includes(value.moon) ? value.moon : null,
       ambience: value.ambience, playTape: value.playTape, drink: ["tea", "coffee"].includes(value.drink) ? value.drink : null,
       station: value.station === "radio" ? "radio" : "tape",
       radio: RADIOS.some(radio => radio.key === value.radio) ? value.radio : RADIOS[0].key };
@@ -1994,12 +1995,13 @@ function paintPersonalScene() {
   if (!personalScene) return;
   document.getElementById("personal-recipe").textContent = `${personalScene.view} · ${personalScene.mood} · ${personalScene.light} light${personalScene.drink ? ` · ${personalScene.drink}` : ""}`;
   personalCard.dataset.personalView = personalScene.view;
+  personalCard.dataset.personalSky = personalScene.sky || "mood";
 }
 document.getElementById("keep-evening").addEventListener("click", () => {
   const snapshot = { name: "Your evening", mood: document.body.dataset.mood, view: windowScene,
     rainOn: musicRainEnabled, rain: rainLevel, light: lightTone, strength: lightStrength,
     lamp: deskLamp.getAttribute("aria-pressed") === "true", ambience: listening,
-    playTape: tapeRunning, station, radio: radioKey, drink };
+    playTape: tapeRunning, station, radio: radioKey, drink, sky: outsideSky, moon: moonShape };
   try { localStorage.setItem("lateNight.personalScene", JSON.stringify(snapshot)); }
   catch { sceneStatus.textContent = "Couldn't keep this evening on this device."; return; }
   personalScene = snapshot;
@@ -2035,6 +2037,8 @@ function applyEveningScene(scene) {
   setLightStrength(scene.strength);
   setDeskLamp(scene.lamp);
   if (scene.drink) setDrink(scene.drink);
+  if (scene.sky) setOutsideSky(scene.sky);
+  if (scene.moon) setMoonShape(scene.moon);
   storeEveningSetting("lateNight.deskLamp", scene.lamp ? "1" : "0");
   setMood(scene.mood);
   if (scene.mood === "music" && scene.station === "radio") {
@@ -2056,7 +2060,8 @@ function paintSceneCards() {
     const matches = document.body.dataset.mood === scene.mood && windowScene === scene.view
       && musicRainEnabled === scene.rainOn && rainLevel === scene.rain && lightTone === scene.light
       && lightStrength === scene.strength && (deskLamp.getAttribute("aria-pressed") === "true") === scene.lamp
-      && (scene.mood !== "music" || station === (scene.station || "tape")) && (!scene.drink || scene.drink === drink);
+      && (scene.mood !== "music" || station === (scene.station || "tape")) && (!scene.drink || scene.drink === drink)
+      && (!scene.sky || scene.sky === outsideSky) && (!scene.moon || scene.moon === moonShape);
     button.setAttribute("aria-pressed", String(matches));
   });
 }
@@ -2066,7 +2071,7 @@ document.querySelectorAll(".scene-card").forEach(button => button.addEventListen
 }));
 const sceneObserver = new MutationObserver(paintSceneCards);
 sceneObserver.observe(document.body, { attributes: true, attributeFilter: ["data-mood", "data-view", "data-rain", "data-station"] });
-sceneObserver.observe(windowView, { attributes: true, attributeFilter: ["data-light", "style"] });
+sceneObserver.observe(windowView, { attributes: true, attributeFilter: ["data-light", "style", "data-sky", "data-moon"] });
 sceneObserver.observe(deskLamp, { attributes: true, attributeFilter: ["aria-pressed"] });
 sceneObserver.observe(musicRainButton, { attributes: true, attributeFilter: ["aria-pressed"] });
 sceneObserver.observe(cupButton, { attributes: true, attributeFilter: ["data-drink"] });
