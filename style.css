@@ -2294,3 +2294,6 @@ body .window-view[data-sky='afterglow'] { --sky-top: #221b2f; --sky-bottom: #715
 .moon-choices { display: flex; gap: 5px; margin-top: 10px; }
 .moon-choices button { flex: 1; min-height: 44px; border: 1px solid #b0b8d02b; border-radius: 999px; background: #ffffff03; color: #b6acc3; font: inherit; font-size: 10px; cursor: pointer; }
 .moon-choices button[aria-pressed='true'] { border-color: #c3a9de88; background: #c3a9de14; color: #e7d9f2; }
+.meteor-button { min-height: 44px; width: 100%; margin-top: 18px; padding: 10px; border: 1px solid #c3a9de55; border-radius: 999px; background: #c3a9de0b; color: #d0bfde; font: inherit; font-size: 11px; cursor: pointer; }
+.meteor-button:disabled { opacity: .4; cursor: default; }
+.meteor-note { color: #a499ad; font-size: 10px; line-height: 1.6; margin-top: 10px; }

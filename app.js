@@ -891,21 +891,31 @@ function seedStars() {
 
 // once in a long while, something crosses the sky
 let comet = null;
+let nextCometAt = Date.now() + 65000 + Math.random() * 45000;
 
 function maybeComet() {
-  if (comet || Math.random() > 0.0009) return;
-
+  if (comet || Date.now() < nextCometAt) return;
+  launchComet();
+}
+function launchComet() {
+  if (comet || starsFrame === null || document.hidden || cityMotion.matches || !hasStarSky()) return false;
+  const x = Math.random() * window.innerWidth * .25;
+  const y = window.innerHeight * (.07 + Math.random() * .1);
   comet = {
-    x: Math.random() * window.innerWidth * 0.7,
-    y: Math.random() * window.innerHeight * 0.45,
-    vx: 4.5 + Math.random() * 3,
-    vy: 1.4 + Math.random() * 1.2,
-    life: 1,
+    x, y, startX: x, startY: y, startedAt: Date.now(),
+    vx: window.innerWidth * .005, vy: window.innerHeight * .0013, life: 1,
   };
+  nextCometAt = Date.now() + 65000 + Math.random() * 45000;
+  return true;
 }
 
 function drawComet() {
   if (!comet) return;
+  const frames = Math.max(0, (Date.now() - comet.startedAt) / (1000 / 60));
+  comet.x = comet.startX + comet.vx * frames;
+  comet.y = comet.startY + comet.vy * frames;
+  comet.life = Math.max(0, 1 - frames / 125);
+  if (!comet.life || comet.x > window.innerWidth + 60) { comet = null; return; }
 
   const tailX = comet.x - comet.vx * 14;
   const tailY = comet.y - comet.vy * 14;
@@ -921,11 +931,6 @@ function drawComet() {
   starsCtx.lineTo(tailX, tailY);
   starsCtx.stroke();
 
-  comet.x += comet.vx;
-  comet.y += comet.vy;
-  comet.life -= 0.009;
-
-  if (comet.life <= 0 || comet.x > window.innerWidth + 60) comet = null;
 }
 
 function drawStars() {
@@ -1938,6 +1943,22 @@ function setMoonShape(value, { save = true } = {}) {
 }
 document.querySelectorAll(".moon-choices button").forEach(button => button.addEventListener("click", () => setMoonShape(button.dataset.moon)));
 setMoonShape(moonShape, { save: false });
+
+const meteorButton = document.getElementById("meteor-button");
+const meteorNote = document.getElementById("meteor-note");
+function paintMeteorControls() {
+  meteorButton.disabled = document.hidden || cityMotion.matches || !hasStarSky();
+  meteorNote.textContent = cityMotion.matches ? "Motion is reduced on this device."
+    : hasStarSky() ? "An occasional visitor in the clear sky." : "For clear mountain skies or Space.";
+}
+meteorButton.addEventListener("click", () => {
+  meteorNote.textContent = launchComet() ? "Something quiet crosses the night." : "Let this one finish its journey.";
+});
+const skyObserver = new MutationObserver(paintMeteorControls);
+skyObserver.observe(document.body, { attributes: true, attributeFilter: ["data-mood", "data-view", "class"] });
+cityMotion.addEventListener("change", paintMeteorControls);
+document.addEventListener("visibilitychange", paintMeteorControls);
+paintMeteorControls();
 
 /* --- a whole evening, chosen with one deliberate gesture --- */
 const EVENING_SCENES = {
