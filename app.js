@@ -1913,6 +1913,20 @@ document.addEventListener("visibilitychange", () => {
   else paintCupHeat();
 });
 
+/* --- choose the colour of the night outside --- */
+const SKY_PALETTES = ["mood", "midnight", "violet", "afterglow"];
+let outsideSky = "mood";
+try { const saved = localStorage.getItem("lateNight.sky"); if (SKY_PALETTES.includes(saved)) outsideSky = saved; } catch { /* Follow the room. */ }
+function setOutsideSky(value, { save = true } = {}) {
+  outsideSky = SKY_PALETTES.includes(value) ? value : "mood";
+  windowView.dataset.sky = outsideSky;
+  document.getElementById("sky-label").textContent = outsideSky === "mood" ? "follow mood" : outsideSky;
+  document.querySelectorAll(".sky-choices button").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.sky === outsideSky)));
+  if (save) rememberLight("lateNight.sky", outsideSky);
+}
+document.querySelectorAll(".sky-choices button").forEach(button => button.addEventListener("click", () => setOutsideSky(button.dataset.sky)));
+setOutsideSky(outsideSky, { save: false });
+
 /* --- a whole evening, chosen with one deliberate gesture --- */
 const EVENING_SCENES = {
   records: { name: "Rainy records", mood: "music", view: "city", rainOn: true, rain: "steady", light: "amber", strength: 70, lamp: true, ambience: true, drink: "tea" },

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=f4de7ea48171" />
+  <link rel="stylesheet" href="style.css?v=9e09bd976913" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -233,6 +233,15 @@
           <label class="light-brightness" for="light-brightness"><span>brightness</span><output id="light-level" for="light-brightness">70%</output></label>
           <input id="light-brightness" class="light-slider" type="range" min="10" max="100" step="1" value="70" />
         </section>
+        <details class="outside-sky" id="outside-sky">
+          <summary>Outside sky <span id="sky-label">follow mood</span></summary>
+          <div class="sky-choices" aria-label="Sky palette">
+            <button data-sky="mood" type="button" aria-pressed="true">mood</button>
+            <button data-sky="midnight" type="button" aria-pressed="false">midnight</button>
+            <button data-sky="violet" type="button" aria-pressed="false">violet</button>
+            <button data-sky="afterglow" type="button" aria-pressed="false">afterglow</button>
+          </div>
+        </details>
       </aside>
     </div>
     <div class="evening-notes">
@@ -272,6 +281,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=736223a85bf2"></script>
+  <script src="app.js?v=4a362ac80763"></script>
 </body>
 </html>

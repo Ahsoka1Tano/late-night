@@ -2270,3 +2270,18 @@ body[data-view='city'] .mountain-lake::before, body[data-view='city'] .mountain-
 .just-poured .cup-body { animation: cup-settle .8s ease; }
 @keyframes cup-settle { 0% { transform: translateY(-4px) rotate(-3deg); } 55% { transform: translateY(0) rotate(1deg); } 100% { transform: none; } }
 @media(max-width:760px) { .cup-ritual { top: 15%; bottom: auto; max-height: 80%; overflow-y: auto; } }
+/* A different colour of night, independent of the mood in the room. */
+.outside-sky { margin-top: 22px; padding-top: 18px; border-top: 1px solid #b0b8d01a; }
+.outside-sky summary { display: flex; justify-content: space-between; gap: 10px; min-height: 44px; align-items: center; color: #c8c3d2; font-size: 13px; cursor: pointer; list-style: none; }
+.outside-sky summary::-webkit-details-marker { display: none; }
+.outside-sky summary span { font-size: 10px; color: #a69ab4; }
+.sky-choices { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; margin-top: 12px; }
+.sky-choices button { min-height: 44px; padding: 10px; border: 1px solid #b0b8d02b; border-radius: 10px; color: #c0b6cd; font: inherit; font-size: 11px; background: #161c2b; cursor: pointer; }
+.sky-choices [data-sky='midnight'] { background: linear-gradient(130deg,#0c1426,#293952); }
+.sky-choices [data-sky='violet'] { background: linear-gradient(130deg,#261b3e,#625071); }
+.sky-choices [data-sky='afterglow'] { background: linear-gradient(130deg,#302039,#866276); }
+.sky-choices button[aria-pressed='true'] { border-color: #c3a9de99; color: #efe0fa; }
+.outside-sky summary:focus-visible,.outside-sky button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+body .window-view[data-sky='midnight'] { --sky-top: #080e1f; --sky-bottom: #202e46; --horizon: #6b809b30; }
+body .window-view[data-sky='violet'] { --sky-top: #191430; --sky-bottom: #554168; --horizon: #b790c444; }
+body .window-view[data-sky='afterglow'] { --sky-top: #221b2f; --sky-bottom: #71566e; --horizon: #e8ab814d; }
