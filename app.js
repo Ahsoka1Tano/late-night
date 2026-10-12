@@ -1927,6 +1927,18 @@ function setOutsideSky(value, { save = true } = {}) {
 document.querySelectorAll(".sky-choices button").forEach(button => button.addEventListener("click", () => setOutsideSky(button.dataset.sky)));
 setOutsideSky(outsideSky, { save: false });
 
+const MOON_SHAPES = ["full", "half", "crescent"];
+let moonShape = "full";
+try { const saved = localStorage.getItem("lateNight.moon"); if (MOON_SHAPES.includes(saved)) moonShape = saved; } catch { /* A full moon tonight. */ }
+function setMoonShape(value, { save = true } = {}) {
+  moonShape = MOON_SHAPES.includes(value) ? value : "full";
+  windowView.dataset.moon = moonShape;
+  document.querySelectorAll(".moon-choices button").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.moon === moonShape)));
+  if (save) rememberLight("lateNight.moon", moonShape);
+}
+document.querySelectorAll(".moon-choices button").forEach(button => button.addEventListener("click", () => setMoonShape(button.dataset.moon)));
+setMoonShape(moonShape, { save: false });
+
 /* --- a whole evening, chosen with one deliberate gesture --- */
 const EVENING_SCENES = {
   records: { name: "Rainy records", mood: "music", view: "city", rainOn: true, rain: "steady", light: "amber", strength: 70, lamp: true, ambience: true, drink: "tea" },
