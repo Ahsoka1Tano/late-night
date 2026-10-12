@@ -705,3 +705,87 @@ test('the cup and drink controls stay accessible inside desktop and narrow phone
   if(process.env.ATMOSPHERE_PREVIEW_DIR)await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'cup-'+width+'.png'),animations:'disabled'});
  }
 });
+
+
+test('outside sky and moon shapes survive reload without changing music or rain', async t => {
+ const page=await openRoom(t);
+ await page.locator('#evening-toggle').click();await page.clock.runFor(3000);
+ await page.evaluate(()=>{window.skyTape=tapeAudio;window.skyRain=ambienceTrack});
+ await page.locator('#outside-sky summary').click();
+ await page.locator('.sky-choices [data-sky="violet"]').click();
+ await page.locator('.moon-choices [data-moon="crescent"]').click();
+ assert.equal(await page.evaluate(()=>tapeAudio===window.skyTape&&ambienceTrack===window.skyRain),true);
+ assert.equal(await page.evaluate(()=>window.media.filter(a=>!a.paused).length),2);
+ assert.equal(await page.locator('.moon-crescent').isVisible(),true);
+ assert.equal(await page.locator('.moon-full').isVisible(),false);
+ await page.reload();
+ assert.equal(await page.locator('#window-view').getAttribute('data-sky'),'violet');
+ assert.equal(await page.locator('#window-view').getAttribute('data-moon'),'crescent');
+});
+
+test('personal evening restores sky and moon and accepts older snapshots without them', async t => {
+ const page=await openRoom(t);
+ await page.locator('#outside-sky summary').click();
+ await page.locator('.sky-choices [data-sky="afterglow"]').click();
+ await page.locator('.moon-choices [data-moon="half"]').click();
+ await page.locator('#keep-evening').click();
+ await page.locator('[data-evening="records"]').click();
+ assert.equal(await page.locator('#window-view').getAttribute('data-sky'),'mood');
+ await page.reload();await page.locator('[data-evening="personal"]').click();
+ assert.equal(await page.locator('#window-view').getAttribute('data-sky'),'afterglow');
+ assert.equal(await page.locator('#window-view').getAttribute('data-moon'),'half');
+ await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem('lateNight.personalScene'));delete s.sky;delete s.moon;localStorage.setItem('lateNight.personalScene',JSON.stringify(s))});
+ await page.reload();await page.locator('[data-evening="personal"]').click();
+ assert.equal(await page.locator('#window-view').getAttribute('data-sky'),'afterglow');
+});
+
+test('shooting stars require clear skies and finish with elapsed time', async t => {
+ const page=await openRoom(t,1280,'no-preference');
+ await page.locator('#outside-sky summary').click();
+ assert.equal(await page.locator('#meteor-button').isDisabled(),true);
+ await page.locator('.view-switch [data-view="mountains"]').click();
+ await page.locator('#meteor-button').click();
+ assert.equal(await page.evaluate(()=>comet!==null),true);
+ await page.clock.fastForward(3000);
+ assert.equal(await page.evaluate(()=>comet),null);
+ await page.locator('#music-rain').click();
+ assert.equal(await page.locator('#meteor-button').isDisabled(),true);
+ await page.locator('#music-rain').click();
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.waitForFunction(()=>document.getElementById('meteor-button').disabled);
+ assert.equal(await page.evaluate(()=>comet),null);
+});
+
+test('night sky controls fit a phone and desktop, with visible half and crescent moons', async t => {
+ for(const width of [320,1440]){
+  const page=await openRoom(t,width);
+  await page.locator('#outside-sky summary').click();
+  for(const shape of ['half','crescent','full']){
+   await page.locator('.moon-choices [data-moon="'+shape+'"]').click();
+   assert.equal(await page.locator('.moon-'+shape).isVisible(),true);
+  }
+  for(const palette of ['midnight','violet','afterglow','mood'])await page.locator('.sky-choices [data-sky="'+palette+'"]').click();
+  await page.locator('.sky-choices [data-sky="violet"]').click();
+  await page.locator('.moon-choices [data-moon="crescent"]').click();
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+  for(const id of ['outside-sky','meteor-button']){
+   const box=await page.locator('#'+id).boundingBox();assert.ok(box.x>=0&&box.x+box.width<=width);
+  }
+  if(process.env.ATMOSPHERE_PREVIEW_DIR){
+   await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'sky-'+width+'.png'),animations:'disabled'});
+   if(width===1440)await page.locator('#outside-sky').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'sky-controls.png'),animations:'disabled'});
+  }
+ }
+});
+
+
+test('requesting a meteor on a phone brings the visible sky back into view', async t=>{
+ const page=await openRoom(t,320,'no-preference');
+ await page.locator('.view-switch [data-view="mountains"]').click();
+ await page.locator('#outside-sky summary').click();
+ await page.locator('#meteor-button').click();
+ assert.equal(await page.locator('#window-view').evaluate(el=>el===document.activeElement),true);
+ const sky=await page.locator('#stars').boundingBox();
+ assert.ok(sky.y>=0&&sky.y+sky.height<=900);
+ assert.equal(await page.evaluate(()=>comet!==null),true);
+});

@@ -28,6 +28,20 @@ The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
 
+## A sky of your own
+
+Open **Outside sky** in the room controls. Follow the mood, or choose **midnight**,
+**violet** or **afterglow**. Pick a **full**, **half** or **crescent** moon. These
+choices are remembered separately from your room lighting and can be kept in
+**Your evening**. Previously saved evenings still work.
+
+In clear **Mountains** or **Space**, **see a shooting star** brings you back to the
+window for a short meteor trail. Automatic visitors are spaced a minute or more
+apart, with timing independent of the display's frame rate. Rain and reduced
+motion keep that control quiet; music continues throughout.
+
+![Violet sky with a crescent moon](assets/night-sky.png)
+
 ## A drink by the window
 
 Click the cup to choose **tea** or **coffee**. The glaze and small emblem change,

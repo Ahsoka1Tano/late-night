@@ -89,6 +89,10 @@ only purpose is filling a day.
 - [x] gentle streak counter
 
 ## Always
+- [x] independent midnight, violet and afterglow sky palettes
+- [x] full, half and crescent moons, remembered in personal evenings
+- [x] a shooting star on request, with automatic meteors paced by elapsed time
+- [x] mobile meteor controls return to the window so the trail is visible
 - [x] the window seat: illustrated night city, live clock, rain and passing train
 - [x] interactive desk lamp, warm room light and a steaming cup
 - [x] interactive tea / coffee cup with remembered choice and accessible controls

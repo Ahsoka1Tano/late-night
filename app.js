@@ -1952,7 +1952,11 @@ function paintMeteorControls() {
     : hasStarSky() ? "An occasional visitor in the clear sky." : "For clear mountain skies or Space.";
 }
 meteorButton.addEventListener("click", () => {
-  meteorNote.textContent = launchComet() ? "Something quiet crosses the night." : "Let this one finish its journey.";
+  if (launchComet()) {
+    windowView.scrollIntoView({ behavior: "instant", block: "center" });
+    windowView.focus({ preventScroll: true });
+    meteorNote.textContent = "Something quiet crosses the night.";
+  } else meteorNote.textContent = "Let this one finish its journey.";
 });
 const skyObserver = new MutationObserver(paintMeteorControls);
 skyObserver.observe(document.body, { attributes: true, attributeFilter: ["data-mood", "data-view", "class"] });
