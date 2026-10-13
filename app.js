@@ -31,14 +31,14 @@ const moodButtons = document.querySelectorAll(".mood");
 let moodLineTimer = null;
 let musicRainEnabled = localStorage.getItem("lateNight.musicRain") === "1";
 let windowScene = "city";
-try { if (localStorage.getItem("lateNight.view") === "mountains") windowScene = "mountains"; } catch { /* Keep the city. */ }
+try { const saved = localStorage.getItem("lateNight.view"); if (["mountains", "coast"].includes(saved)) windowScene = saved; } catch { /* Keep the city. */ }
 
 function isRainScene(mood = document.body.dataset.mood) {
   return mood === "rain" || (mood === "music" && musicRainEnabled);
 }
 
 function hasStarSky(mood = document.body.dataset.mood) {
-  return mood === "space" || mood === "aurora" || (windowScene === "mountains" && !isRainScene(mood));
+  return mood === "space" || mood === "aurora" || (["mountains", "coast"].includes(windowScene) && !isRainScene(mood));
 }
 function syncWindowSky() {
   if (!document.hidden && !cityMotion.matches && hasStarSky()) startStars();
@@ -56,6 +56,10 @@ function paintWeather() {
 
 function paintSceneCaption() {
   const mood = document.body.dataset.mood;
+  if (windowScene === "coast") {
+    document.getElementById("scene-caption").textContent = isRainScene() ? "RAIN ON THE GLASS. LIGHTS ACROSS THE BAY." : "THE SHORE IS STILL AWAKE.";
+    return;
+  }
   if (windowScene === "mountains") {
     document.getElementById("scene-caption").textContent = isRainScene()
       ? "RAIN ON THE GLASS. PEAKS IN THE DISTANCE." : "A LITTLE FURTHER FROM EVERYTHING.";
@@ -1748,13 +1752,13 @@ document.addEventListener("visibilitychange", syncCityLife);
 cityMotion.addEventListener("change", () => { syncCityLife(); syncWindowSky(); });
 
 function setWindowScene(scene, { save = true } = {}) {
-  windowScene = scene === "mountains" ? "mountains" : "city";
+  windowScene = ["mountains", "coast"].includes(scene) ? scene : "city";
   document.body.dataset.view = windowScene;
   document.querySelectorAll(".view-switch button").forEach(button => {
     button.setAttribute("aria-pressed", String(button.dataset.view === windowScene));
   });
-  windowView.setAttribute("aria-label", windowScene === "mountains" ? "Your mountain window" : "Your night city window");
-  document.getElementById("window-whisper").textContent = windowScene === "mountains" ? "let the world wait." : "let the city carry on.";
+  windowView.setAttribute("aria-label", windowScene === "coast" ? "Your coastal window" : windowScene === "mountains" ? "Your mountain window" : "Your night city window");
+  document.getElementById("window-whisper").textContent = windowScene === "coast" ? "let the tide take its time." : windowScene === "mountains" ? "let the world wait." : "let the city carry on.";
   paintSceneCaption();
   syncCityLife();
   syncWindowSky();
@@ -1949,7 +1953,7 @@ const meteorNote = document.getElementById("meteor-note");
 function paintMeteorControls() {
   meteorButton.disabled = document.hidden || cityMotion.matches || !hasStarSky();
   meteorNote.textContent = cityMotion.matches ? "Motion is reduced on this device."
-    : hasStarSky() ? "An occasional visitor in the clear sky." : "For clear mountain skies or Space.";
+    : hasStarSky() ? "An occasional visitor in the clear sky." : "For clear Mountains, Coast or Space.";
 }
 meteorButton.addEventListener("click", () => {
   if (launchComet()) {
@@ -1980,7 +1984,7 @@ function readPersonalScene() {
     const value = JSON.parse(localStorage.getItem("lateNight.personalScene") || "null");
     if (!value || typeof value !== "object" || Array.isArray(value)
         || !["calm", "music", "focus", "rain", "space", "sleep", "aurora"].includes(value.mood)
-        || !["city", "mountains"].includes(value.view) || !["amber", "moon", "dim"].includes(value.light)
+        || !["city", "mountains", "coast"].includes(value.view) || !["amber", "moon", "dim"].includes(value.light)
         || !RAIN_ORDER.includes(value.rain) || !Number.isFinite(value.strength)
         || value.strength < 10 || value.strength > 100
         || ["rainOn", "lamp", "ambience", "playTape"].some(key => typeof value[key] !== "boolean")) return null;

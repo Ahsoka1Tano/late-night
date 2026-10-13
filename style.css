@@ -2299,3 +2299,12 @@ body .window-view[data-sky='afterglow'] { --sky-top: #221b2f; --sky-bottom: #715
 .meteor-note { color: #a499ad; font-size: 10px; line-height: 1.6; margin-top: 10px; }
 [data-personal-sky='midnight'] .art-personal { background: radial-gradient(circle at 76% 22%,#d4dce9 0 5px,transparent 6px),linear-gradient(#080e1f,#202e46); }
 [data-personal-sky='afterglow'] .art-personal { background: radial-gradient(circle at 76% 22%,#efddc4 0 5px,transparent 6px),linear-gradient(#221b2f,#71566e); }
+/* A light on the headland, with a quiet bay beyond it. */
+.coast-view { position: absolute; inset: auto 0 0; height: 53%; z-index: 2; opacity: 0; pointer-events: none; transition: opacity 1.8s; }
+.coast-view svg { display: block; width: 100%; height: 100%; }
+.sea-water { position: absolute; inset: auto 0 0; height: 25%; z-index: 1; opacity: 0; background: linear-gradient(#344e63,#12283c); pointer-events: none; transition: opacity 1.8s; }
+body[data-view='coast'] .coast-view,body[data-view='coast'] .sea-water { opacity: 1; }
+body[data-view='coast'] .skyline,body[data-view='coast'] .night-train,body[data-view='coast'] .railway-bridge { opacity: 0; }
+body[data-view='coast'] .night-flight { display: none; }
+body[data-view='coast'] .stars-layer { mask-image: linear-gradient(#000 0 40%,transparent 72%); }
+@media(max-width:760px) { .view-switch > span { display: none; } .view-switch { justify-content: flex-end; } .view-switch button { padding-inline: 11px; } }
