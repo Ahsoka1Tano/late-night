@@ -2308,3 +2308,12 @@ body[data-view='coast'] .skyline,body[data-view='coast'] .night-train,body[data-
 body[data-view='coast'] .night-flight { display: none; }
 body[data-view='coast'] .stars-layer { mask-image: linear-gradient(#000 0 40%,transparent 72%); }
 @media(max-width:760px) { .view-switch > span { display: none; } .view-switch { justify-content: flex-end; } .view-switch button { padding-inline: 11px; } }
+/* Broad, slow swells instead of a busy water texture. */
+.sea-swells { position: absolute; inset: 0 -15%; width: 130%; height: 100%; fill: none; stroke: #a5b8c544; stroke-width: 1; opacity: .55; animation: sea-swell 23s ease-in-out infinite alternate; }
+.sea-water::before { content: ''; position: absolute; inset: 0 7% 0 58%; background: repeating-linear-gradient(0deg,transparent 0 5px,#d6d5da55 5px 6px,transparent 6px 9px); mask-image: radial-gradient(ellipse 44% 95% at 50% 0,#0008,transparent 85%); opacity: .6; animation: sea-glimmer 19s ease-in-out infinite alternate; }
+.sea-water::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 45% 8% at 10% 76%,#c4d3de12,transparent 85%),radial-gradient(ellipse 25% 7% at 90% 92%,#c4d3de18,transparent 85%); }
+@keyframes sea-swell { from { transform: translateX(-3%); } to { transform: translateX(3%); } }
+@keyframes sea-glimmer { from { transform: translateX(-3%) scaleX(.9); } to { transform: translateX(2%) scaleX(1.1); } }
+body:not([data-view='coast']) .sea-swells,body:not([data-view='coast']) .sea-water::before,.city-is-hidden .sea-swells,.city-is-hidden .sea-water::before { animation-play-state: paused; }
+body[data-view='coast'].has-rain .sea-water::before { opacity: .15; }
+@media(prefers-reduced-motion:reduce) { .sea-swells,.sea-water::before { animation: none !important; } }
