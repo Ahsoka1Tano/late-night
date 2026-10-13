@@ -2324,3 +2324,13 @@ body[data-view='coast'] [data-beacon='on'] .lighthouse-beam { opacity: .75; }
 body:not([data-view='coast']) .lighthouse-beam,.city-is-hidden .lighthouse-beam { animation-play-state: paused; }
 .beacon-button { min-height: 44px; width: 100%; margin-top: 12px; border: 1px solid #d2b99244; border-radius: 999px; color: #cfbd9e; background: #d2b9920a; font: inherit; font-size: 11px; cursor: pointer; }
 @media(prefers-reduced-motion:reduce) { .lighthouse-beam { animation: none !important; } }
+/* Another complete evening, with a calm sea instead of a tape. */
+.art-harbour { background: radial-gradient(circle at 76% 22%,#d5d7d1 0 5px,transparent 6px),linear-gradient(#122137,#39546a); }
+.art-harbour::before,[data-personal-view='coast'] .art-personal::before { background: #1a2d42; clip-path: polygon(0 48%,12% 33%,29% 43%,35% 66%,65% 66%,79% 52%,100% 46%,100% 100%,0 100%); }
+.art-harbour i { position: absolute; left: 16%; bottom: 31%; width: 9px; height: 31px; background: linear-gradient(#cfc4a7 0 25%,#6f8497 25% 35%,#bfc0ba 35% 60%,#344961 60% 72%,#bfc0ba 72%); clip-path: polygon(50% 0,100% 18%,82% 18%,95% 100%,5% 100%,18% 18%,0 18%); }
+.scene-cards { grid-template-columns: repeat(4,minmax(0,1fr)); }
+.scene-cards.has-personal { grid-template-columns: repeat(5,minmax(0,1fr)); }
+.scene-card { flex-direction: column; align-items: stretch; }
+.scene-art { flex-basis: auto; width: 100%; height: 86px; }
+@media(max-width:1000px) { .scene-cards,.scene-cards.has-personal { grid-template-columns: repeat(2,minmax(0,1fr)); } .scene-card { flex-direction: row; align-items: center; } .scene-art { flex: 0 0 60px; height: 96px; } .has-personal [data-evening='personal'] { grid-column: 1 / -1; } }
+@media(max-width:600px) { .scene-art { flex-basis: 42px; height: 80px; } .scene-card-copy strong { font-size: 12px; } }
