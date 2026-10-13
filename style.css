@@ -2317,3 +2317,10 @@ body[data-view='coast'] .stars-layer { mask-image: linear-gradient(#000 0 40%,tr
 body:not([data-view='coast']) .sea-swells,body:not([data-view='coast']) .sea-water::before,.city-is-hidden .sea-swells,.city-is-hidden .sea-water::before { animation-play-state: paused; }
 body[data-view='coast'].has-rain .sea-water::before { opacity: .15; }
 @media(prefers-reduced-motion:reduce) { .sea-swells,.sea-water::before { animation: none !important; } }
+.lighthouse-beam { position: absolute; left: 13.6%; bottom: 21%; width: 70%; height: 11%; z-index: 2; opacity: 0; transform-origin: 0 50%; pointer-events: none; background: linear-gradient(90deg,#f2d19b37,#e5d3b200); clip-path: polygon(0 49%,100% 0,100% 100%,0 51%); filter: blur(2px); transition: opacity 2s; animation: harbour-beam 29s ease-in-out infinite alternate; }
+body[data-view='coast'] [data-beacon='on'] .lighthouse-beam { opacity: .75; }
+[data-beacon='off'] .lighthouse-lantern { opacity: .2; }
+@keyframes harbour-beam { 0% { transform: rotate(-5deg) scaleX(.62); } 50% { transform: rotate(1deg) scaleX(1); } 100% { transform: rotate(6deg) scaleX(.72); } }
+body:not([data-view='coast']) .lighthouse-beam,.city-is-hidden .lighthouse-beam { animation-play-state: paused; }
+.beacon-button { min-height: 44px; width: 100%; margin-top: 12px; border: 1px solid #d2b99244; border-radius: 999px; color: #cfbd9e; background: #d2b9920a; font: inherit; font-size: 11px; cursor: pointer; }
+@media(prefers-reduced-motion:reduce) { .lighthouse-beam { animation: none !important; } }

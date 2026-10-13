@@ -1948,9 +1948,23 @@ function setMoonShape(value, { save = true } = {}) {
 document.querySelectorAll(".moon-choices button").forEach(button => button.addEventListener("click", () => setMoonShape(button.dataset.moon)));
 setMoonShape(moonShape, { save: false });
 
+const beaconButton = document.getElementById("beacon-button");
+let lighthouseOn = true;
+try { lighthouseOn = localStorage.getItem("lateNight.beacon") !== "0"; } catch { /* Keep the harbour light. */ }
+function setLighthouse(on, { save = true } = {}) {
+  lighthouseOn = Boolean(on);
+  windowView.dataset.beacon = lighthouseOn ? "on" : "off";
+  beaconButton.setAttribute("aria-pressed", String(lighthouseOn));
+  beaconButton.textContent = `lighthouse beam · ${lighthouseOn ? "on" : "off"}`;
+  if (save) rememberLight("lateNight.beacon", lighthouseOn ? "1" : "0");
+}
+beaconButton.addEventListener("click", () => setLighthouse(!lighthouseOn));
+setLighthouse(lighthouseOn, { save: false });
+
 const meteorButton = document.getElementById("meteor-button");
 const meteorNote = document.getElementById("meteor-note");
 function paintMeteorControls() {
+  beaconButton.hidden = windowScene !== "coast";
   meteorButton.disabled = document.hidden || cityMotion.matches || !hasStarSky();
   meteorNote.textContent = cityMotion.matches ? "Motion is reduced on this device."
     : hasStarSky() ? "An occasional visitor in the clear sky." : "For clear Mountains, Coast or Space.";
