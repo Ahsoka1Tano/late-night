@@ -789,3 +789,56 @@ test('requesting a meteor on a phone brings the visible sky back into view', asy
  assert.ok(sky.y>=0&&sky.y+sky.height<=900);
  assert.equal(await page.evaluate(()=>comet!==null),true);
 });
+
+
+test('coastal view changes preserve the playing tape, rain and notes', async t=>{
+ const page=await openRoom(t);
+ await page.locator('#evening-toggle').click();await page.clock.runFor(3000);
+ await page.locator('#journal-note').fill('A night beside the bay.');
+ await page.evaluate(()=>{window.coastTape=tapeAudio;window.coastRain=ambienceTrack});
+ await page.locator('.view-switch [data-view="coast"]').click();
+ assert.equal(await page.evaluate(()=>tapeAudio===window.coastTape&&ambienceTrack===window.coastRain),true);
+ assert.equal(await page.locator('#journal-note').inputValue(),'A night beside the bay.');
+ await page.reload();assert.equal(await page.locator('body').getAttribute('data-view'),'coast');
+});
+
+test('the harbour scene plays the existing ocean recording and remembers a disabled beacon', async t=>{
+ const page=await openRoom(t);
+ await page.locator('[data-evening="harbour"]').click();await page.clock.runFor(3000);
+ assert.equal(await page.locator('body').getAttribute('data-view'),'coast');
+ assert.equal(await page.locator('body').getAttribute('data-mood'),'calm');
+ assert.match(await page.evaluate(()=>ambienceTrack.src),/Gentle%20Ocean/);
+ assert.equal(await page.evaluate(()=>window.media.filter(a=>!a.paused).length),1);
+ await page.locator('#outside-sky summary').click();await page.locator('#beacon-button').click();
+ await page.locator('#keep-evening').click();
+ await page.locator('[data-evening="records"]').click();
+ await page.reload();await page.locator('[data-evening="personal"]').click();
+ assert.equal(await page.locator('body').getAttribute('data-view'),'coast');
+ assert.equal(await page.locator('#window-view').getAttribute('data-beacon'),'off');
+ await page.locator('#outside-sky summary').click();await page.locator('#beacon-button').click();
+ assert.equal(await page.locator('#window-view').getAttribute('data-beacon'),'on');
+});
+
+test('clear coastal skies support shooting stars and water respects reduced motion', async t=>{
+ const page=await openRoom(t,1280,'no-preference');
+ await page.locator('.view-switch [data-view="coast"]').click();
+ await page.locator('#outside-sky summary').click();
+ assert.equal(await page.locator('#meteor-button').isEnabled(),true);
+ await page.locator('#meteor-button').click();assert.equal(await page.evaluate(()=>comet!==null),true);
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.waitForFunction(()=>starsFrame===null);
+ assert.equal(await page.locator('.sea-swells').evaluate(el=>getComputedStyle(el).animationName),'none');
+});
+
+test('coastal views and all five evening cards fit phones and desktop', async t=>{
+ for(const width of [320,768,1440]){
+  const page=await openRoom(t,width);
+  await page.locator('[data-evening="harbour"]').click();
+  await page.locator('#keep-evening').click();
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+  for(const key of ['records','hideaway','lastlight','harbour','personal']){
+   const box=await page.locator('[data-evening="'+key+'"]').boundingBox();assert.ok(box.x>=0&&box.x+box.width<=width);
+  }
+  if(process.env.ATMOSPHERE_PREVIEW_DIR)await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'coast-'+width+'.png'),animations:'disabled'});
+ }
+});

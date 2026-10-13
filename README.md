@@ -16,6 +16,7 @@ The illustrated cards at the top set up a whole evening with one click:
 - **Rainy records**: a lo-fi tape, real steady rain, the city and amber light.
 - **Mountain hideaway**: a lo-fi tape, clear mountain skies and moon-coloured light.
 - **The last light**: Sleep, distant recorded rain, mountains and a dim lamp.
+- **Harbour after hours**: Calm, a real ocean recording, the coast, amber light and tea.
 
 Choosing a card starts its sounds. You can then change any dial; the selected
 card loses its highlight when the setup no longer matches. Existing notes remain.
@@ -27,6 +28,19 @@ removes that shortcut without changing the room or stopping playback.
 The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
+
+## A night by the sea
+
+**Coast** opens a rocky headland, distant harbour lights, slow swells and moonlight
+on the bay. The lighthouse sweeps a soft beam over the water. Open **Outside sky**
+to switch its beam off or on; the choice is remembered and can be kept in **Your evening**.
+Water and light stop moving in a hidden tab, and reduced motion leaves a still view.
+
+Choose **Harbour after hours** to start the existing real ocean recording alongside
+the coastal scene. Changing only the view leaves your music and rain playing.
+Clear coastal skies also support stars and the shooting-star control.
+
+![The coastal window](assets/coastal-window.png)
 
 ## A sky of your own
 
@@ -57,7 +71,7 @@ your drink too; previously saved setups still work.
 
 ## One little room
 
-Use **The view → City / Mountains** above the window to choose the landscape.
+Use **The view → City / Mountains / Coast** above the window to choose the landscape.
 The room remembers it separately from your mood. Changing the view preserves
 playing music, real rain, the radio, your timer and journal.
 The mountain window has layered snowy ridges, a pine shore, low mist and moonlight

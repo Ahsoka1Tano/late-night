@@ -110,7 +110,10 @@ only purpose is filling a day.
 - [x] another view from the window: moonlit mountains and a quiet lake
 - [x] the landscape is remembered independently of mood and audio playback
 - [x] mountain atmosphere: pine shore, valley mist, lake reflections and weather-aware stars
-- [ ] a third view: rooftops or the last café open
+- [x] a third view: a coastal headland, lighthouse and distant harbour
+- [x] slow ocean swells, moonlit water and a remembered lighthouse beam
+- [x] Harbour after hours: the coastal scene with a real ocean recording
+- [ ] a fourth view: rooftops or the last café open
 - polish, animation, micro-interactions
 - [x] a proper pass over the phone layout: wrapping, thumb-sized controls
 - new atmospheres and phrases
