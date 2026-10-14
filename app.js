@@ -128,7 +128,6 @@ function setMood(mood, { save = true } = {}) {
   }
 
   // a finished session is history once you leave the room
-  if (mood !== "focus" && focusBlock.classList.contains("is-done")) resetFocus();
 
   if (save) localStorage.setItem("lateNight.mood", mood);
 }
@@ -464,9 +463,10 @@ const FOCUS_PRESETS = [15, 25, 45, 60];
 
 const savedMinutes = Number(localStorage.getItem("lateNight.focusMinutes"));
 let focusMinutes = FOCUS_PRESETS.includes(savedMinutes) ? savedMinutes : 25;
+let focusPhase = "focus";
 
 function focusLength() {
-  return focusMinutes * 60 * 1000;
+  return (focusPhase === "break" ? 5 : focusMinutes) * 60 * 1000;
 }
 
 const focusBlock = document.getElementById("focus");
@@ -485,10 +485,17 @@ function paintWindowFocus() {
   windowFocus.hidden = !shown;
   document.body.classList.toggle("has-window-focus", shown);
   windowFocusTime.textContent = focusTime.textContent;
+  windowFocus.dataset.phase = focusPhase;
   windowFocus.style.setProperty("--session-progress", focusProgress.style.getPropertyValue("--progress") || 0);
-  document.getElementById("window-focus-task").textContent = focusIntention.value.trim() || "Nothing else needs doing.";
-  windowFocusToggle.textContent = focusEndsAt ? "pause session" : focusBlock.classList.contains("is-done") ? "another session" : "start session";
-  document.getElementById("window-focus-label").textContent = focusBlock.classList.contains("is-done") ? "ENOUGH FOR NOW" : focusEndsAt ? "JUST THIS. JUST NOW." : "ONE SMALL THING";
+  const done = focusBlock.classList.contains("is-done");
+  document.getElementById("window-focus-task").textContent = focusPhase === "break" ? "Look outside. Let your shoulders drop." : focusIntention.value.trim() || "Nothing else needs doing.";
+  windowFocusToggle.textContent = focusEndsAt ? "pause" : done ? "once more" : focusPhase === "break" ? "start break" : "start session";
+  document.getElementById("window-focus-label").textContent = focusPhase === "break" ? done ? "COME BACK WHEN YOU FEEL LIKE IT" : "FIVE MINUTES FOR YOURSELF" : done ? "ENOUGH FOR NOW" : focusEndsAt ? "JUST THIS. JUST NOW." : "ONE SMALL THING";
+  document.querySelectorAll("[data-focus-break]").forEach(button => {
+    button.hidden = focusPhase !== "break" && !done;
+    button.textContent = focusPhase === "break" ? "back to focus" : "take five minutes";
+  });
+  focusPresets.forEach(button => { button.disabled = Boolean(focusEndsAt); });
 }
 focusIntention.addEventListener("input", () => {
   try {
@@ -564,8 +571,8 @@ function finishFocus() {
   focusBlock.classList.add("is-done");
   focusTime.textContent = "00:00";
   document.title = BASE_TITLE;
-  focusNote.textContent = `that was ${focusMinutes} quiet minutes`;
-  keepSession(focusMinutes);
+  focusNote.textContent = focusPhase === "break" ? "No rush to begin again." : `that was ${focusMinutes} quiet minutes`;
+  if (focusPhase === "focus") keepSession(focusMinutes);
   focusProgress.style.setProperty("--progress", 1);
   focusProgress.setAttribute("aria-valuenow", "100");
   paintWindowFocus();
@@ -576,6 +583,7 @@ const focusPresets = document.querySelectorAll(".focus-preset");
 function setFocusLength(minutes, { save = true } = {}) {
   if (!FOCUS_PRESETS.includes(minutes)) minutes = 25;
   focusMinutes = minutes;
+  focusPhase = "focus";
 
   focusPresets.forEach((btn) => {
     btn.classList.toggle("is-active", Number(btn.dataset.minutes) === minutes);
@@ -599,6 +607,16 @@ windowFocusToggle.addEventListener("click", () => {
   if (focusEndsAt) pauseFocus();
   else startFocus();
 });
+document.querySelectorAll("[data-focus-break]").forEach(button => button.addEventListener("click", () => {
+  if (focusPhase === "break") {
+    focusPhase = "focus";
+    resetFocus();
+  } else {
+    focusPhase = "break";
+    resetFocus();
+    startFocus();
+  }
+}));
 
 setFocusLength(focusMinutes, { save: false });
 

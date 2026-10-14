@@ -874,3 +874,23 @@ test('quiet room keeps tape and rain playing and Escape returns to the desk', as
   assert.equal(await page.locator('.room-desk').isVisible(), true);
   assert.equal(await page.locator('#quiet-room').getAttribute('aria-pressed'), 'false');
 });
+
+test('focus finishes once and a five minute break never adds work to the stats', async t => {
+  const page = await openRoom(t);
+  await page.locator('.mood[data-mood="focus"]').click();
+  await page.locator('[data-minutes="15"]').click();
+  await page.locator('#focus-toggle').click();
+  assert.equal(await page.locator('[data-minutes="25"]').isDisabled(), true);
+  await page.clock.fastForward(15 * 60000 + 300);
+  assert.equal(await page.locator('#window-focus-time').textContent(), '00:00');
+  assert.equal(await page.locator('#window-focus-label').textContent(), 'ENOUGH FOR NOW');
+  const stats = await page.evaluate(() => readStats());
+  await page.locator('#window-focus [data-focus-break]').click();
+  assert.equal(await page.locator('#window-focus-time').textContent(), '05:00');
+  await page.clock.fastForward(5 * 60000 + 300);
+  assert.equal(await page.locator('#window-focus-time').textContent(), '00:00');
+  assert.deepEqual(await page.evaluate(() => readStats()), stats);
+  await page.locator('#window-focus [data-focus-break]').click();
+  assert.equal(await page.locator('#window-focus-time').textContent(), '15:00');
+  assert.equal(await page.locator('#focus-toggle').textContent(), 'start');
+});
