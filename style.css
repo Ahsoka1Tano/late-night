@@ -1888,7 +1888,7 @@ body[data-mood="sleep"] .railway-bridge { opacity: .3; }
 .window-time time { display: block; font-size: clamp(60px, 9vw, 140px); font-weight: 300; letter-spacing: -.065em; line-height: 1.25; font-variant-numeric: tabular-nums; }
 .window-time p:last-child { margin-top: 5px; font-size: 13px; letter-spacing: .07em; color: #c1bed3; }
 .has-window-focus .window-time { visibility: hidden; }
-.window-focus { position: absolute; top: 8%; left: 6%; width: 53%; z-index: 5; text-align: center; color: #eeedf5; }
+.window-focus { position: absolute; top: 4%; left: 6%; width: 53%; z-index: 7; text-align: center; color: #eeedf5; pointer-events: none; }
 .window-focus-label { font-size: 8px; letter-spacing: .2em; margin-bottom: 6px; }
 .focus-orbit { position: relative; width: clamp(100px, 16vw, 180px); aspect-ratio: 1; margin: auto; display: grid; place-items: center; }
 .focus-orbit svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); fill: none; stroke-width: .6; }
@@ -1896,12 +1896,12 @@ body[data-mood="sleep"] .railway-bridge { opacity: .3; }
 .orbit-progress { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--session-progress, 0)); stroke-linecap: round; }
 .focus-orbit span { font-size: clamp(25px, 4.5vw, 52px); font-weight: 300; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
 .window-focus-task { margin: 8px auto; max-width: 95%; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.window-focus button { min-height: 36px; padding: 6px 12px; border: 1px solid #ffffff26; border-radius: 999px; background: #111422b3; color: #eeedf5; font: inherit; font-size: 10px; cursor: pointer; }
+.window-focus button { min-height: 44px; padding: 6px 12px; border: 1px solid #ffffff26; border-radius: 999px; background: #111422b3; color: #eeedf5; font: inherit; font-size: 10px; cursor: pointer; pointer-events: auto; }
 .window-focus button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .window-focus[data-phase='break'] .orbit-progress { stroke: #a9d2ce; }
 .focus [data-focus-break] { margin-top: 12px; color: var(--text); }
 .window-focus [data-focus-break] { display: block; margin: 6px auto 0; }
-@media (max-width: 760px) { .focus-orbit { width: clamp(100px, 24vw, 150px); } .window-focus-task { font-size: 10px; margin: 5px auto; } .window-focus-label { font-size: 7px; } }
+@media (max-width: 760px) { .focus-orbit { width: clamp(90px, 22vw, 140px); } .window-focus-task { font-size: 10px; margin: 5px auto; } .window-focus-label { font-size: 7px; } }
 .window-sill { position: absolute; top: 76%; left: 6%; right: 6%; height: 25px; background: linear-gradient(#33303b, #191821 40%, #0b0e17 42%); transform: perspective(400px) rotateX(15deg); box-shadow: 0 15px 30px #0009; }
 .desk-glow { position: absolute; inset: 37% 45% 0 -12%; z-index: 5; pointer-events: none; background: radial-gradient(ellipse at 50% 60%, #eeaf6936, transparent 65%); transition: opacity 1s; }
 .desk-lamp { position: absolute; left: 13%; bottom: 23%; z-index: 6; width: 110px; height: 160px; border: 0; background: none; cursor: pointer; }
@@ -2363,9 +2363,9 @@ body.is-quiet .room { width: min(1320px, 96vw); padding-top: 18px; }
 body.is-quiet .room > :not(.quiet-toolbar):not(.evening-layout),body.is-quiet .room-desk,body.is-quiet .evening-notes,body.is-quiet .hint { display: none; }
 body.is-quiet .evening-layout { display: block; }
 body.is-quiet .window-view { position: relative; top: auto; height: max(500px, calc(100svh - 96px)); max-height: 950px; }
-body.is-quiet .focus-orbit { width: clamp(140px, 24vw, 270px); }
+body.is-quiet .focus-orbit { width: clamp(120px, 21vw, 230px); }
 body.is-quiet .focus-orbit span { font-size: clamp(38px, 7vw, 78px); }
-body.is-quiet .window-focus { top: 10%; }
+body.is-quiet .window-focus { top: 4%; }
 body.is-quiet .window-focus-task { font-size: clamp(12px, 1.5vw, 18px); }
 body.is-quiet .window-focus button { min-height: 44px; }
-@media (max-width: 600px) { .quiet-toolbar p { max-width: 120px; line-height: 1.7; } body.is-quiet .window-focus { top: 12%; } }
+@media (max-width: 600px) { .quiet-toolbar p { max-width: 120px; line-height: 1.7; } body.is-quiet .window-focus { top: 5%; } }

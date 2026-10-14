@@ -573,12 +573,15 @@ function startFocus() {
   focusBlock.classList.add("is-running");
   focusBlock.classList.remove("is-done");
   focusNote.textContent = "";
+  focusNote.classList.remove("is-warning");
   focusTick = setInterval(paintFocus, 250);
   saveFocusSession();
   paintFocus();
 }
 
 function pauseFocus() {
+  if (!focusEndsAt) return;
+  if (focusEndsAt <= Date.now()) { finishFocus(); return; }
   focusLeft = Math.max(0, focusEndsAt - Date.now());
   focusEndsAt = null;
   clearInterval(focusTick);

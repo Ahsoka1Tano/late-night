@@ -952,3 +952,38 @@ test('invalid saved timer is discarded and storage failures keep controls usable
   await page.locator('#focus-reset').click();
   assert.equal(await page.locator('#focus-time').textContent(), '25:00');
 });
+
+test('focus orbit and quiet controls fit narrow and wide windows', async t => {
+  for (const width of [320, 768, 1440]) {
+    const page = await openRoom(t, width);
+    await page.locator('.mood[data-mood="focus"]').click();
+    await page.locator('#focus-intention').fill('A little reading before tomorrow');
+    await page.locator('#window-focus-toggle').click();
+    await page.clock.runFor(800);
+    for (const quiet of [false, true]) {
+      if (quiet) await page.locator('#quiet-room').click();
+      const size = await page.evaluate(() => ({scroll:document.documentElement.scrollWidth, client:document.documentElement.clientWidth}));
+      assert.ok(size.scroll <= size.client, `No horizontal overflow at ${width}`);
+      const button = await page.locator('#window-focus-toggle').boundingBox();
+      const glass = await page.locator('#window-outside').boundingBox();
+      assert.ok(button.x >= glass.x && button.x + button.width <= glass.x + glass.width);
+      assert.ok(button.y + button.height <= glass.y + glass.height, `Controls stay inside the glass at ${width}`);
+      if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator(quiet ? '.room' : '#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR, `focus-${width}-${quiet ? 'quiet' : 'room'}.png`)});
+    }
+    await page.close();
+  }
+});
+
+test('completed focus controls remain tappable beside the lamp on a small phone', async t => {
+  const page = await openRoom(t, 320);
+  await page.locator('.mood[data-mood="focus"]').click();
+  await page.locator('#focus-intention').fill('A longer intention wraps gently across the glass');
+  await page.locator('#window-focus-toggle').click();
+  await page.clock.fastForward(1500000 + 300);
+  await page.locator('#window-focus [data-focus-break]').click();
+  assert.equal(await page.locator('#window-focus-time').textContent(), '05:00');
+  await page.locator('#window-focus [data-focus-break]').click();
+  assert.equal(await page.locator('#window-focus-time').textContent(), '25:00');
+  await page.locator('#desk-lamp').click();
+  assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'), 'false');
+});

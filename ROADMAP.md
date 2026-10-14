@@ -62,6 +62,9 @@ only purpose is filling a day.
 - [x] Focus: presets 15 / 25 / 45 / 60
 - [x] Focus: a soft progress line follows the session
 - [x] Focus: a quieter finish than a blank 00:00
+- [x] Focus: an intention and circular session clock on the window, across moods
+- [x] Focus: an optional five-minute break without extra work statistics
+- [x] Focus: restore running deadlines, pauses and completed sessions after refresh
 - [x] Space: drifting stars, warm and cold, a rare shooting star
 - [x] Space: parallax on the star field
 - [x] Sleep: the room dozes off if you leave it alone
@@ -100,6 +103,7 @@ only purpose is filling a day.
 - [x] remembered amber, moon and dim lamp tones
 - [x] keyboard-accessible brightness control and a faint lamp reflection in the glass
 - [x] one continuous room: window, mood controls, audio and journal on the same page
+- [x] quiet room: expand the window, keep audio playing and return with Escape
 - [x] start and pause a lo-fi tape with real rain directly at the window
 - [x] the same sky changes warmth, light and city visibility with the chosen mood
 - [x] individual apartment lights slowly change; Sleep puts the neighbours to bed

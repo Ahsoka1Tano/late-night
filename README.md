@@ -29,6 +29,28 @@ The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
 
+## One small thing, by the window
+
+Choose **Focus**, write one small intention and pick 15, 25, 45 or 60 minutes.
+The window becomes a quiet clock with a circular progress trace. Start and pause
+from the glass or the desk; Space still works outside text fields and buttons.
+An active or paused session stays on the glass when you change moods, so you can
+listen to a lo-fi tape and rain while working. Your intention is kept on this device.
+
+**Quiet room** gives the window the screen, with music and weather continuing.
+Use **back to the room** or Escape to bring the desk back. It also works without
+a timer: just the view, your lamp and a drink. This mode opens only when requested.
+
+When a session ends, **take five minutes** starts a short break with a softer
+progress ring. No new work session starts automatically. Breaks do not add focus
+minutes or sessions to your stats. **Back to focus** leaves the timer ready.
+
+Running timers, pauses and breaks survive a refresh. A session that finished
+while the page was closed is counted once when you return. A refresh does not
+start music on the timer's behalf. All of this stays local to the browser.
+
+![A quiet focus session at the window](assets/quiet-focus.png)
+
 ## A night by the sea
 
 **Coast** opens a rocky headland, distant harbour lights, slow swells and moonlight
