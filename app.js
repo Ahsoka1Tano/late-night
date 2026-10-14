@@ -475,6 +475,29 @@ const focusProgress = document.getElementById("focus-progress");
 const focusToggle = document.getElementById("focus-toggle");
 const focusReset = document.getElementById("focus-reset");
 const focusNote = document.getElementById("focus-note");
+const focusIntention = document.getElementById("focus-intention");
+const windowFocus = document.getElementById("window-focus");
+const windowFocusTime = document.getElementById("window-focus-time");
+const windowFocusToggle = document.getElementById("window-focus-toggle");
+try { focusIntention.value = localStorage.getItem("lateNight.intention") || ""; } catch {}
+function paintWindowFocus() {
+  const shown = document.body.dataset.mood === "focus" || Boolean(focusEndsAt) || focusLeft < focusLength() || focusBlock.classList.contains("is-done");
+  windowFocus.hidden = !shown;
+  document.body.classList.toggle("has-window-focus", shown);
+  windowFocusTime.textContent = focusTime.textContent;
+  windowFocus.style.setProperty("--session-progress", focusProgress.style.getPropertyValue("--progress") || 0);
+  document.getElementById("window-focus-task").textContent = focusIntention.value.trim() || "Nothing else needs doing.";
+  windowFocusToggle.textContent = focusEndsAt ? "pause session" : focusBlock.classList.contains("is-done") ? "another session" : "start session";
+  document.getElementById("window-focus-label").textContent = focusBlock.classList.contains("is-done") ? "ENOUGH FOR NOW" : focusEndsAt ? "JUST THIS. JUST NOW." : "ONE SMALL THING";
+}
+focusIntention.addEventListener("input", () => {
+  try {
+    localStorage.setItem("lateNight.intention", focusIntention.value);
+    document.getElementById("focus-intention-note").textContent = "";
+  } catch { document.getElementById("focus-intention-note").textContent = "Kept for this visit. Device storage unavailable."; }
+  paintWindowFocus();
+});
+new MutationObserver(paintWindowFocus).observe(document.body, { attributes: true, attributeFilter: ["data-mood"] });
 
 let focusLeft = focusLength();
 let focusEndsAt = null;
@@ -496,9 +519,11 @@ function paintFocus() {
   document.title = focusEndsAt ? `${mm}:${ss} — ${BASE_TITLE}` : BASE_TITLE;
 
   if (focusEndsAt && left <= 0) finishFocus();
+  paintWindowFocus();
 }
 
 function startFocus() {
+  if (focusEndsAt) return;
   focusEndsAt = Date.now() + focusLeft;
   focusToggle.textContent = "pause";
   focusBlock.classList.add("is-running");
@@ -541,6 +566,9 @@ function finishFocus() {
   document.title = BASE_TITLE;
   focusNote.textContent = `that was ${focusMinutes} quiet minutes`;
   keepSession(focusMinutes);
+  focusProgress.style.setProperty("--progress", 1);
+  focusProgress.setAttribute("aria-valuenow", "100");
+  paintWindowFocus();
 }
 
 const focusPresets = document.querySelectorAll(".focus-preset");
@@ -567,6 +595,10 @@ focusToggle.addEventListener("click", () => {
 });
 
 focusReset.addEventListener("click", resetFocus);
+windowFocusToggle.addEventListener("click", () => {
+  if (focusEndsAt) pauseFocus();
+  else startFocus();
+});
 
 setFocusLength(focusMinutes, { save: false });
 

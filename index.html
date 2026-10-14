@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=02ba33a9c5fb" />
+  <link rel="stylesheet" href="style.css?v=97b91c233e4e" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -148,6 +148,12 @@
       <div class="window-crossbar" aria-hidden="true"></div>
       <div class="window-time"><p>NO PLACE TO BE. NOTHING TO PROVE.</p>
         <time id="window-clock">--:--</time><p id="window-whisper">let the city carry on.</p></div>
+      <section class="window-focus" id="window-focus" aria-label="Session at the window" hidden>
+        <p class="window-focus-label" id="window-focus-label">ONE SMALL THING</p>
+        <div class="focus-orbit"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="orbit-track" cx="60" cy="60" r="55"/><circle class="orbit-progress" cx="60" cy="60" r="55" pathLength="1"/></svg><span id="window-focus-time">25:00</span></div>
+        <p class="window-focus-task" id="window-focus-task">Nothing else needs doing.</p>
+        <button id="window-focus-toggle" type="button">start session</button>
+      </section>
     </div>
     <div class="window-sill" aria-hidden="true"></div>
     <div class="desk-glow" aria-hidden="true"></div>
@@ -214,6 +220,8 @@
 
 
     <section class="focus" id="focus" aria-label="Focus timer">
+      <label class="focus-intention" for="focus-intention">ONE SMALL THING FOR TONIGHT<input id="focus-intention" type="text" maxlength="100" placeholder="Read a few pages, sketch, write…" autocomplete="off" /></label>
+      <p class="focus-intention-note" id="focus-intention-note" role="status"></p>
       <div class="focus-presets" id="focus-presets" aria-label="Session length">
         <button class="focus-preset" data-minutes="15" type="button">15</button>
         <button class="focus-preset" data-minutes="25" type="button">25</button>
@@ -323,6 +331,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=eb2600dc566d"></script>
+  <script src="app.js?v=90e40d9c9962"></script>
 </body>
 </html>
