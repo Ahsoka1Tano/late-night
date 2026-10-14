@@ -464,6 +464,9 @@ const FOCUS_PRESETS = [15, 25, 45, 60];
 const savedMinutes = Number(localStorage.getItem("lateNight.focusMinutes"));
 let focusMinutes = FOCUS_PRESETS.includes(savedMinutes) ? savedMinutes : 25;
 let focusPhase = "focus";
+let savedFocusSession = null;
+let focusReady = false;
+try { savedFocusSession = JSON.parse(localStorage.getItem("lateNight.focusSession")); } catch {}
 
 function focusLength() {
   return (focusPhase === "break" ? 5 : focusMinutes) * 60 * 1000;
@@ -479,7 +482,7 @@ const focusIntention = document.getElementById("focus-intention");
 const windowFocus = document.getElementById("window-focus");
 const windowFocusTime = document.getElementById("window-focus-time");
 const windowFocusToggle = document.getElementById("window-focus-toggle");
-try { focusIntention.value = localStorage.getItem("lateNight.intention") || ""; } catch {}
+try { focusIntention.value = (localStorage.getItem("lateNight.intention") || "").slice(0, 100); } catch {}
 function paintWindowFocus() {
   const shown = document.body.dataset.mood === "focus" || Boolean(focusEndsAt) || focusLeft < focusLength() || focusBlock.classList.contains("is-done");
   windowFocus.hidden = !shown;
@@ -511,9 +514,43 @@ let focusEndsAt = null;
 let focusTick = null;
 
 const BASE_TITLE = document.title;
+function saveFocusSession() {
+  if (!focusReady) return;
+  try {
+    localStorage.setItem("lateNight.focusSession", JSON.stringify({
+      minutes: focusMinutes, phase: focusPhase, left: focusLeft,
+      endsAt: focusEndsAt, done: focusBlock.classList.contains("is-done")
+    }));
+  } catch {
+    focusNote.textContent = "Timer stays here. Device storage unavailable.";
+    focusNote.classList.add("is-warning");
+  }
+}
+
+function restoreFocusSession() {
+  const saved = savedFocusSession;
+  const length = (saved?.phase === "break" ? 5 : saved?.minutes) * 60000;
+  if (saved && FOCUS_PRESETS.includes(saved.minutes) && ["focus", "break"].includes(saved.phase)
+      && Number.isFinite(saved.left) && saved.left > 0 && saved.left <= length
+      && typeof saved.done === "boolean" && (saved.endsAt === null ||
+        Number.isFinite(saved.endsAt) && saved.endsAt > 0 && saved.endsAt <= Date.now() + length)
+      && !(saved.done && saved.endsAt !== null)) {
+    setFocusLength(saved.minutes, { save: false });
+    focusPhase = saved.phase;
+    focusLeft = saved.left;
+    focusEndsAt = saved.endsAt;
+    focusBlock.classList.toggle("is-done", saved.done);
+    focusBlock.classList.toggle("is-running", Boolean(focusEndsAt));
+    focusToggle.textContent = focusEndsAt ? "pause" : "start";
+    if (saved.done) focusNote.textContent = focusPhase === "break" ? "No rush to begin again." : `that was ${focusMinutes} quiet minutes`;
+    if (focusEndsAt) focusTick = setInterval(paintFocus, 250);
+  }
+  focusReady = true;
+  paintFocus();
+}
 
 function paintFocus() {
-  const left = Math.max(0, focusEndsAt ? focusEndsAt - Date.now() : focusLeft);
+  const left = focusBlock.classList.contains("is-done") ? 0 : Math.max(0, focusEndsAt ? focusEndsAt - Date.now() : focusLeft);
   const total = Math.ceil(left / 1000);
   const mm = String(Math.floor(total / 60)).padStart(2, "0");
   const ss = String(total % 60).padStart(2, "0");
@@ -537,6 +574,7 @@ function startFocus() {
   focusBlock.classList.remove("is-done");
   focusNote.textContent = "";
   focusTick = setInterval(paintFocus, 250);
+  saveFocusSession();
   paintFocus();
 }
 
@@ -547,6 +585,7 @@ function pauseFocus() {
   focusTick = null;
   focusToggle.textContent = "start";
   focusBlock.classList.remove("is-running");
+  saveFocusSession();
   paintFocus();
 }
 
@@ -558,6 +597,8 @@ function resetFocus() {
   focusToggle.textContent = "start";
   focusBlock.classList.remove("is-running", "is-done");
   focusNote.textContent = "";
+  focusNote.classList.remove("is-warning");
+  saveFocusSession();
   paintFocus();
 }
 
@@ -572,7 +613,14 @@ function finishFocus() {
   focusTime.textContent = "00:00";
   document.title = BASE_TITLE;
   focusNote.textContent = focusPhase === "break" ? "No rush to begin again." : `that was ${focusMinutes} quiet minutes`;
-  if (focusPhase === "focus") keepSession(focusMinutes);
+  // Save the completed state before counting so a refresh cannot count it again.
+  saveFocusSession();
+  if (focusPhase === "focus") {
+    try { keepSession(focusMinutes); } catch {
+      focusNote.textContent += " · Stats could not be saved on this device.";
+      focusNote.classList.add("is-warning");
+    }
+  }
   focusProgress.style.setProperty("--progress", 1);
   focusProgress.setAttribute("aria-valuenow", "100");
   paintWindowFocus();
@@ -590,7 +638,9 @@ function setFocusLength(minutes, { save = true } = {}) {
   });
 
   resetFocus();
-  if (save) localStorage.setItem("lateNight.focusMinutes", String(minutes));
+  if (save) {
+    try { localStorage.setItem("lateNight.focusMinutes", String(minutes)); } catch {}
+  }
 }
 
 focusPresets.forEach((btn) => {
@@ -619,6 +669,7 @@ document.querySelectorAll("[data-focus-break]").forEach(button => button.addEven
 }));
 
 setFocusLength(focusMinutes, { save: false });
+document.addEventListener("visibilitychange", () => { if (!document.hidden) paintFocus(); });
 
 /* A quiet room keeps the same scene and audio; Escape brings the desk back. */
 const quietRoomButton = document.getElementById("quiet-room");
@@ -2193,3 +2244,4 @@ document.addEventListener("keydown", (e) => {
 
 setWindowScene(windowScene, { save: false });
 setMood(localStorage.getItem("lateNight.mood") || "music", { save: false });
+restoreFocusSession();

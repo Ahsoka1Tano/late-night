@@ -784,6 +784,7 @@ body[data-mood="focus"] .focus {
   opacity: 0.7;
   transform: none;
 }
+.focus .focus-note.is-warning { opacity: 1; transform: none; }
 
 /* --- the line for tonight --- */
 .tonight {

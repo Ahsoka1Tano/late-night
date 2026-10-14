@@ -894,3 +894,61 @@ test('focus finishes once and a five minute break never adds work to the stats',
   assert.equal(await page.locator('#window-focus-time').textContent(), '15:00');
   assert.equal(await page.locator('#focus-toggle').textContent(), 'start');
 });
+
+test('running and paused focus sessions survive refresh without starting audio', async t => {
+  const page = await openRoom(t);
+  await page.locator('.mood[data-mood="focus"]').click();
+  await page.locator('#focus-toggle').click();
+  await page.clock.runFor(10000);
+  await page.reload();
+  assert.equal(await page.locator('#focus-time').textContent(), '24:50');
+  assert.equal(await page.locator('#focus-toggle').textContent(), 'pause');
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)), false);
+  await page.locator('#focus-toggle').click();
+  await page.clock.fastForward(60000);
+  await page.reload();
+  assert.equal(await page.locator('#focus-time').textContent(), '24:50');
+  assert.equal(await page.locator('#focus-toggle').textContent(), 'start');
+});
+
+test('an overdue saved session completes once and finished breaks restore separately', async t => {
+  const page = await openRoom(t);
+  await page.evaluate(() => {
+    localStorage.setItem('lateNight.focusSession', JSON.stringify({minutes:15,phase:'focus',left:900000,endsAt:Date.now()-1000,done:false}));
+  });
+  await page.reload();
+  assert.equal(await page.locator('#window-focus-label').textContent(), 'ENOUGH FOR NOW');
+  const stats = await page.evaluate(() => readStats());
+  assert.equal(stats.sessions, 1);
+  assert.equal(stats.minutes, 15);
+  await page.reload();
+  assert.equal(await page.locator('#window-focus-time').textContent(), '00:00');
+  assert.deepEqual(await page.evaluate(() => readStats()), stats);
+  await page.locator('#window-focus [data-focus-break]').click();
+  await page.clock.runFor(30000);
+  await page.reload();
+  assert.equal(await page.locator('#window-focus-time').textContent(), '04:30');
+  await page.clock.fastForward(270000 + 300);
+  await page.reload();
+  assert.equal(await page.locator('#window-focus-time').textContent(), '00:00');
+  assert.deepEqual(await page.evaluate(() => readStats()), stats);
+});
+
+test('invalid saved timer is discarded and storage failures keep controls usable', async t => {
+  const page = await openRoom(t);
+  await page.evaluate(() => localStorage.setItem('lateNight.focusSession', JSON.stringify({minutes:999,phase:'focus',left:-1,endsAt:Infinity,done:false})));
+  await page.reload();
+  await page.locator('.mood[data-mood="focus"]').click();
+  assert.equal(await page.locator('#focus-time').textContent(), '25:00');
+  await page.evaluate(() => {
+    Storage.prototype.setItem = function(key) { if (key.startsWith('lateNight.focus') || key === 'lateNight.intention' || key === 'lateNight.stats') throw new Error('quota'); };
+  });
+  await page.locator('#focus-intention').fill('Stay here');
+  assert.match(await page.locator('#focus-intention-note').textContent(), /storage unavailable/);
+  await page.locator('#focus-toggle').click();
+  await page.clock.fastForward(1500000 + 300);
+  assert.equal(await page.locator('#window-focus-time').textContent(), '00:00');
+  assert.match(await page.locator('#focus-note').textContent(), /could not be saved/);
+  await page.locator('#focus-reset').click();
+  assert.equal(await page.locator('#focus-time').textContent(), '25:00');
+});
