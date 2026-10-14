@@ -602,6 +602,23 @@ windowFocusToggle.addEventListener("click", () => {
 
 setFocusLength(focusMinutes, { save: false });
 
+/* A quiet room keeps the same scene and audio; Escape brings the desk back. */
+const quietRoomButton = document.getElementById("quiet-room");
+function setQuietRoom(on) {
+  document.body.classList.toggle("is-quiet", on);
+  quietRoomButton.setAttribute("aria-pressed", String(on));
+  quietRoomButton.textContent = on ? "← back to the room" : "◌ quiet room";
+  quietRoomButton.focus({ preventScroll: true });
+  document.getElementById("window-view").scrollIntoView({ block: "center", behavior: "instant" });
+  window.dispatchEvent(new Event("resize"));
+}
+quietRoomButton.addEventListener("click", () => setQuietRoom(!document.body.classList.contains("is-quiet")));
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && document.body.classList.contains("is-quiet")) {
+    setQuietRoom(false);
+  }
+});
+
 
 /* --- one line for tonight --- */
 const TONIGHT_LINES = [

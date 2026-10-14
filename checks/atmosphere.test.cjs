@@ -842,3 +842,35 @@ test('coastal views and all five evening cards fit phones and desktop', async t=
   if(process.env.ATMOSPHERE_PREVIEW_DIR)await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'coast-'+width+'.png'),animations:'disabled'});
  }
 });
+
+test('window focus mirrors an intention and keeps a session across moods', async t => {
+  const page = await openRoom(t);
+  await page.locator('.mood[data-mood="focus"]').click();
+  await page.locator('#focus-intention').fill('Read a chapter <quietly>');
+  assert.equal(await page.locator('#window-focus-task').textContent(), 'Read a chapter <quietly>');
+  await page.locator('#window-focus-toggle').click();
+  await page.clock.runFor(10000);
+  assert.equal(await page.locator('#window-focus-time').textContent(), '24:50');
+  await page.locator('.mood[data-mood="music"]').click();
+  assert.equal(await page.locator('#window-focus').isVisible(), true);
+  await page.locator('#window-focus-toggle').click();
+  await page.clock.runFor(5000);
+  assert.equal(await page.locator('#window-focus-time').textContent(), '24:50');
+  await page.reload();
+  assert.equal(await page.locator('#focus-intention').inputValue(), 'Read a chapter <quietly>');
+});
+
+test('quiet room keeps tape and rain playing and Escape returns to the desk', async t => {
+  const page = await openRoom(t, 390);
+  await page.locator('[data-evening="records"]').click();
+  await page.clock.runFor(1500);
+  const playing = await page.evaluate(() => window.media.filter(a => !a.paused).length);
+  await page.locator('#quiet-room').click();
+  assert.equal(await page.locator('.room-desk').isVisible(), false);
+  assert.equal(await page.locator('.evening-scenes').isVisible(), false);
+  assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length), playing);
+  assert.equal(await page.locator('#quiet-room').getAttribute('aria-pressed'), 'true');
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('.room-desk').isVisible(), true);
+  assert.equal(await page.locator('#quiet-room').getAttribute('aria-pressed'), 'false');
+});

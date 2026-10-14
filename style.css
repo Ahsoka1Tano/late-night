@@ -1941,6 +1941,10 @@ body[data-mood="sleep"] .railway-bridge { opacity: .3; }
 .room .mood-secret { display: none; }
 body.knows-aurora .room .mood-secret { display: flex; }
 .room .mood.is-active { background: color-mix(in srgb, var(--accent) 12%, transparent); box-shadow: none; }
+.quiet-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin: 0 0 14px; }
+.quiet-toolbar p { color: var(--text-dim); font-size: 8px; letter-spacing: .17em; }
+.quiet-toolbar button { min-height: 44px; padding: 8px 14px; border: 1px solid #ffffff20; border-radius: 999px; background: #ffffff04; color: var(--text); font: inherit; font-size: 11px; cursor: pointer; }
+.quiet-toolbar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .evening-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 26px; align-items: start; }
 .window-view {
   position: sticky;
@@ -2350,3 +2354,14 @@ body:not([data-view='coast']) .lighthouse-beam,.city-is-hidden .lighthouse-beam 
 .scene-art { flex-basis: auto; width: 100%; height: 86px; }
 @media(max-width:1000px) { .scene-cards,.scene-cards.has-personal { grid-template-columns: repeat(2,minmax(0,1fr)); } .scene-card { flex-direction: row; align-items: center; } .scene-art { flex: 0 0 60px; height: 96px; } .has-personal [data-evening='personal'] { grid-column: 1 / -1; } }
 @media(max-width:600px) { .scene-art { flex-basis: 42px; height: 80px; } .scene-card-copy strong { font-size: 12px; } }
+/* The window takes the evening, with an always reachable way back. */
+body.is-quiet .room { width: min(1320px, 96vw); padding-top: 18px; }
+body.is-quiet .room > :not(.quiet-toolbar):not(.evening-layout),body.is-quiet .room-desk,body.is-quiet .evening-notes,body.is-quiet .hint { display: none; }
+body.is-quiet .evening-layout { display: block; }
+body.is-quiet .window-view { position: relative; top: auto; height: max(500px, calc(100svh - 96px)); max-height: 950px; }
+body.is-quiet .focus-orbit { width: clamp(140px, 24vw, 270px); }
+body.is-quiet .focus-orbit span { font-size: clamp(38px, 7vw, 78px); }
+body.is-quiet .window-focus { top: 10%; }
+body.is-quiet .window-focus-task { font-size: clamp(12px, 1.5vw, 18px); }
+body.is-quiet .window-focus button { min-height: 44px; }
+@media (max-width: 600px) { .quiet-toolbar p { max-width: 120px; line-height: 1.7; } body.is-quiet .window-focus { top: 12%; } }
