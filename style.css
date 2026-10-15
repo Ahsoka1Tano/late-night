@@ -2341,6 +2341,8 @@ body .window-view[data-sky='afterglow'] { --sky-top: #221b2f; --sky-bottom: #715
 .cat-paw { fill: var(--cat-cream); stroke: var(--cat-mid); stroke-width: 1; }
 .cat-tail { fill: none; stroke: url(#cat-tail-fur); stroke-width: 16; stroke-linecap: round; }
 .cat-tail-stripes { fill: none; stroke: var(--cat-ink); stroke-width: 4; opacity: .4; }
+.cat-rim { fill: none; stroke: var(--lamp-edge); stroke-width: 1.5; stroke-linecap: round; opacity: calc(var(--lamp-strength, 1) * var(--light-multiplier, 1) * .5); transition: opacity 1s ease; }
+.lamp-off .cat-rim { opacity: 0; }
 .cat-status { position: absolute; bottom: 37%; left: 32%; right: 27%; z-index: 8; color: #ded2de; font-size: 10px; text-align: center; pointer-events: none; }
 .window-cat[data-coat='ink'] { --cat-light: #70758b; --cat-mid: #4b5067; --cat-dark: #2c3045; --cat-cream: #aaa5b1; --cat-ink: #25283a; }
 .window-cat[data-coat='moon'] { --cat-light: #ccc7cf; --cat-mid: #a5a0b1; --cat-dark: #706c84; --cat-cream: #ebe2da; --cat-ink: #757080; }

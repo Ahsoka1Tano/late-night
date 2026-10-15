@@ -1102,3 +1102,36 @@ test('window company survives quiet mode, view changes and an ongoing focus sess
   assert.equal(await page.locator('.room-desk').isVisible(), true);
   assert.equal(await page.locator('#focus-toggle').textContent(), 'pause');
 });
+
+test('company controls and all coats fit a phone and cat stays reachable after focus', async t => {
+  for (const width of [320, 768, 1440]) {
+    const page = await openRoom(t, width);
+    await page.locator('#window-company summary').click();
+    for (const coat of ['ginger','ink','moon']) {
+      await page.locator(`button[data-cat-coat="${coat}"]`).click();
+      await page.locator('#window-cat').click();
+      assert.ok(await page.locator('#window-cat').isVisible());
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true);
+      if (process.env.ATMOSPHERE_PREVIEW_DIR && width === 1440) await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR, `cat-coat-${coat}.png`)});
+    }
+    if (width === 320) {
+      await page.locator('.mood[data-mood="focus"]').click();
+      await page.locator('#focus-intention').fill('A long quiet task for the evening');
+      await page.locator('#focus-toggle').click();
+      await page.clock.fastForward(1500000 + 300);
+      await page.locator('#window-cat').click({timeout:3000});
+      assert.equal(await page.locator('#window-cat').getAttribute('data-state'), 'content');
+    }
+    await page.close();
+  }
+});
+
+test('corrupted cat preferences fall back safely without replacing the saved data', async t => {
+  const page = await openRoom(t);
+  const bad = JSON.stringify({coat:'unknown',present:'true'});
+  await page.evaluate(value => localStorage.setItem('lateNight.cat',value), bad);
+  await page.reload();
+  assert.equal(await page.locator('#window-cat').getAttribute('data-coat'), 'ginger');
+  assert.equal(await page.locator('#window-cat').isVisible(), true);
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.cat')), bad);
+});

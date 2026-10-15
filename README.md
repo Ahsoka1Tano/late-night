@@ -29,6 +29,24 @@ The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
 
+## A little company
+
+There is a sleeping cat between the lamp and your cup. Touch it, or focus it and
+press Enter or Space: a slow blink, a little tail movement, then back to dreaming.
+Its breathing is quiet; there are no sounds to interrupt your recording.
+
+In **Window company**, choose **ginger**, **ink** or **moon**, or turn the companion
+off for an empty sill. The choice stays on this device and is included in
+**Your evening**. Older saved evenings leave your current company choice alone.
+Changing moods or views keeps the cat in the room, including **Quiet room**.
+
+The desk lamp leaves a faint coloured edge on the fur. Motion pauses in hidden
+tabs, and reduced motion keeps the illustration still while leaving touch and
+keyboard reactions available. A tab that returns later lets the cat settle back
+to sleep rather than replaying an old reaction.
+
+![A little company at the window](assets/window-company.png)
+
 ## One small thing, by the window
 
 Choose **Focus**, write one small intention and pick 15, 25, 45 or 60 minutes.

@@ -100,6 +100,9 @@ only purpose is filling a day.
 - [x] interactive desk lamp, warm room light and a steaming cup
 - [x] interactive tea / coffee cup with remembered choice and accessible controls
 - [x] gradual cooling, a warming ritual, hidden-tab catch-up and saved-scene compatibility
+- [x] window company: an illustrated cat with breathing, a slow blink and tail movement
+- [x] remembered ginger, ink and moon coats, optional solitude and saved-evening support
+- [x] companion lighting, keyboard interaction, hidden-tab pausing and reduced motion
 - [x] remembered amber, moon and dim lamp tones
 - [x] keyboard-accessible brightness control and a faint lamp reflection in the glass
 - [x] one continuous room: window, mood controls, audio and journal on the same page
