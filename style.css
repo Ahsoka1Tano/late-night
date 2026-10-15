@@ -2342,6 +2342,19 @@ body .window-view[data-sky='afterglow'] { --sky-top: #221b2f; --sky-bottom: #715
 .cat-tail { fill: none; stroke: url(#cat-tail-fur); stroke-width: 16; stroke-linecap: round; }
 .cat-tail-stripes { fill: none; stroke: var(--cat-ink); stroke-width: 4; opacity: .4; }
 .cat-status { position: absolute; bottom: 37%; left: 32%; right: 27%; z-index: 8; color: #ded2de; font-size: 10px; text-align: center; pointer-events: none; }
+.cat-breath { transform-origin: 120px 120px; animation: cat-breathing 6.5s ease-in-out infinite; }
+.cat-head { transform-origin: 173px 96px; transition: transform 1.2s ease; }
+.cat-open-eyes,.cat-sleep-eyes { transition: opacity .8s ease; }
+.cat-tail,.cat-tail-stripes { transform-origin: 75px 112px; animation: cat-dream 23s ease-in-out infinite; }
+.window-cat[data-state='content'] .cat-head { transform: rotate(-5deg) translateY(-3px); }
+.window-cat[data-state='content'] .cat-open-eyes { opacity: 1; }
+.window-cat[data-state='content'] .cat-sleep-eyes { opacity: 0; }
+.window-cat[data-state='content'] .cat-tail,.window-cat[data-state='content'] .cat-tail-stripes { animation: cat-thanks 1.8s ease-in-out infinite; }
+.city-is-hidden .cat-breath,.city-is-hidden .cat-tail,.city-is-hidden .cat-tail-stripes { animation-play-state: paused; }
+@keyframes cat-breathing { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(1.025); } }
+@keyframes cat-dream { 0%,78%,88%,100% { transform: rotate(0); } 83% { transform: rotate(-3deg); } }
+@keyframes cat-thanks { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-5deg); } }
+@media (prefers-reduced-motion: reduce) { .cat-breath,.cat-tail,.cat-tail-stripes { animation: none !important; } .cat-head,.cat-open-eyes,.cat-sleep-eyes { transition: none; } }
 .coast-view { position: absolute; inset: auto 0 0; height: 53%; z-index: 2; opacity: 0; pointer-events: none; transition: opacity 1.8s; }
 .coast-view svg { display: block; width: 100%; height: 100%; }
 .sea-water { position: absolute; inset: auto 0 0; height: 25%; z-index: 1; opacity: 0; background: linear-gradient(#344e63,#12283c); pointer-events: none; transition: opacity 1.8s; }

@@ -1001,3 +1001,39 @@ test('the illustrated cat fits the sill without covering the cup or lamp', async
     await page.close();
   }
 });
+
+test('petting the cat works with the keyboard and leaves the tape and rain alone', async t => {
+  const page = await openRoom(t);
+  await page.locator('[data-evening="records"]').click();
+  await page.clock.runFor(1500);
+  const sounds = await page.evaluate(() => window.media.filter(a => !a.paused).map(a => a.src));
+  await page.locator('#window-cat').focus();
+  await page.keyboard.press('Enter');
+  assert.equal(await page.locator('#window-cat').getAttribute('data-state'), 'content');
+  assert.match(await page.locator('#cat-status').textContent(), /slow blink/);
+  assert.deepEqual(await page.evaluate(() => window.media.filter(a => !a.paused).map(a => a.src)), sounds);
+  await page.clock.runFor(5000);
+  assert.equal(await page.locator('#window-cat').getAttribute('data-state'), 'asleep');
+  assert.equal(await page.locator('#cat-status').textContent(), '');
+});
+
+test('cat motion respects reduced motion and petting catches up after a hidden tab', async t => {
+  const page = await openRoom(t, 1280, 'no-preference');
+  assert.equal(await page.locator('.cat-breath').evaluate(el => getComputedStyle(el).animationName), 'cat-breathing');
+  await page.locator('#window-cat').click();
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable:true, value:true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  assert.equal(await page.locator('.cat-breath').evaluate(el => getComputedStyle(el).animationPlayState), 'paused');
+  await page.clock.fastForward(6000);
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable:true, value:false });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  assert.equal(await page.locator('#window-cat').getAttribute('data-state'), 'asleep');
+  await page.emulateMedia({reducedMotion:'reduce'});
+  assert.equal(await page.locator('.cat-breath').evaluate(el => getComputedStyle(el).animationName), 'none');
+  await page.locator('#window-cat').click();
+  assert.equal(await page.locator('#window-cat').getAttribute('data-state'), 'content');
+});

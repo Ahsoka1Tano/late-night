@@ -2103,6 +2103,28 @@ cityMotion.addEventListener("change", paintMeteorControls);
 document.addEventListener("visibilitychange", paintMeteorControls);
 paintMeteorControls();
 
+/* A companion on the sill: a touch, a slow blink, then back to sleep. */
+const catButton = document.getElementById("window-cat");
+const catStatus = document.getElementById("cat-status");
+let catPetUntil = 0;
+let catPetTimer = null;
+function settleCat() {
+  clearTimeout(catPetTimer);
+  catPetTimer = null;
+  const awake = catPetUntil > Date.now();
+  catButton.dataset.state = awake ? "content" : "asleep";
+  catButton.setAttribute("aria-label", awake ? "Pet the contented cat" : "Pet the sleeping cat");
+  if (awake && !document.hidden) catPetTimer = setTimeout(settleCat, catPetUntil - Date.now());
+  if (!awake) catStatus.textContent = "";
+}
+catButton.addEventListener("click", () => {
+  catPetUntil = Date.now() + 4500;
+  catStatus.textContent = "A slow blink. Nowhere else to be.";
+  settleCat();
+});
+document.addEventListener("visibilitychange", settleCat);
+settleCat();
+
 /* --- a whole evening, chosen with one deliberate gesture --- */
 const EVENING_SCENES = {
   harbour: { name: "Harbour after hours", mood: "calm", view: "coast", rainOn: false, rain: "drizzle", light: "amber", strength: 45, lamp: true, ambience: true, drink: "tea", sky: "midnight", moon: "full", beacon: true },
