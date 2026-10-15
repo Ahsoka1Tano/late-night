@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=3835c967ce1f" />
+  <link rel="stylesheet" href="style.css?v=dd4bca6fb41e" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -304,6 +304,17 @@
           <label class="light-brightness" for="light-brightness"><span>brightness</span><output id="light-level" for="light-brightness">70%</output></label>
           <input id="light-brightness" class="light-slider" type="range" min="10" max="100" step="1" value="70" />
         </section>
+        <details class="window-company" id="window-company">
+          <summary>Window company <span id="cat-label">ginger · here</span></summary>
+          <p>A warm spot. No demands.</p>
+          <div class="cat-coats" aria-label="Cat coat">
+            <button data-cat-coat="ginger" type="button" aria-pressed="true"><i aria-hidden="true"></i>ginger</button>
+            <button data-cat-coat="ink" type="button" aria-pressed="false"><i aria-hidden="true"></i>ink</button>
+            <button data-cat-coat="moon" type="button" aria-pressed="false"><i aria-hidden="true"></i>moon</button>
+          </div>
+          <button id="cat-toggle" type="button" aria-pressed="true">cat at the window · on</button>
+          <p id="cat-settings-note" role="status">Touch the cat for a slow blink.</p>
+        </details>
         <details class="outside-sky" id="outside-sky">
           <summary>Outside sky <span id="sky-label">follow mood</span></summary>
           <div class="sky-choices" aria-label="Sky palette">
@@ -361,6 +372,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=4ffcfe0c4304"></script>
+  <script src="app.js?v=2e559015f4d4"></script>
 </body>
 </html>

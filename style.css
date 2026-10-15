@@ -2342,6 +2342,20 @@ body .window-view[data-sky='afterglow'] { --sky-top: #221b2f; --sky-bottom: #715
 .cat-tail { fill: none; stroke: url(#cat-tail-fur); stroke-width: 16; stroke-linecap: round; }
 .cat-tail-stripes { fill: none; stroke: var(--cat-ink); stroke-width: 4; opacity: .4; }
 .cat-status { position: absolute; bottom: 37%; left: 32%; right: 27%; z-index: 8; color: #ded2de; font-size: 10px; text-align: center; pointer-events: none; }
+.window-cat[data-coat='ink'] { --cat-light: #70758b; --cat-mid: #4b5067; --cat-dark: #2c3045; --cat-cream: #aaa5b1; --cat-ink: #25283a; }
+.window-cat[data-coat='moon'] { --cat-light: #ccc7cf; --cat-mid: #a5a0b1; --cat-dark: #706c84; --cat-cream: #ebe2da; --cat-ink: #757080; }
+.lamp-off .window-cat { filter: brightness(.7); }
+.window-company { margin-top: 24px; border-top: 1px solid #b0b8d01a; padding-top: 16px; color: var(--text-dim); }
+.window-company summary { display: flex; justify-content: space-between; gap: 8px; align-items: center; min-height: 44px; cursor: pointer; font-size: 12px; color: var(--text); }
+.window-company summary span { font-size: 10px; color: var(--text-dim); }
+.window-company p { font-size: 11px; line-height: 1.8; margin: 8px 0; }
+.cat-coats { display: flex; gap: 7px; margin: 12px 0; }
+.window-company button { min-height: 44px; border-radius: 10px; border: 1px solid #ffffff1c; background: #ffffff03; color: var(--text-dim); font: inherit; font-size: 11px; cursor: pointer; padding: 8px 10px; }
+.cat-coats button { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.cat-coats button[aria-pressed='true'] { border-color: var(--accent); color: var(--text); background: #ffffff08; }
+.cat-coats i { width: 8px; height: 8px; border-radius: 50%; background: #c7946b; }
+[data-cat-coat='ink'] i { background: #70758b; } [data-cat-coat='moon'] i { background: #ccc7cf; }
+.window-company button:focus-visible,.window-company summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .cat-breath { transform-origin: 120px 120px; animation: cat-breathing 6.5s ease-in-out infinite; }
 .cat-head { transform-origin: 173px 96px; transition: transform 1.2s ease; }
 .cat-open-eyes,.cat-sleep-eyes { transition: opacity .8s ease; }

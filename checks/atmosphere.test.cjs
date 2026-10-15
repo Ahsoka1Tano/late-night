@@ -1037,3 +1037,28 @@ test('cat motion respects reduced motion and petting catches up after a hidden t
   await page.locator('#window-cat').click();
   assert.equal(await page.locator('#window-cat').getAttribute('data-state'), 'content');
 });
+
+test('cat coats and solitude persist and storage failures leave the current choice usable', async t => {
+  const page = await openRoom(t, 320);
+  await page.locator('#window-company summary').click();
+  await page.locator('button[data-cat-coat="ink"]').click();
+  assert.equal(await page.locator('#window-cat').getAttribute('data-coat'), 'ink');
+  await page.locator('#cat-toggle').click();
+  assert.equal(await page.locator('#window-cat').isVisible(), false);
+  await page.reload();
+  assert.equal(await page.locator('#window-cat').isVisible(), false);
+  assert.equal(await page.locator('#window-cat').getAttribute('data-coat'), 'ink');
+  await page.locator('#window-company summary').click();
+  await page.locator('#cat-toggle').click();
+  await page.locator('button[data-cat-coat="moon"]').click();
+  assert.equal(await page.locator('#window-cat').isVisible(), true);
+  assert.equal(await page.locator('button[data-cat-coat="moon"]').getAttribute('aria-pressed'), 'true');
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function(key,value) { if (key === 'lateNight.cat') throw new Error('quota'); return original.call(this,key,value); };
+  });
+  await page.locator('button[data-cat-coat="ginger"]').click();
+  assert.equal(await page.locator('#window-cat').getAttribute('data-coat'), 'ginger');
+  assert.match(await page.locator('#cat-settings-note').textContent(), /storage unavailable/);
+  assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('lateNight.cat')).coat), 'moon');
+});

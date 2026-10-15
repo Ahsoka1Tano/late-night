@@ -2125,6 +2125,39 @@ catButton.addEventListener("click", () => {
 document.addEventListener("visibilitychange", settleCat);
 settleCat();
 
+const CAT_COATS = ["ginger", "ink", "moon"];
+let catCoat = "ginger";
+let catPresent = true;
+try {
+  const savedCat = JSON.parse(localStorage.getItem("lateNight.cat"));
+  if (savedCat && CAT_COATS.includes(savedCat.coat) && typeof savedCat.present === "boolean") {
+    catCoat = savedCat.coat;
+    catPresent = savedCat.present;
+  }
+} catch {}
+function setCatCompanion(coat, present, { save = true } = {}) {
+  if (!CAT_COATS.includes(coat) || typeof present !== "boolean") return;
+  catCoat = coat;
+  catPresent = present;
+  catButton.dataset.coat = coat;
+  catButton.hidden = !present;
+  windowView.dataset.catCoat = coat;
+  windowView.dataset.catPresent = String(present);
+  if (!present) { catPetUntil = 0; settleCat(); }
+  document.querySelectorAll("button[data-cat-coat]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.catCoat === coat)));
+  document.getElementById("cat-label").textContent = present ? `${coat} · here` : "a little solitude";
+  document.getElementById("cat-toggle").setAttribute("aria-pressed", String(present));
+  document.getElementById("cat-toggle").textContent = `cat at the window · ${present ? "on" : "off"}`;
+  document.getElementById("cat-settings-note").textContent = present ? "Touch the cat for a slow blink." : "The warm spot will be here later.";
+  if (save) {
+    try { localStorage.setItem("lateNight.cat", JSON.stringify({ coat, present })); }
+    catch { document.getElementById("cat-settings-note").textContent = "Kept for this visit. Device storage unavailable."; }
+  }
+}
+document.querySelectorAll("button[data-cat-coat]").forEach(button => button.addEventListener("click", () => setCatCompanion(button.dataset.catCoat, catPresent)));
+document.getElementById("cat-toggle").addEventListener("click", () => setCatCompanion(catCoat, !catPresent));
+setCatCompanion(catCoat, catPresent, { save: false });
+
 /* --- a whole evening, chosen with one deliberate gesture --- */
 const EVENING_SCENES = {
   harbour: { name: "Harbour after hours", mood: "calm", view: "coast", rainOn: false, rain: "drizzle", light: "amber", strength: 45, lamp: true, ambience: true, drink: "tea", sky: "midnight", moon: "full", beacon: true },
