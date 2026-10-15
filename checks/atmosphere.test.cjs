@@ -987,3 +987,17 @@ test('completed focus controls remain tappable beside the lamp on a small phone'
   await page.locator('#desk-lamp').click();
   assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'), 'false');
 });
+
+test('the illustrated cat fits the sill without covering the cup or lamp', async t => {
+  for (const width of [320, 768, 1440]) {
+    const page = await openRoom(t, width);
+    const cat = await page.locator('#window-cat').boundingBox();
+    const cup = await page.locator('#window-cup').boundingBox();
+    const lamp = await page.locator('#desk-lamp').boundingBox();
+    assert.ok(cat.width >= 44 && cat.height >= 44);
+    assert.ok(cat.x + cat.width < cup.x + 5, `Cat leaves room for the cup at ${width}`);
+    assert.ok(cat.x >= lamp.x + lamp.width - 16, `Cat leaves room for the lamp at ${width}`);
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR, `cat-${width}.png`)});
+    await page.close();
+  }
+});

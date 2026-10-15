@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=ed4f9950a2ad" />
+  <link rel="stylesheet" href="style.css?v=b21348e6149c" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -159,6 +159,33 @@
     </div>
     <div class="window-sill" aria-hidden="true"></div>
     <div class="desk-glow" aria-hidden="true"></div>
+    <button class="window-cat" id="window-cat" type="button" aria-label="Pet the sleeping cat">
+      <svg viewBox="0 0 240 130" aria-hidden="true">
+        <defs><linearGradient id="cat-fur" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="var(--cat-light)"/><stop offset="1" stop-color="var(--cat-dark)"/></linearGradient><linearGradient id="cat-tail-fur" x1="0" y1="0" x2="1" y2="1"><stop stop-color="var(--cat-mid)"/><stop offset="1" stop-color="var(--cat-dark)"/></linearGradient></defs>
+        <ellipse class="cat-shadow" cx="122" cy="119" rx="104" ry="8"/>
+        <g class="cat-breath">
+          <path class="cat-body" d="M29 104C15 73 35 39 72 32c39-9 75 6 89 37l33 29c-8 21-41 24-78 24H57c-17 0-24-6-28-18Z"/>
+          <path class="cat-haunch" d="M35 94c-5-25 14-43 36-41 26 1 36 23 29 44"/>
+          <path class="cat-stripe" d="m58 37 8 17m15-22 3 17m18-16-3 17m21-9-7 14"/>
+          <g class="cat-head">
+            <path class="cat-ear" d="m142 63-8-38c16 3 26 11 31 23m22 2 26-23c4 15 2 27-3 41"/>
+            <path class="cat-inner-ear" d="m142 48-3-14 15 15m43 5 11-15-2 18"/>
+            <path class="cat-face" d="M134 70c0-20 17-30 39-29 26-1 43 12 43 33 0 23-20 37-43 37-24 0-41-16-39-41Z"/>
+            <path class="cat-cheek" d="M153 84c4-8 16-8 21-2 5-5 17-6 23 2-1 15-12 21-24 21s-20-9-20-21Z"/>
+            <path class="cat-stripe" d="m163 43 4 13m14-13-3 14m-42 13 11 4m63-5-10 4"/>
+            <g class="cat-sleep-eyes"><path d="M146 77q7 7 14 0m24 0q7 7 14 0"/></g>
+            <g class="cat-open-eyes"><ellipse cx="153" cy="77" rx="5" ry="4"/><ellipse cx="191" cy="77" rx="5" ry="4"/><path d="M153 74v6m38-6v6"/></g>
+            <path class="cat-nose" d="m169 86 9 0-5 5Z"/>
+            <path class="cat-mouth" d="M173 91v3m0-1q-4 5-8 1m8-1q4 5 8 1"/>
+            <path class="cat-whiskers" d="m150 88-23-4m23 10-25 2m72-8 24-4m-24 10 24 3"/>
+          </g>
+          <path class="cat-paw" d="M141 104c10-7 29-4 30 6 0 10-31 12-40 6m17-10 1 8m8-8 1 7"/>
+          <path class="cat-tail" d="M38 91C18 92 15 118 48 119h77c20 0 22-22 6-23-9-1-17 9-10 12"/>
+          <path class="cat-tail-stripes" d="m47 109-2 10m18-10-1 10m19-10v10"/>
+        </g>
+      </svg>
+    </button>
+    <p class="cat-status" id="cat-status" role="status"></p>
     <button class="desk-lamp" id="desk-lamp" type="button" aria-label="Desk lamp" aria-pressed="true">
       <span class="lamp-shade"></span><span class="lamp-stem"></span><span class="lamp-base"></span>
     </button>

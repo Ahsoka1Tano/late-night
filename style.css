@@ -2324,6 +2324,24 @@ body .window-view[data-sky='afterglow'] { --sky-top: #221b2f; --sky-bottom: #715
 [data-personal-sky='midnight'] .art-personal { background: radial-gradient(circle at 76% 22%,#d4dce9 0 5px,transparent 6px),linear-gradient(#080e1f,#202e46); }
 [data-personal-sky='afterglow'] .art-personal { background: radial-gradient(circle at 76% 22%,#efddc4 0 5px,transparent 6px),linear-gradient(#221b2f,#71566e); }
 /* A light on the headland, with a quiet bay beyond it. */
+.window-cat { --cat-light: #c7946b; --cat-mid: #a46e50; --cat-dark: #674737; --cat-cream: #d8b390; --cat-ink: #573c33; position: absolute; bottom: 21%; left: 49%; transform: translateX(-50%); z-index: 6; width: clamp(84px, 17vw, 180px); min-height: 48px; padding: 0; border: 0; border-radius: 45%; background: none; cursor: pointer; }
+.window-cat svg { display: block; width: 100%; height: auto; overflow: visible; }
+.window-cat:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+.cat-shadow { fill: #0006; }
+.cat-body,.cat-face,.cat-ear { fill: url(#cat-fur); stroke: var(--cat-dark); stroke-width: 1; }
+.cat-haunch { fill: none; stroke: var(--cat-mid); stroke-width: 2; }
+.cat-stripe { fill: none; stroke: var(--cat-ink); stroke-width: 5; stroke-linecap: round; opacity: .45; }
+.cat-inner-ear { fill: none; stroke: #b17b7d; stroke-width: 4; stroke-linecap: round; }
+.cat-cheek { fill: var(--cat-cream); opacity: .7; }
+.cat-sleep-eyes,.cat-mouth { fill: none; stroke: var(--cat-ink); stroke-width: 2; stroke-linecap: round; }
+.cat-open-eyes { opacity: 0; fill: #c7c58e; }
+.cat-open-eyes path { stroke: #262732; stroke-width: 2; }
+.cat-nose { fill: #775052; }
+.cat-whiskers { fill: none; stroke: #e6d4c0; stroke-width: .8; opacity: .6; }
+.cat-paw { fill: var(--cat-cream); stroke: var(--cat-mid); stroke-width: 1; }
+.cat-tail { fill: none; stroke: url(#cat-tail-fur); stroke-width: 16; stroke-linecap: round; }
+.cat-tail-stripes { fill: none; stroke: var(--cat-ink); stroke-width: 4; opacity: .4; }
+.cat-status { position: absolute; bottom: 37%; left: 32%; right: 27%; z-index: 8; color: #ded2de; font-size: 10px; text-align: center; pointer-events: none; }
 .coast-view { position: absolute; inset: auto 0 0; height: 53%; z-index: 2; opacity: 0; pointer-events: none; transition: opacity 1.8s; }
 .coast-view svg { display: block; width: 100%; height: 100%; }
 .sea-water { position: absolute; inset: auto 0 0; height: 25%; z-index: 1; opacity: 0; background: linear-gradient(#344e63,#12283c); pointer-events: none; transition: opacity 1.8s; }
@@ -2369,3 +2387,4 @@ body.is-quiet .window-focus { top: 4%; }
 body.is-quiet .window-focus-task { font-size: clamp(12px, 1.5vw, 18px); }
 body.is-quiet .window-focus button { min-height: 44px; }
 @media (max-width: 600px) { .quiet-toolbar p { max-width: 120px; line-height: 1.7; } body.is-quiet .window-focus { top: 5%; } }
+@media (max-width: 760px) { .window-cat { width: 76px; left: 50%; } .window-cup { right: 12%; } .window-cat svg { position: absolute; bottom: 0; } }
