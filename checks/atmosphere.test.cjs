@@ -1062,3 +1062,43 @@ test('cat coats and solitude persist and storage failures leave the current choi
   assert.match(await page.locator('#cat-settings-note').textContent(), /storage unavailable/);
   assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('lateNight.cat')).coat), 'moon');
 });
+
+test('personal evenings restore cat settings and older evenings leave company alone', async t => {
+  const page = await openRoom(t);
+  await page.locator('#window-company summary').click();
+  await page.locator('button[data-cat-coat="moon"]').click();
+  await page.locator('#cat-toggle').click();
+  await page.locator('#keep-evening').click();
+  assert.match(await page.locator('#personal-recipe').textContent(), /solitude/);
+  await page.locator('#cat-toggle').click();
+  assert.equal(await page.locator('[data-evening="personal"]').getAttribute('aria-pressed'), 'false');
+  await page.locator('button[data-cat-coat="ink"]').click();
+  await page.locator('[data-evening="personal"]').click();
+  assert.equal(await page.locator('#window-cat').isVisible(), false);
+  assert.equal(await page.locator('#window-cat').getAttribute('data-coat'), 'moon');
+  await page.evaluate(() => {
+    const older = JSON.parse(localStorage.getItem('lateNight.personalScene'));
+    delete older.cat;
+    localStorage.setItem('lateNight.personalScene', JSON.stringify(older));
+    localStorage.setItem('lateNight.cat', JSON.stringify({coat:'ink',present:true}));
+  });
+  await page.reload();
+  await page.locator('[data-evening="personal"]').click();
+  assert.equal(await page.locator('#window-cat').isVisible(), true);
+  assert.equal(await page.locator('#window-cat').getAttribute('data-coat'), 'ink');
+});
+
+test('window company survives quiet mode, view changes and an ongoing focus session', async t => {
+  const page = await openRoom(t);
+  await page.locator('.mood[data-mood="focus"]').click();
+  await page.locator('#focus-toggle').click();
+  await page.locator('#quiet-room').click();
+  await page.locator('#window-cat').click();
+  await page.clock.runFor(2000);
+  assert.equal(await page.locator('#window-focus-time').textContent(), '24:58');
+  await page.locator('button[data-view="coast"]').click();
+  assert.equal(await page.locator('#window-cat').getAttribute('data-state'), 'content');
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('.room-desk').isVisible(), true);
+  assert.equal(await page.locator('#focus-toggle').textContent(), 'pause');
+});
