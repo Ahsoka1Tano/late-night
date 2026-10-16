@@ -1135,3 +1135,30 @@ test('corrupted cat preferences fall back safely without replacing the saved dat
   assert.equal(await page.locator('#window-cat').isVisible(), true);
   assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.cat')), bad);
 });
+
+test('cafe view remembers the street and preserves tape, rain and the journal', async t => {
+  const page = await openRoom(t);
+  await page.locator('[data-evening="records"]').click();
+  await page.clock.runFor(1600);
+  await page.locator('#journal-note').fill('The last café is still open.');
+  const sounds = await page.evaluate(() => window.media.filter(a => !a.paused).map(a => a.src));
+  await page.locator('button[data-view="cafe"]').click();
+  assert.equal(await page.locator('body').getAttribute('data-view'), 'cafe');
+  assert.deepEqual(await page.evaluate(() => window.media.filter(a => !a.paused).map(a => a.src)), sounds);
+  assert.equal(await page.locator('#journal-note').inputValue(), 'The last café is still open.');
+  await page.reload();
+  assert.equal(await page.locator('body').getAttribute('data-view'), 'cafe');
+  assert.equal(await page.locator('button[data-view="cafe"]').getAttribute('aria-pressed'), 'true');
+});
+
+test('cafe artwork and four view buttons fit a narrow phone and desktop', async t => {
+  for (const width of [320, 768, 1440]) {
+    const page = await openRoom(t, width);
+    await page.locator('button[data-view="cafe"]').click();
+    assert.ok(await page.locator('button[data-view="city"]').isVisible());
+    assert.ok(await page.locator('button[data-view="cafe"]').isVisible());
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true);
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR, `cafe-${width}.png`)});
+    await page.close();
+  }
+});

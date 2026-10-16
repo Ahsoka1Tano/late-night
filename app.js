@@ -31,7 +31,7 @@ const moodButtons = document.querySelectorAll(".mood");
 let moodLineTimer = null;
 let musicRainEnabled = localStorage.getItem("lateNight.musicRain") === "1";
 let windowScene = "city";
-try { const saved = localStorage.getItem("lateNight.view"); if (["mountains", "coast"].includes(saved)) windowScene = saved; } catch { /* Keep the city. */ }
+try { const saved = localStorage.getItem("lateNight.view"); if (["mountains", "coast", "cafe"].includes(saved)) windowScene = saved; } catch { /* Keep the city. */ }
 
 function isRainScene(mood = document.body.dataset.mood) {
   return mood === "rain" || (mood === "music" && musicRainEnabled);
@@ -56,6 +56,10 @@ function paintWeather() {
 
 function paintSceneCaption() {
   const mood = document.body.dataset.mood;
+  if (windowScene === "cafe") {
+    document.getElementById("scene-caption").textContent = isRainScene() ? "WARM WINDOWS. RAIN BETWEEN US." : "SOMEWHERE, THE KETTLE IS STILL ON.";
+    return;
+  }
   if (windowScene === "coast") {
     document.getElementById("scene-caption").textContent = isRainScene() ? "RAIN ON THE GLASS. LIGHTS ACROSS THE BAY." : "THE SHORE IS STILL AWAKE.";
     return;
@@ -1873,13 +1877,13 @@ document.addEventListener("visibilitychange", syncCityLife);
 cityMotion.addEventListener("change", () => { syncCityLife(); syncWindowSky(); });
 
 function setWindowScene(scene, { save = true } = {}) {
-  windowScene = ["mountains", "coast"].includes(scene) ? scene : "city";
+  windowScene = ["mountains", "coast", "cafe"].includes(scene) ? scene : "city";
   document.body.dataset.view = windowScene;
   document.querySelectorAll(".view-switch button").forEach(button => {
     button.setAttribute("aria-pressed", String(button.dataset.view === windowScene));
   });
-  windowView.setAttribute("aria-label", windowScene === "coast" ? "Your coastal window" : windowScene === "mountains" ? "Your mountain window" : "Your night city window");
-  document.getElementById("window-whisper").textContent = windowScene === "coast" ? "let the tide take its time." : windowScene === "mountains" ? "let the world wait." : "let the city carry on.";
+  windowView.setAttribute("aria-label", { cafe: "Your late-night café window", coast: "Your coastal window", mountains: "Your mountain window", city: "Your night city window" }[windowScene]);
+  document.getElementById("window-whisper").textContent = { cafe: "there is still a light on.", coast: "let the tide take its time.", mountains: "let the world wait.", city: "let the city carry on." }[windowScene];
   paintSceneCaption();
   syncCityLife();
   syncWindowSky();

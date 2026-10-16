@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=7a1434585125" />
+  <link rel="stylesheet" href="style.css?v=9c7eea98be83" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -73,11 +73,41 @@
             <button type="button" data-view="city" aria-pressed="true">City</button>
             <button type="button" data-view="mountains" aria-pressed="false">Mountains</button>
             <button type="button" data-view="coast" aria-pressed="false">Coast</button>
+            <button type="button" data-view="cafe" aria-pressed="false">Café</button>
           </div>
         </div>
     <div class="window-outside" id="window-outside">
       <canvas class="stars-layer" id="stars" aria-hidden="true"></canvas>
       <canvas class="rain-layer" id="rain" aria-hidden="true"></canvas>
+      <svg class="cafe-view" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
+        <defs><linearGradient id="cafe-wall" x2="1" y2="1"><stop stop-color="#34333f"/><stop offset="1" stop-color="#191f31"/></linearGradient><linearGradient id="cafe-warmth" x2="0" y2="1"><stop stop-color="#d8a66c"/><stop offset=".5" stop-color="#947058"/><stop offset="1" stop-color="#654f4c"/></linearGradient></defs>
+        <path fill="#151e30" d="M0 175h220V70h150v100h90v370H0Z"/>
+        <g fill="#718391" opacity=".35"><path d="M35 235h20v37H35zm60 0h20v37H95zm60 0h20v37h-20zm103-100h18v31h-18zm55 0h18v31h-18zM35 330h20v37H35zm120 0h20v37h-20zm103-100h18v31h-18zm55 0h18v31h-18z"/></g>
+        <path fill="#a18a6b" opacity=".45" d="M95 330h20v37H95zm218 0h18v31h-18z"/>
+        <path fill="url(#cafe-wall)" d="M435 129h765v399H435Z"/>
+        <path fill="#131a29" d="M420 120h780v22H420z"/>
+        <g fill="#182133" stroke="#474754" stroke-width="4"><path d="M485 167h78v78h-78zm140 0h78v78h-78zm340 0h78v78h-78zm140 0h78v78h-78z"/></g>
+        <path fill="#a38e76" opacity=".4" d="M635 178h58v55h-58Z"/>
+        <path fill="#443b43" d="M460 274h720v228H460Z"/>
+        <g class="cafe-interior">
+          <path fill="url(#cafe-warmth)" d="M484 295h273v176H484zm305 0h110v209H789zm140 0h225v176H929Z"/>
+          <g fill="#efd3a0"><path d="M544 295h4v28h-4zm147 0h4v28h-4zm308 0h4v28h-4z"/><path d="m532 322 28 0 10 18h-48zm147 0h28l10 18h-48zm310 0h28l10 18h-48Z"/></g>
+          <path fill="#352f33" d="M485 429h272v10H485zm445 0h224v10H930z"/>
+          <g fill="#3c3034"><path d="M505 402h18v25h-18zm35 5h24v20h-24zm413-7h23v27h-23zm37 5h18v22h-18zM606 357h68v7h-68zm26 7h7v62h-7zm413-5h65v7h-65zm28 7h7v60h-7Z"/></g>
+          <path fill="#8e9b79" d="m721 406-13-27 18 10 5-34 11 29 15-9-11 30z"/>
+          <path fill="#694a3d" d="m716 405 30 0-4 23h-22Z"/>
+        </g>
+        <g stroke="#292a36" stroke-width="8" fill="none"><path d="M482 295v182h279V295m-138 0v182m167-182v213h113V295m-56 0v213m82-213v182h229V295m-111 0v182"/></g>
+        <path fill="#a0927c" d="M482 477h279v8H482zm447 0h229v8H929z"/>
+        <path fill="#231f2c" d="m452 268 728 0 20 35H435Z"/>
+        <path fill="#82666a" d="m452 268 81 0-8 35h-90zm162 0h81l-1 35h-84zm162 0h81l7 35h-85zm162 0h81l15 35h-85zm162 0h80l20 35h-85Z"/>
+        <path fill="#2b2632" d="M435 303h765v12H435z"/>
+        <path fill="#151c2a" d="M0 520h1200v80H0z"/><path stroke="#53515c" stroke-width="3" d="M0 527h1200"/>
+        <g stroke="#6e6871" stroke-width="4" fill="none"><circle cx="405" cy="491" r="24"/><circle cx="481" cy="491" r="24"/><path d="m405 491 28-42 48 42h-76l31-30m-3-12-7-12h-14m69 54-18-53h-12m-24 2h16"/></g>
+        <path fill="#171b27" stroke="#5d5662" stroke-width="2" d="m1038 451 55 0 15 66h-82Z"/><path stroke="#a99b8c" stroke-width="2" d="m1048 470 32 0m-30 9h24m-27 10h35"/>
+        <path fill="#8c6b58" d="M571 489h91v8h-91z"/><path stroke="#362c33" stroke-width="6" d="M616 497v26m-33-15-7 19m75-19 7 19"/>
+        <path fill="#1b2230" d="M0 575h1200v25H0z"/>
+      </svg>
       <div class="window-moon" aria-hidden="true"><svg class="moon-disc" viewBox="0 0 24 24">
         <defs><radialGradient id="moon-surface" cx="30%" cy="25%" r="85%"><stop stop-color="#f1e6cd"/><stop offset=".7" stop-color="#c9c4b9"/><stop offset="1" stop-color="#8e99ac"/></radialGradient></defs>
         <circle class="moon-full" cx="12" cy="12" r="11" />
@@ -373,6 +403,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=f44068e98e2b"></script>
+  <script src="app.js?v=66ca908bc219"></script>
 </body>
 </html>
