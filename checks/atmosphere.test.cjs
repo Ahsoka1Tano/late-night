@@ -1196,3 +1196,25 @@ test('cafe sign dims the shop, remembers closing time and leaves sound playing',
   await page.locator('button[data-view="city"]').click();
   assert.equal(await page.locator('#cafe-sign').isVisible(), false);
 });
+
+test('the last cafe starts real rain and a tape and a personal evening remembers its lights', async t => {
+  const page = await openRoom(t);
+  await page.locator('[data-evening="cafe"]').click();
+  await page.clock.runFor(1600);
+  assert.equal(await page.locator('body').getAttribute('data-view'), 'cafe');
+  assert.equal(await page.locator('#window-cup').getAttribute('data-drink'), 'coffee');
+  assert.equal(await page.locator('[data-evening="cafe"]').getAttribute('aria-pressed'), 'true');
+  assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length), 2);
+  assert.match(await page.evaluate(() => ambienceTrack.src), /Light%20Gentle%20Rain/);
+  await page.locator('#cafe-sign').click();
+  assert.equal(await page.locator('[data-evening="cafe"]').getAttribute('aria-pressed'), 'false');
+  await page.locator('#keep-evening').click();
+  await page.reload();
+  await page.locator('button[data-view="city"]').click();
+  await page.locator('[data-evening="personal"]').click();
+  assert.equal(await page.locator('body').getAttribute('data-view'), 'cafe');
+  assert.equal(await page.locator('#cafe-sign').getAttribute('aria-pressed'), 'false');
+  await page.locator('#cafe-sign').click();
+  await page.locator('[data-evening="personal"]').click();
+  assert.equal(await page.locator('#cafe-sign').getAttribute('aria-pressed'), 'false');
+});
