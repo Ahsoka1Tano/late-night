@@ -1218,3 +1218,29 @@ test('the last cafe starts real rain and a tape and a personal evening remembers
   await page.locator('[data-evening="personal"]').click();
   assert.equal(await page.locator('#cafe-sign').getAttribute('aria-pressed'), 'false');
 });
+
+test('all cafe controls fit the room and quiet mode with six evening cards', async t => {
+  for (const width of [320, 768, 1440]) {
+    const page = await openRoom(t, width);
+    await page.locator('[data-evening="cafe"]').click();
+    await page.clock.runFor(1600);
+    await page.locator('#keep-evening').click();
+    for (const card of await page.locator('.scene-card').all()) {
+      const box = await card.boundingBox();
+      assert.ok(box.x >= 0 && box.x + box.width <= width);
+    }
+    for (const view of ['city','mountains','coast','cafe']) {
+      const box = await page.locator(`button[data-view="${view}"]`).boundingBox();
+      const room = await page.locator('#window-view').boundingBox();
+      assert.ok(box.x >= room.x && box.x + box.width <= room.x + room.width);
+    }
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR, `last-cafe-${width}.png`)});
+    await page.locator('#quiet-room').click();
+    await page.locator('#cafe-sign').click();
+    assert.equal(await page.locator('#cafe-sign').getAttribute('aria-pressed'), 'false');
+    await page.locator('#cafe-sign').click();
+    assert.equal(await page.locator('#cafe-sign').getAttribute('aria-pressed'), 'true');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true);
+    await page.close();
+  }
+});

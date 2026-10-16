@@ -17,6 +17,7 @@ The illustrated cards at the top set up a whole evening with one click:
 - **Mountain hideaway**: a lo-fi tape, clear mountain skies and moon-coloured light.
 - **The last light**: Sleep, distant recorded rain, mountains and a dim lamp.
 - **Harbour after hours**: Calm, a real ocean recording, the coast, amber light and tea.
+- **The last café**: a lo-fi tape, real light rain, coffee and a warm shop across the street.
 
 Choosing a card starts its sounds. You can then change any dial; the selected
 card loses its highlight when the setup no longer matches. Existing notes remain.
@@ -28,6 +29,24 @@ removes that shortcut without changing the room or stopping playback.
 The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
+
+## The last café on the street
+
+Choose **Café** in the view switch for a warm storefront, striped awning, a bicycle,
+a little menu board and a pool of street light. Rain adds window reflections on
+the pavement and slow rings in the puddles. Motion pauses in hidden tabs and stays
+still with reduced motion enabled.
+
+Touch **OPEN LATE** in the shop window to dim the café for the night; **GOOD NIGHT**
+brings its lights back. The same switch is in **Outside sky** when Café is selected.
+This changes the shop, leaving your desk light and playback alone. Its state is
+remembered and can be included in **Your evening**; older saved rooms still work.
+
+**The last café** at the top sets up the scene with a real light-rain recording,
+your selected lo-fi tape and a cup of coffee. You can also change just the view
+without touching your music, focus session or notes.
+
+![Lo-fi and rain across from the last café](assets/last-cafe.png)
 
 ## A little company
 
@@ -111,7 +130,7 @@ your drink too; previously saved setups still work.
 
 ## One little room
 
-Use **The view → City / Mountains / Coast** above the window to choose the landscape.
+Use **The view → City / Mountains / Coast / Café** above the window to choose the landscape.
 The room remembers it separately from your mood. Changing the view preserves
 playing music, real rain, the radio, your timer and journal.
 The mountain window has layered snowy ridges, a pine shore, low mist and moonlight

@@ -120,7 +120,9 @@ only purpose is filling a day.
 - [x] a third view: a coastal headland, lighthouse and distant harbour
 - [x] slow ocean swells, moonlit water and a remembered lighthouse beam
 - [x] Harbour after hours: the coastal scene with a real ocean recording
-- [ ] a fourth view: rooftops or the last café open
+- [x] a fourth view: the last café open, with warm windows, awning and a quiet street
+- [x] rain-aware pavement reflections, puddle rings and accessible shop light controls
+- [x] The last café: real light rain, lo-fi, coffee and saved closing-time preferences
 - polish, animation, micro-interactions
 - [x] a proper pass over the phone layout: wrapping, thumb-sized controls
 - new atmospheres and phrases
