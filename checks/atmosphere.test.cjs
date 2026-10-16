@@ -1162,3 +1162,18 @@ test('cafe artwork and four view buttons fit a narrow phone and desktop', async 
     await page.close();
   }
 });
+
+test('cafe pavement follows the rain and respects hidden tabs and reduced motion', async t => {
+  const page = await openRoom(t, 1280, 'no-preference');
+  await page.locator('button[data-view="cafe"]').click();
+  assert.equal(await page.locator('.cafe-pavement').evaluate(el => getComputedStyle(el).animationName), 'none');
+  await page.locator('#music-rain').click();
+  assert.equal(await page.locator('.cafe-pavement').evaluate(el => getComputedStyle(el).animationName), 'cafe-reflections');
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', {configurable:true,value:true});
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  assert.equal(await page.locator('.cafe-pavement').evaluate(el => getComputedStyle(el).animationPlayState), 'paused');
+  await page.emulateMedia({reducedMotion:'reduce'});
+  assert.equal(await page.locator('.cafe-pavement').evaluate(el => getComputedStyle(el).animationName), 'none');
+});
