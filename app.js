@@ -1879,6 +1879,7 @@ cityMotion.addEventListener("change", () => { syncCityLife(); syncWindowSky(); }
 function setWindowScene(scene, { save = true } = {}) {
   windowScene = ["mountains", "coast", "cafe"].includes(scene) ? scene : "city";
   document.body.dataset.view = windowScene;
+  document.querySelectorAll("[data-cafe-only]").forEach(element => { element.hidden = windowScene !== "cafe"; });
   document.querySelectorAll(".view-switch button").forEach(button => {
     button.setAttribute("aria-pressed", String(button.dataset.view === windowScene));
   });
@@ -2161,6 +2162,22 @@ function setCatCompanion(coat, present, { save = true } = {}) {
 document.querySelectorAll("button[data-cat-coat]").forEach(button => button.addEventListener("click", () => setCatCompanion(button.dataset.catCoat, catPresent)));
 document.getElementById("cat-toggle").addEventListener("click", () => setCatCompanion(catCoat, !catPresent));
 setCatCompanion(catCoat, catPresent, { save: false });
+
+/* The café can close for the night, without changing anything in our room. */
+let cafeOpen = true;
+try { cafeOpen = localStorage.getItem("lateNight.cafeLight") !== "0"; } catch {}
+function setCafeLight(on, { save = true } = {}) {
+  cafeOpen = Boolean(on);
+  windowView.dataset.cafeOpen = String(cafeOpen);
+  document.getElementById("cafe-sign").textContent = cafeOpen ? "OPEN LATE" : "GOOD NIGHT";
+  document.getElementById("cafe-sign").setAttribute("aria-pressed", String(cafeOpen));
+  document.getElementById("cafe-light-button").setAttribute("aria-pressed", String(cafeOpen));
+  document.getElementById("cafe-light-button").textContent = `café lights · ${cafeOpen ? "on" : "off"}`;
+  if (save) { try { localStorage.setItem("lateNight.cafeLight", cafeOpen ? "1" : "0"); } catch {} }
+}
+document.getElementById("cafe-sign").addEventListener("click", () => setCafeLight(!cafeOpen));
+document.getElementById("cafe-light-button").addEventListener("click", () => setCafeLight(!cafeOpen));
+setCafeLight(cafeOpen, { save: false });
 
 /* --- a whole evening, chosen with one deliberate gesture --- */
 const EVENING_SCENES = {

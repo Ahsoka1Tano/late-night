@@ -1177,3 +1177,22 @@ test('cafe pavement follows the rain and respects hidden tabs and reduced motion
   await page.emulateMedia({reducedMotion:'reduce'});
   assert.equal(await page.locator('.cafe-pavement').evaluate(el => getComputedStyle(el).animationName), 'none');
 });
+
+test('cafe sign dims the shop, remembers closing time and leaves sound playing', async t => {
+  const page = await openRoom(t, 320);
+  await page.locator('[data-evening="records"]').click();
+  await page.clock.runFor(1500);
+  await page.locator('button[data-view="cafe"]').click();
+  const sounds = await page.evaluate(() => window.media.filter(a => !a.paused).map(a => a.src));
+  await page.locator('#cafe-sign').click();
+  assert.equal(await page.locator('#window-view').getAttribute('data-cafe-open'), 'false');
+  assert.equal(await page.locator('#cafe-sign').textContent(), 'GOOD NIGHT');
+  assert.deepEqual(await page.evaluate(() => window.media.filter(a => !a.paused).map(a => a.src)), sounds);
+  await page.reload();
+  assert.equal(await page.locator('#cafe-sign').getAttribute('aria-pressed'), 'false');
+  await page.locator('#cafe-sign').focus();
+  await page.keyboard.press('Enter');
+  assert.equal(await page.locator('#cafe-sign').getAttribute('aria-pressed'), 'true');
+  await page.locator('button[data-view="city"]').click();
+  assert.equal(await page.locator('#cafe-sign').isVisible(), false);
+});

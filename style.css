@@ -2329,12 +2329,20 @@ body[data-view='cafe'] .cafe-view { opacity: 1; }
 body[data-view='cafe'] .skyline,body[data-view='cafe'] .railway-bridge,body[data-view='cafe'] .night-train { opacity: 0; }
 body[data-view='cafe'] .night-flight { display: none; }
 .cafe-pavement { opacity: .12; filter: blur(1px); transform-origin: 820px 550px; }
+.cafe-interior { transition: filter 2s ease; }
+.cafe-sign { position: absolute; right: 9%; top: 55%; z-index: 5; width: 84px; min-height: 44px; padding: 5px; border: 1px solid #e4b89855; border-radius: 3px; background: #412d38d9; color: #ffccb1; text-shadow: 0 0 10px #ff9b6855; box-shadow: 0 0 15px #f4a06e18; font: inherit; font-size: 9px; letter-spacing: .1em; cursor: pointer; }
+.cafe-sign:focus-visible,.cafe-light-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.cafe-light-button { margin-top: 10px; min-height: 44px; padding: 8px 12px; border: 1px solid #ffffff20; border-radius: 9px; background: #ffffff04; color: var(--text-dim); font: inherit; font-size: 11px; cursor: pointer; }
+.window-view[data-cafe-open='false'] .cafe-interior { filter: brightness(.2) saturate(.5); }
+.window-view[data-cafe-open='false'] .cafe-pavement { opacity: .05; animation: none; }
+.window-view[data-cafe-open='false'] .cafe-sign { color: #a29ca7; border-color: #ffffff20; text-shadow: none; box-shadow: none; background: #272533e6; }
+@media(max-width:760px) { .cafe-sign { right: 5%; width: 68px; font-size: 7px; } }
 body.has-rain .cafe-pavement { opacity: .4; animation: cafe-reflections 11s ease-in-out infinite; }
 .cafe-ripples { opacity: 0; }
 body.has-rain .cafe-ripples { opacity: .3; }
 body.has-rain .cafe-ripples ellipse { transform-box: fill-box; transform-origin: center; animation: cafe-ripple 5s ease-out infinite; }
 .cafe-ripples ellipse:nth-child(2) { animation-delay: -2s; } .cafe-ripples ellipse:nth-child(3) { animation-delay: -3.7s; }
-body:not([data-view='cafe']) .cafe-pavement,body:not([data-view='cafe']) .cafe-ripples ellipse,.city-is-hidden .cafe-pavement,.city-is-hidden .cafe-ripples ellipse { animation-play-state: paused; }
+body:not([data-view='cafe']) .cafe-pavement,body:not([data-view='cafe']) .cafe-ripples ellipse,body.city-is-hidden .cafe-pavement,body.city-is-hidden .cafe-ripples ellipse { animation-play-state: paused; }
 @keyframes cafe-reflections { 0%,100% { transform: scaleX(1); opacity: .32; } 50% { transform: scaleX(.96); opacity: .46; } }
 @keyframes cafe-ripple { 0% { transform: scale(.35); opacity: 0; } 20% { opacity: .6; } 100% { transform: scale(1.3); opacity: 0; } }
 @media(prefers-reduced-motion:reduce) { .cafe-pavement,.cafe-ripples ellipse { animation: none !important; } }

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=ccffd8e56ee0" />
+  <link rel="stylesheet" href="style.css?v=902db00a497c" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -113,6 +113,7 @@
         <g class="cafe-street-lamp"><path stroke="#333340" stroke-width="6" fill="none" d="M275 525V285q0-28 30-28h17"/><path fill="#a89677" d="M313 252h35v9h-35Z"/><ellipse fill="#ebd2a2" cx="331" cy="262" rx="14" ry="3"/><path fill="#f0cf9420" d="m317 265-48 253h132l-57-253Z"/></g>
         <path fill="#1b2230" d="M0 575h1200v25H0z"/>
       </svg>
+      <button class="cafe-sign" id="cafe-sign" data-cafe-only type="button" aria-label="Café lights" aria-pressed="true" hidden>OPEN LATE</button>
       <div class="window-moon" aria-hidden="true"><svg class="moon-disc" viewBox="0 0 24 24">
         <defs><radialGradient id="moon-surface" cx="30%" cy="25%" r="85%"><stop stop-color="#f1e6cd"/><stop offset=".7" stop-color="#c9c4b9"/><stop offset="1" stop-color="#8e99ac"/></radialGradient></defs>
         <circle class="moon-full" cx="12" cy="12" r="11" />
@@ -368,6 +369,7 @@
           <button class="meteor-button" id="meteor-button" type="button">see a shooting star ↗</button>
           <p class="meteor-note" id="meteor-note" role="status">For clear mountain skies or Space.</p>
           <button class="beacon-button" id="beacon-button" type="button" aria-pressed="true" hidden>lighthouse beam · on</button>
+          <button class="cafe-light-button" id="cafe-light-button" data-cafe-only type="button" aria-pressed="true" hidden>café lights · on</button>
         </details>
       </aside>
     </div>
@@ -408,6 +410,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=66ca908bc219"></script>
+  <script src="app.js?v=5590de575549"></script>
 </body>
 </html>
