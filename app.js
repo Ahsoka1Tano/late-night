@@ -731,13 +731,14 @@ function paintBreathing() {
   const cycle = elapsed % (inTime + outTime);
   const incoming = cycle < inTime;
   const fraction = incoming ? cycle / inTime : 1 - (cycle - inTime) / outTime;
-  const phase = breathState === "idle" ? "your own pace is fine" : breathState === "done" ? "nothing more to do" : breathState === "paused" ? "a moment of stillness" : incoming ? "breathe in" : "breathe out";
+  const phase = breathState === "idle" ? "your own pace is fine" : breathState === "done" ? "just be here" : breathState === "paused" ? "stillness" : incoming ? "breathe in" : "breathe out";
   const seconds = Math.ceil((breathLength - elapsed) / 1000);
   const time = `${String(Math.floor(seconds / 60)).padStart(2,"0")}:${String(seconds % 60).padStart(2,"0")}`;
   const growth = breathState === "idle" || breathState === "done" ? .65 : .6 + .4 * (1 - Math.cos(Math.PI * fraction)) / 2;
   document.documentElement.style.setProperty("--breath-growth", String(growth));
-  document.querySelectorAll("[data-breath-phase]").forEach(element => { element.textContent = phase; });
-  document.querySelectorAll("[data-breath-time]").forEach(element => { element.textContent = time; });
+  // Announce phase changes once, without rebuilding live text on every light tick.
+  document.querySelectorAll("[data-breath-phase]").forEach(element => { if (element.textContent !== phase) element.textContent = phase; });
+  document.querySelectorAll("[data-breath-time]").forEach(element => { if (element.textContent !== time) element.textContent = time; });
   document.querySelectorAll("[data-breath-toggle]").forEach(button => { button.textContent = breathState === "running" ? "pause" : breathState === "paused" ? "continue" : breathState === "done" ? "once more" : "begin"; });
   breathPanel.hidden = document.body.dataset.mood !== "calm" && breathState === "idle";
   breathPanel.dataset.state = breathState;

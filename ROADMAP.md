@@ -58,6 +58,10 @@ only purpose is filling a day.
 
 ## Other moods
 - [x] Calm: slow breathing light
+- [x] a quiet minute: a light on the glass, pause and leave controls across moods
+- [x] remembered 1 / 3 / 5 minute durations and gentle / even rhythms
+- [x] hidden-tab pausing, still light for reduced motion and polite phase announcements
+- [x] Sleep stays readable during the ritual; music and focus statistics remain independent
 - [x] Focus: 25:00 timer with start / pause / reset
 - [x] Focus: presets 15 / 25 / 45 / 60
 - [x] Focus: a soft progress line follows the session

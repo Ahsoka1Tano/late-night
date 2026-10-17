@@ -1342,3 +1342,38 @@ test('Sleep keeps the room awake during a quiet minute and dozes after it ends',
   await page.clock.runFor(26000);
   assert.equal(await page.locator('body').evaluate(el => el.classList.contains('is-dozing')), true);
 });
+
+test('quiet rhythm fits small and wide windows and keeps controls reachable', async t => {
+  for (const width of [320,768,1440]) {
+    const page = await openRoom(t,width,'no-preference');
+    await page.locator('#breath-arrive').click();
+    await page.clock.runFor(3900);
+    for (const quiet of [false,true]) {
+      if (quiet) await page.locator('#quiet-room').click();
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth),true);
+      for (const button of await page.locator('#window-breathing button').all()) {
+        const box = await button.boundingBox();
+        const glass = await page.locator('#window-outside').boundingBox();
+        assert.ok(box.height >= 44);
+        assert.ok(box.x >= glass.x && box.x + box.width <= glass.x + glass.width);
+        assert.ok(box.y + box.height <= glass.y + glass.height, `Breath controls fit ${width}`);
+      }
+      if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR, `quiet-breath-${width}-${quiet ? 'quiet' : 'room'}.png`)});
+    }
+    await page.locator('#window-breathing [data-breath-toggle]').click();
+    await page.locator('#window-breathing [data-breath-reset]').click();
+    assert.equal(await page.locator('#window-breathing').isVisible(),false);
+    await page.close();
+  }
+});
+
+test('invalid quiet rhythm preferences fall back without overwriting their saved value', async t => {
+  const page = await openRoom(t);
+  const invalid = JSON.stringify({minutes:999,pace:'__proto__'});
+  await page.evaluate(value => localStorage.setItem('lateNight.breathing',value),invalid);
+  await page.reload();
+  await page.locator('.mood[data-mood="calm"]').click();
+  assert.equal(await page.locator('[data-breath-minutes="1"]').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.locator('[data-breath-pace="gentle"]').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.breathing')),invalid);
+});

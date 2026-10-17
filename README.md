@@ -30,6 +30,24 @@ The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
 
+## A quiet minute
+
+Choose **take a breath** above the window for a short rhythm of light on the glass.
+It works with any mood: your lo-fi, rain, radio and focus timer keep going. The
+same controls remain at the window in **Quiet room**. Pause or leave whenever you like.
+
+In **Calm**, the desk offers **1, 3 or 5 minutes** and two rhythms: **gentle**
+(four seconds in, six out) or **even** (four in, four out). Duration and pace stay
+on this device. Reset the current ritual before changing them. Refreshing the
+page starts no ritual automatically; there are no streaks or focus points for this.
+
+Leaving the tab pauses the rhythm, and returning waits for **continue**. Reduced
+motion keeps the light still while the phase text continues. Screen readers get
+one announcement per phase. Sleep waits until the rhythm finishes before dimming
+the room again. At the end, nothing else starts: just a little space to sit.
+
+![A quiet rhythm of light at the window](assets/quiet-minute.png)
+
 ## The last café on the street
 
 Choose **Café** in the view switch for a warm storefront, striped awning, a bicycle,
