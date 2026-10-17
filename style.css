@@ -727,6 +727,12 @@ body[data-mood="focus"] .focus {
 .breath-actions button { min-height: 44px; padding: 8px 15px; border: 1px solid #bfd2cd30; border-radius: 999px; background: #ffffff04; color: var(--text); font: inherit; font-size: 11px; cursor: pointer; }
 .breath-actions button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 #breath-note { margin-top: 14px; color: var(--text-dim); font-size: 10px; line-height: 1.8; }
+.breath-settings { margin-top: 14px; display: grid; gap: 7px; }
+.breath-settings > div { display: flex; justify-content: center; gap: 5px; }
+.breath-settings button { min-height: 44px; padding: 6px 10px; border: 1px solid #b1c5c520; border-radius: 9px; background: transparent; color: var(--text-dim); font: inherit; font-size: 10px; cursor: pointer; }
+.breath-settings button[aria-pressed='true'] { border-color: #a7c4bf80; background: #aacfc611; color: #d0ded9; }
+.breath-settings button:disabled { opacity: .45; cursor: default; }
+.breath-settings button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 @media(prefers-reduced-motion:reduce) { .breath-orb i { transform: scale(.75); transition: none; } }
 .focus-presets {
   display: flex;

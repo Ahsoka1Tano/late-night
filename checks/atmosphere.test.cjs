@@ -1281,3 +1281,27 @@ test('a breath at the window preserves music, rain and the focus timer in quiet 
   await page.keyboard.press('Escape');
   assert.equal(await page.locator('.room-desk').isVisible(), true);
 });
+
+test('quiet rhythm remembers duration and pace without resuming a session on refresh', async t => {
+  const page = await openRoom(t);
+  await page.locator('.mood[data-mood="calm"]').click();
+  await page.locator('[data-breath-minutes="3"]').click();
+  await page.locator('[data-breath-pace="even"]').click();
+  await page.locator('#breath-arrive').click();
+  assert.equal(await page.locator('#window-breathing [data-breath-time]').textContent(), '03:00');
+  assert.equal(await page.locator('[data-breath-minutes="1"]').isDisabled(), true);
+  await page.clock.runFor(8000);
+  assert.equal(await page.locator('#window-breathing [data-breath-phase]').textContent(), 'breathe in');
+  await page.reload();
+  assert.equal(await page.locator('#window-breathing').isVisible(), false);
+  assert.equal(await page.locator('[data-breath-minutes="3"]').getAttribute('aria-pressed'), 'true');
+  assert.equal(await page.locator('[data-breath-pace="even"]').getAttribute('aria-pressed'), 'true');
+  assert.equal(await page.locator('#breathing-ritual [data-breath-time]').textContent(), '03:00');
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function(key,value) { if (key === 'lateNight.breathing') throw new Error('quota'); return original.call(this,key,value); };
+  });
+  await page.locator('[data-breath-minutes="5"]').click();
+  assert.match(await page.locator('#breath-note').textContent(), /storage unavailable/);
+  assert.equal(await page.locator('#breathing-ritual [data-breath-time]').textContent(), '05:00');
+});

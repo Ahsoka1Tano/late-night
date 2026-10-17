@@ -698,11 +698,21 @@ document.addEventListener("keydown", event => {
 
 /* A short, optional rhythm, independent of music and focus statistics. */
 const breathPanel = document.getElementById("breathing-ritual");
+const BREATH_PACES = { gentle: [4000,6000], even: [4000,4000] };
+let breathMinutes = 1;
+let breathPace = "gentle";
+try {
+  const saved = JSON.parse(localStorage.getItem("lateNight.breathing"));
+  if (saved && [1,3,5].includes(saved.minutes) && Object.hasOwn(BREATH_PACES,saved.pace)) {
+    breathMinutes = saved.minutes;
+    breathPace = saved.pace;
+  }
+} catch {}
 let breathState = "idle";
 let breathElapsed = 0;
 let breathStartedAt = null;
 let breathTick = null;
-let breathLength = 60000;
+let breathLength = breathMinutes * 60000;
 function breathElapsedNow() {
   return Math.min(breathLength, breathElapsed + (breathState === "running" ? Math.max(0, Date.now() - breathStartedAt) : 0));
 }
@@ -716,9 +726,10 @@ function paintBreathing() {
     breathTick = null;
     document.getElementById("breath-note").textContent = "A little space. Come back whenever you like.";
   }
-  const cycle = elapsed % 10000;
-  const incoming = cycle < 4000;
-  const fraction = incoming ? cycle / 4000 : 1 - (cycle - 4000) / 6000;
+  const [inTime,outTime] = BREATH_PACES[breathPace];
+  const cycle = elapsed % (inTime + outTime);
+  const incoming = cycle < inTime;
+  const fraction = incoming ? cycle / inTime : 1 - (cycle - inTime) / outTime;
   const phase = breathState === "idle" ? "your own pace is fine" : breathState === "done" ? "nothing more to do" : breathState === "paused" ? "a moment of stillness" : incoming ? "breathe in" : "breathe out";
   const seconds = Math.ceil((breathLength - elapsed) / 1000);
   const time = `${String(Math.floor(seconds / 60)).padStart(2,"0")}:${String(seconds % 60).padStart(2,"0")}`;
@@ -732,13 +743,17 @@ function paintBreathing() {
   document.getElementById("window-breathing").hidden = breathState === "idle";
   document.body.classList.toggle("has-breath-ritual", breathState !== "idle");
   document.getElementById("breath-arrive").textContent = breathState === "running" || breathState === "paused" ? "◯ back to the rhythm" : "◯ take a breath";
+  document.querySelectorAll("button[data-breath-minutes],button[data-breath-pace]").forEach(button => {
+    button.disabled = breathState === "running" || breathState === "paused";
+    button.setAttribute("aria-pressed", String(button.dataset.breathMinutes ? Number(button.dataset.breathMinutes) === breathMinutes : button.dataset.breathPace === breathPace));
+  });
 }
 function startBreathing() {
   if (breathState === "running") return;
   if (breathState === "done") breathElapsed = 0;
   breathStartedAt = Date.now();
   breathState = "running";
-  document.getElementById("breath-note").textContent = "Just this minute, at your own pace.";
+  document.getElementById("breath-note").textContent = "A little space, at your own pace.";
   breathTick = setInterval(paintBreathing, 100);
   paintBreathing();
 }
@@ -769,6 +784,15 @@ document.getElementById("breath-arrive").addEventListener("click", () => {
   document.getElementById("window-view").scrollIntoView({block:"center",behavior:"instant"});
   document.querySelector("#window-breathing [data-breath-toggle]").focus({preventScroll:true});
 });
+document.querySelectorAll("button[data-breath-minutes],button[data-breath-pace]").forEach(button => button.addEventListener("click", () => {
+  if (breathState === "running" || breathState === "paused") return;
+  if (button.dataset.breathMinutes) breathMinutes = Number(button.dataset.breathMinutes);
+  else breathPace = button.dataset.breathPace;
+  breathLength = breathMinutes * 60000;
+  resetBreathing();
+  try { localStorage.setItem("lateNight.breathing",JSON.stringify({minutes:breathMinutes,pace:breathPace})); }
+  catch { document.getElementById("breath-note").textContent = "Kept for this visit. Device storage unavailable."; }
+}));
 new MutationObserver(paintBreathing).observe(document.body, {attributes:true, attributeFilter:["data-mood"]});
 paintBreathing();
 
