@@ -696,6 +696,73 @@ document.addEventListener("keydown", event => {
 });
 
 
+/* A short, optional rhythm, independent of music and focus statistics. */
+const breathPanel = document.getElementById("breathing-ritual");
+let breathState = "idle";
+let breathElapsed = 0;
+let breathStartedAt = null;
+let breathTick = null;
+let breathLength = 60000;
+function breathElapsedNow() {
+  return Math.min(breathLength, breathElapsed + (breathState === "running" ? Math.max(0, Date.now() - breathStartedAt) : 0));
+}
+function paintBreathing() {
+  const elapsed = breathElapsedNow();
+  if (breathState === "running" && elapsed >= breathLength) {
+    breathElapsed = breathLength;
+    breathState = "done";
+    breathStartedAt = null;
+    clearInterval(breathTick);
+    breathTick = null;
+    document.getElementById("breath-note").textContent = "A little space. Come back whenever you like.";
+  }
+  const cycle = elapsed % 10000;
+  const incoming = cycle < 4000;
+  const fraction = incoming ? cycle / 4000 : 1 - (cycle - 4000) / 6000;
+  const phase = breathState === "idle" ? "your own pace is fine" : breathState === "done" ? "nothing more to do" : breathState === "paused" ? "a moment of stillness" : incoming ? "breathe in" : "breathe out";
+  const seconds = Math.ceil((breathLength - elapsed) / 1000);
+  const time = `${String(Math.floor(seconds / 60)).padStart(2,"0")}:${String(seconds % 60).padStart(2,"0")}`;
+  const growth = breathState === "idle" || breathState === "done" ? .65 : .6 + .4 * (1 - Math.cos(Math.PI * fraction)) / 2;
+  document.documentElement.style.setProperty("--breath-growth", String(growth));
+  document.querySelectorAll("[data-breath-phase]").forEach(element => { element.textContent = phase; });
+  document.querySelectorAll("[data-breath-time]").forEach(element => { element.textContent = time; });
+  document.querySelectorAll("[data-breath-toggle]").forEach(button => { button.textContent = breathState === "running" ? "pause" : breathState === "paused" ? "continue" : breathState === "done" ? "once more" : "begin"; });
+  breathPanel.hidden = document.body.dataset.mood !== "calm" && breathState === "idle";
+  breathPanel.dataset.state = breathState;
+}
+function startBreathing() {
+  if (breathState === "running") return;
+  if (breathState === "done") breathElapsed = 0;
+  breathStartedAt = Date.now();
+  breathState = "running";
+  document.getElementById("breath-note").textContent = "Just this minute, at your own pace.";
+  breathTick = setInterval(paintBreathing, 100);
+  paintBreathing();
+}
+function pauseBreathing() {
+  if (breathState !== "running") return;
+  breathElapsed = breathElapsedNow();
+  breathStartedAt = null;
+  breathState = "paused";
+  clearInterval(breathTick);
+  breathTick = null;
+  document.getElementById("breath-note").textContent = "Paused. No need to catch up.";
+  paintBreathing();
+}
+function resetBreathing() {
+  clearInterval(breathTick);
+  breathTick = null;
+  breathElapsed = 0;
+  breathStartedAt = null;
+  breathState = "idle";
+  document.getElementById("breath-note").textContent = "A quiet rhythm. Nothing to achieve.";
+  paintBreathing();
+}
+document.querySelectorAll("[data-breath-toggle]").forEach(button => button.addEventListener("click", () => breathState === "running" ? pauseBreathing() : startBreathing()));
+document.getElementById("breath-reset").addEventListener("click", resetBreathing);
+new MutationObserver(paintBreathing).observe(document.body, {attributes:true, attributeFilter:["data-mood"]});
+paintBreathing();
+
 /* --- one line for tonight --- */
 const TONIGHT_LINES = [
   "You don't need to rush tonight.",

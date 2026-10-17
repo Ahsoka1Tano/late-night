@@ -1244,3 +1244,21 @@ test('all cafe controls fit the room and quiet mode with six evening cards', asy
     await page.close();
   }
 });
+
+test('a quiet minute changes phases, pauses and finishes without adding focus statistics', async t => {
+  const page = await openRoom(t);
+  await page.locator('.mood[data-mood="calm"]').click();
+  await page.locator('#breathing-ritual [data-breath-toggle]').click();
+  assert.equal(await page.locator('#breathing-ritual [data-breath-phase]').textContent(), 'breathe in');
+  await page.clock.runFor(4000);
+  assert.equal(await page.locator('#breathing-ritual [data-breath-phase]').textContent(), 'breathe out');
+  await page.locator('#breathing-ritual [data-breath-toggle]').click();
+  await page.clock.runFor(10000);
+  assert.equal(await page.locator('#breathing-ritual [data-breath-time]').textContent(), '00:56');
+  const stats = await page.evaluate(() => readStats());
+  await page.locator('#breathing-ritual [data-breath-toggle]').click();
+  await page.clock.fastForward(56000);
+  assert.equal(await page.locator('#breathing-ritual').getAttribute('data-state'), 'done');
+  assert.equal(await page.locator('#breathing-ritual [data-breath-time]').textContent(), '00:00');
+  assert.deepEqual(await page.evaluate(() => readStats()), stats);
+});

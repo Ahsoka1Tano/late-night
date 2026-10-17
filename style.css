@@ -717,6 +717,17 @@ body[data-mood="focus"] .focus {
 }
 
 /* --- how long the session runs --- */
+.breathing-ritual { margin-top: 24px; padding: 20px 16px; border: 1px solid #9cbcbc26; border-radius: 16px; background: radial-gradient(ellipse at 50% 40%,#477b7b16,transparent 70%); text-align: center; }
+.breathing-ritual h3 { margin: 8px 0 15px; font-size: 18px; font-weight: 300; color: var(--text); }
+.breath-orb { position: relative; display: grid; place-items: center; width: 120px; aspect-ratio: 1; margin: 8px auto; border: 1px solid #b8d6d224; border-radius: 50%; }
+.breath-orb i { display: block; width: 90%; height: 90%; border-radius: 50%; background: radial-gradient(circle at 35% 32%,#dce8dbe6,#9dbdb4aa 35%,#719aa744 65%,transparent 72%); box-shadow: 0 0 30px #87b9ae20; transform: scale(var(--breath-growth,.65)); transition: transform .12s linear; }
+.breath-phase { margin: 12px 0 6px; color: #c3d5d3; font-size: 13px; letter-spacing: .06em; }
+.breath-time { color: var(--text-dim); font-size: 11px; font-variant-numeric: tabular-nums; }
+.breath-actions { display: flex; justify-content: center; gap: 8px; margin-top: 14px; }
+.breath-actions button { min-height: 44px; padding: 8px 15px; border: 1px solid #bfd2cd30; border-radius: 999px; background: #ffffff04; color: var(--text); font: inherit; font-size: 11px; cursor: pointer; }
+.breath-actions button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+#breath-note { margin-top: 14px; color: var(--text-dim); font-size: 10px; line-height: 1.8; }
+@media(prefers-reduced-motion:reduce) { .breath-orb i { transform: scale(.75); transition: none; } }
 .focus-presets {
   display: flex;
   justify-content: center;
