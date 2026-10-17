@@ -1262,3 +1262,22 @@ test('a quiet minute changes phases, pauses and finishes without adding focus st
   assert.equal(await page.locator('#breathing-ritual [data-breath-time]').textContent(), '00:00');
   assert.deepEqual(await page.evaluate(() => readStats()), stats);
 });
+
+test('a breath at the window preserves music, rain and the focus timer in quiet mode', async t => {
+  const page = await openRoom(t, 390);
+  await page.locator('[data-evening="records"]').click();
+  await page.clock.runFor(1600);
+  await page.evaluate(() => startFocus());
+  const sounds = await page.evaluate(() => window.media.filter(a => !a.paused).map(a => a.src));
+  await page.locator('#breath-arrive').click();
+  await page.locator('#quiet-room').click();
+  await page.clock.runFor(5000);
+  assert.equal(await page.locator('#window-breathing [data-breath-phase]').textContent(), 'breathe out');
+  assert.equal(await page.locator('#window-focus-time').textContent(), '24:55');
+  assert.deepEqual(await page.evaluate(() => window.media.filter(a => !a.paused).map(a => a.src)), sounds);
+  await page.locator('#window-breathing [data-breath-reset]').click();
+  assert.equal(await page.locator('#window-breathing').isVisible(), false);
+  assert.equal(await page.locator('#breath-arrive').evaluate(el => el === document.activeElement), true);
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('.room-desk').isVisible(), true);
+});

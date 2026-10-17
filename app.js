@@ -729,6 +729,9 @@ function paintBreathing() {
   document.querySelectorAll("[data-breath-toggle]").forEach(button => { button.textContent = breathState === "running" ? "pause" : breathState === "paused" ? "continue" : breathState === "done" ? "once more" : "begin"; });
   breathPanel.hidden = document.body.dataset.mood !== "calm" && breathState === "idle";
   breathPanel.dataset.state = breathState;
+  document.getElementById("window-breathing").hidden = breathState === "idle";
+  document.body.classList.toggle("has-breath-ritual", breathState !== "idle");
+  document.getElementById("breath-arrive").textContent = breathState === "running" || breathState === "paused" ? "◯ back to the rhythm" : "◯ take a breath";
 }
 function startBreathing() {
   if (breathState === "running") return;
@@ -757,9 +760,15 @@ function resetBreathing() {
   breathState = "idle";
   document.getElementById("breath-note").textContent = "A quiet rhythm. Nothing to achieve.";
   paintBreathing();
+  if (breathPanel.hidden || document.activeElement?.closest("#window-breathing")) document.getElementById("breath-arrive").focus({preventScroll:true});
 }
 document.querySelectorAll("[data-breath-toggle]").forEach(button => button.addEventListener("click", () => breathState === "running" ? pauseBreathing() : startBreathing()));
-document.getElementById("breath-reset").addEventListener("click", resetBreathing);
+document.querySelectorAll("[data-breath-reset]").forEach(button => button.addEventListener("click", resetBreathing));
+document.getElementById("breath-arrive").addEventListener("click", () => {
+  if (breathState === "idle" || breathState === "done") startBreathing();
+  document.getElementById("window-view").scrollIntoView({block:"center",behavior:"instant"});
+  document.querySelector("#window-breathing [data-breath-toggle]").focus({preventScroll:true});
+});
 new MutationObserver(paintBreathing).observe(document.body, {attributes:true, attributeFilter:["data-mood"]});
 paintBreathing();
 

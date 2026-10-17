@@ -1960,6 +1960,14 @@ body.knows-aurora .room .mood-secret { display: flex; }
 .quiet-toolbar p { color: var(--text-dim); font-size: 8px; letter-spacing: .17em; }
 .quiet-toolbar button { min-height: 44px; padding: 8px 14px; border: 1px solid #ffffff20; border-radius: 999px; background: #ffffff04; color: var(--text); font: inherit; font-size: 11px; cursor: pointer; }
 .quiet-toolbar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.quiet-toolbar-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.window-breathing { position: absolute; top: 9%; right: 4%; width: 29%; z-index: 8; text-align: center; pointer-events: none; }
+.window-breathing .breath-orb { width: min(110px, 100%); margin: 0 auto; background: #10182a44; }
+.window-breathing .breath-phase { font-size: 11px; line-height: 1.6; }
+.window-breathing .breath-actions { margin-top: 9px; gap: 5px; flex-wrap: wrap; }
+.window-breathing button { padding: 6px 10px; font-size: 10px; background: #121a29cc; pointer-events: auto; }
+.has-breath-ritual .window-moon,.has-breath-ritual .cafe-sign { visibility: hidden; }
+@media(max-width:600px) { .quiet-toolbar { flex-wrap: wrap; } .quiet-toolbar > p { max-width: none; } .quiet-toolbar-actions { width: 100%; justify-content: space-between; } .window-breathing .breath-phase { font-size: 9px; } body.is-quiet .window-view { height: max(500px,calc(100svh - 140px)); } }
 .evening-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 26px; align-items: start; }
 .window-view {
   position: sticky;
