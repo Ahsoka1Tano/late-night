@@ -725,6 +725,7 @@ function paintBreathing() {
     clearInterval(breathTick);
     breathTick = null;
     document.getElementById("breath-note").textContent = "A little space. Come back whenever you like.";
+    if (document.body.dataset.mood === "sleep") scheduleDoze();
   }
   const [inTime,outTime] = BREATH_PACES[breathPace];
   const cycle = elapsed % (inTime + outTime);
@@ -749,22 +750,28 @@ function paintBreathing() {
   });
 }
 function startBreathing() {
-  if (breathState === "running") return;
+  if (breathState === "running" || document.hidden) return;
   if (breathState === "done") breathElapsed = 0;
   breathStartedAt = Date.now();
   breathState = "running";
+  if (document.body.dataset.mood === "sleep") {
+    clearDoze();
+    document.body.classList.remove("is-dozing", "is-deeper");
+  }
   document.getElementById("breath-note").textContent = "A little space, at your own pace.";
   breathTick = setInterval(paintBreathing, 100);
   paintBreathing();
 }
 function pauseBreathing() {
   if (breathState !== "running") return;
+  if (breathElapsedNow() >= breathLength) { paintBreathing(); return; }
   breathElapsed = breathElapsedNow();
   breathStartedAt = null;
   breathState = "paused";
   clearInterval(breathTick);
   breathTick = null;
   document.getElementById("breath-note").textContent = "Paused. No need to catch up.";
+  if (document.body.dataset.mood === "sleep") scheduleDoze();
   paintBreathing();
 }
 function resetBreathing() {
@@ -773,6 +780,7 @@ function resetBreathing() {
   breathElapsed = 0;
   breathStartedAt = null;
   breathState = "idle";
+  if (document.body.dataset.mood === "sleep") scheduleDoze();
   document.getElementById("breath-note").textContent = "A quiet rhythm. Nothing to achieve.";
   paintBreathing();
   if (breathPanel.hidden || document.activeElement?.closest("#window-breathing")) document.getElementById("breath-arrive").focus({preventScroll:true});
@@ -794,6 +802,12 @@ document.querySelectorAll("button[data-breath-minutes],button[data-breath-pace]"
   catch { document.getElementById("breath-note").textContent = "Kept for this visit. Device storage unavailable."; }
 }));
 new MutationObserver(paintBreathing).observe(document.body, {attributes:true, attributeFilter:["data-mood"]});
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && breathState === "running") {
+    pauseBreathing();
+    if (breathState === "paused") document.getElementById("breath-note").textContent = "Paused while you were away. Continue whenever you like.";
+  }
+});
 paintBreathing();
 
 /* --- one line for tonight --- */
@@ -1228,7 +1242,7 @@ function clearDoze() {
 
 function scheduleDoze() {
   clearDoze();
-  if (document.body.dataset.mood !== "sleep") return;
+  if (document.body.dataset.mood !== "sleep" || breathState === "running") return;
 
   dozeTimers.push(
     setTimeout(() => document.body.classList.add("is-dozing"), DOZE_AFTER),

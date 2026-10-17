@@ -734,6 +734,8 @@ body[data-mood="focus"] .focus {
 .breath-settings button:disabled { opacity: .45; cursor: default; }
 .breath-settings button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 @media(prefers-reduced-motion:reduce) { .breath-orb i { transform: scale(.75); transition: none; } }
+body.has-breath-ritual .breath { animation: none; opacity: 0; }
+body.has-breath-ritual .title { animation: none; }
 .focus-presets {
   display: flex;
   justify-content: center;

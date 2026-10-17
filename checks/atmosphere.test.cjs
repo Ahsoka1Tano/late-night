@@ -1305,3 +1305,40 @@ test('quiet rhythm remembers duration and pace without resuming a session on ref
   assert.match(await page.locator('#breath-note').textContent(), /storage unavailable/);
   assert.equal(await page.locator('#breathing-ritual [data-breath-time]').textContent(), '05:00');
 });
+
+test('quiet rhythm pauses in a hidden tab and reduced motion leaves a still light', async t => {
+  const page = await openRoom(t);
+  await page.locator('#breath-arrive').click();
+  const start = await page.locator('#window-breathing .breath-orb i').evaluate(el => getComputedStyle(el).transform);
+  await page.clock.runFor(5000);
+  const later = await page.locator('#window-breathing .breath-orb i').evaluate(el => getComputedStyle(el).transform);
+  assert.equal(start, later);
+  assert.equal(await page.locator('#window-breathing [data-breath-phase]').textContent(), 'breathe out');
+  await page.evaluate(() => {
+    Object.defineProperty(document,'hidden',{configurable:true,value:true});
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await page.clock.fastForward(120000);
+  assert.equal(await page.locator('#breathing-ritual').getAttribute('data-state'), 'paused');
+  assert.equal(await page.locator('#window-breathing [data-breath-time]').textContent(), '00:55');
+  await page.evaluate(() => {
+    Object.defineProperty(document,'hidden',{configurable:true,value:false});
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  assert.equal(await page.locator('#window-breathing [data-breath-toggle]').textContent(), 'continue');
+  await page.locator('#window-breathing [data-breath-toggle]').click();
+  await page.clock.fastForward(55000);
+  assert.equal(await page.locator('#breathing-ritual').getAttribute('data-state'), 'done');
+});
+
+test('Sleep keeps the room awake during a quiet minute and dozes after it ends', async t => {
+  const page = await openRoom(t);
+  await page.locator('.mood[data-mood="sleep"]').click();
+  await page.locator('#breath-arrive').click();
+  await page.clock.runFor(26000);
+  assert.equal(await page.locator('body').evaluate(el => el.classList.contains('is-dozing')), false);
+  await page.clock.fastForward(34000);
+  assert.equal(await page.locator('#breathing-ritual').getAttribute('data-state'), 'done');
+  await page.clock.runFor(26000);
+  assert.equal(await page.locator('body').evaluate(el => el.classList.contains('is-dozing')), true);
+});
