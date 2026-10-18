@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1307db6c9b11" />
+  <link rel="stylesheet" href="style.css?v=79559f683134" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -348,6 +348,14 @@
     </div>
 
 
+        <section class="sound-timer" id="sound-timer" aria-label="Evening sound timer">
+          <p class="desk-kicker">LET THE EVENING END SOFTLY</p><h3>A little longer.</h3>
+          <p class="sound-timer-copy">Stop the sound after a while.</p>
+          <div class="sound-timer-lengths" aria-label="Time until quiet"><button type="button" data-sound-minutes="15" aria-pressed="false">15 min</button><button type="button" data-sound-minutes="30" aria-pressed="true">30 min</button><button type="button" data-sound-minutes="60" aria-pressed="false">60 min</button></div>
+          <p class="sound-timer-time" id="sound-timer-time">30:00</p>
+          <div class="sound-timer-actions"><button id="sound-timer-start" type="button">set timer</button><button id="sound-timer-cancel" type="button" hidden>cancel timer</button></div>
+          <p id="sound-timer-note" role="status">Setting a timer does not start playback.</p>
+        </section>
         <section class="room-light" aria-label="Desk lighting">
           <div class="light-heading"><h3>Desk light</h3><span id="light-state">amber · on</span></div>
           <div class="light-tones" aria-label="Light colour">
@@ -428,6 +436,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=7eb28110b3c0"></script>
+  <script src="app.js?v=89b977c306b0"></script>
 </body>
 </html>

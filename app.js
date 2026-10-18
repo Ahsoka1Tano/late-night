@@ -2443,6 +2443,73 @@ document.addEventListener("keydown", (e) => {
   setMood("aurora");
 });
 
+/* A deadline for the sound, independent of moods, views and the focus clock. */
+let soundTimerMinutes = 30;
+let soundTimerEndsAt = null;
+let soundTimerTick = null;
+let soundTimerFinished = false;
+function paintSoundTimer() {
+  const left = soundTimerEndsAt === null ? soundTimerFinished ? 0 : soundTimerMinutes * 60000 : Math.max(0,soundTimerEndsAt - Date.now());
+  if (soundTimerEndsAt !== null && left <= 0) { finishSoundTimer(); return; }
+  const seconds = Math.ceil(left / 1000);
+  document.getElementById("sound-timer-time").textContent = `${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`;
+  document.getElementById("sound-timer").dataset.state = soundTimerEndsAt !== null ? "running" : soundTimerFinished ? "done" : "idle";
+  document.getElementById("sound-timer-start").hidden = soundTimerEndsAt !== null;
+  document.getElementById("sound-timer-cancel").hidden = soundTimerEndsAt === null;
+  document.querySelectorAll("button[data-sound-minutes]").forEach(button => {
+    button.disabled = soundTimerEndsAt !== null;
+    button.setAttribute("aria-pressed",String(Number(button.dataset.soundMinutes) === soundTimerMinutes));
+  });
+}
+function stopEveningSound() {
+  setTape(false);
+  clearInterval(fadeStep);
+  fadeStep = null;
+  tapeAudio?.pause();
+  listening = false;
+  try { localStorage.setItem("lateNight.listen","0"); } catch {}
+  stopAmbience();
+  clearInterval(ambienceFade);
+  ambienceFade = null;
+  ambienceTrack?.pause();
+  closeRadio();
+}
+function finishSoundTimer() {
+  clearInterval(soundTimerTick);
+  soundTimerTick = null;
+  soundTimerEndsAt = null;
+  soundTimerFinished = true;
+  stopEveningSound();
+  document.getElementById("sound-timer-note").textContent = "Quiet now. Nothing else will start.";
+  paintSoundTimer();
+}
+function startSoundTimer() {
+  clearInterval(soundTimerTick);
+  soundTimerFinished = false;
+  soundTimerEndsAt = Date.now() + soundTimerMinutes * 60000;
+  soundTimerTick = setInterval(paintSoundTimer,250);
+  document.getElementById("sound-timer-note").textContent = "The sound will stop when the timer ends.";
+  paintSoundTimer();
+}
+function cancelSoundTimer() {
+  clearInterval(soundTimerTick);
+  soundTimerTick = null;
+  soundTimerEndsAt = null;
+  soundTimerFinished = false;
+  document.getElementById("sound-timer-note").textContent = "Timer cancelled. Your evening continues.";
+  paintSoundTimer();
+}
+document.querySelectorAll("button[data-sound-minutes]").forEach(button => button.addEventListener("click", () => {
+  if (soundTimerEndsAt !== null) return;
+  soundTimerMinutes = Number(button.dataset.soundMinutes);
+  soundTimerFinished = false;
+  paintSoundTimer();
+}));
+document.getElementById("sound-timer-start").addEventListener("click",startSoundTimer);
+document.getElementById("sound-timer-cancel").addEventListener("click",cancelSoundTimer);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) paintSoundTimer(); });
+paintSoundTimer();
+
 setWindowScene(windowScene, { save: false });
 setMood(localStorage.getItem("lateNight.mood") || "music", { save: false });
 restoreFocusSession();

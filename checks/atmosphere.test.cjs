@@ -1377,3 +1377,37 @@ test('invalid quiet rhythm preferences fall back without overwriting their saved
   assert.equal(await page.locator('[data-breath-pace="gentle"]').getAttribute('aria-pressed'),'true');
   assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.breathing')),invalid);
 });
+
+test('the sound timer starts no audio and cancelling leaves the evening playing', async t => {
+  const page = await openRoom(t);
+  await page.locator('#sound-timer-start').click();
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  await page.locator('#sound-timer-cancel').click();
+  await page.locator('[data-evening="records"]').click();
+  await page.clock.runFor(1600);
+  const sounds = await page.evaluate(() => window.media.filter(a => !a.paused).map(a => a.src));
+  await page.locator('#sound-timer-start').click();
+  await page.clock.runFor(5000);
+  assert.equal(await page.locator('#sound-timer-time').textContent(),'29:55');
+  await page.locator('#sound-timer-cancel').click();
+  assert.deepEqual(await page.evaluate(() => window.media.filter(a => !a.paused).map(a => a.src)),sounds);
+});
+
+test('the sound timer stops tape, rain and radio without resetting the focus session', async t => {
+  const page = await openRoom(t);
+  await page.locator('[data-evening="records"]').click();
+  await page.clock.runFor(1600);
+  await page.locator('[data-sound-minutes="15"]').click();
+  await page.locator('#sound-timer-start').click();
+  await page.evaluate(() => { startFocus(); soundTimerEndsAt = Date.now() + 2000; });
+  await page.clock.runFor(2500);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  assert.equal(await page.locator('#sound-timer').getAttribute('data-state'),'done');
+  assert.equal(await page.evaluate(() => Boolean(focusEndsAt)),true);
+  await page.locator('[data-station="radio"]').click();
+  assert.equal(await page.locator('#radio-frame iframe').count(),1);
+  await page.locator('#sound-timer-start').click();
+  await page.evaluate(() => { soundTimerEndsAt = Date.now() + 1000; });
+  await page.clock.runFor(1500);
+  assert.equal(await page.locator('#radio-frame iframe').count(),0);
+});
