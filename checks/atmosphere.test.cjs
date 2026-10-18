@@ -1453,3 +1453,47 @@ test('sound countdown stays on the glass in quiet mode and lamp shutdown is opti
   await page.locator('#window-sound-timer').click();
   assert.equal(await page.locator('#window-sound-timer').isVisible(),false);
 });
+
+test('sound timers restore their original deadline and catch overdue endings before playback', async t => {
+  const page = await openRoom(t);
+  await page.locator('#sound-timer-lamp').check();
+  await page.locator('#sound-timer-start').click();
+  const deadline = await page.evaluate(() => soundTimerEndsAt);
+  await page.clock.runFor(10000);
+  await page.reload();
+  assert.equal(await page.evaluate(() => soundTimerEndsAt),deadline);
+  assert.equal(await page.locator('#sound-timer-time').textContent(),'29:50');
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  await page.evaluate(() => {
+    const timer = JSON.parse(localStorage.getItem('lateNight.soundTimer'));
+    timer.endsAt = Date.now() - 1000;
+    localStorage.setItem('lateNight.soundTimer',JSON.stringify(timer));
+    localStorage.setItem('lateNight.listen','1');
+    localStorage.setItem('lateNight.musicRain','1');
+  });
+  await page.reload();
+  assert.equal(await page.locator('#sound-timer').getAttribute('data-state'),'done');
+  assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'),'false');
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.listen')),'0');
+  await page.reload();
+  assert.equal(await page.locator('#sound-timer').getAttribute('data-state'),'done');
+});
+
+test('invalid stored sound timers are ignored and write failures keep a working local timer', async t => {
+  const page = await openRoom(t);
+  const invalid = JSON.stringify({minutes:999,lamp:true,endsAt:-1,finished:false});
+  await page.evaluate(value => localStorage.setItem('lateNight.soundTimer',value),invalid);
+  await page.reload();
+  assert.equal(await page.locator('#sound-timer-time').textContent(),'30:00');
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.soundTimer')),invalid);
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function(key,value) { if (key === 'lateNight.soundTimer') throw new Error('quota'); return original.call(this,key,value); };
+  });
+  await page.locator('#sound-timer-start').click();
+  assert.match(await page.locator('#sound-timer-note').textContent(),/storage unavailable/);
+  await page.evaluate(() => { soundTimerEndsAt = Date.now() + 1000; });
+  await page.clock.runFor(1500);
+  assert.equal(await page.locator('#sound-timer').getAttribute('data-state'),'done');
+});

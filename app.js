@@ -2451,6 +2451,22 @@ let soundTimerEndsAt = null;
 let soundTimerTick = null;
 let soundTimerFinished = false;
 let soundTimerLamp = false;
+try {
+  const saved = JSON.parse(localStorage.getItem("lateNight.soundTimer"));
+  if (saved && [15,30,60].includes(saved.minutes) && typeof saved.lamp === "boolean"
+      && typeof saved.finished === "boolean" && (saved.endsAt === null || Number.isFinite(saved.endsAt)
+        && saved.endsAt > 0 && saved.endsAt <= Date.now() + saved.minutes * 60000)
+      && !(saved.finished && saved.endsAt !== null)) {
+    soundTimerMinutes = saved.minutes;
+    soundTimerLamp = saved.lamp;
+    soundTimerFinished = saved.finished;
+    soundTimerEndsAt = saved.endsAt;
+  }
+} catch {}
+function saveSoundTimer() {
+  try { localStorage.setItem("lateNight.soundTimer",JSON.stringify({minutes:soundTimerMinutes,lamp:soundTimerLamp,endsAt:soundTimerEndsAt,finished:soundTimerFinished})); }
+  catch { document.getElementById("sound-timer-note").textContent = "Timer works for this visit. Device storage unavailable."; }
+}
 function applyEveningGain(gain) {
   eveningSoundGain = Math.max(0,Math.min(1,gain));
   if (tapeAudio && tapeRunning && !tapeAudio.paused && !fadeStep) tapeAudio.volume = tapeVolume * eveningSoundGain;
@@ -2507,6 +2523,7 @@ function finishSoundTimer() {
   }
   applyEveningGain(1);
   document.getElementById("sound-timer-note").textContent = "Quiet now. Nothing else will start.";
+  saveSoundTimer();
   paintSoundTimer();
 }
 function startSoundTimer() {
@@ -2515,6 +2532,7 @@ function startSoundTimer() {
   soundTimerEndsAt = Date.now() + soundTimerMinutes * 60000;
   soundTimerTick = setInterval(paintSoundTimer,250);
   document.getElementById("sound-timer-note").textContent = "Tapes and ambience fade in the final minute. Radio stops at the end.";
+  saveSoundTimer();
   paintSoundTimer();
 }
 function cancelSoundTimer() {
@@ -2524,22 +2542,31 @@ function cancelSoundTimer() {
   soundTimerFinished = false;
   applyEveningGain(1);
   document.getElementById("sound-timer-note").textContent = "Timer cancelled. Your evening continues.";
+  saveSoundTimer();
   paintSoundTimer();
 }
 document.querySelectorAll("button[data-sound-minutes]").forEach(button => button.addEventListener("click", () => {
   if (soundTimerEndsAt !== null) return;
   soundTimerMinutes = Number(button.dataset.soundMinutes);
   soundTimerFinished = false;
+  saveSoundTimer();
   paintSoundTimer();
 }));
 document.getElementById("sound-timer-start").addEventListener("click",startSoundTimer);
 document.getElementById("sound-timer-cancel").addEventListener("click",cancelSoundTimer);
-document.getElementById("sound-timer-lamp").addEventListener("change",event => { if (soundTimerEndsAt === null) soundTimerLamp = event.target.checked; });
+document.getElementById("sound-timer-lamp").addEventListener("change",event => {
+  if (soundTimerEndsAt === null) { soundTimerLamp = event.target.checked; saveSoundTimer(); }
+});
 document.getElementById("window-sound-timer").addEventListener("click",() => {
   cancelSoundTimer();
   document.getElementById("quiet-room").focus({preventScroll:true});
 });
 document.addEventListener("visibilitychange", () => { if (!document.hidden) paintSoundTimer(); });
+if (soundTimerEndsAt !== null && soundTimerEndsAt > Date.now()) {
+  soundTimerTick = setInterval(paintSoundTimer,250);
+  document.getElementById("sound-timer-note").textContent = "Your original end time is kept. Playback is yours to start.";
+}
+// Catch up before the remembered mood can start its ambience.
 paintSoundTimer();
 
 setWindowScene(windowScene, { save: false });
