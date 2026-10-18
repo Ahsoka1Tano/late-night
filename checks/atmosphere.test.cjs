@@ -1411,3 +1411,26 @@ test('the sound timer stops tape, rain and radio without resetting the focus ses
   await page.clock.runFor(1500);
   assert.equal(await page.locator('#radio-frame iframe').count(),0);
 });
+
+test('the final minute fades both layers without changing saved volume and cancel restores them', async t => {
+  const page = await openRoom(t);
+  await page.locator('[data-evening="records"]').click();
+  await page.clock.runFor(3000);
+  await page.locator('#player-volume').fill('60');
+  await page.locator('#room-volume').fill('80');
+  await page.locator('#sound-timer-start').click();
+  await page.evaluate(() => { soundTimerEndsAt = Date.now() + 30000; paintSoundTimer(); });
+  assert.equal(await page.evaluate(() => tapeAudio.volume),.3);
+  assert.ok(Math.abs(await page.evaluate(() => ambienceTrack.volume) - .55 * .8 * .5) < .001);
+  assert.equal(await page.locator('#player-volume').inputValue(),'60');
+  assert.equal(await page.locator('#room-volume').inputValue(),'80');
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.volume')),'0.6');
+  await page.locator('#player-volume').fill('40');
+  assert.equal(await page.evaluate(() => tapeAudio.volume),.2);
+  await page.locator('[data-rain="drizzle"]').click();
+  await page.clock.runFor(1600);
+  assert.ok(await page.evaluate(() => ambienceTrack.volume) < .4 * .8 * .5);
+  await page.locator('#sound-timer-cancel').click();
+  assert.equal(await page.evaluate(() => tapeAudio.volume),.4);
+  assert.ok(Math.abs(await page.evaluate(() => ambienceTrack.volume) - .4 * .8) < .001);
+});

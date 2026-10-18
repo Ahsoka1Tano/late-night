@@ -1,4 +1,5 @@
 /* Late Night — a tiny digital room for quiet evenings. */
+let eveningSoundGain = 1;
 
 const clockEl = document.getElementById("clock");
 const windowClock = document.getElementById("window-clock");
@@ -1357,7 +1358,7 @@ function fadeSynth(target, seconds) {
 
 // the synth hum sits a little lower than a real track at the same setting
 function synthLevel() {
-  return tapeVolume * 0.58;
+  return tapeVolume * 0.58 * eveningSoundGain;
 }
 
 function ensureAudio() {
@@ -1516,17 +1517,18 @@ function paintTape() {
 
 function fadeAudio(target, seconds) {
   clearInterval(fadeStep);
-  const from = tapeAudio.volume;
+  const track = tapeAudio;
+  const from = Math.min(1,track.volume / Math.max(.001,eveningSoundGain));
   const steps = Math.max(1, Math.round(seconds * 25));
   let step = 0;
 
   fadeStep = setInterval(() => {
     step++;
-    tapeAudio.volume = Math.min(1, Math.max(0, from + (target - from) * (step / steps)));
+    track.volume = Math.min(1, Math.max(0, (from + (target - from) * (step / steps)) * eveningSoundGain));
     if (step >= steps) {
       clearInterval(fadeStep);
       fadeStep = null;
-      if (target === 0) tapeAudio.pause();
+      if (target === 0) track.pause();
     }
   }, 40);
 }
@@ -1688,7 +1690,7 @@ function setVolume(value, { save = true } = {}) {
   if (tapeAudio && !tapeAudio.paused) {
     clearInterval(fadeStep);
     fadeStep = null;
-    tapeAudio.volume = tapeVolume;
+    tapeAudio.volume = tapeVolume * eveningSoundGain;
   }
 
   if (synth) fadeSynth(synthLevel(), 0.2);
@@ -1786,12 +1788,12 @@ function fadeAmbience(target, seconds, andThen) {
   clearInterval(ambienceFade);
   const track = ambienceTrack;
   if (!track) return;
-  const from = track.volume;
+  const from = Math.min(1,track.volume / Math.max(.001,eveningSoundGain));
   const steps = Math.max(1, Math.round(seconds * 25));
   let step = 0;
   ambienceFade = setInterval(() => {
     step++;
-    track.volume = Math.min(1, Math.max(0, from + (target - from) * step / steps));
+    track.volume = Math.min(1, Math.max(0, (from + (target - from) * step / steps) * eveningSoundGain));
     if (step >= steps) {
       clearInterval(ambienceFade);
       ambienceFade = null;
@@ -1872,7 +1874,7 @@ function setRoomVolume(value, { save = true } = {}) {
   if (sound && ambienceTrack && !ambienceTrack.paused) {
     clearInterval(ambienceFade);
     ambienceFade = null;
-    ambienceTrack.volume = levelOf(sound);
+    ambienceTrack.volume = levelOf(sound) * eveningSoundGain;
   }
 
   if (save) localStorage.setItem("lateNight.roomVolume", String(roomVolume));
@@ -2448,8 +2450,16 @@ let soundTimerMinutes = 30;
 let soundTimerEndsAt = null;
 let soundTimerTick = null;
 let soundTimerFinished = false;
+function applyEveningGain(gain) {
+  eveningSoundGain = Math.max(0,Math.min(1,gain));
+  if (tapeAudio && tapeRunning && !tapeAudio.paused && !fadeStep) tapeAudio.volume = tapeVolume * eveningSoundGain;
+  const sound = ambienceFor(document.body.dataset.mood);
+  if (ambienceTrack && listening && !ambienceTrack.paused && !ambienceFade && sound) ambienceTrack.volume = levelOf(sound) * eveningSoundGain;
+  if (synth && onSynth && tapeRunning) fadeSynth(synthLevel(),.25);
+}
 function paintSoundTimer() {
   const left = soundTimerEndsAt === null ? soundTimerFinished ? 0 : soundTimerMinutes * 60000 : Math.max(0,soundTimerEndsAt - Date.now());
+  if (soundTimerEndsAt !== null) applyEveningGain(Math.min(1,left / 60000));
   if (soundTimerEndsAt !== null && left <= 0) { finishSoundTimer(); return; }
   const seconds = Math.ceil(left / 1000);
   document.getElementById("sound-timer-time").textContent = `${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`;
@@ -2480,6 +2490,7 @@ function finishSoundTimer() {
   soundTimerEndsAt = null;
   soundTimerFinished = true;
   stopEveningSound();
+  applyEveningGain(1);
   document.getElementById("sound-timer-note").textContent = "Quiet now. Nothing else will start.";
   paintSoundTimer();
 }
@@ -2488,7 +2499,7 @@ function startSoundTimer() {
   soundTimerFinished = false;
   soundTimerEndsAt = Date.now() + soundTimerMinutes * 60000;
   soundTimerTick = setInterval(paintSoundTimer,250);
-  document.getElementById("sound-timer-note").textContent = "The sound will stop when the timer ends.";
+  document.getElementById("sound-timer-note").textContent = "Tapes and ambience fade in the final minute. Radio stops at the end.";
   paintSoundTimer();
 }
 function cancelSoundTimer() {
@@ -2496,6 +2507,7 @@ function cancelSoundTimer() {
   soundTimerTick = null;
   soundTimerEndsAt = null;
   soundTimerFinished = false;
+  applyEveningGain(1);
   document.getElementById("sound-timer-note").textContent = "Timer cancelled. Your evening continues.";
   paintSoundTimer();
 }
