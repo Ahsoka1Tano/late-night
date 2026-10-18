@@ -72,6 +72,8 @@ only purpose is filling a day.
 - [x] Space: drifting stars, warm and cold, a rare shooting star
 - [x] Space: parallax on the star field
 - [x] Sleep: the room dozes off if you leave it alone
+- [x] sound timer: 15 / 30 / 60 minutes, final-minute fade and optional lamp shutdown
+- [x] sound deadlines survive refresh, with cancellation from the quiet window
 
 ## Ambient
 - [ ] ambient cards: Rain, Ocean, Fireplace, Space, Cafe, Night City

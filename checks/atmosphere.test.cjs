@@ -1449,7 +1449,7 @@ test('sound countdown stays on the glass in quiet mode and lamp shutdown is opti
   await page.clock.runFor(1500);
   assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'),'false');
   assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.deskLamp')),'0');
-  assert.equal(await page.locator('#window-sound-time').textContent(),'quiet now');
+  assert.equal(await page.locator('#window-sound-time').textContent(),'finished');
   await page.locator('#window-sound-timer').click();
   assert.equal(await page.locator('#window-sound-timer').isVisible(),false);
 });
@@ -1496,4 +1496,46 @@ test('invalid stored sound timers are ignored and write failures keep a working 
   await page.evaluate(() => { soundTimerEndsAt = Date.now() + 1000; });
   await page.clock.runFor(1500);
   assert.equal(await page.locator('#sound-timer').getAttribute('data-state'),'done');
+});
+
+test('expired sound timers reject late playback failures and allow a fresh manual play', async t => {
+  const page = await openRoom(t);
+  await page.evaluate(() => { window.deferAudio = true; });
+  await page.locator('#evening-toggle').click();
+  await page.locator('#sound-timer-start').click();
+  await page.evaluate(() => { soundTimerEndsAt = Date.now() + 1000; });
+  await page.clock.runFor(1500);
+  await page.evaluate(() => {
+    window.deferAudio = false;
+    window.media.forEach(track => track.rejectPlay?.(new Error('late failure')));
+  });
+  await page.waitForTimeout(50);
+  assert.equal(await page.evaluate(() => tapeRunning || onSynth || listening),false);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  await page.locator('#player-play').click();
+  await page.clock.runFor(3000);
+  assert.equal(await page.evaluate(() => tapeRunning),true);
+  assert.equal(await page.evaluate(() => tapeAudio.volume),.55);
+});
+
+test('sound timer cards and the window countdown fit phones, tablets and quiet mode', async t => {
+  for (const width of [320,768,1440]) {
+    const page = await openRoom(t,width);
+    await page.locator('[data-evening="records"]').click();
+    await page.clock.runFor(1600);
+    await page.locator('#sound-timer-start').click();
+    assert.equal(await page.locator('#sound-timer-cancel').evaluate(el => el === document.activeElement),true);
+    for (const quiet of [false,true]) {
+      if (quiet) await page.locator('#quiet-room').click();
+      const badge = await page.locator('#window-sound-timer').boundingBox();
+      const play = await page.locator('#evening-toggle').boundingBox();
+      assert.ok(badge.x + badge.width <= play.x,`Countdown leaves room for playback at ${width}`);
+      assert.ok(badge.height >= 44);
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth),true);
+      if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`sound-timer-${width}-${quiet ? 'quiet' : 'room'}.png`)});
+    }
+    await page.locator('#window-sound-timer').click();
+    assert.equal(await page.locator('#window-sound-timer').isVisible(),false);
+    await page.close();
+  }
 });

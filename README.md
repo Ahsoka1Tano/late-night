@@ -30,6 +30,25 @@ The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
 
+## Let the sound end softly
+
+**A little longer**, in the room controls, sets a **15, 30 or 60 minute** sound
+timer. It starts no playback. In the final minute, tapes and ambient recordings
+fade together without changing your volume settings. The official radio stops
+at the end; its embedded player does not fade.
+
+The small moon countdown at the window stays available in **Quiet room**. Touch
+it to cancel and keep listening at your chosen volume. **Turn off the desk lamp
+at the end** is optional and starts unchecked. The focus timer and journal continue
+independently; stopping the sound does not finish a focus session.
+
+The deadline and lamp choice stay on this device. Refreshing keeps the original
+end time. An overdue timer stops remembered ambience before it can start, and
+the finished state never starts another recording. Suspended tabs catch up as
+soon as the browser resumes; the timer uses elapsed wall time.
+
+![The last-light countdown at the window](assets/sound-timer.png)
+
 ## A quiet minute
 
 Choose **take a breath** above the window for a short rhythm of light on the glass.

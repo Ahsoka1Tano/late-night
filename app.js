@@ -2485,7 +2485,7 @@ function paintSoundTimer() {
   const windowTimer = document.getElementById("window-sound-timer");
   windowTimer.hidden = !hasTimer;
   windowTimer.style.setProperty("--sound-left",String(left / (soundTimerMinutes * 60000)));
-  document.getElementById("window-sound-time").textContent = soundTimerFinished ? "quiet now" : document.getElementById("sound-timer-time").textContent;
+  document.getElementById("window-sound-time").textContent = soundTimerFinished ? "finished" : document.getElementById("sound-timer-time").textContent;
   document.getElementById("window-sound-action").textContent = soundTimerFinished ? "dismiss · ×" : "until quiet · ×";
   windowTimer.setAttribute("aria-label",soundTimerFinished ? "Dismiss completed sound timer" : `Cancel sound timer, ${Math.ceil(left / 60000)} minutes until quiet`);
   document.getElementById("sound-timer-lamp").disabled = soundTimerEndsAt !== null;
@@ -2552,8 +2552,14 @@ document.querySelectorAll("button[data-sound-minutes]").forEach(button => button
   saveSoundTimer();
   paintSoundTimer();
 }));
-document.getElementById("sound-timer-start").addEventListener("click",startSoundTimer);
-document.getElementById("sound-timer-cancel").addEventListener("click",cancelSoundTimer);
+document.getElementById("sound-timer-start").addEventListener("click",() => {
+  startSoundTimer();
+  document.getElementById("sound-timer-cancel").focus({preventScroll:true});
+});
+document.getElementById("sound-timer-cancel").addEventListener("click",() => {
+  cancelSoundTimer();
+  document.getElementById("sound-timer-start").focus({preventScroll:true});
+});
 document.getElementById("sound-timer-lamp").addEventListener("change",event => {
   if (soundTimerEndsAt === null) { soundTimerLamp = event.target.checked; saveSoundTimer(); }
 });
@@ -2564,7 +2570,7 @@ document.getElementById("window-sound-timer").addEventListener("click",() => {
 document.addEventListener("visibilitychange", () => { if (!document.hidden) paintSoundTimer(); });
 if (soundTimerEndsAt !== null && soundTimerEndsAt > Date.now()) {
   soundTimerTick = setInterval(paintSoundTimer,250);
-  document.getElementById("sound-timer-note").textContent = "Your original end time is kept. Playback is yours to start.";
+  document.getElementById("sound-timer-note").textContent = "Your original end time is kept.";
 }
 // Catch up before the remembered mood can start its ambience.
 paintSoundTimer();
