@@ -2477,6 +2477,16 @@ body.is-quiet .window-focus button { min-height: 44px; }
 .sound-timer button:disabled { opacity: .45; cursor: default; }
 .sound-timer button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .sound-timer-time { margin-top: 18px; font-size: 38px; letter-spacing: -.03em; font-weight: 300; font-variant-numeric: tabular-nums; color: #d6c9e0; }
+.sound-timer-lamp { display: flex; gap: 9px; align-items: center; min-height: 44px; margin-top: 10px; color: var(--text-dim); font-size: 10px; line-height: 1.7; cursor: pointer; }
+.sound-timer-lamp input { width: 18px; height: 18px; accent-color: #b9a4ca; flex-shrink: 0; }
+.window-sound-timer { min-height: 44px; max-width: 50%; padding: 6px 9px; display: flex; align-items: center; gap: 7px; border: 1px solid #bba2d04d; border-radius: 12px; background: #211d2b99; color: #d9c9e4; cursor: pointer; font: inherit; text-align: left; }
+.window-sound-timer svg { width: 24px; height: 24px; flex-shrink: 0; fill: none; stroke: #bfa9d3; stroke-width: 1; }
+.window-sound-timer circle { stroke-width: 1.5; stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--sound-left,1)); transform-origin: center; transform: rotate(-90deg); }
+.window-sound-timer span { display: grid; gap: 3px; min-width: 0; }
+.window-sound-timer strong { font-size: 13px; font-weight: 400; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.window-sound-timer small { font-size: 7px; white-space: nowrap; color: #a99bb5; }
+.window-sound-timer:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+body.has-sound-timer .scene-signature { display: none; }
 #sound-timer-note { margin-top: 12px; min-height: 36px; }
 .scene-cards { grid-template-columns: repeat(5,minmax(0,1fr)); }
 .scene-cards.has-personal { grid-template-columns: repeat(3,minmax(0,1fr)); }

@@ -2450,6 +2450,7 @@ let soundTimerMinutes = 30;
 let soundTimerEndsAt = null;
 let soundTimerTick = null;
 let soundTimerFinished = false;
+let soundTimerLamp = false;
 function applyEveningGain(gain) {
   eveningSoundGain = Math.max(0,Math.min(1,gain));
   if (tapeAudio && tapeRunning && !tapeAudio.paused && !fadeStep) tapeAudio.volume = tapeVolume * eveningSoundGain;
@@ -2463,6 +2464,16 @@ function paintSoundTimer() {
   if (soundTimerEndsAt !== null && left <= 0) { finishSoundTimer(); return; }
   const seconds = Math.ceil(left / 1000);
   document.getElementById("sound-timer-time").textContent = `${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`;
+  const hasTimer = soundTimerEndsAt !== null || soundTimerFinished;
+  document.body.classList.toggle("has-sound-timer",hasTimer);
+  const windowTimer = document.getElementById("window-sound-timer");
+  windowTimer.hidden = !hasTimer;
+  windowTimer.style.setProperty("--sound-left",String(left / (soundTimerMinutes * 60000)));
+  document.getElementById("window-sound-time").textContent = soundTimerFinished ? "quiet now" : document.getElementById("sound-timer-time").textContent;
+  document.getElementById("window-sound-action").textContent = soundTimerFinished ? "dismiss · ×" : "until quiet · ×";
+  windowTimer.setAttribute("aria-label",soundTimerFinished ? "Dismiss completed sound timer" : `Cancel sound timer, ${Math.ceil(left / 60000)} minutes until quiet`);
+  document.getElementById("sound-timer-lamp").disabled = soundTimerEndsAt !== null;
+  document.getElementById("sound-timer-lamp").checked = soundTimerLamp;
   document.getElementById("sound-timer").dataset.state = soundTimerEndsAt !== null ? "running" : soundTimerFinished ? "done" : "idle";
   document.getElementById("sound-timer-start").hidden = soundTimerEndsAt !== null;
   document.getElementById("sound-timer-cancel").hidden = soundTimerEndsAt === null;
@@ -2490,6 +2501,10 @@ function finishSoundTimer() {
   soundTimerEndsAt = null;
   soundTimerFinished = true;
   stopEveningSound();
+  if (soundTimerLamp) {
+    setDeskLamp(false);
+    try { localStorage.setItem("lateNight.deskLamp","0"); } catch {}
+  }
   applyEveningGain(1);
   document.getElementById("sound-timer-note").textContent = "Quiet now. Nothing else will start.";
   paintSoundTimer();
@@ -2519,6 +2534,11 @@ document.querySelectorAll("button[data-sound-minutes]").forEach(button => button
 }));
 document.getElementById("sound-timer-start").addEventListener("click",startSoundTimer);
 document.getElementById("sound-timer-cancel").addEventListener("click",cancelSoundTimer);
+document.getElementById("sound-timer-lamp").addEventListener("change",event => { if (soundTimerEndsAt === null) soundTimerLamp = event.target.checked; });
+document.getElementById("window-sound-timer").addEventListener("click",() => {
+  cancelSoundTimer();
+  document.getElementById("quiet-room").focus({preventScroll:true});
+});
 document.addEventListener("visibilitychange", () => { if (!document.hidden) paintSoundTimer(); });
 paintSoundTimer();
 

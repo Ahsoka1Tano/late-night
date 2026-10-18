@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=79559f683134" />
+  <link rel="stylesheet" href="style.css?v=9a59c705d9f9" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -248,6 +248,7 @@
     </section>
 
         <div class="scene-footer">
+          <button class="window-sound-timer" id="window-sound-timer" type="button" aria-label="Cancel sound timer" hidden><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" pathLength="1"/><path d="M21 9a8 8 0 1 0 2 12A9 9 0 0 1 21 9Z"/></svg><span><strong id="window-sound-time">30:00</strong><small id="window-sound-action">until quiet · ×</small></span></button>
           <p class="scene-signature"><span class="scene-dot" aria-hidden="true"></span><span id="scene-caption">THE CITY IS KEEPING YOU COMPANY</span></p>
           <button class="evening-toggle" id="evening-toggle" type="button" aria-pressed="false" aria-label="Play a lo-fi tape and real rain together"><span aria-hidden="true">▶</span> lo-fi + rain</button>
         </div>
@@ -353,6 +354,7 @@
           <p class="sound-timer-copy">Tapes and ambience fade in the last minute.<br />Radio stops at the end.</p>
           <div class="sound-timer-lengths" aria-label="Time until quiet"><button type="button" data-sound-minutes="15" aria-pressed="false">15 min</button><button type="button" data-sound-minutes="30" aria-pressed="true">30 min</button><button type="button" data-sound-minutes="60" aria-pressed="false">60 min</button></div>
           <p class="sound-timer-time" id="sound-timer-time">30:00</p>
+          <label class="sound-timer-lamp"><input id="sound-timer-lamp" type="checkbox" />turn off the desk lamp at the end</label>
           <div class="sound-timer-actions"><button id="sound-timer-start" type="button">set timer</button><button id="sound-timer-cancel" type="button" hidden>cancel timer</button></div>
           <p id="sound-timer-note" role="status">Setting a timer does not start playback.</p>
         </section>
@@ -436,6 +438,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=da5221b4d682"></script>
+  <script src="app.js?v=abb92e5ee6c3"></script>
 </body>
 </html>

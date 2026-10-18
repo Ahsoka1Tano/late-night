@@ -1434,3 +1434,22 @@ test('the final minute fades both layers without changing saved volume and cance
   assert.equal(await page.evaluate(() => tapeAudio.volume),.4);
   assert.ok(Math.abs(await page.evaluate(() => ambienceTrack.volume) - .4 * .8) < .001);
 });
+
+test('sound countdown stays on the glass in quiet mode and lamp shutdown is optional', async t => {
+  const page = await openRoom(t,320);
+  await page.locator('#sound-timer-lamp').check();
+  await page.locator('#sound-timer-start').click();
+  await page.locator('#quiet-room').click();
+  assert.equal(await page.locator('#window-sound-timer').isVisible(),true);
+  await page.locator('#window-sound-timer').click();
+  assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'),'true');
+  await page.keyboard.press('Escape');
+  await page.locator('#sound-timer-start').click();
+  await page.evaluate(() => { soundTimerEndsAt = Date.now() + 1000; });
+  await page.clock.runFor(1500);
+  assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'),'false');
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.deskLamp')),'0');
+  assert.equal(await page.locator('#window-sound-time').textContent(),'quiet now');
+  await page.locator('#window-sound-timer').click();
+  assert.equal(await page.locator('#window-sound-timer').isVisible(),false);
+});
