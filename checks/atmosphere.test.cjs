@@ -109,7 +109,7 @@ test('unavailable recording offers retry and never replaces rain with generated 
   await page.locator('#music-rain').click();
   await page.waitForFunction(() => document.getElementById('listen').textContent === 'retry');
   assert.match(await page.locator('#ambience-name').textContent(), /recording unavailable/);
-  assert.equal(await page.evaluate(() => audioCtx), null);
+  assert.equal(await page.evaluate(() => typeof audioCtx), 'undefined');
   await page.evaluate(() => { window.failAudio = false; });
   await page.locator('#listen').click();
   assert.equal(await page.locator('#listen').textContent(), 'listening');
@@ -395,9 +395,9 @@ test('a late rejected play from an old tape cannot start synthetic fallback', as
  const src = await page.locator('#tape-choice option').nth(1).getAttribute('value');
  await page.locator('#tape-choice').selectOption(src);
  await page.evaluate(() => window.oldTape.rejectPlay(new Error('late failure')));
- assert.equal(await page.evaluate(() => onSynth), false);
+ assert.equal(await page.evaluate(() => typeof buildSynth), 'undefined');
  assert.equal(await page.evaluate(() => tapeAudio.src), src);
- assert.equal(await page.evaluate(() => audioCtx), null);
+ assert.equal(await page.evaluate(() => typeof audioCtx), 'undefined');
 });
 
 
@@ -1510,7 +1510,7 @@ test('expired sound timers reject late playback failures and allow a fresh manua
     window.media.forEach(track => track.rejectPlay?.(new Error('late failure')));
   });
   await page.waitForTimeout(50);
-  assert.equal(await page.evaluate(() => tapeRunning || onSynth || listening),false);
+  assert.equal(await page.evaluate(() => tapeRunning || listening),false);
   assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
   await page.locator('#player-play').click();
   await page.clock.runFor(3000);
@@ -1538,4 +1538,19 @@ test('sound timer cards and the window countdown fit phones, tablets and quiet m
     assert.equal(await page.locator('#window-sound-timer').isVisible(),false);
     await page.close();
   }
+});
+
+test('unavailable tapes offer an honest retry while real rain keeps playing', async t => {
+  const page = await openRoom(t);
+  await page.locator('#music-rain').click();
+  await page.clock.runFor(1600);
+  await page.evaluate(() => { window.failAudio = true; });
+  await page.locator('#player-play').click();
+  await page.waitForFunction(() => document.getElementById('player-play').textContent === 'retry');
+  assert.match(await page.locator('#tape-status').textContent(),/Recording unavailable/);
+  assert.equal(await page.evaluate(() => typeof buildSynth),'undefined');
+  assert.equal(await page.evaluate(() => Boolean(ambienceTrack && !ambienceTrack.paused)),true);
+  await page.evaluate(() => { window.failAudio = false; });
+  await page.locator('#player-play').click();
+  assert.equal(await page.locator('#player-play').textContent(),'pause');
 });

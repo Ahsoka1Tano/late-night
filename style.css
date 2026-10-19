@@ -2468,6 +2468,8 @@ body.is-quiet .window-focus button { min-height: 44px; }
 @media (max-width: 600px) { .quiet-toolbar p { max-width: 120px; line-height: 1.7; } body.is-quiet .window-focus { top: 5%; } }
 @media (max-width: 760px) { .window-cat { width: 76px; left: 50%; } .window-cup { right: 12%; } .window-cat svg { position: absolute; bottom: 0; } }
 /* Five places to begin; your own evening makes a balanced sixth card. */
+.tape-status { margin-top: 7px; color: var(--text-dim); font-size: 10px; line-height: 1.7; }
+.player[data-playback='error'] .tape-status { color: #d4b6c0; }
 .sound-timer { margin-top: 24px; padding: 20px 16px; border: 1px solid #a99cb82b; border-radius: 16px; background: radial-gradient(ellipse at 85% 0,#785c8a15,transparent 75%); }
 .sound-timer h3 { margin: 8px 0; font-size: 20px; font-weight: 300; color: var(--text); }
 .sound-timer-copy,#sound-timer-note { color: var(--text-dim); font-size: 10px; line-height: 1.8; }

@@ -1279,109 +1279,6 @@ const radioDial = document.getElementById("radio-dial");
 const volumeSlider = document.getElementById("player-volume");
 
 let tapeRunning = false;
-let audioCtx = null;
-let synth = null;
-
-// three seconds of tape hiss with the occasional pop, looped forever
-function crackleBuffer(ctx) {
-  const length = ctx.sampleRate * 3;
-  const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-
-  for (let i = 0; i < length; i++) {
-    data[i] += (Math.random() * 2 - 1) * 0.018;
-
-    if (Math.random() < 0.00028) {
-      const amp = 0.2 + Math.random() * 0.45;
-      for (let k = 0; k < 48 && i + k < length; k++) {
-        data[i + k] += amp * Math.exp(-k / 11) * (Math.random() * 2 - 1);
-      }
-    }
-  }
-
-  return buffer;
-}
-
-function buildSynth() {
-  const ctx = audioCtx;
-
-  const master = ctx.createGain();
-  master.gain.value = 0;
-  master.connect(ctx.destination);
-
-  const warmth = ctx.createBiquadFilter();
-  warmth.type = "lowpass";
-  warmth.frequency.value = 620;
-  warmth.Q.value = 0.7;
-  warmth.connect(master);
-
-  // an Am7 left humming in the room
-  const voices = [110, 130.81, 164.81, 196].map((freq, i) => {
-    const osc = ctx.createOscillator();
-    osc.type = i % 2 ? "sine" : "triangle";
-    osc.frequency.value = freq;
-    osc.detune.value = (i - 1.5) * 7;
-
-    const level = ctx.createGain();
-    level.gain.value = 0.12;
-    osc.connect(level).connect(warmth);
-    osc.start();
-    return osc;
-  });
-
-  // the filter drifts, the way a tape never holds a steady speed
-  const wobble = ctx.createOscillator();
-  wobble.frequency.value = 0.045;
-  const wobbleDepth = ctx.createGain();
-  wobbleDepth.gain.value = 210;
-  wobble.connect(wobbleDepth).connect(warmth.frequency);
-  wobble.start();
-
-  const crackle = ctx.createBufferSource();
-  crackle.buffer = crackleBuffer(ctx);
-  crackle.loop = true;
-  const crackleLevel = ctx.createGain();
-  crackleLevel.gain.value = 0.35;
-  crackle.connect(crackleLevel).connect(master);
-  crackle.start();
-
-  return { master, sources: [...voices, wobble, crackle] };
-}
-
-function fadeSynth(target, seconds) {
-  const now = audioCtx.currentTime;
-  const gain = synth.master.gain;
-  gain.cancelScheduledValues(now);
-  gain.setValueAtTime(gain.value, now);
-  gain.linearRampToValueAtTime(target, now + seconds);
-}
-
-// the synth hum sits a little lower than a real track at the same setting
-function synthLevel() {
-  return tapeVolume * 0.58 * eveningSoundGain;
-}
-
-function ensureAudio() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  audioCtx.resume();
-  return audioCtx;
-}
-
-function startSynth() {
-  ensureAudio();
-  if (!synth) synth = buildSynth();
-  fadeSynth(synthLevel(), 2.5);
-}
-
-function stopSynth() {
-  if (!synth) return;
-  fadeSynth(0, 1.4);
-
-  const ending = synth;
-  synth = null;
-  setTimeout(() => ending.sources.forEach((node) => node.stop()), 1600);
-}
-
 /* real tapes, streamed straight from the Internet Archive */
 let TAPES = [
   {
@@ -1430,7 +1327,8 @@ let tapeVolume = storedVolume === null ? 0.55 : Math.min(1, Math.max(0, Number(s
 let tapeIndex = Math.floor(Math.random() * TAPES.length);
 let tapeAudio = null;
 let fadeStep = null;
-let onSynth = false;
+let tapeState = "idle";
+let tapeError = "";
 let tapeRequest = 0;
 const tapeShelf = document.getElementById("tape-shelf");
 const tapeChoice = document.getElementById("tape-choice");
@@ -1480,8 +1378,8 @@ function chooseTape(src) {
   clearInterval(fadeStep);
   if (tapeAudio) tapeAudio.pause();
   tapeAudio = null;
-  if (onSynth) stopSynth();
-  onSynth = false;
+  tapeState = "idle";
+  tapeError = "";
   tapeIndex = index;
   tapeKeptNote.textContent = "";
   rememberTape();
@@ -1510,9 +1408,22 @@ paintTapeShelf();
 
 function paintTape() {
   const tape = TAPES[tapeIndex];
-  playerTitle.textContent = onSynth
-    ? "night tape · side a"
-    : `${tape.title} · ${tape.licence}`;
+  playerTitle.textContent = `${tape.title} · ${tape.licence}`;
+  player.dataset.playback = tapeState;
+  player.classList.toggle("is-playing",tapeState === "playing");
+  playerPlay.textContent = tapeState === "loading" ? "loading" : tapeRunning ? "pause" : tapeError ? "retry" : "play";
+  document.getElementById("tape-status").textContent = tapeState === "loading" ? "Finding the recording…" : tapeError || (tapeState === "playing" ? "A real recording. Settle in." : "Ready when you are.");
+}
+function failTape(error,track,request) {
+  if (track !== tapeAudio || request !== tapeRequest || !tapeRunning) return;
+  ++tapeRequest;
+  clearInterval(fadeStep);
+  fadeStep = null;
+  track.pause();
+  tapeRunning = false;
+  tapeState = "error";
+  tapeError = error?.name === "NotAllowedError" ? "Tap retry to start the recording." : "Recording unavailable. Retry, choose another tape or try radio.";
+  paintTape();
 }
 
 function fadeAudio(target, seconds) {
@@ -1539,14 +1450,7 @@ function loadTape() {
     tapeAudio.preload = "none";
     tapeAudio.volume = 0;
 
-    // if the archive is unreachable, the little synth takes over
     const track = tapeAudio;
-    tapeAudio.addEventListener("error", () => {
-      if (track !== tapeAudio || !tapeRunning) return;
-      onSynth = true;
-      paintTape();
-      startSynth();
-    });
 
     tapeAudio.addEventListener("ended", () => { if (track === tapeAudio && tapeRunning) nextTape(); });
   }
@@ -1556,27 +1460,25 @@ function loadTape() {
 
 function playTape() {
   const request = ++tapeRequest;
-  if (onSynth) {
-    startSynth();
-    return;
-  }
-
   if (!tapeAudio || !tapeAudio.src) loadTape();
-  tapeAudio.play().catch(() => {
-    if (request !== tapeRequest || !tapeRunning) return;
-    onSynth = true;
+  const track = tapeAudio;
+  tapeState = "loading";
+  tapeError = "";
+  paintTape();
+  track.onerror = () => failTape(track.error,track,request);
+  track.play().then(() => {
+    if (request !== tapeRequest || track !== tapeAudio || !tapeRunning) return;
+    tapeState = "playing";
     paintTape();
-    startSynth();
-  });
+  }).catch(error => failTape(error,track,request));
   fadeAudio(tapeVolume, 2.5);
 }
 
 function pauseTape() {
   ++tapeRequest;
-  if (onSynth) {
-    stopSynth();
-    return;
-  }
+  tapeState = "paused";
+  tapeError = "";
+  paintTape();
   if (tapeAudio) fadeAudio(0, 1.2);
 }
 
@@ -1676,8 +1578,6 @@ stationButtons.forEach((btn) => {
 
 function setTape(running) {
   tapeRunning = running;
-  player.classList.toggle("is-playing", running);
-  playerPlay.textContent = running ? "pause" : "play";
 
   if (running) playTape();
   else pauseTape();
@@ -1693,7 +1593,6 @@ function setVolume(value, { save = true } = {}) {
     tapeAudio.volume = tapeVolume * eveningSoundGain;
   }
 
-  if (synth) fadeSynth(synthLevel(), 0.2);
   if (save) localStorage.setItem("lateNight.volume", String(tapeVolume));
 }
 
@@ -2472,7 +2371,6 @@ function applyEveningGain(gain) {
   if (tapeAudio && tapeRunning && !tapeAudio.paused && !fadeStep) tapeAudio.volume = tapeVolume * eveningSoundGain;
   const sound = ambienceFor(document.body.dataset.mood);
   if (ambienceTrack && listening && !ambienceTrack.paused && !ambienceFade && sound) ambienceTrack.volume = levelOf(sound) * eveningSoundGain;
-  if (synth && onSynth && tapeRunning) fadeSynth(synthLevel(),.25);
 }
 function paintSoundTimer() {
   const left = soundTimerEndsAt === null ? soundTimerFinished ? 0 : soundTimerMinutes * 60000 : Math.max(0,soundTimerEndsAt - Date.now());
