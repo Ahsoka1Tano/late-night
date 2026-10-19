@@ -1337,6 +1337,58 @@ const tapeFilter = document.getElementById("tape-filter");
 const tapeKeptNote = document.getElementById("tape-kept-note");
 let savedTapesOnly = false;
 const keptTapes = new Set(readKeptTapes());
+let tapeCollectionOpen = false;
+function paintTapeCollection() {
+  const collection = document.getElementById("tape-collection");
+  const visible = tapeCollectionOpen && document.body.dataset.mood === "music" && document.body.dataset.station !== "radio";
+  collection.hidden = !visible;
+  document.getElementById("browse-tapes").setAttribute("aria-expanded",String(visible));
+  const grid = document.getElementById("cassette-grid");
+  const focusedSrc = document.activeElement?.closest(".cassette-card")?.dataset.tapeSrc;
+  grid.replaceChildren();
+  TAPES.forEach((tape,index) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "cassette-card";
+    card.dataset.tapeSrc = tape.src;
+    card.style.setProperty("--cassette-hue",String([272,193,28,340,150,225][index % 6]));
+    const selected = index === tapeIndex;
+    card.setAttribute("aria-pressed",String(selected));
+    card.classList.toggle("is-spinning",selected && tapeState === "playing");
+    const art = document.createElement("span");
+    art.className = "cassette-art";
+    art.setAttribute("aria-hidden","true");
+    const label = document.createElement("span");
+    label.className = "cassette-label";
+    label.textContent = `LATE NIGHT / ${String(index+1).padStart(2,"0")}`;
+    const reels = document.createElement("span");
+    reels.className = "cassette-reels";
+    reels.append(document.createElement("i"),document.createElement("i"));
+    art.append(label,reels);
+    const title = document.createElement("strong");
+    title.textContent = tape.title;
+    const note = document.createElement("small");
+    note.textContent = selected ? tapeState === "playing" ? "playing · " + tape.licence : "selected · " + tape.licence : tape.licence;
+    card.append(art,title,note);
+    card.addEventListener("click",() => { if (index !== tapeIndex) chooseTape(tape.src); });
+    grid.append(card);
+    if (focusedSrc === tape.src) card.focus({preventScroll:true});
+  });
+}
+document.getElementById("browse-tapes").addEventListener("click",() => {
+  tapeCollectionOpen = !tapeCollectionOpen;
+  paintTapeCollection();
+  if (tapeCollectionOpen) {
+    document.getElementById("tape-collection").scrollIntoView({block:"start",behavior:"instant"});
+    document.getElementById("tape-collection").focus({preventScroll:true});
+  }
+});
+document.getElementById("close-collection").addEventListener("click",() => {
+  tapeCollectionOpen = false;
+  paintTapeCollection();
+  document.getElementById("browse-tapes").focus();
+});
+new MutationObserver(paintTapeCollection).observe(document.body,{attributes:true,attributeFilter:["data-mood","data-station"]});
 
 function readKeptTapes() {
   try {
@@ -1370,6 +1422,7 @@ function paintTapeShelf() {
   tapeFilter.textContent = `saved tapes · ${count}`;
   tapeFilter.disabled = count === 0;
   tapeFilter.setAttribute("aria-pressed", String(savedTapesOnly));
+  paintTapeCollection();
 }
 function chooseTape(src) {
   const index = TAPES.findIndex(tape => tape.src === src);
@@ -1413,6 +1466,7 @@ function paintTape() {
   player.classList.toggle("is-playing",tapeState === "playing");
   playerPlay.textContent = tapeState === "loading" ? "loading" : tapeRunning ? "pause" : tapeError ? "retry" : "play";
   document.getElementById("tape-status").textContent = tapeState === "loading" ? "Finding the recording…" : tapeError || (tapeState === "playing" ? "A real recording. Settle in." : "Ready when you are.");
+  paintTapeCollection();
 }
 function failTape(error,track,request) {
   if (track !== tapeAudio || request !== tapeRequest || !tapeRunning) return;

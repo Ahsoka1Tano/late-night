@@ -2468,6 +2468,30 @@ body.is-quiet .window-focus button { min-height: 44px; }
 @media (max-width: 600px) { .quiet-toolbar p { max-width: 120px; line-height: 1.7; } body.is-quiet .window-focus { top: 5%; } }
 @media (max-width: 760px) { .window-cat { width: 76px; left: 50%; } .window-cup { right: 12%; } .window-cat svg { position: absolute; bottom: 0; } }
 /* Five places to begin; your own evening makes a balanced sixth card. */
+.browse-tapes { width: 100%; min-height: 44px; margin-top: 12px; padding: 10px; border: 1px solid #b7a1cc44; border-radius: 10px; background: #b59cc80a; color: #c7b5da; font: inherit; font-size: 11px; cursor: pointer; }
+.tape-collection { margin-top: 28px; padding: clamp(16px,3vw,32px); border: 1px solid #b0a2c52b; border-radius: 22px; background: linear-gradient(135deg,#211b2c88,#121b28bb); scroll-margin-top: 20px; }
+.collection-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.collection-heading h2 { margin: 8px 0; font-size: clamp(23px,3vw,34px); font-weight: 300; color: var(--text); }
+.collection-heading p:last-child { color: var(--text-dim); font-size: 11px; line-height: 1.8; }
+.collection-heading > button { width: 44px; height: 44px; flex-shrink: 0; border: 1px solid #ffffff22; border-radius: 50%; background: #ffffff04; color: #b9a4cc; font: inherit; font-size: 23px; cursor: pointer; }
+.cassette-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 16px; }
+.cassette-card { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: 12px; border: 1px solid #b9a1cf22; border-radius: 13px; background: #11121c77; color: var(--text); font: inherit; cursor: pointer; text-align: left; transition: border-color .3s,transform .3s; }
+.cassette-card:hover { transform: translateY(-3px); border-color: #baa4cd77; }
+.cassette-card[aria-pressed='true'] { border-color: #c9a4e2bb; background: #6b4c7b22; }
+.cassette-card strong { font-size: 12px; line-height: 1.6; font-weight: 400; overflow-wrap: anywhere; }
+.cassette-card small { font-size: 9px; color: #b0a2bc; line-height: 1.6; margin-top: auto; }
+.cassette-art { display: block; position: relative; width: 100%; aspect-ratio: 1.6; border: 1px solid #c6b9d12a; border-radius: 9px; background: linear-gradient(125deg,hsl(var(--cassette-hue) 20% 31%),hsl(var(--cassette-hue) 17% 17%)); box-shadow: inset 0 0 0 4px #11131e88,0 7px 12px #0004; overflow: hidden; }
+.cassette-art::after { content: ''; position: absolute; left: 22%; right: 22%; bottom: 0; height: 12%; background: #141721; clip-path: polygon(10% 0,90% 0,100% 100%,0 100%); border-top: 1px solid #c1b6cc22; }
+.cassette-label { display: block; margin: 9% 8% 0; padding: 5% 4%; border-radius: 3px; background: #d9cfba; color: #45404a; font-size: clamp(6px,.75vw,9px); letter-spacing: .08em; }
+.cassette-reels { position: absolute; left: 13%; right: 13%; top: 47%; height: 28%; border: 1px solid #10131d; border-radius: 999px; background: #131520; display: flex; align-items: center; justify-content: space-between; padding: 0 9%; }
+.cassette-reels i { height: 80%; aspect-ratio: 1; border: 3px dotted #a9a2a5; border-radius: 50%; box-shadow: 0 0 0 2px #55515b; }
+.is-spinning .cassette-reels i { animation: cassette-turn 5s linear infinite; }
+.tape-collection[hidden] .cassette-reels i { animation-play-state: paused; }
+@keyframes cassette-turn { to { transform: rotate(360deg); } }
+.browse-tapes:focus-visible,.cassette-card:focus-visible,.collection-heading button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+@media(max-width:1000px) { .cassette-grid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; } }
+@media(max-width:600px) { .cassette-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; } .cassette-card { padding: 8px; gap: 9px; } .cassette-card strong { font-size: 10px; } }
+@media(prefers-reduced-motion:reduce) { .cassette-card:hover { transform: none; } .cassette-reels i { animation: none !important; } }
 .tape-status { margin-top: 7px; color: var(--text-dim); font-size: 10px; line-height: 1.7; }
 .player[data-playback='error'] .tape-status { color: #d4b6c0; }
 .sound-timer { margin-top: 24px; padding: 20px 16px; border: 1px solid #a99cb82b; border-radius: 16px; background: radial-gradient(ellipse at 85% 0,#785c8a15,transparent 75%); }

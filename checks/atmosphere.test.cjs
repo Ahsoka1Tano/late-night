@@ -1554,3 +1554,23 @@ test('unavailable tapes offer an honest retry while real rain keeps playing', as
   await page.locator('#player-play').click();
   assert.equal(await page.locator('#player-play').textContent(),'pause');
 });
+
+test('illustrated cassette cards cue paused recordings and preserve playing rain', async t => {
+  const page = await openRoom(t);
+  await page.locator('#browse-tapes').click();
+  assert.ok(await page.locator('.cassette-card').count() > 2);
+  const second = await page.locator('.cassette-card').nth(1).getAttribute('data-tape-src');
+  await page.locator('.cassette-card').nth(1).click();
+  assert.equal(await page.locator('#tape-choice').inputValue(),second);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(3000);
+  const rain = await page.evaluate(() => ambienceTrack.src);
+  await page.locator('.cassette-card').nth(2).click();
+  assert.equal(await page.evaluate(() => tapeRunning),true);
+  assert.equal(await page.evaluate(() => ambienceTrack.src),rain);
+  assert.equal(await page.locator('.cassette-card[aria-pressed="true"]').evaluate(el => el === document.activeElement),true);
+  await page.locator('#close-collection').click();
+  assert.equal(await page.locator('#tape-collection').isVisible(),false);
+  assert.equal(await page.locator('#browse-tapes').evaluate(el => el === document.activeElement),true);
+});
