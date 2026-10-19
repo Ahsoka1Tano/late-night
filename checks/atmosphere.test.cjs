@@ -1601,3 +1601,28 @@ test('the cassette shelf searches, saves without playing and pages through real 
   await page.locator('#browse-tapes').click();
   assert.equal(await page.locator('#collection-filter').textContent(),'saved · 1');
 });
+
+test('recording position supports paused seeking and ignores metadata from an old tape', async t => {
+  const page = await openRoom(t);
+  assert.equal(await page.locator('#tape-seek').isDisabled(),true);
+  await page.locator('#player-play').click();
+  await page.evaluate(() => {
+    window.previousTape = tapeAudio;
+    tapeAudio.duration = 600;
+    tapeAudio.currentTime = 120;
+    tapeAudio.dispatchEvent(new Event('loadedmetadata'));
+  });
+  assert.equal(await page.locator('#tape-elapsed').textContent(),'02:00');
+  assert.equal(await page.locator('#tape-duration').textContent(),'10:00');
+  await page.locator('#player-play').click();
+  await page.clock.runFor(1400);
+  await page.locator('#tape-seek').fill('500');
+  assert.equal(await page.evaluate(() => tapeAudio.currentTime),300);
+  assert.equal(await page.evaluate(() => tapeAudio.paused),true);
+  assert.match(await page.locator('#tape-source').getAttribute('href'),/^https:\/\/archive.org\/details\//);
+  const next = await page.locator('#tape-choice option').nth(1).getAttribute('value');
+  await page.locator('#tape-choice').selectOption(next);
+  await page.evaluate(() => { previousTape.currentTime = 400; previousTape.dispatchEvent(new Event('timeupdate')); });
+  assert.equal(await page.locator('#tape-elapsed').textContent(),'00:00');
+  assert.equal(await page.locator('#tape-seek').isDisabled(),true);
+});

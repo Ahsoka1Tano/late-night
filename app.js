@@ -1511,7 +1511,36 @@ function paintTape() {
   playerPlay.textContent = tapeState === "loading" ? "loading" : tapeRunning ? "pause" : tapeError ? "retry" : "play";
   document.getElementById("tape-status").textContent = tapeState === "loading" ? "Finding the recording…" : tapeError || (tapeState === "playing" ? "A real recording. Settle in." : "Ready when you are.");
   paintTapeCollection();
+  paintTapePosition();
+  const sourceLink = document.getElementById("tape-source");
+  try {
+    const source = new URL(tape.src);
+    const item = source.pathname.match(/^\/download\/([^/]+)\//);
+    sourceLink.href = source.hostname === "archive.org" && item ? `https://archive.org/details/${item[1]}` : source.href;
+    sourceLink.hidden = source.protocol !== "https:";
+  } catch { sourceLink.hidden = true; }
 }
+function tapeTime(seconds) {
+  if (!Number.isFinite(seconds) || seconds < 0) return "--:--";
+  const whole = Math.floor(seconds);
+  return `${String(Math.floor(whole/60)).padStart(2,"0")}:${String(whole%60).padStart(2,"0")}`;
+}
+function paintTapePosition() {
+  const elapsed = Number.isFinite(tapeAudio?.currentTime) ? tapeAudio.currentTime : 0;
+  const duration = tapeAudio?.duration;
+  const seekable = Number.isFinite(duration) && duration > 0;
+  document.getElementById("tape-elapsed").textContent = tapeTime(elapsed);
+  document.getElementById("tape-duration").textContent = tapeTime(duration);
+  const seek = document.getElementById("tape-seek");
+  seek.disabled = !seekable;
+  seek.value = seekable ? String(Math.min(1000,elapsed / duration * 1000)) : "0";
+  seek.setAttribute("aria-valuetext",seekable ? `${tapeTime(elapsed)} of ${tapeTime(duration)}` : "Duration available when the recording loads");
+}
+document.getElementById("tape-seek").addEventListener("input",event => {
+  if (!tapeAudio || !Number.isFinite(tapeAudio.duration) || tapeAudio.duration <= 0) return;
+  tapeAudio.currentTime = Number(event.target.value) / 1000 * tapeAudio.duration;
+  paintTapePosition();
+});
 function failTape(error,track,request) {
   if (track !== tapeAudio || request !== tapeRequest || !tapeRunning) return;
   ++tapeRequest;
@@ -1549,6 +1578,7 @@ function loadTape() {
     tapeAudio.volume = 0;
 
     const track = tapeAudio;
+    ["loadedmetadata","durationchange","timeupdate","seeked"].forEach(name => track.addEventListener(name,() => { if (track === tapeAudio) paintTapePosition(); }));
 
     tapeAudio.addEventListener("ended", () => { if (track === tapeAudio && tapeRunning) nextTape(); });
   }
@@ -1558,6 +1588,11 @@ function loadTape() {
 
 function playTape() {
   const request = ++tapeRequest;
+  if (tapeState === "error") {
+    clearInterval(fadeStep);
+    tapeAudio?.pause();
+    tapeAudio = null;
+  }
   if (!tapeAudio || !tapeAudio.src) loadTape();
   const track = tapeAudio;
   tapeState = "loading";

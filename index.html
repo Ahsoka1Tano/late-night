@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=c171d0543af7" />
+  <link rel="stylesheet" href="style.css?v=08f164741c60" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -289,6 +289,7 @@
           <button id="tape-filter" type="button" aria-pressed="false" disabled>saved tapes · 0</button>
         </div>
         <p class="tape-kept-note" id="tape-kept-note" role="status"></p>
+        <div class="tape-position"><div><span id="tape-elapsed">00:00</span><span id="tape-duration">--:--</span></div><input id="tape-seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek in this recording" disabled /><a id="tape-source" target="_blank" rel="noopener noreferrer">recording and credits ↗</a></div>
         <button class="browse-tapes" id="browse-tapes" type="button" aria-expanded="false" aria-controls="tape-collection">▤ browse the cassette shelf</button>
       </div>
     </div>
@@ -448,6 +449,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=e82b4c665627"></script>
+  <script src="app.js?v=cb1003001a95"></script>
 </body>
 </html>
