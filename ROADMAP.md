@@ -46,10 +46,12 @@ only purpose is filling a day.
 - [x] save favourite tapes locally and let Next cycle through the saved collection
 - [x] changing recordings preserves rain; late playback failures cannot replace a new tape
 - [x] lo-fi player bar: play / pause, next, tape title, a small moving wave
-- [x] real tracks streamed from the Internet Archive, synth as a fallback
+- [x] real recordings streamed from the Internet Archive, with honest loading and retry states
+- [x] illustrated cassette shelf, search by title or artist, favourite hearts and pagination
+- [x] recording position, paused seeking and original source credits
 - [x] a radio station: Lofi Girl's live stream
 - [x] more radio channels: lofi house, synthwave, summer lofi, deep sleep
-- [x] tape hiss / vinyl crackle layer
+- [x] keep recordings as supplied, with no generated music or crackle fallback
 - [x] a volume knob for the tape, and arrow keys to match
 - [x] separate volume for music and ambience
 - [x] slow cassette reels turn while playing

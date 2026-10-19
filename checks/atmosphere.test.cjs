@@ -1626,3 +1626,27 @@ test('recording position supports paused seeking and ignores metadata from an ol
   assert.equal(await page.locator('#tape-elapsed').textContent(),'00:00');
   assert.equal(await page.locator('#tape-seek').isDisabled(),true);
 });
+
+test('cassette shelf and playback controls fit phones and desktop with keyboard favourites', async t => {
+  for (const width of [320,768,1440]) {
+    const page = await openRoom(t,width);
+    await page.locator('#browse-tapes').click();
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth),true);
+    for (const card of await page.locator('.cassette-card').all()) {
+      const box = await card.boundingBox();
+      assert.ok(box.x >= 0 && box.x + box.width <= width);
+    }
+    await page.locator('.cassette-save').first().focus();
+    await page.keyboard.press('Space');
+    assert.equal(await page.locator('.cassette-save').first().getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('.cassette-save').first().evaluate(el => el === document.activeElement),true);
+    assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#tape-collection').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`cassette-shelf-${width}.png`)});
+    await page.locator('#close-collection').click();
+    await page.locator('[data-station="radio"]').click();
+    assert.equal(await page.locator('#tape-status').isVisible(),false);
+    await page.evaluate(() => { stopEveningSound(); });
+    assert.match(await page.locator('#player-title').textContent(),/lofi girl/);
+    await page.close();
+  }
+});

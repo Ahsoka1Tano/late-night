@@ -2515,6 +2515,7 @@ body.is-quiet .window-focus button { min-height: 44px; }
 .tape-position a { display: inline-flex; align-items: center; min-height: 36px; color: #bfa8ce; font-size: 10px; text-underline-offset: 4px; }
 .tape-position input:focus-visible,.tape-position a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 5px; }
 .player[data-playback='error'] .tape-status { color: #d4b6c0; }
+body[data-station='radio'] .tape-status { display: none; }
 .sound-timer { margin-top: 24px; padding: 20px 16px; border: 1px solid #a99cb82b; border-radius: 16px; background: radial-gradient(ellipse at 85% 0,#785c8a15,transparent 75%); }
 .sound-timer h3 { margin: 8px 0; font-size: 20px; font-weight: 300; color: var(--text); }
 .sound-timer-copy,#sound-timer-note { color: var(--text-dim); font-size: 10px; line-height: 1.8; }

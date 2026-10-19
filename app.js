@@ -1345,6 +1345,7 @@ function paintTapeCollection() {
   const visible = tapeCollectionOpen && document.body.dataset.mood === "music" && document.body.dataset.station !== "radio";
   collection.hidden = !visible;
   document.getElementById("browse-tapes").setAttribute("aria-expanded",String(visible));
+  if (!visible) return;
   const grid = document.getElementById("cassette-grid");
   const focusedSrc = document.activeElement?.closest(".cassette-item")?.dataset.tapeSrc;
   const focusedSave = document.activeElement?.classList.contains("cassette-save");
@@ -1505,7 +1506,7 @@ paintTapeShelf();
 
 function paintTape() {
   const tape = TAPES[tapeIndex];
-  playerTitle.textContent = `${tape.title} · ${tape.licence}`;
+  playerTitle.textContent = document.body.dataset.station === "radio" ? `lofi girl · ${currentRadio().name}` : `${tape.title} · ${tape.licence}`;
   player.dataset.playback = tapeState;
   player.classList.toggle("is-playing",tapeState === "playing");
   playerPlay.textContent = tapeState === "loading" ? "loading" : tapeRunning ? "pause" : tapeError ? "retry" : "play";

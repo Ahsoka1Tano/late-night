@@ -30,6 +30,24 @@ The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
 
+## A shelf of real cassettes
+
+In **Music → tape**, **browse the cassette shelf** opens an illustrated collection
+below the room. Search by artist or recording title, save a cassette with its
+heart, or show only your saved recordings. Twelve cards appear at a time;
+**more recordings** reveals the next group. Closing the shelf returns to the deck.
+
+Choosing a card preserves playback state: a paused deck cues the recording,
+and a playing deck starts it. Rain keeps going. Hearts save recordings without
+selecting or playing them. The compact native tape selector remains available.
+
+The deck shows elapsed time and duration once the recording supplies them.
+The seek bar works during playback and while paused. **Recording and credits**
+opens the original source page. If a recording cannot load, the deck offers
+**retry**, another cassette or radio. There is no generated replacement music.
+
+![The cassette shelf](assets/cassette-shelf.png)
+
 ## Let the sound end softly
 
 **A little longer**, in the room controls, sets a **15, 30 or 60 minute** sound
@@ -213,7 +231,7 @@ quiet for a while. Its first pass begins shortly after opening the room.
   further than far ones — and once in a long while something crosses it
 - a tape deck in the music mood: twenty hours of freely licensed tapes,
   or five of Lofi Girl's radio channels in her own player;
-  if a stream is out of reach, a small synth keeps the room humming
+  with recording progress, a searchable cassette shelf and a clear retry if a stream fails
 - a calm mood that breathes: a slow glow in, a slower glow out
 - a sleep mood that dozes off on its own if you stop touching anything
 - drizzle, steady or downpour — heavy rain blurs the city away
