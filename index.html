@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=aa62d61390ea" />
+  <link rel="stylesheet" href="style.css?v=c171d0543af7" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -405,7 +405,11 @@
     </div>
     <section class="tape-collection" id="tape-collection" aria-labelledby="collection-title" tabindex="-1" hidden>
       <header class="collection-heading"><div><p class="desk-kicker">RECORDINGS FOR STAYING IN</p><h2 id="collection-title">Pick a little soundtrack.</h2><p>Choose a cassette. Playing stays playing; paused stays paused.</p></div><button id="close-collection" type="button" aria-label="Close the cassette shelf">×</button></header>
+      <div class="collection-tools"><label for="collection-search">Find a recording<input id="collection-search" type="search" placeholder="Artist or tape title…" autocomplete="off" /></label><button id="collection-filter" type="button" aria-pressed="false" disabled>saved · 0</button></div>
+      <p class="collection-results" id="collection-results" role="status"></p>
+      <p class="collection-results" id="collection-save-note" role="status"></p>
       <div class="cassette-grid" id="cassette-grid"></div>
+      <button class="collection-more" id="collection-more" type="button" hidden>more recordings</button>
     </section>
     <div class="evening-notes">
       <div class="night-thought"><p class="desk-kicker">A MOMENT BEFORE TOMORROW</p>
@@ -444,6 +448,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=9e4fc97597f4"></script>
+  <script src="app.js?v=e82b4c665627"></script>
 </body>
 </html>

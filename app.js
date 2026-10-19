@@ -1338,15 +1338,31 @@ const tapeKeptNote = document.getElementById("tape-kept-note");
 let savedTapesOnly = false;
 const keptTapes = new Set(readKeptTapes());
 let tapeCollectionOpen = false;
+let tapeSearch = "";
+let rackVisible = 12;
 function paintTapeCollection() {
   const collection = document.getElementById("tape-collection");
   const visible = tapeCollectionOpen && document.body.dataset.mood === "music" && document.body.dataset.station !== "radio";
   collection.hidden = !visible;
   document.getElementById("browse-tapes").setAttribute("aria-expanded",String(visible));
   const grid = document.getElementById("cassette-grid");
-  const focusedSrc = document.activeElement?.closest(".cassette-card")?.dataset.tapeSrc;
+  const focusedSrc = document.activeElement?.closest(".cassette-item")?.dataset.tapeSrc;
+  const focusedSave = document.activeElement?.classList.contains("cassette-save");
+  let restoredFocus = false;
   grid.replaceChildren();
-  TAPES.forEach((tape,index) => {
+  const matching = TAPES.map((tape,index) => ({tape,index})).filter(({tape}) => (!savedTapesOnly || keptTapes.has(tape.src)) && tape.title.toLocaleLowerCase().includes(tapeSearch));
+  const result = matching.length ? `${Math.min(rackVisible,matching.length)} of ${matching.length} recordings` : "No recordings match. Try another title or show all tapes.";
+  const resultLabel = document.getElementById("collection-results");
+  if (resultLabel.textContent !== result) resultLabel.textContent = result;
+  document.getElementById("collection-more").hidden = matching.length <= rackVisible;
+  const savedCount = TAPES.filter(tape => keptTapes.has(tape.src)).length;
+  document.getElementById("collection-filter").textContent = `saved · ${savedCount}`;
+  document.getElementById("collection-filter").disabled = savedCount === 0;
+  document.getElementById("collection-filter").setAttribute("aria-pressed",String(savedTapesOnly));
+  matching.slice(0,rackVisible).forEach(({tape,index}) => {
+    const item = document.createElement("article");
+    item.className = "cassette-item";
+    item.dataset.tapeSrc = tape.src;
     const card = document.createElement("button");
     card.type = "button";
     card.className = "cassette-card";
@@ -1371,10 +1387,36 @@ function paintTapeCollection() {
     note.textContent = selected ? tapeState === "playing" ? "playing · " + tape.licence : "selected · " + tape.licence : tape.licence;
     card.append(art,title,note);
     card.addEventListener("click",() => { if (index !== tapeIndex) chooseTape(tape.src); });
-    grid.append(card);
-    if (focusedSrc === tape.src) card.focus({preventScroll:true});
+    const save = document.createElement("button");
+    save.type = "button";
+    save.className = "cassette-save";
+    const kept = keptTapes.has(tape.src);
+    save.textContent = kept ? "♥" : "♡";
+    save.setAttribute("aria-pressed",String(kept));
+    save.setAttribute("aria-label",`${kept ? "Remove" : "Save"} ${tape.title}${kept ? " from saved tapes" : ""}`);
+    save.addEventListener("click",() => toggleKeptTape(tape.src));
+    item.append(card,save);
+    grid.append(item);
+    if (focusedSrc === tape.src) { (focusedSave ? save : card).focus({preventScroll:true}); restoredFocus = true; }
   });
+  if (focusedSrc && !restoredFocus && visible) document.getElementById("collection-search").focus({preventScroll:true});
 }
+document.getElementById("collection-search").addEventListener("input",event => {
+  tapeSearch = event.target.value.trim().toLocaleLowerCase();
+  rackVisible = 12;
+  paintTapeCollection();
+});
+document.getElementById("collection-filter").addEventListener("click",() => {
+  savedTapesOnly = !savedTapesOnly;
+  rackVisible = 12;
+  paintTapeShelf();
+});
+document.getElementById("collection-more").addEventListener("click",() => {
+  const oldCount = document.querySelectorAll(".cassette-card").length;
+  rackVisible += 12;
+  paintTapeCollection();
+  document.querySelectorAll(".cassette-card")[oldCount]?.focus({preventScroll:true});
+});
 document.getElementById("browse-tapes").addEventListener("click",() => {
   tapeCollectionOpen = !tapeCollectionOpen;
   paintTapeCollection();
@@ -1441,8 +1483,7 @@ function chooseTape(src) {
   if (tapeRunning) playTape();
 }
 tapeChoice.addEventListener("change", () => chooseTape(tapeChoice.value));
-tapeKeep.addEventListener("click", () => {
-  const src = TAPES[tapeIndex].src;
+function toggleKeptTape(src) {
   if (keptTapes.has(src)) keptTapes.delete(src);
   else keptTapes.add(src);
   try {
@@ -1451,10 +1492,13 @@ tapeKeep.addEventListener("click", () => {
   } catch {
     tapeKeptNote.textContent = "changes kept for this visit · device storage unavailable";
   }
+  document.getElementById("collection-save-note").textContent = tapeKeptNote.textContent;
   paintTapeShelf();
-});
+}
+tapeKeep.addEventListener("click", () => toggleKeptTape(TAPES[tapeIndex].src));
 tapeFilter.addEventListener("click", () => {
   savedTapesOnly = !savedTapesOnly;
+  rackVisible = 12;
   paintTapeShelf();
 });
 paintTapeShelf();

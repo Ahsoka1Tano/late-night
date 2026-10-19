@@ -1574,3 +1574,30 @@ test('illustrated cassette cards cue paused recordings and preserve playing rain
   assert.equal(await page.locator('#tape-collection').isVisible(),false);
   assert.equal(await page.locator('#browse-tapes').evaluate(el => el === document.activeElement),true);
 });
+
+test('the cassette shelf searches, saves without playing and pages through real recordings', async t => {
+  const page = await openRoom(t);
+  await page.locator('#browse-tapes').click();
+  const title = await page.locator('.cassette-card strong').nth(1).textContent();
+  const selected = await page.locator('#tape-choice').inputValue();
+  await page.locator('#collection-search').fill(title.toUpperCase());
+  assert.equal(await page.locator('.cassette-card').count(),1);
+  await page.locator('.cassette-save').click();
+  assert.equal(await page.locator('#tape-choice').inputValue(),selected);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  await page.locator('#collection-filter').click();
+  assert.equal(await page.locator('.cassette-card').count(),1);
+  assert.equal(await page.locator('.cassette-save').getAttribute('aria-pressed'),'true');
+  await page.locator('#collection-search').fill('no such recording at midnight');
+  assert.equal(await page.locator('.cassette-card').count(),0);
+  assert.match(await page.locator('#collection-results').textContent(),/No recordings match/);
+  await page.locator('#collection-search').fill('');
+  await page.locator('#collection-filter').click();
+  assert.equal(await page.locator('.cassette-card').count(),12);
+  await page.locator('#collection-more').click();
+  assert.ok(await page.locator('.cassette-card').count() > 12);
+  assert.equal(await page.locator('.cassette-card').nth(12).evaluate(el => el === document.activeElement),true);
+  await page.reload();
+  await page.locator('#browse-tapes').click();
+  assert.equal(await page.locator('#collection-filter').textContent(),'saved · 1');
+});
