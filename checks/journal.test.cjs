@@ -341,12 +341,49 @@ test('album distinguishes an empty month from unreadable data and recovers on re
   await page.evaluate(key => localStorage.setItem(key,'unreadable'),KEY);
   await page.locator('#journal-history summary').click();
   await page.locator('#journal-history summary').click();
+  await page.waitForFunction(() => document.getElementById('album-status').textContent.includes("couldn't be read"));
   assert.match(await page.locator('#album-status').textContent(),/couldn't be read/);
   assert.equal(await page.locator('#album-prev').isDisabled(),true);
   assert.equal(await page.evaluate(key => localStorage.getItem(key),KEY),'unreadable');
   await page.evaluate(key => localStorage.setItem(key,JSON.stringify({'2026-10-4':{note:'Back again.',day:'quiet'}})),KEY);
   await page.locator('#journal-history summary').click();
   await page.locator('#journal-history summary').click();
+  // <details> delivers toggle asynchronously; wait for its reader to repaint.
+  await page.waitForFunction(() => document.getElementById('album-note').textContent === 'Back again.');
   assert.equal(await page.locator('#album-note').textContent(),'Back again.');
   assert.equal(await page.locator('#download-journal').isDisabled(),false);
+});
+
+test('night album fits phones and desktop and keeps calendar focus during updates', async t => {
+  for (const width of [320,768,1440]) {
+    const page = await openRoom(t, {
+      '2026-10-4':{note:'A cup by the window.\nThe city carried on. I stayed for one more song.',day:'quiet'},
+      '2026-10-2':{note:'The rain was enough.',day:'tired'},
+      '2026-9-30':{note:'A slow September evening.',day:'good'}
+    },{width,height:900});
+    await page.locator('#journal-history summary').click();
+    await page.locator('[data-history-view="album"]').click();
+    await page.locator('[data-album-date="2026-10-4"]').focus();
+    await page.evaluate(() => dispatchEvent(new StorageEvent('storage',{key:'lateNight.journal'})));
+    assert.equal(await page.locator('[data-album-date="2026-10-4"]').evaluate(el => el === document.activeElement),true);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth),true);
+    const note = await page.locator('#album-letter').boundingBox();
+    assert.ok(note.x >= 0 && note.x + note.width <= width);
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#night-album').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`night-album-${width}.png`)});
+    await page.close();
+  }
+});
+
+test('an open album keeps yesterday readable when midnight starts a fresh note', async t => {
+  const page = await openRoom(t,{[DAY]:{note:'The fifth had soft rain.',day:'quiet'}});
+  await page.locator('#journal-history summary').click();
+  await page.locator('[data-history-view="album"]').click();
+  await page.clock.setSystemTime(new Date('2026-10-06T00:05:00+03:00'));
+  await page.evaluate(() => dispatchEvent(new Event('focus')));
+  assert.equal(await page.locator('#journal-note').inputValue(),'');
+  assert.equal(await page.locator('#album-note').textContent(),'The fifth had soft rain.');
+  await page.locator('#journal-note').fill('The sixth begins quietly.');
+  await page.locator('[data-album-date="2026-10-6"]').click();
+  assert.equal(await page.locator('#album-note').textContent(),'The sixth begins quietly.');
+  assert.equal((await entries(page))[DAY].note,'The fifth had soft rain.');
 });

@@ -30,6 +30,26 @@ The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
 
+## An album of quiet nights
+
+Below the room, open **previous nights → night album**. Marked dates hold your
+saved notes and feelings; blank dates stay quiet. Browse months or choose a day
+to read a small illustrated postcard. **Older night** and **newer night** move
+between saved entries, including across month boundaries.
+
+Reading a past evening leaves tonight's editor in place. The album also includes
+today's saved note, updates after a successful save, and remembers whether you
+prefer the album or the original list. Different feelings tint the postcard's
+illustration.
+
+**Download saved notes · .txt** prepares a plain text file of saved entries,
+newest first, with dates, feelings and original line breaks. The file is made
+locally in your browser. Your journal stays in localStorage; there is no upload,
+account or cloud copy. An unreadable journal offers a retry instead of an empty
+export.
+
+![A saved evening in the night album](assets/night-album.png)
+
 ## A shelf of real cassettes
 
 In **Music → tape**, **browse the cassette shelf** opens an illustrated collection

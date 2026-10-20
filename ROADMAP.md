@@ -93,6 +93,9 @@ only purpose is filling a day.
 - [x] browser regressions for journal saving, midnight and narrow screens
 - [x] previous nights: dated notes and emotions, newest first, seven at a time
 - [x] history: keyboard navigation, safe text rendering and mobile layout checks
+- [x] night album: marked dates, month browsing and illustrated read-only postcards
+- [x] move between saved nights and remember list / album preference
+- [x] download saved notes as local text with dates, feelings and line breaks
 - [x] everything stored in localStorage
 
 ## Traces

@@ -1039,7 +1039,10 @@ function savedAlbumEntries() {
 function paintAlbumLetter() {
   const entry = albumEntries.find(item => albumDateKey(item.date) === albumSelected);
   document.getElementById("album-letter").hidden = !entry;
-  if (!entry) return;
+  if (!entry) {
+    document.getElementById("album-note").textContent = "";
+    return;
+  }
   document.getElementById("album-letter").dataset.emotion = entry.mood || "quiet";
   const time = document.getElementById("album-date");
   time.textContent = new Intl.DateTimeFormat(undefined,{year:"numeric",month:"long",day:"numeric"}).format(entry.date);
@@ -1054,6 +1057,7 @@ function paintAlbumLetter() {
 function renderNightAlbum() {
   const status = document.getElementById("album-status");
   const days = document.getElementById("album-days");
+  const focusedDay = document.activeElement?.dataset.albumDate;
   days.replaceChildren();
   try { albumEntries = savedAlbumEntries(); }
   catch {
@@ -1071,6 +1075,10 @@ function renderNightAlbum() {
     albumSelected = albumEntries[0] ? albumDateKey(albumEntries[0].date) : null;
   }
   document.getElementById("download-journal").disabled = albumEntries.length === 0;
+  const oldestMonth = albumEntries.at(-1)?.date;
+  const newestMonth = albumEntries[0]?.date;
+  if (oldestMonth && albumMonth.getFullYear()*12+albumMonth.getMonth() < oldestMonth.getFullYear()*12+oldestMonth.getMonth()) albumMonth = new Date(oldestMonth.getFullYear(),oldestMonth.getMonth(),1,12);
+  if (newestMonth && albumMonth.getFullYear()*12+albumMonth.getMonth() > newestMonth.getFullYear()*12+newestMonth.getMonth()) albumMonth = new Date(newestMonth.getFullYear(),newestMonth.getMonth(),1,12);
   const year = albumMonth.getFullYear(), month = albumMonth.getMonth();
   const monthEntries = albumEntries.filter(entry => entry.date.getFullYear() === year && entry.date.getMonth() === month);
   if (!monthEntries.some(entry => albumDateKey(entry.date) === albumSelected)) albumSelected = monthEntries[0] ? albumDateKey(monthEntries[0].date) : null;
@@ -1101,15 +1109,19 @@ function renderNightAlbum() {
   }
   status.textContent = monthEntries.length ? "Choose a marked evening. Your words stay on this device." : albumEntries.length ? "No saved evenings in this month." : "No saved notes yet. A quiet page is fine too.";
   paintAlbumLetter();
+  if (focusedDay) {
+    const target = Array.from(days.querySelectorAll("button:not(:disabled)")).find(button => button.dataset.albumDate === focusedDay) || days.querySelector("button[aria-pressed='true']:not(:disabled)");
+    target?.focus({preventScroll:true});
+  }
 }
 document.getElementById("album-prev").addEventListener("click",() => { albumMonth = new Date(albumMonth.getFullYear(),albumMonth.getMonth()-1,1,12); renderNightAlbum(); });
 document.getElementById("album-next").addEventListener("click",() => { albumMonth = new Date(albumMonth.getFullYear(),albumMonth.getMonth()+1,1,12); renderNightAlbum(); });
 function setHistoryView(view, { save = true } = {}) {
   historyView = view === "album" ? "album" : "list";
-  document.getElementById("night-album").hidden = view !== "album";
-  document.getElementById("journal-list-view").hidden = view !== "list";
-  document.querySelectorAll("[data-history-view]").forEach(button => button.setAttribute("aria-pressed",String(button.dataset.historyView === view)));
-  if (view === "album" && journalHistory.open) renderNightAlbum();
+  document.getElementById("night-album").hidden = historyView !== "album";
+  document.getElementById("journal-list-view").hidden = historyView !== "list";
+  document.querySelectorAll("[data-history-view]").forEach(button => button.setAttribute("aria-pressed",String(button.dataset.historyView === historyView)));
+  if (historyView === "album" && journalHistory.open) renderNightAlbum();
   if (save) { try { localStorage.setItem("lateNight.historyView",historyView); } catch {} }
 }
 document.querySelectorAll("[data-history-view]").forEach(button => button.addEventListener("click",() => setHistoryView(button.dataset.historyView)));
