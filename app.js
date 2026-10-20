@@ -1061,6 +1061,7 @@ function renderNightAlbum() {
     document.getElementById("album-letter").hidden = true;
     document.getElementById("album-prev").disabled = true;
     document.getElementById("album-next").disabled = true;
+    document.getElementById("download-journal").disabled = true;
     status.textContent = "Saved nights couldn't be read. Close and reopen to retry.";
     return;
   }
@@ -1069,6 +1070,7 @@ function renderNightAlbum() {
     albumMonth = new Date(latest.getFullYear(),latest.getMonth(),1,12);
     albumSelected = albumEntries[0] ? albumDateKey(albumEntries[0].date) : null;
   }
+  document.getElementById("download-journal").disabled = albumEntries.length === 0;
   const year = albumMonth.getFullYear(), month = albumMonth.getMonth();
   const monthEntries = albumEntries.filter(entry => entry.date.getFullYear() === year && entry.date.getMonth() === month);
   if (!monthEntries.some(entry => albumDateKey(entry.date) === albumSelected)) albumSelected = monthEntries[0] ? albumDateKey(monthEntries[0].date) : null;
@@ -1122,6 +1124,24 @@ function browseAlbumNight(direction) {
 document.getElementById("album-older").addEventListener("click",() => browseAlbumNight(1));
 document.getElementById("album-newer").addEventListener("click",() => browseAlbumNight(-1));
 setHistoryView(historyView,{save:false});
+document.getElementById("download-journal").addEventListener("click",() => {
+  const status = document.getElementById("album-download-status");
+  try {
+    const saved = savedAlbumEntries();
+    if (!saved.length) { status.textContent = "There are no saved notes to download yet."; return; }
+    const iso = date => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+    const text = "LATE NIGHT\nA little collection of saved evenings.\n\n" + saved.map(entry => `${iso(entry.date)}${entry.mood ? ` · ${entry.mood}` : ""}\n${entry.note.trim() ? entry.note : "A feeling was enough that evening."}`).join("\n\n———\n\n") + "\n";
+    const url = URL.createObjectURL(new Blob(["\ufeff",text],{type:"text/plain;charset=utf-8"}));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `late-night-notes-${iso(new Date())}.txt`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url),1000);
+    status.textContent = "Text file prepared. Keep it wherever you like.";
+  } catch { status.textContent = "Saved notes couldn't be read. Reopen the album to retry."; }
+});
 
 journalHistory.addEventListener("toggle", () => {
   document.body.classList.toggle("is-reading-journal", journalHistory.open);

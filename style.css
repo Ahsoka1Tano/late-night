@@ -2496,6 +2496,12 @@ body.is-quiet .window-focus button { min-height: 44px; }
 .album-reading-nav button { min-height: 44px; padding: 7px 8px; border: 1px solid #bda8cc22; border-radius: 9px; background: #ffffff02; color: #bba9ca; font: inherit; font-size: 10px; cursor: pointer; }
 .album-reading-nav button:disabled { opacity: .3; cursor: default; }
 .album-reading-nav button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.album-actions { margin-top: 16px; }
+.album-actions button { min-height: 44px; padding: 9px 12px; border: 1px solid #bba2cf2e; border-radius: 10px; background: #ffffff03; color: #bca9ca; font: inherit; font-size: 10px; cursor: pointer; }
+.album-actions button:disabled { opacity: .35; cursor: default; }
+.album-actions button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.album-actions p { color: var(--text-dim); font-size: 10px; line-height: 1.8; margin-top: 9px; }
+.album-actions p:empty { display: none; }
 .album-letter time { color: #a997b9; font-size: 10px; letter-spacing: .06em; }
 .album-emotion { margin-top: 12px; color: #d8c6df; font-size: 13px; }
 .album-note { margin-top: 12px; color: #bfb2c9; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; line-height: 1.9; }

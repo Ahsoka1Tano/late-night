@@ -312,3 +312,41 @@ test('album postcards browse across months, keep literal text and remember the r
   await page.locator('[data-album-date="2026-10-5"]').click();
   assert.equal(await page.locator('#album-note').textContent(),'A fresh October evening.');
 });
+
+test('album downloads saved notes as readable text and leaves the journal untouched', async t => {
+  const page = await openRoom(t, {
+    '2026-10-4':{note:'A small moon.\nOne more page. 🌙',day:'quiet'},
+    '2026-9-30':{note:'',day:'tired'}
+  });
+  const before = await page.evaluate(key => localStorage.getItem(key),KEY);
+  await page.locator('#journal-history summary').click();
+  await page.locator('[data-history-view="album"]').click();
+  const waiting = page.waitForEvent('download');
+  await page.locator('#download-journal').click();
+  const download = await waiting;
+  assert.equal(download.suggestedFilename(),'late-night-notes-2026-10-05.txt');
+  const text = await fs.readFile(await download.path(),'utf8');
+  assert.ok(text.includes('A small moon.\nOne more page. 🌙'));
+  assert.ok(text.indexOf('2026-10-04') < text.indexOf('2026-09-30'));
+  assert.ok(text.includes('2026-09-30 · tired'));
+  assert.equal(await page.evaluate(key => localStorage.getItem(key),KEY),before);
+});
+
+test('album distinguishes an empty month from unreadable data and recovers on reopening', async t => {
+  const page = await openRoom(t);
+  await page.locator('#journal-history summary').click();
+  await page.locator('[data-history-view="album"]').click();
+  assert.match(await page.locator('#album-status').textContent(),/No saved notes yet/);
+  assert.equal(await page.locator('#download-journal').isDisabled(),true);
+  await page.evaluate(key => localStorage.setItem(key,'unreadable'),KEY);
+  await page.locator('#journal-history summary').click();
+  await page.locator('#journal-history summary').click();
+  assert.match(await page.locator('#album-status').textContent(),/couldn't be read/);
+  assert.equal(await page.locator('#album-prev').isDisabled(),true);
+  assert.equal(await page.evaluate(key => localStorage.getItem(key),KEY),'unreadable');
+  await page.evaluate(key => localStorage.setItem(key,JSON.stringify({'2026-10-4':{note:'Back again.',day:'quiet'}})),KEY);
+  await page.locator('#journal-history summary').click();
+  await page.locator('#journal-history summary').click();
+  assert.equal(await page.locator('#album-note').textContent(),'Back again.');
+  assert.equal(await page.locator('#download-journal').isDisabled(),false);
+});
