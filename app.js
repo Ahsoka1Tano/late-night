@@ -970,6 +970,7 @@ function journalEntryDate(key) {
 }
 
 function renderJournalHistory() {
+  if (historyView === "album") renderNightAlbum();
   journalHistoryList.replaceChildren();
   journalOlder.hidden = true;
   let nights;
@@ -1021,6 +1022,87 @@ function renderJournalHistory() {
   journalHistoryNote.textContent = `${shown.length} of ${nights.length} saved ${nights.length === 1 ? "evening" : "evenings"} · on this device`;
   journalOlder.hidden = shown.length === nights.length;
 }
+
+/* An album reads the same local notes, without changing the editor. */
+let historyView = "list";
+let albumMonth = null;
+let albumSelected = null;
+let albumEntries = [];
+function albumDateKey(date) { return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`; }
+function savedAlbumEntries() {
+  return Object.entries(readJournal()).map(([key,value]) => ({
+    date:journalEntryDate(key),note:typeof value?.note === "string" ? value.note : "",mood:journalMoods.has(value?.day) ? value.day : null
+  })).filter(entry => entry.date && (entry.note.trim() || entry.mood)).sort((a,b) => b.date - a.date);
+}
+function paintAlbumLetter() {
+  const entry = albumEntries.find(item => albumDateKey(item.date) === albumSelected);
+  document.getElementById("album-letter").hidden = !entry;
+  if (!entry) return;
+  const time = document.getElementById("album-date");
+  time.textContent = new Intl.DateTimeFormat(undefined,{year:"numeric",month:"long",day:"numeric"}).format(entry.date);
+  time.dateTime = `${entry.date.getFullYear()}-${String(entry.date.getMonth()+1).padStart(2,"0")}-${String(entry.date.getDate()).padStart(2,"0")}`;
+  document.getElementById("album-emotion").textContent = entry.mood || "a night of your own";
+  document.getElementById("album-note").textContent = entry.note.trim() ? entry.note : "A feeling was enough that evening.";
+}
+function renderNightAlbum() {
+  const status = document.getElementById("album-status");
+  const days = document.getElementById("album-days");
+  days.replaceChildren();
+  try { albumEntries = savedAlbumEntries(); }
+  catch {
+    albumEntries = [];
+    document.getElementById("album-letter").hidden = true;
+    document.getElementById("album-prev").disabled = true;
+    document.getElementById("album-next").disabled = true;
+    status.textContent = "Saved nights couldn't be read. Close and reopen to retry.";
+    return;
+  }
+  if (!albumMonth) {
+    const latest = albumEntries[0]?.date || new Date();
+    albumMonth = new Date(latest.getFullYear(),latest.getMonth(),1,12);
+    albumSelected = albumEntries[0] ? albumDateKey(albumEntries[0].date) : null;
+  }
+  const year = albumMonth.getFullYear(), month = albumMonth.getMonth();
+  const monthEntries = albumEntries.filter(entry => entry.date.getFullYear() === year && entry.date.getMonth() === month);
+  if (!monthEntries.some(entry => albumDateKey(entry.date) === albumSelected)) albumSelected = monthEntries[0] ? albumDateKey(monthEntries[0].date) : null;
+  document.getElementById("album-month-title").textContent = new Intl.DateTimeFormat(undefined,{year:"numeric",month:"long"}).format(albumMonth);
+  const earliest = albumEntries.at(-1)?.date || new Date();
+  const latest = albumEntries[0]?.date || new Date();
+  document.getElementById("album-prev").disabled = year * 12 + month <= earliest.getFullYear() * 12 + earliest.getMonth();
+  document.getElementById("album-next").disabled = year * 12 + month >= latest.getFullYear() * 12 + latest.getMonth();
+  for (let blank = 0; blank < (albumMonth.getDay()+6)%7; blank++) {
+    const spacer = document.createElement("span"); spacer.setAttribute("aria-hidden","true"); days.append(spacer);
+  }
+  for (let day = 1; day <= new Date(year,month+1,0,12).getDate(); day++) {
+    const date = new Date(year,month,day,12), key = albumDateKey(date);
+    const entry = albumEntries.find(item => albumDateKey(item.date) === key);
+    const button = document.createElement("button");
+    button.type = "button"; button.textContent = String(day); button.dataset.albumDate = key;
+    button.disabled = !entry;
+    button.setAttribute("aria-label",`${new Intl.DateTimeFormat(undefined,{month:"long",day:"numeric",year:"numeric"}).format(date)}${entry ? ` · ${entry.mood || "saved note"}` : " · no note"}`);
+    button.setAttribute("aria-pressed",String(key === albumSelected));
+    if (key === today()) button.setAttribute("aria-current","date");
+    if (entry) button.dataset.emotion = entry.mood || "note";
+    button.addEventListener("click",() => {
+      albumSelected = key;
+      days.querySelectorAll("button").forEach(item => item.setAttribute("aria-pressed",String(item.dataset.albumDate === key)));
+      paintAlbumLetter();
+    });
+    days.append(button);
+  }
+  status.textContent = monthEntries.length ? "Choose a marked evening. Your words stay on this device." : albumEntries.length ? "No saved evenings in this month." : "No saved notes yet. A quiet page is fine too.";
+  paintAlbumLetter();
+}
+document.getElementById("album-prev").addEventListener("click",() => { albumMonth = new Date(albumMonth.getFullYear(),albumMonth.getMonth()-1,1,12); renderNightAlbum(); });
+document.getElementById("album-next").addEventListener("click",() => { albumMonth = new Date(albumMonth.getFullYear(),albumMonth.getMonth()+1,1,12); renderNightAlbum(); });
+function setHistoryView(view) {
+  historyView = view;
+  document.getElementById("night-album").hidden = view !== "album";
+  document.getElementById("journal-list-view").hidden = view !== "list";
+  document.querySelectorAll("[data-history-view]").forEach(button => button.setAttribute("aria-pressed",String(button.dataset.historyView === view)));
+  if (view === "album") renderNightAlbum();
+}
+document.querySelectorAll("[data-history-view]").forEach(button => button.addEventListener("click",() => setHistoryView(button.dataset.historyView)));
 
 journalHistory.addEventListener("toggle", () => {
   document.body.classList.toggle("is-reading-journal", journalHistory.open);

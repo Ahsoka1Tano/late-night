@@ -2468,6 +2468,28 @@ body.is-quiet .window-focus button { min-height: 44px; }
 @media (max-width: 600px) { .quiet-toolbar p { max-width: 120px; line-height: 1.7; } body.is-quiet .window-focus { top: 5%; } }
 @media (max-width: 760px) { .window-cat { width: 76px; left: 50%; } .window-cup { right: 12%; } .window-cat svg { position: absolute; bottom: 0; } }
 /* Five places to begin; your own evening makes a balanced sixth card. */
+.history-views { display: flex; gap: 7px; margin: 0 0 18px; }
+.history-views button,.album-month button { min-height: 44px; padding: 8px 15px; border: 1px solid #b0a4c02b; border-radius: 10px; background: #ffffff03; color: var(--text-dim); font: inherit; font-size: 11px; cursor: pointer; }
+.history-views button[aria-pressed='true'] { border-color: #b9a2cc88; background: #a98cbd12; color: var(--text); }
+.album-month { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.album-month h3 { color: #d8c9e1; font-size: 16px; font-weight: 300; }
+.album-month button { width: 44px; padding: 0; font-size: 23px; }
+.album-month button:disabled { opacity: .25; cursor: default; }
+.album-weekdays,.album-days { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 4px; }
+.album-weekdays { color: #8d829b; font-size: 9px; text-align: center; padding: 0 0 10px; }
+.album-days button { min-width: 0; min-height: 34px; aspect-ratio: 1; border: 1px solid transparent; border-radius: 9px; background: transparent; color: #685e75; font: inherit; font-size: 11px; font-variant-numeric: tabular-nums; }
+.album-days button[data-emotion] { cursor: pointer; border-color: #bda3d233; background: #a08ab315; color: #c8b9d3; box-shadow: inset 0 -3px #b49bcc44; }
+.album-days button[data-emotion='good'] { box-shadow: inset 0 -3px #a8bf9b66; }
+.album-days button[data-emotion='tired'] { box-shadow: inset 0 -3px #8c9ebc77; }
+.album-days button[data-emotion='productive'] { box-shadow: inset 0 -3px #d5a68077; }
+.album-days button[aria-pressed='true'] { border-color: #dac1eb; background: #ae8dc833; color: #f1e7f5; }
+.album-days button[aria-current='date'] { text-decoration: underline; text-underline-offset: 5px; }
+.album-status { margin: 14px 0; color: var(--text-dim); font-size: 10px; line-height: 1.8; }
+.album-letter { border: 1px solid #b6a2c12e; border-radius: 13px; padding: 20px; background: #171924; }
+.album-letter time { color: #a997b9; font-size: 10px; letter-spacing: .06em; }
+.album-emotion { margin-top: 12px; color: #d8c6df; font-size: 13px; }
+.album-note { margin-top: 12px; color: #bfb2c9; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; line-height: 1.9; }
+.history-views button:focus-visible,.album-month button:focus-visible,.album-days button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .browse-tapes { width: 100%; min-height: 44px; margin-top: 12px; padding: 10px; border: 1px solid #b7a1cc44; border-radius: 10px; background: #b59cc80a; color: #c7b5da; font: inherit; font-size: 11px; cursor: pointer; }
 .tape-collection { margin-top: 28px; padding: clamp(16px,3vw,32px); border: 1px solid #b0a2c52b; border-radius: 22px; background: linear-gradient(135deg,#211b2c88,#121b28bb); scroll-margin-top: 20px; }
 .collection-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }

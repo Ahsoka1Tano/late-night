@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=b70016980fdf" />
+  <link rel="stylesheet" href="style.css?v=8be76209df52" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -437,9 +437,19 @@
       <details class="journal-history" id="journal-history">
         <summary>previous nights</summary>
         <div class="journal-history-body">
+          <div class="history-views" aria-label="View saved nights"><button type="button" data-history-view="list" aria-pressed="true">list</button><button type="button" data-history-view="album" aria-pressed="false">night album</button></div>
+          <section class="night-album" id="night-album" aria-label="Your saved nights" hidden>
+            <div class="album-month"><button id="album-prev" type="button" aria-label="Previous month">‹</button><h3 id="album-month-title"></h3><button id="album-next" type="button" aria-label="Next month">›</button></div>
+            <div class="album-weekdays" aria-hidden="true"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
+            <div class="album-days" id="album-days" aria-label="Days with saved notes"></div>
+            <p class="album-status" id="album-status" role="status"></p>
+            <article class="album-letter" id="album-letter" hidden><time id="album-date"></time><p class="album-emotion" id="album-emotion"></p><p class="album-note" id="album-note"></p></article>
+          </section>
+          <div id="journal-list-view">
           <p class="journal-history-note" id="journal-history-note" role="status"></p>
           <ol class="journal-history-list" id="journal-history-list" aria-label="Previous journal entries"></ol>
           <button class="journal-older" id="journal-older" type="button" hidden>older nights</button>
+          </div>
         </div>
       </details>
     </section>
@@ -449,6 +459,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=8361346fa1ab"></script>
+  <script src="app.js?v=80169f369899"></script>
 </body>
 </html>

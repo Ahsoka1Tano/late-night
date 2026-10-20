@@ -265,3 +265,24 @@ test('a storage read failure at midnight does not move an unsaved draft to the w
   assert.equal((await entries(page))[DAY].note, 'Draft still belongs to the fifth.');
   assert.equal(await page.locator('#journal-note').inputValue(), '');
 });
+
+test('night album marks real dates and reads notes without changing the current draft', async t => {
+  const page = await openRoom(t, {
+    '2026-10-4':{note:'A book and the rain.',day:'quiet'},
+    '2026-9-30':{note:'The last September light.',day:'tired'},
+    [DAY]:{note:'Tonight stays here.',day:'good'},
+    'not-a-date':{note:'ignore this',day:'good'}
+  });
+  await page.locator('#journal-history summary').click();
+  await page.locator('[data-history-view="album"]').click();
+  assert.equal(await page.locator('#album-days button:not([disabled])').count(),2);
+  await page.locator('[data-album-date="2026-10-4"]').click();
+  assert.equal(await page.locator('#album-note').textContent(),'A book and the rain.');
+  assert.equal(await page.locator('#journal-note').inputValue(),'Tonight stays here.');
+  await page.locator('#album-prev').click();
+  assert.equal(await page.locator('#album-note').textContent(),'The last September light.');
+  assert.equal(await page.locator('#album-prev').isDisabled(),true);
+  await page.locator('#album-next').click();
+  assert.equal(await page.locator('#album-next').isDisabled(),true);
+  assert.equal(await page.locator('[data-album-date="2026-10-5"]').getAttribute('aria-current'),'date');
+});
