@@ -891,6 +891,7 @@ function saveJournal() {
     localStorage.setItem("lateNight.journal", JSON.stringify(all));
     journalDirty = false;
     showJournalStatus("saved on this device");
+    if (journalHistory.open && historyView === "album") renderNightAlbum();
     return true;
   } catch {
     showJournalStatus("couldn't save · keep this tab open", true);
@@ -1025,6 +1026,7 @@ function renderJournalHistory() {
 
 /* An album reads the same local notes, without changing the editor. */
 let historyView = "list";
+try { if (localStorage.getItem("lateNight.historyView") === "album") historyView = "album"; } catch {}
 let albumMonth = null;
 let albumSelected = null;
 let albumEntries = [];
@@ -1038,11 +1040,16 @@ function paintAlbumLetter() {
   const entry = albumEntries.find(item => albumDateKey(item.date) === albumSelected);
   document.getElementById("album-letter").hidden = !entry;
   if (!entry) return;
+  document.getElementById("album-letter").dataset.emotion = entry.mood || "quiet";
   const time = document.getElementById("album-date");
   time.textContent = new Intl.DateTimeFormat(undefined,{year:"numeric",month:"long",day:"numeric"}).format(entry.date);
   time.dateTime = `${entry.date.getFullYear()}-${String(entry.date.getMonth()+1).padStart(2,"0")}-${String(entry.date.getDate()).padStart(2,"0")}`;
-  document.getElementById("album-emotion").textContent = entry.mood || "a night of your own";
+  const symbols = { good:"✧", normal:"○", tired:"☁", productive:"✦", quiet:"☾" };
+  document.getElementById("album-emotion").textContent = entry.mood ? `${symbols[entry.mood]} ${entry.mood}` : "a night of your own";
   document.getElementById("album-note").textContent = entry.note.trim() ? entry.note : "A feeling was enough that evening.";
+  const index = albumEntries.indexOf(entry);
+  document.getElementById("album-older").disabled = index >= albumEntries.length-1;
+  document.getElementById("album-newer").disabled = index <= 0;
 }
 function renderNightAlbum() {
   const status = document.getElementById("album-status");
@@ -1095,14 +1102,26 @@ function renderNightAlbum() {
 }
 document.getElementById("album-prev").addEventListener("click",() => { albumMonth = new Date(albumMonth.getFullYear(),albumMonth.getMonth()-1,1,12); renderNightAlbum(); });
 document.getElementById("album-next").addEventListener("click",() => { albumMonth = new Date(albumMonth.getFullYear(),albumMonth.getMonth()+1,1,12); renderNightAlbum(); });
-function setHistoryView(view) {
-  historyView = view;
+function setHistoryView(view, { save = true } = {}) {
+  historyView = view === "album" ? "album" : "list";
   document.getElementById("night-album").hidden = view !== "album";
   document.getElementById("journal-list-view").hidden = view !== "list";
   document.querySelectorAll("[data-history-view]").forEach(button => button.setAttribute("aria-pressed",String(button.dataset.historyView === view)));
-  if (view === "album") renderNightAlbum();
+  if (view === "album" && journalHistory.open) renderNightAlbum();
+  if (save) { try { localStorage.setItem("lateNight.historyView",historyView); } catch {} }
 }
 document.querySelectorAll("[data-history-view]").forEach(button => button.addEventListener("click",() => setHistoryView(button.dataset.historyView)));
+function browseAlbumNight(direction) {
+  const index = albumEntries.findIndex(entry => albumDateKey(entry.date) === albumSelected);
+  const entry = albumEntries[index+direction];
+  if (!entry) return;
+  albumSelected = albumDateKey(entry.date);
+  albumMonth = new Date(entry.date.getFullYear(),entry.date.getMonth(),1,12);
+  renderNightAlbum();
+}
+document.getElementById("album-older").addEventListener("click",() => browseAlbumNight(1));
+document.getElementById("album-newer").addEventListener("click",() => browseAlbumNight(-1));
+setHistoryView(historyView,{save:false});
 
 journalHistory.addEventListener("toggle", () => {
   document.body.classList.toggle("is-reading-journal", journalHistory.open);

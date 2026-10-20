@@ -286,3 +286,29 @@ test('night album marks real dates and reads notes without changing the current 
   assert.equal(await page.locator('#album-next').isDisabled(),true);
   assert.equal(await page.locator('[data-album-date="2026-10-5"]').getAttribute('aria-current'),'date');
 });
+
+test('album postcards browse across months, keep literal text and remember the reading view', async t => {
+  const literal = '<img src=x onerror=alert(1)>\nA cup, then quiet.';
+  const page = await openRoom(t, {
+    '2026-10-4':{note:literal,day:'quiet'},
+    '2026-9-30':{note:'September.',day:'tired'},
+    '2026-8-10':{note:'August.',day:'good'}
+  });
+  await page.locator('#journal-history summary').click();
+  await page.locator('[data-history-view="album"]').click();
+  assert.equal(await page.locator('#album-note').textContent(),literal);
+  assert.equal(await page.locator('#album-note img').count(),0);
+  await page.locator('#album-older').click();
+  assert.equal(await page.locator('#album-note').textContent(),'September.');
+  await page.locator('#album-older').click();
+  assert.equal(await page.locator('#album-older').isDisabled(),true);
+  await page.locator('#album-newer').click();
+  assert.equal(await page.locator('#album-note').textContent(),'September.');
+  await page.reload();
+  await page.locator('#journal-history summary').click();
+  assert.equal(await page.locator('#night-album').isVisible(),true);
+  assert.equal(await page.locator('#journal-list-view').isVisible(),false);
+  await page.locator('#journal-note').fill('A fresh October evening.');
+  await page.locator('[data-album-date="2026-10-5"]').click();
+  assert.equal(await page.locator('#album-note').textContent(),'A fresh October evening.');
+});

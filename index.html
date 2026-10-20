@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=8be76209df52" />
+  <link rel="stylesheet" href="style.css?v=4e61afd51776" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -443,7 +443,11 @@
             <div class="album-weekdays" aria-hidden="true"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
             <div class="album-days" id="album-days" aria-label="Days with saved notes"></div>
             <p class="album-status" id="album-status" role="status"></p>
-            <article class="album-letter" id="album-letter" hidden><time id="album-date"></time><p class="album-emotion" id="album-emotion"></p><p class="album-note" id="album-note"></p></article>
+            <article class="album-letter" id="album-letter" aria-labelledby="album-date" hidden>
+              <div class="album-letter-art" aria-hidden="true"><svg viewBox="0 0 480 150" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="album-sky" x2="0" y2="1"><stop stop-color="var(--album-top)"/><stop offset="1" stop-color="var(--album-bottom)"/></linearGradient></defs><path fill="url(#album-sky)" d="M0 0h480v150H0Z"/><g fill="#d7cbdc" opacity=".6"><circle cx="50" cy="28" r="1"/><circle cx="109" cy="64" r="1.5"/><circle cx="214" cy="31" r="1"/><circle cx="288" cy="56" r="1"/><circle cx="441" cy="22" r="1"/></g><circle cx="380" cy="43" r="18" fill="#d9cfbe"/><path fill="#303348" d="m0 128 68-37 48 20 87-49 59 45 68-27 90 48 60-24v46H0Z"/><path fill="#1a2434" d="m0 145 74-28 64 20 112-25 82 30 67-24 81 17v15H0Z"/><path stroke="#b9a7bc" stroke-width="1" opacity=".2" d="M350 130h59m-48 7h34m-21 7h19"/></svg></div>
+              <time id="album-date"></time><p class="album-emotion" id="album-emotion"></p><p class="album-note" id="album-note"></p>
+              <div class="album-reading-nav"><button id="album-older" type="button">← older night</button><button id="album-newer" type="button">newer night →</button></div>
+            </article>
           </section>
           <div id="journal-list-view">
           <p class="journal-history-note" id="journal-history-note" role="status"></p>
@@ -459,6 +463,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=80169f369899"></script>
+  <script src="app.js?v=ae5ab6664322"></script>
 </body>
 </html>
