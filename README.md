@@ -30,6 +30,30 @@ The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
 
+## Somewhere else: a shelf of sound
+
+In the room controls, **Somewhere else** has four illustrated recording cards:
+**Rain**, **Ocean**, **Fireplace** and **Space**. Choose one, then press **listen**.
+Choosing a card while paused only cues the sound. While listening, it switches
+the background without restarting a tape or the official radio player.
+
+The chosen recording stays with you across moods, independently of the view and
+visible weather. Rain has the same drizzle / steady / downpour dial even under
+a clear sky. The room volume and sound timer apply to every background.
+**Follow the mood** returns to the original mood-based recordings.
+
+The window button starts lo-fi together with your chosen background; it keeps
+clear weather clear. With **follow the mood**, it starts the original lo-fi and
+rain evening. **Add real rain** returns to that mood-based rain setup.
+
+Your sound choice is remembered on this device and included in **Keep this
+evening**. Ready-made cards restore their own original sound setups. An older
+saved evening still works and follows its mood. Each recording has a source and
+credits link; loading failures offer **retry**. Rain, ocean and fireplace stream
+from the Internet Archive; Space uses the existing local CC0 recording.
+
+![Four illustrated background recordings](assets/sound-shelf.png)
+
 ## An album of quiet nights
 
 Below the room, open **previous nights → night album**. Marked dates hold your

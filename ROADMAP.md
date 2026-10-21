@@ -78,7 +78,9 @@ only purpose is filling a day.
 - [x] sound deadlines survive refresh, with cancellation from the quiet window
 
 ## Ambient
-- [ ] ambient cards: Rain, Ocean, Fireplace, Space, Cafe, Night City
+- [x] illustrated ambient cards: Rain, Ocean, Fireplace and Space using existing recordings
+- [x] independent sound choice, quiet cueing, original source links and saved-evening support
+- [ ] real Cafe and Night City recordings, with clear source credits
 - [ ] local audio loops with soft fade in/out
 
 ## Evening rituals
