@@ -562,6 +562,19 @@ body.has-rain .rain-dial {
   background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
+.sound-shelf { margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.07); }
+.sound-shelf h3 { margin: 7px 0 10px; font-size: 24px; font-weight: 300; }
+.sound-shelf-copy, .sound-choice-note { color: var(--text-dim); font-size: 12px; line-height: 1.7; }
+.sound-choices { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin: 18px 0 12px; }
+.sound-choices button { min-width: 0; overflow: hidden; padding: 14px; border: 1px solid rgba(255,255,255,.1); border-radius: 14px; background: #10151e; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.sound-choices strong, .sound-choices small { display: block; font-weight: 400; }
+.sound-choices strong { font-size: 13px; margin-top: 8px; }
+.sound-choices small { color: var(--text-dim); font-size: 10px; margin-top: 5px; }
+.sound-choices button[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb,var(--accent) 10%,#10151e); }
+.sound-follow { min-height: 44px; padding: 8px 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 20px; background: transparent; color: var(--text-dim); font: inherit; font-size: 11px; cursor: pointer; }
+.sound-follow[aria-pressed="true"] { color: var(--text); border-color: var(--accent); }
+.sound-shelf button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
 /* --- a quiet note about the keys --- */
 .hint {
   position: fixed;

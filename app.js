@@ -1915,6 +1915,28 @@ const AMBIENCE = {
 const listenButton = document.getElementById("listen");
 const ambienceName = document.getElementById("ambience-name");
 const roomSlider = document.getElementById("room-volume");
+const AMBIENT_CHOICES = ["auto", "rain", "ocean", "fire", "space"];
+let ambientChoice = "auto";
+try {
+  const saved = localStorage.getItem("lateNight.ambientChoice");
+  if (AMBIENT_CHOICES.includes(saved)) ambientChoice = saved;
+} catch { /* Follow the mood for this visit. */ }
+
+function setAmbientChoice(value, { save = true, swap = true } = {}) {
+  ambientChoice = AMBIENT_CHOICES.includes(value) ? value : "auto";
+  document.body.dataset.ambient = ambientChoice;
+  document.querySelectorAll("[data-ambient]").forEach(button => {
+    if (button.tagName === "BUTTON") button.setAttribute("aria-pressed", String(button.dataset.ambient === ambientChoice));
+  });
+  document.getElementById("sound-choice-note").textContent = ambientChoice === "auto"
+    ? "The recording follows your mood and rain setting."
+    : "Your recording stays with you across moods. Weather stays as you set it.";
+  if (save) {
+    try { localStorage.setItem("lateNight.ambientChoice", ambientChoice); }
+    catch { document.getElementById("sound-choice-note").textContent = "Chosen for this visit. Couldn't save on this device."; }
+  }
+  if (swap) swapAmbience();
+}
 
 // one knob for the whole room, on top of each sound's own level
 const storedRoom = localStorage.getItem("lateNight.roomVolume");
@@ -1932,6 +1954,10 @@ let ambienceLoading = false;
 let listening = localStorage.getItem("lateNight.listen") === "1";
 
 function ambienceFor(mood) {
+  if (ambientChoice === "rain") return RAIN_BY_STRENGTH[rainLevel];
+  if (ambientChoice === "ocean") return AMBIENCE.calm;
+  if (ambientChoice === "fire") return AMBIENCE.focus;
+  if (ambientChoice === "space") return AMBIENCE.space;
   if (isRainScene(mood)) return RAIN_BY_STRENGTH[rainLevel];
   return AMBIENCE[mood] || null;
 }
@@ -2071,6 +2097,7 @@ function paintMusicRain() {
   musicRainButton.replaceChildren(document.createTextNode(musicRainEnabled ? "rain is here −" : "add real rain ＋"));
 }
 musicRainButton.addEventListener("click", () => {
+  setAmbientChoice("auto", { swap: false });
   musicRainEnabled = !musicRainEnabled;
   localStorage.setItem("lateNight.musicRain", musicRainEnabled ? "1" : "0");
   if (musicRainEnabled) {
@@ -2082,6 +2109,11 @@ musicRainButton.addEventListener("click", () => {
   swapAmbience();
 });
 paintMusicRain();
+
+document.querySelectorAll("button[data-ambient]").forEach(button => {
+  button.addEventListener("click", () => setAmbientChoice(button.dataset.ambient));
+});
+setAmbientChoice(ambientChoice, { save: false, swap: false });
 
 setRoomVolume(roomVolume, { save: false });
 paintAmbience();
@@ -2230,14 +2262,15 @@ setLightStrength(lightStrength, { save: false, turnOn: false });
 const eveningToggle = document.getElementById("evening-toggle");
 function eveningIsPlaying() {
   return document.body.dataset.mood === "music" && station === "tape"
-    && tapeRunning && musicRainEnabled && listening;
+    && tapeRunning && Boolean(ambienceFor("music")) && listening;
 }
 function paintEveningToggle() {
   const playing = eveningIsPlaying();
   eveningToggle.hidden = document.body.dataset.mood === "music" && station === "radio";
-  eveningToggle.textContent = playing ? "Ⅱ pause the evening" : "▶ lo-fi + rain";
+  const background = { ocean: "ocean", fire: "fireplace", space: "space" }[ambientChoice] || "rain";
+  eveningToggle.textContent = playing ? "Ⅱ pause the evening" : `▶ lo-fi + ${background}`;
   eveningToggle.setAttribute("aria-pressed", String(playing));
-  eveningToggle.setAttribute("aria-label", playing ? "Pause the tape and rain together" : "Play a lo-fi tape and real rain together");
+  eveningToggle.setAttribute("aria-label", playing ? "Pause the tape and background together" : `Play a lo-fi tape and ${background} together`);
 }
 eveningToggle.addEventListener("click", () => {
   if (eveningIsPlaying()) {
@@ -2259,7 +2292,7 @@ eveningToggle.addEventListener("click", () => {
 });
 // Also follow individual controls, recording failures and keyboard mood changes.
 const eveningObserver = new MutationObserver(paintEveningToggle);
-eveningObserver.observe(document.body, { attributes: true, attributeFilter: ["data-mood", "data-station"] });
+eveningObserver.observe(document.body, { attributes: true, attributeFilter: ["data-mood", "data-station", "data-ambient"] });
 eveningObserver.observe(player, { attributes: true, attributeFilter: ["class"] });
 eveningObserver.observe(listenButton, { attributes: true, attributeFilter: ["aria-pressed"] });
 eveningObserver.observe(musicRainButton, { attributes: true, attributeFilter: ["aria-pressed"] });
