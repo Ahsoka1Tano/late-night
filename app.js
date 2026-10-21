@@ -2288,9 +2288,9 @@ eveningToggle.addEventListener("click", () => {
     localStorage.setItem("lateNight.listen", "0");
     stopAmbience();
   } else {
-    musicRainEnabled = true;
+    if (ambientChoice === "auto") musicRainEnabled = true;
     listening = true;
-    localStorage.setItem("lateNight.musicRain", "1");
+    localStorage.setItem("lateNight.musicRain", musicRainEnabled ? "1" : "0");
     localStorage.setItem("lateNight.listen", "1");
     paintMusicRain();
     setStation("tape");
@@ -2531,6 +2531,7 @@ function readPersonalScene() {
       sky: SKY_PALETTES.includes(value.sky) ? value.sky : null, moon: MOON_SHAPES.includes(value.moon) ? value.moon : null, beacon: typeof value.beacon === "boolean" ? value.beacon : null,
       cat: value.cat && CAT_COATS.includes(value.cat.coat) && typeof value.cat.present === "boolean" ? { coat: value.cat.coat, present: value.cat.present } : null,
       cafe: typeof value.cafe === "boolean" ? value.cafe : null,
+      ambientChoice: AMBIENT_CHOICES.includes(value.ambientChoice) ? value.ambientChoice : "auto",
       ambience: value.ambience, playTape: value.playTape, drink: ["tea", "coffee"].includes(value.drink) ? value.drink : null,
       station: value.station === "radio" ? "radio" : "tape",
       radio: RADIOS.some(radio => radio.key === value.radio) ? value.radio : RADIOS[0].key };
@@ -2549,7 +2550,7 @@ document.getElementById("keep-evening").addEventListener("click", () => {
   const snapshot = { name: "Your evening", mood: document.body.dataset.mood, view: windowScene,
     rainOn: musicRainEnabled, rain: rainLevel, light: lightTone, strength: lightStrength,
     lamp: deskLamp.getAttribute("aria-pressed") === "true", ambience: listening,
-    playTape: tapeRunning, station, radio: radioKey, drink, sky: outsideSky, moon: moonShape, beacon: lighthouseOn, cat: { coat: catCoat, present: catPresent }, cafe: cafeOpen };
+    playTape: tapeRunning, station, radio: radioKey, drink, sky: outsideSky, moon: moonShape, beacon: lighthouseOn, cat: { coat: catCoat, present: catPresent }, cafe: cafeOpen, ambientChoice };
   try { localStorage.setItem("lateNight.personalScene", JSON.stringify(snapshot)); }
   catch { sceneStatus.textContent = "Couldn't keep this evening on this device."; return; }
   personalScene = snapshot;
@@ -2575,6 +2576,7 @@ function applyEveningScene(scene) {
   if (tapeRunning) setTape(false);
   listening = false;
   stopAmbience();
+  setAmbientChoice(scene.ambientChoice || "auto", { swap: false });
   setStation("tape");
   musicRainEnabled = scene.rainOn;
   storeEveningSetting("lateNight.musicRain", musicRainEnabled ? "1" : "0");
@@ -2614,7 +2616,8 @@ function paintSceneCards() {
       && (scene.mood !== "music" || station === (scene.station || "tape")) && (!scene.drink || scene.drink === drink)
       && (!scene.sky || scene.sky === outsideSky) && (!scene.moon || scene.moon === moonShape)
       && (typeof scene.beacon !== "boolean" || scene.beacon === lighthouseOn)
-      && (!scene.cat || scene.cat.coat === catCoat && scene.cat.present === catPresent);
+      && (!scene.cat || scene.cat.coat === catCoat && scene.cat.present === catPresent)
+      && ambientChoice === (scene.ambientChoice || "auto");
     const cafeMatches = typeof scene.cafe !== "boolean" || scene.cafe === cafeOpen;
     button.setAttribute("aria-pressed", String(matches && cafeMatches));
   });
@@ -2624,7 +2627,7 @@ document.querySelectorAll(".scene-card").forEach(button => button.addEventListen
   if (scene) applyEveningScene(scene);
 }));
 const sceneObserver = new MutationObserver(paintSceneCards);
-sceneObserver.observe(document.body, { attributes: true, attributeFilter: ["data-mood", "data-view", "data-rain", "data-station"] });
+sceneObserver.observe(document.body, { attributes: true, attributeFilter: ["data-mood", "data-view", "data-rain", "data-station", "data-ambient"] });
 sceneObserver.observe(windowView, { attributes: true, attributeFilter: ["data-light", "style", "data-sky", "data-moon", "data-beacon", "data-cat-coat", "data-cat-present", "data-cafe-open"] });
 sceneObserver.observe(deskLamp, { attributes: true, attributeFilter: ["aria-pressed"] });
 sceneObserver.observe(musicRainButton, { attributes: true, attributeFilter: ["aria-pressed"] });
