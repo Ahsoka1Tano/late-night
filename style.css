@@ -574,6 +574,25 @@ body.has-rain .rain-dial {
 .sound-follow { min-height: 44px; padding: 8px 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 20px; background: transparent; color: var(--text-dim); font: inherit; font-size: 11px; cursor: pointer; }
 .sound-follow[aria-pressed="true"] { color: var(--text); border-color: var(--accent); }
 .sound-shelf button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.sound-choices button { position: relative; padding: 0 0 15px; transition: border-color .35s, background .35s, transform .35s; }
+.sound-choices strong, .sound-choices small { margin-left: 14px; margin-right: 10px; }
+.sound-art { display: block; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,.05); background: linear-gradient(145deg,#192a3b,#101923); }
+.sound-art svg { display: block; width: 100%; height: auto; }
+[data-ambient="ocean"] .sound-art { background: linear-gradient(#162e40,#355160); }
+[data-ambient="fire"] .sound-art { background: radial-gradient(ellipse at 50% 85%,#634135,#211f2a 75%); }
+[data-ambient="space"] .sound-art { background: radial-gradient(ellipse at 70% 10%,#302844,#121725 80%); }
+.sound-choices button[aria-pressed="true"]::after { content: "✓"; position: absolute; right: 9px; top: 9px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #111925d9; color: var(--accent); font-size: 12px; }
+@media(hover:hover) { .sound-choices button:hover { transform: translateY(-3px); border-color: var(--accent); } }
+@media(prefers-reduced-motion:no-preference) {
+  body.is-listening .sound-choices [aria-pressed="true"] .sound-rain { animation: soundRain 2.5s ease-in-out infinite alternate; }
+  body.is-listening .sound-choices [aria-pressed="true"] .sound-waves { animation: soundWaves 7s ease-in-out infinite alternate; }
+  body.is-listening .sound-choices [aria-pressed="true"] .sound-flame { transform-origin: 80px 75px; animation: soundEmbers 3s ease-in-out infinite alternate; }
+  body.is-listening .sound-choices [aria-pressed="true"] .sound-planet { animation: soundWaves 9s ease-in-out infinite alternate; }
+}
+@keyframes soundRain { to { transform: translateY(6px); opacity: .3; } }
+@keyframes soundWaves { to { transform: translateX(4px); } }
+@keyframes soundEmbers { to { transform: scale(.95,1.07); opacity: .75; } }
+@media(max-width:360px) { .sound-choices { gap: 8px; } .sound-choices strong, .sound-choices small { margin-left: 10px; } }
 
 /* --- a quiet note about the keys --- */
 .hint {
