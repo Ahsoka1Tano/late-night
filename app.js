@@ -2542,7 +2542,8 @@ function paintPersonalScene() {
   forgetEvening.hidden = !personalScene;
   document.querySelector(".scene-cards").classList.toggle("has-personal", Boolean(personalScene));
   if (!personalScene) return;
-  document.getElementById("personal-recipe").textContent = `${personalScene.view} · ${personalScene.mood} · ${personalScene.light} light${personalScene.drink ? ` · ${personalScene.drink}` : ""}${personalScene.cat ? personalScene.cat.present ? ` · ${personalScene.cat.coat} cat` : " · solitude" : ""}`;
+  const savedSound = { rain: "rain", ocean: "ocean", fire: "fireplace", space: "space" }[personalScene.ambientChoice];
+  document.getElementById("personal-recipe").textContent = `${personalScene.view} · ${personalScene.mood} · ${personalScene.light} light${savedSound ? ` · ${savedSound} sound` : ""}${personalScene.drink ? ` · ${personalScene.drink}` : ""}${personalScene.cat ? personalScene.cat.present ? ` · ${personalScene.cat.coat} cat` : " · solitude" : ""}`;
   personalCard.dataset.personalView = personalScene.view;
   personalCard.dataset.personalSky = personalScene.sky || "mood";
 }

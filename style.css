@@ -578,9 +578,9 @@ body.has-rain .rain-dial, body[data-ambient="rain"] .rain-dial {
 .sound-choices strong, .sound-choices small { margin-left: 14px; margin-right: 10px; }
 .sound-art { display: block; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,.05); background: linear-gradient(145deg,#192a3b,#101923); }
 .sound-art svg { display: block; width: 100%; height: auto; }
-[data-ambient="ocean"] .sound-art { background: linear-gradient(#162e40,#355160); }
-[data-ambient="fire"] .sound-art { background: radial-gradient(ellipse at 50% 85%,#634135,#211f2a 75%); }
-[data-ambient="space"] .sound-art { background: radial-gradient(ellipse at 70% 10%,#302844,#121725 80%); }
+button[data-ambient="ocean"] .sound-art { background: linear-gradient(#162e40,#355160); }
+button[data-ambient="fire"] .sound-art { background: radial-gradient(ellipse at 50% 85%,#634135,#211f2a 75%); }
+button[data-ambient="space"] .sound-art { background: radial-gradient(ellipse at 70% 10%,#302844,#121725 80%); }
 .sound-choices button[aria-pressed="true"]::after { content: "✓"; position: absolute; right: 9px; top: 9px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #111925d9; color: var(--accent); font-size: 12px; }
 @media(hover:hover) { .sound-choices button:hover { transform: translateY(-3px); border-color: var(--accent); } }
 @media(prefers-reduced-motion:no-preference) {
@@ -595,6 +595,7 @@ body.has-rain .rain-dial, body[data-ambient="rain"] .rain-dial {
 @keyframes soundWaves { to { transform: translateX(4px); } }
 @keyframes soundEmbers { to { transform: scale(.95,1.07); opacity: .75; } }
 @media(max-width:360px) { .sound-choices { gap: 8px; } .sound-choices strong, .sound-choices small { margin-left: 10px; } }
+@media(prefers-reduced-motion:reduce) { .sound-choices button { transition: none; } .sound-choices button:hover { transform: none; } }
 
 /* --- a quiet note about the keys --- */
 .hint {

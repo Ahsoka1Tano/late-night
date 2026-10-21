@@ -70,6 +70,139 @@ async function openRoom(t, width = 1280, motion = 'reduce') {
   return page;
 }
 
+test('sound shelf cues recordings without autoplay and keeps a chosen background across moods', async t => {
+  const page = await openRoom(t);
+  await page.locator('button[data-ambient="ocean"]').click();
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  assert.match(await page.locator('#ambience-name').textContent(),/gentle ocean.*ready/);
+  await page.locator('#listen').click();
+  await page.clock.runFor(1600);
+  assert.match(await page.evaluate(() => ambienceTrack.src),/Gentle%20Ocean/);
+  await page.locator('.mood[data-mood="focus"]').click();
+  assert.match(await page.evaluate(() => ambienceTrack.src),/Gentle%20Ocean/);
+  assert.equal(await page.locator('button[data-ambient="ocean"]').getAttribute('aria-pressed'),'true');
+  await page.locator('button[data-ambient="auto"]').click();
+  assert.match(await page.evaluate(() => ambienceTrack.src),/FIRE/);
+  await page.locator('#listen').click();
+  await page.clock.runFor(800);
+  await page.locator('button[data-ambient="space"]').click();
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  await page.reload();
+  assert.equal(await page.locator('body').getAttribute('data-ambient'),'space');
+  assert.equal(await page.locator('#listen').getAttribute('aria-pressed'),'false');
+  assert.match(await page.locator('#ambient-source').getAttribute('href'),/opengameart.org/);
+});
+
+test('window playback respects the chosen ocean and leaves clear weather alone', async t => {
+  const page = await openRoom(t);
+  await page.locator('button[data-ambient="ocean"]').click();
+  assert.match(await page.locator('#evening-toggle').textContent(),/lo-fi \+ ocean/);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(3000);
+  assert.equal(await page.locator('body').evaluate(el => el.classList.contains('has-rain')),false);
+  assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length),2);
+  await page.evaluate(() => { window.keptTape = tapeAudio; });
+  await page.locator('button[data-ambient="fire"]').click();
+  await page.clock.runFor(1600);
+  assert.equal(await page.evaluate(() => tapeAudio === window.keptTape && !tapeAudio.paused),true);
+  assert.match(await page.evaluate(() => ambienceTrack.src),/FIRE/);
+  assert.match(await page.locator('#ambient-source').getAttribute('href'),/archive.org\/details\/relaxingsounds$/);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(1600);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+});
+
+test('independent rain has an intensity dial without changing the sky and legacy rain control returns to auto', async t => {
+  const page = await openRoom(t);
+  await page.locator('button[data-ambient="rain"]').click();
+  assert.equal(await page.locator('#rain-dial').isVisible(),true);
+  await page.locator('#listen').click();
+  await page.locator('[data-rain="downpour"]').click();
+  await page.clock.runFor(1600);
+  assert.match(await page.evaluate(() => ambienceTrack.src),/Thunderstorm/);
+  assert.equal(await page.locator('body').evaluate(el => el.classList.contains('has-rain')),false);
+  await page.locator('#music-rain').click();
+  assert.equal(await page.locator('body').getAttribute('data-ambient'),'auto');
+  assert.equal(await page.locator('body').evaluate(el => el.classList.contains('has-rain')),true);
+});
+
+test('personal evenings restore chosen backgrounds while ready-made and older scenes follow their moods', async t => {
+  const page = await openRoom(t);
+  await page.locator('button[data-ambient="fire"]').click();
+  await page.locator('#keep-evening').click();
+  assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('lateNight.personalScene')).ambientChoice),'fire');
+  assert.match(await page.locator('#personal-recipe').textContent(),/fireplace sound/);
+  await page.locator('[data-evening="harbour"]').click();
+  assert.equal(await page.locator('body').getAttribute('data-ambient'),'auto');
+  assert.match(await page.evaluate(() => ambienceTrack.src),/Ocean/);
+  await page.locator('[data-evening="personal"]').click();
+  assert.equal(await page.locator('body').getAttribute('data-ambient'),'fire');
+  assert.equal(await page.locator('#listen').getAttribute('aria-pressed'),'false');
+  await page.locator('button[data-ambient="ocean"]').click();
+  assert.equal(await page.locator('[data-evening="personal"]').getAttribute('aria-pressed'),'false');
+  await page.evaluate(() => { const s = JSON.parse(localStorage.getItem('lateNight.personalScene')); delete s.ambientChoice; localStorage.setItem('lateNight.personalScene',JSON.stringify(s)); });
+  await page.reload();
+  await page.locator('[data-evening="personal"]').click();
+  assert.equal(await page.locator('body').getAttribute('data-ambient'),'auto');
+});
+
+test('changing ambient cards preserves radio and ignores failures belonging to the previous sound', async t => {
+  const page = await openRoom(t);
+  await page.locator('[data-station="radio"]').click();
+  await page.locator('#radio-frame iframe').evaluate(el => { el.dataset.kept = 'yes'; });
+  await page.evaluate(() => { window.deferAudio = true; });
+  await page.locator('button[data-ambient="rain"]').click();
+  await page.locator('#listen').click();
+  await page.evaluate(() => { window.oldAmbient = ambienceTrack; window.deferAudio = false; });
+  await page.locator('button[data-ambient="ocean"]').click();
+  await page.evaluate(() => window.oldAmbient.rejectPlay(new Error('late failure')));
+  assert.equal(await page.locator('#listen').textContent(),'listening');
+  assert.equal(await page.locator('#radio-frame iframe').getAttribute('data-kept'),'yes');
+  await page.evaluate(() => { window.failAudio = true; });
+  await page.locator('button[data-ambient="fire"]').click();
+  await page.waitForFunction(() => document.getElementById('listen').textContent === 'retry');
+  assert.equal(await page.locator('#sound-shelf').evaluate(el => el.classList.contains('is-playing')),false);
+  await page.evaluate(() => { window.failAudio = false; });
+  await page.locator('#listen').click();
+  assert.match(await page.evaluate(() => ambienceTrack.src),/FIRE/);
+});
+
+test('sound shelf respects device storage failures, invalid preferences and the evening deadline', async t => {
+  const page = await openRoom(t);
+  await page.evaluate(() => localStorage.setItem('lateNight.ambientChoice','unknown'));
+  await page.reload();
+  assert.equal(await page.locator('body').getAttribute('data-ambient'),'auto');
+  await page.evaluate(() => { const original = Storage.prototype.setItem; Storage.prototype.setItem = function(key,value) { if (key === 'lateNight.ambientChoice') throw new Error('quota'); return original.call(this,key,value); }; });
+  await page.locator('button[data-ambient="ocean"]').click();
+  assert.match(await page.locator('#sound-choice-note').textContent(),/Couldn't save/);
+  await page.locator('#listen').click();
+  await page.locator('[data-sound-minutes="15"]').click();
+  await page.locator('#sound-timer-start').click();
+  await page.clock.fastForward(15 * 60 * 1000 + 1000);
+  assert.equal(await page.evaluate(() => ambienceTrack.paused),true);
+  assert.equal(await page.locator('#listen').getAttribute('aria-pressed'),'false');
+});
+
+test('illustrated sound cards fit narrow phones and support keyboard selection without motion', async t => {
+  for (const width of [320,768,1440]) {
+    const page = await openRoom(t,width);
+    const choice = page.locator('button[data-ambient="ocean"]');
+    await choice.focus();
+    await page.keyboard.press('Space');
+    assert.equal(await choice.getAttribute('aria-pressed'),'true');
+    assert.equal(await choice.evaluate(el => el === document.activeElement),true);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
+    for (const card of await page.locator('.sound-choices button').all()) {
+      const box = await card.boundingBox();
+      assert.ok(box.width >= 44 && box.height >= 44 && box.x >= 0 && box.x + box.width <= width);
+    }
+    await page.locator('#listen').click();
+    assert.equal(await page.locator('.sound-waves').evaluate(el => getComputedStyle(el).animationName),'none');
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#sound-shelf').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`sound-shelf-${width}.png`)});
+    await page.close();
+  }
+});
+
 test('real rain and tape play together with independent volume and weather strength', async t => {
   const page = await openRoom(t);
   await page.locator('#player-play').click();
