@@ -523,7 +523,7 @@ body[data-mood="music"] .weather-mix {
   transition: opacity 0.9s ease, transform 0.9s var(--ease);
 }
 
-body.has-rain .rain-dial {
+body.has-rain .rain-dial, body[data-ambient="rain"] .rain-dial {
   margin-top: 1.6rem;
   height: auto;
   opacity: 1;
@@ -584,11 +584,13 @@ body.has-rain .rain-dial {
 .sound-choices button[aria-pressed="true"]::after { content: "✓"; position: absolute; right: 9px; top: 9px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #111925d9; color: var(--accent); font-size: 12px; }
 @media(hover:hover) { .sound-choices button:hover { transform: translateY(-3px); border-color: var(--accent); } }
 @media(prefers-reduced-motion:no-preference) {
-  body.is-listening .sound-choices [aria-pressed="true"] .sound-rain { animation: soundRain 2.5s ease-in-out infinite alternate; }
-  body.is-listening .sound-choices [aria-pressed="true"] .sound-waves { animation: soundWaves 7s ease-in-out infinite alternate; }
-  body.is-listening .sound-choices [aria-pressed="true"] .sound-flame { transform-origin: 80px 75px; animation: soundEmbers 3s ease-in-out infinite alternate; }
-  body.is-listening .sound-choices [aria-pressed="true"] .sound-planet { animation: soundWaves 9s ease-in-out infinite alternate; }
+  .sound-shelf.is-playing .sound-choices [aria-pressed="true"] .sound-rain { animation: soundRain 2.5s ease-in-out infinite alternate; }
+  .sound-shelf.is-playing .sound-choices [aria-pressed="true"] .sound-waves { animation: soundWaves 7s ease-in-out infinite alternate; }
+  .sound-shelf.is-playing .sound-choices [aria-pressed="true"] .sound-flame { transform-origin: 80px 75px; animation: soundEmbers 3s ease-in-out infinite alternate; }
+  .sound-shelf.is-playing .sound-choices [aria-pressed="true"] .sound-planet { animation: soundWaves 9s ease-in-out infinite alternate; }
 }
+.sound-source { display: inline-block; min-height: 32px; color: var(--text-dim); font-size: 10px; line-height: 2; text-underline-offset: 4px; }
+.sound-source:hover { color: var(--text); }
 @keyframes soundRain { to { transform: translateY(6px); opacity: .3; } }
 @keyframes soundWaves { to { transform: translateX(4px); } }
 @keyframes soundEmbers { to { transform: scale(.95,1.07); opacity: .75; } }

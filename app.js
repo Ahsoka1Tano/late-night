@@ -48,7 +48,7 @@ function syncWindowSky() {
 
 function paintWeather() {
   document.body.classList.toggle("has-rain", isRainScene());
-  document.getElementById("rain-dial").hidden = !isRainScene();
+  document.getElementById("rain-dial").hidden = !isRainScene() && ambientChoice !== "rain";
   paintSceneCaption();
   if (isRainScene()) startRain();
   else stopRain();
@@ -1935,6 +1935,7 @@ function setAmbientChoice(value, { save = true, swap = true } = {}) {
     try { localStorage.setItem("lateNight.ambientChoice", ambientChoice); }
     catch { document.getElementById("sound-choice-note").textContent = "Chosen for this visit. Couldn't save on this device."; }
   }
+  document.getElementById("rain-dial").hidden = !isRainScene() && ambientChoice !== "rain";
   if (swap) swapAmbience();
 }
 
@@ -1972,7 +1973,15 @@ function paintAmbience() {
   listenButton.classList.toggle("is-on", listening);
   listenButton.setAttribute("aria-pressed", String(listening));
   listenButton.textContent = ambienceLoading ? "loading" : listening ? "listening" : ambienceError ? "retry" : "listen";
-  ambienceName.textContent = ambienceLoading ? "tuning in…" : listening && sound ? sound.name : ambienceError;
+  ambienceName.textContent = ambienceLoading ? "tuning in…" : ambienceError || (sound ? `${sound.name}${listening ? "" : " · ready when you are"}` : "");
+  const sourceLink = document.getElementById("ambient-source");
+  sourceLink.hidden = !sound;
+  if (sound) {
+    const source = new URL(sound.src, document.baseURI);
+    const item = source.hostname === "archive.org" && source.pathname.match(/^\/download\/([^/]+)\//);
+    sourceLink.href = item ? `https://archive.org/details/${item[1]}` : "https://opengameart.org/content/floating-in-space";
+  } else sourceLink.removeAttribute("href");
+  document.getElementById("sound-shelf").classList.toggle("is-playing", listening && !ambienceLoading && !ambienceError && Boolean(sound));
 }
 
 // Every playback attempt owns its callbacks. Leaving a mood invalidates them.
