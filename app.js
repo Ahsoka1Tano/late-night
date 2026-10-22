@@ -2544,11 +2544,11 @@ setCafeLight(cafeOpen, { save: false });
 
 /* --- a whole evening, chosen with one deliberate gesture --- */
 const EVENING_SCENES = {
-  cafe: { name: "The last café", mood: "music", view: "cafe", rainOn: true, rain: "drizzle", light: "amber", strength: 45, lamp: true, ambience: true, drink: "coffee", sky: "midnight", moon: "half", cafe: true },
-  harbour: { name: "Harbour after hours", mood: "calm", view: "coast", rainOn: false, rain: "drizzle", light: "amber", strength: 45, lamp: true, ambience: true, drink: "tea", sky: "midnight", moon: "full", beacon: true },
-  records: { name: "Rainy records", mood: "music", view: "city", rainOn: true, rain: "steady", light: "amber", strength: 70, lamp: true, ambience: true, drink: "tea", sky: "mood", moon: "full" },
-  hideaway: { name: "Mountain hideaway", mood: "music", view: "mountains", rainOn: false, rain: "drizzle", light: "moon", strength: 45, lamp: true, ambience: false, drink: "coffee", sky: "midnight", moon: "crescent" },
-  lastlight: { name: "The last light", mood: "sleep", view: "mountains", rainOn: false, rain: "drizzle", light: "dim", strength: 20, lamp: true, ambience: true, drink: "tea" },
+  cafe: { name: "The last café", mood: "music", view: "cafe", rainOn: true, rain: "drizzle", light: "amber", strength: 45, lamp: true, ambience: true, drink: "coffee", sky: "midnight", moon: "half", cafe: true, curtains: { amount: 25, fabric: "plum" } },
+  harbour: { name: "Harbour after hours", mood: "calm", view: "coast", rainOn: false, rain: "drizzle", light: "amber", strength: 45, lamp: true, ambience: true, drink: "tea", sky: "midnight", moon: "full", beacon: true, curtains: { amount: 0, fabric: "linen" } },
+  records: { name: "Rainy records", mood: "music", view: "city", rainOn: true, rain: "steady", light: "amber", strength: 70, lamp: true, ambience: true, drink: "tea", sky: "mood", moon: "full", curtains: { amount: 25, fabric: "linen" } },
+  hideaway: { name: "Mountain hideaway", mood: "music", view: "mountains", rainOn: false, rain: "drizzle", light: "moon", strength: 45, lamp: true, ambience: false, drink: "coffee", sky: "midnight", moon: "crescent", curtains: { amount: 25, fabric: "ink" } },
+  lastlight: { name: "The last light", mood: "sleep", view: "mountains", rainOn: false, rain: "drizzle", light: "dim", strength: 20, lamp: true, ambience: true, drink: "tea", curtains: { amount: 100, fabric: "ink" } },
 };
 const sceneStatus = document.getElementById("scene-status");
 const personalCard = document.querySelector('[data-evening="personal"]');
@@ -2569,6 +2569,7 @@ function readPersonalScene() {
       sky: SKY_PALETTES.includes(value.sky) ? value.sky : null, moon: MOON_SHAPES.includes(value.moon) ? value.moon : null, beacon: typeof value.beacon === "boolean" ? value.beacon : null,
       cat: value.cat && CAT_COATS.includes(value.cat.coat) && typeof value.cat.present === "boolean" ? { coat: value.cat.coat, present: value.cat.present } : null,
       cafe: typeof value.cafe === "boolean" ? value.cafe : null,
+      curtains: validCurtains(value.curtains) ? { amount: Math.round(value.curtains.amount), fabric: value.curtains.fabric } : null,
       ambientChoice: AMBIENT_CHOICES.includes(value.ambientChoice) ? value.ambientChoice : "auto",
       ambience: value.ambience, playTape: value.playTape, drink: ["tea", "coffee"].includes(value.drink) ? value.drink : null,
       station: value.station === "radio" ? "radio" : "tape",
@@ -2589,7 +2590,7 @@ document.getElementById("keep-evening").addEventListener("click", () => {
   const snapshot = { name: "Your evening", mood: document.body.dataset.mood, view: windowScene,
     rainOn: musicRainEnabled, rain: rainLevel, light: lightTone, strength: lightStrength,
     lamp: deskLamp.getAttribute("aria-pressed") === "true", ambience: listening,
-    playTape: tapeRunning, station, radio: radioKey, drink, sky: outsideSky, moon: moonShape, beacon: lighthouseOn, cat: { coat: catCoat, present: catPresent }, cafe: cafeOpen, ambientChoice };
+    playTape: tapeRunning, station, radio: radioKey, drink, sky: outsideSky, moon: moonShape, beacon: lighthouseOn, cat: { coat: catCoat, present: catPresent }, cafe: cafeOpen, ambientChoice, curtains: { amount: curtainAmount, fabric: curtainFabric } };
   try { localStorage.setItem("lateNight.personalScene", JSON.stringify(snapshot)); }
   catch { sceneStatus.textContent = "Couldn't keep this evening on this device."; return; }
   personalScene = snapshot;
@@ -2631,6 +2632,7 @@ function applyEveningScene(scene) {
   if (typeof scene.beacon === "boolean") setLighthouse(scene.beacon);
   if (scene.cat) setCatCompanion(scene.cat.coat, scene.cat.present);
   if (typeof scene.cafe === "boolean") setCafeLight(scene.cafe);
+  if (scene.curtains) setCurtains(scene.curtains.amount, { fabric: scene.curtains.fabric });
   storeEveningSetting("lateNight.deskLamp", scene.lamp ? "1" : "0");
   setMood(scene.mood);
   if (scene.mood === "music" && scene.station === "radio") {
@@ -2656,7 +2658,8 @@ function paintSceneCards() {
       && (!scene.sky || scene.sky === outsideSky) && (!scene.moon || scene.moon === moonShape)
       && (typeof scene.beacon !== "boolean" || scene.beacon === lighthouseOn)
       && (!scene.cat || scene.cat.coat === catCoat && scene.cat.present === catPresent)
-      && ambientChoice === (scene.ambientChoice || "auto");
+      && ambientChoice === (scene.ambientChoice || "auto")
+      && (!scene.curtains || scene.curtains.amount === curtainAmount && scene.curtains.fabric === curtainFabric);
     const cafeMatches = typeof scene.cafe !== "boolean" || scene.cafe === cafeOpen;
     button.setAttribute("aria-pressed", String(matches && cafeMatches));
   });
@@ -2667,7 +2670,7 @@ document.querySelectorAll(".scene-card").forEach(button => button.addEventListen
 }));
 const sceneObserver = new MutationObserver(paintSceneCards);
 sceneObserver.observe(document.body, { attributes: true, attributeFilter: ["data-mood", "data-view", "data-rain", "data-station", "data-ambient"] });
-sceneObserver.observe(windowView, { attributes: true, attributeFilter: ["data-light", "style", "data-sky", "data-moon", "data-beacon", "data-cat-coat", "data-cat-present", "data-cafe-open"] });
+sceneObserver.observe(windowView, { attributes: true, attributeFilter: ["data-light", "style", "data-sky", "data-moon", "data-beacon", "data-cat-coat", "data-cat-present", "data-cafe-open", "data-curtains", "data-fabric"] });
 sceneObserver.observe(deskLamp, { attributes: true, attributeFilter: ["aria-pressed"] });
 sceneObserver.observe(musicRainButton, { attributes: true, attributeFilter: ["aria-pressed"] });
 sceneObserver.observe(cupButton, { attributes: true, attributeFilter: ["data-drink"] });
