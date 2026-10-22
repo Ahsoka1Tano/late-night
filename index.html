@@ -192,6 +192,7 @@
       </div>
       <div class="night-train" aria-hidden="true"><span class="train-beam"></span><img src="assets/night-express.svg?v=042f6ba1a95c" alt="" width="660" height="80" /></div>
       <div class="window-crossbar" aria-hidden="true"></div>
+      <div class="window-curtains" aria-hidden="true"><div class="curtain-panel curtain-left"><i></i></div><div class="curtain-panel curtain-right"><i></i></div><div class="curtain-rail"></div></div>
       <div class="window-time"><p>NO PLACE TO BE. NOTHING TO PROVE.</p>
         <time id="window-clock">--:--</time><p id="window-whisper">let the city carry on.</p></div>
       <section class="window-focus" id="window-focus" aria-label="Session at the window" hidden>
@@ -381,6 +382,11 @@
           <label class="sound-timer-lamp"><input id="sound-timer-lamp" type="checkbox" />turn off the desk lamp at the end</label>
           <div class="sound-timer-actions"><button id="sound-timer-start" type="button">set timer</button><button id="sound-timer-cancel" type="button" hidden>cancel timer</button></div>
           <p id="sound-timer-note" role="status">Setting a timer does not start playback.</p>
+        </section>
+        <section class="room-curtains" id="room-curtains" aria-labelledby="curtains-title">
+          <p class="desk-kicker">A LITTLE WORLD OF YOUR OWN</p><h3 id="curtains-title">Draw the night in.</h3>
+          <p>Soft folds. A little less outside.</p>
+          <div class="curtain-presets" aria-label="Curtain position"><button type="button" data-curtain="0" aria-pressed="false">open</button><button type="button" data-curtain="25" aria-pressed="true">framed</button><button type="button" data-curtain="100" aria-pressed="false">sheltered</button></div>
         </section>
         <section class="room-light" aria-label="Desk lighting">
           <div class="light-heading"><h3>Desk light</h3><span id="light-state">amber · on</span></div>

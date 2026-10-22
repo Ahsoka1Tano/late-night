@@ -2145,6 +2145,17 @@ function rememberLight(key, value) {
   try { localStorage.setItem(key, String(value)); } catch { /* Keep this visit's light. */ }
 }
 
+/* Cloth sits above the weather, below the readable window controls. */
+let curtainAmount = 25;
+function setCurtains(value) {
+  curtainAmount = Number.isFinite(Number(value)) ? Math.min(100, Math.max(0, Math.round(Number(value)))) : 25;
+  windowView.style.setProperty("--curtain-width", `${curtainAmount * .3}%`);
+  windowView.dataset.curtains = String(curtainAmount);
+  document.querySelectorAll("button[data-curtain]").forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.curtain) === curtainAmount)));
+}
+document.querySelectorAll("button[data-curtain]").forEach(button => button.addEventListener("click", () => setCurtains(Number(button.dataset.curtain))));
+setCurtains(curtainAmount);
+
 const neighbourWindows = [];
 const cityMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 let cityLightsTimer = null;
