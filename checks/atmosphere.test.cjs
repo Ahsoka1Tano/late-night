@@ -70,6 +70,125 @@ async function openRoom(t, width = 1280, motion = 'reduce') {
   return page;
 }
 
+test('curtain folds and fabrics persist without starting or replacing room audio', async t => {
+  const page = await openRoom(t);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(3000);
+  await page.evaluate(() => { window.curtainTape = tapeAudio; window.curtainRain = ambienceTrack; });
+  await page.locator('button[data-fabric="plum"]').click();
+  await page.locator('#curtain-amount').fill('63');
+  assert.equal(await page.locator('#window-view').getAttribute('data-curtains'),'63');
+  assert.equal(await page.locator('#curtain-level').textContent(),'63%');
+  assert.equal(await page.locator('#curtain-amount').getAttribute('aria-valuetext'),'63 percent drawn');
+  assert.equal(await page.evaluate(() => tapeAudio === window.curtainTape && ambienceTrack === window.curtainRain && !tapeAudio.paused && !ambienceTrack.paused),true);
+  await page.locator('[data-station="radio"]').click();
+  await page.locator('#radio-frame iframe').evaluate(el => { el.dataset.curtainKept = 'yes'; });
+  await page.locator('button[data-curtain="0"]').click();
+  assert.equal(await page.locator('#radio-frame iframe').getAttribute('data-curtain-kept'),'yes');
+  await page.reload();
+  assert.equal(await page.locator('#window-view').getAttribute('data-curtains'),'0');
+  assert.equal(await page.locator('#window-view').getAttribute('data-fabric'),'plum');
+  assert.equal(await page.evaluate(() => tapeRunning),false);
+});
+
+test('window curtain pull cycles positions with the keyboard in quiet mode and leaves focus running', async t => {
+  const page = await openRoom(t);
+  await page.locator('.mood[data-mood="focus"]').click();
+  await page.locator('#focus-toggle').click();
+  await page.locator('#quiet-room').click();
+  const deadline = await page.evaluate(() => focusEndsAt);
+  const pull = page.locator('#curtain-pull');
+  await pull.focus();
+  await page.keyboard.press('Enter');
+  assert.equal(await page.locator('#window-view').getAttribute('data-curtains'),'100');
+  assert.match(await pull.getAttribute('aria-label'),/^Open.*100 percent/);
+  await page.keyboard.press('Space');
+  assert.equal(await page.locator('#window-view').getAttribute('data-curtains'),'0');
+  await page.keyboard.press('Enter');
+  assert.equal(await page.locator('#window-view').getAttribute('data-curtains'),'25');
+  assert.equal(await page.evaluate(() => focusEndsAt),deadline);
+  assert.equal(await pull.evaluate(el => el === document.activeElement),true);
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('#quiet-room').getAttribute('aria-pressed'),'false');
+});
+
+test('personal evening remembers curtain details and older scenes keep the current fabric', async t => {
+  const page = await openRoom(t);
+  await page.locator('button[data-fabric="plum"]').click();
+  await page.locator('#curtain-amount').fill('63');
+  await page.locator('#keep-evening').click();
+  assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('lateNight.personalScene')).curtains),{amount:63,fabric:'plum'});
+  await page.locator('[data-evening="lastlight"]').click();
+  assert.equal(await page.locator('#window-view').getAttribute('data-curtains'),'100');
+  assert.equal(await page.locator('#window-view').getAttribute('data-fabric'),'ink');
+  await page.locator('[data-evening="personal"]').click();
+  assert.equal(await page.locator('#window-view').getAttribute('data-curtains'),'63');
+  assert.equal(await page.locator('#window-view').getAttribute('data-fabric'),'plum');
+  assert.equal(await page.locator('#listen').getAttribute('aria-pressed'),'false');
+  await page.locator('button[data-curtain="0"]').click();
+  assert.equal(await page.locator('[data-evening="personal"]').getAttribute('aria-pressed'),'false');
+  await page.evaluate(() => { const s = JSON.parse(localStorage.getItem('lateNight.personalScene')); delete s.curtains; localStorage.setItem('lateNight.personalScene',JSON.stringify(s)); });
+  await page.reload();
+  await page.locator('button[data-fabric="ink"]').click();
+  await page.locator('#curtain-amount').fill('42');
+  await page.locator('[data-evening="personal"]').click();
+  assert.equal(await page.locator('#window-view').getAttribute('data-curtains'),'42');
+  assert.equal(await page.locator('#window-view').getAttribute('data-fabric'),'ink');
+});
+
+test('curtains preserve malformed saved data and remain usable when storage fails', async t => {
+  const page = await openRoom(t);
+  for (const stored of ['{broken','{"amount":999,"fabric":"ink"}','{"amount":50,"fabric":"unknown"}']) {
+    await page.evaluate(value => localStorage.setItem('lateNight.curtains',value),stored);
+    await page.reload();
+    assert.equal(await page.locator('#window-view').getAttribute('data-curtains'),'25');
+    assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.curtains')),stored);
+  }
+  await page.evaluate(() => { const original = Storage.prototype.setItem; Storage.prototype.setItem = function(key,value) { if (key === 'lateNight.curtains') throw new Error('quota'); return original.call(this,key,value); }; });
+  await page.locator('button[data-curtain="100"]').click();
+  assert.equal(await page.locator('#window-view').getAttribute('data-curtains'),'100');
+  assert.match(await page.locator('#curtain-note').textContent(),/Couldn't save/);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+});
+
+test('curtain cloth fits every view and the pull stays reachable on phones and desktop', async t => {
+  for (const width of [320,768,1440]) {
+    const page = await openRoom(t,width);
+    await page.locator('button[data-curtain="100"]').click();
+    for (const view of ['city','mountains','coast','cafe']) {
+      await page.locator(`.view-switch button[data-view="${view}"]`).click();
+      const glass = await page.locator('#window-outside').boundingBox();
+      const panel = await page.locator('.curtain-left').boundingBox();
+      assert.ok(panel.width > 0 && panel.width < glass.width * .32);
+      assert.ok(await page.locator('.curtain-left').evaluate(el => getComputedStyle(el).transitionDuration.split(',').every(value => parseFloat(value) < .001)));
+      assert.equal(await page.locator('.window-curtains').evaluate(el => getComputedStyle(el).pointerEvents),'none');
+      if (view === 'cafe') {
+        const sign = await page.locator('#cafe-sign').boundingBox();
+        const rightCloth = await page.locator('.curtain-right').boundingBox();
+        assert.ok(sign.x >= panel.x + panel.width && sign.x + sign.width <= rightCloth.x);
+        const whisper = await page.locator('#window-whisper').boundingBox();
+        assert.ok(sign.y >= whisper.y + whisper.height);
+      }
+      await page.locator('#curtain-pull').click();
+      await page.locator('#curtain-pull').click();
+      await page.locator('#curtain-pull').click();
+    }
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
+    const pull = await page.locator('#curtain-pull').boundingBox();
+    assert.ok(pull.width >= 44 && pull.x >= 0 && pull.x + pull.width <= width);
+    await page.locator('#curtain-amount').focus();
+    await page.keyboard.press('ArrowLeft');
+    assert.equal(await page.locator('#curtain-level').textContent(),'99%');
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`curtain-shelter-${width}.png`)});
+    await page.locator('button[data-curtain="25"]').click();
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) {
+      await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`curtain-room-${width}.png`)});
+      await page.locator('#room-curtains').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`curtain-controls-${width}.png`)});
+    }
+    await page.close();
+  }
+});
+
 test('sound shelf cues recordings without autoplay and keeps a chosen background across moods', async t => {
   const page = await openRoom(t);
   await page.locator('button[data-ambient="ocean"]').click();

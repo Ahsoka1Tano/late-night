@@ -2161,6 +2161,7 @@ function setCurtains(value, { fabric = curtainFabric, save = true } = {}) {
   curtainAmount = Number.isFinite(Number(value)) ? Math.min(100, Math.max(0, Math.round(Number(value)))) : 25;
   curtainFabric = CURTAIN_FABRICS.includes(fabric) ? fabric : "linen";
   windowView.style.setProperty("--curtain-width", `${curtainAmount * .3}%`);
+  windowView.style.setProperty("--curtain-sign-top", curtainAmount > 55 ? "74%" : "55%");
   windowView.dataset.curtains = String(curtainAmount);
   windowView.dataset.fabric = curtainFabric;
   document.querySelectorAll("button[data-curtain]").forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.curtain) === curtainAmount)));
