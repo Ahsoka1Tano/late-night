@@ -30,6 +30,26 @@ The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
 
+## Draw the night in
+
+The window now has softly folded curtains with three fabrics: **linen**, **plum**
+and **ink**. In **Draw the night in**, choose **open**, **framed** or **sheltered**,
+or use the slider for a position between them. Sheltered leaves a central glimpse
+of the night; the clock and focus controls remain readable above the cloth.
+
+The small pull to the right of the window cycles through framed, sheltered and
+open. It also works with Enter or Space, including in **Quiet room**. Curtain
+controls change the room without starting or replacing music, rain or radio.
+The fabric catches a little of the desk lamp's colour; switching the lamp off
+removes that glow. Reduced motion makes position changes immediate.
+
+Fabric and position are remembered on this device and included in **Keep this
+evening**. Existing saved evenings without curtains retain the current choice.
+Ready-made evenings have their own folds: the harbour opens the window, the last
+light draws ink curtains, and the café has plum fabric around its warm street.
+
+![Curtains around the late-night café](assets/curtained-window.png)
+
 ## Somewhere else: a shelf of sound
 
 In the room controls, **Somewhere else** has four illustrated recording cards:

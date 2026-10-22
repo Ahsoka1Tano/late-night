@@ -105,6 +105,9 @@ only purpose is filling a day.
 - [x] gentle streak counter
 
 ## Always
+- [x] softly folded window curtains, three fabrics, preset positions and a continuous slider
+- [x] remembered folds, saved-evening support and a keyboard-accessible pull in quiet mode
+- [x] lamp-aware fabric, reduced motion and phone layout checks for curtain controls
 - [x] independent midnight, violet and afterglow sky palettes
 - [x] full, half and crescent moons, remembered in personal evenings
 - [x] a shooting star on request, with automatic meteors paced by elapsed time
