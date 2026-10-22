@@ -204,6 +204,7 @@
       </section>
     </div>
     <div class="window-sill" aria-hidden="true"></div>
+    <button class="curtain-pull" id="curtain-pull" type="button" aria-label="Draw the curtains further"><span aria-hidden="true"></span></button>
     <div class="desk-glow" aria-hidden="true"></div>
     <button class="window-cat" id="window-cat" type="button" aria-label="Pet the sleeping cat">
       <svg viewBox="0 0 240 130" aria-hidden="true">
@@ -387,6 +388,10 @@
           <p class="desk-kicker">A LITTLE WORLD OF YOUR OWN</p><h3 id="curtains-title">Draw the night in.</h3>
           <p>Soft folds. A little less outside.</p>
           <div class="curtain-presets" aria-label="Curtain position"><button type="button" data-curtain="0" aria-pressed="false">open</button><button type="button" data-curtain="25" aria-pressed="true">framed</button><button type="button" data-curtain="100" aria-pressed="false">sheltered</button></div>
+          <label class="curtain-amount" for="curtain-amount"><span>how much of the night stays outside</span><output id="curtain-level" for="curtain-amount">25%</output></label>
+          <input id="curtain-amount" type="range" min="0" max="100" step="1" value="25" />
+          <div class="curtain-fabrics" aria-label="Curtain fabric"><button type="button" data-fabric="linen" aria-pressed="true"><i aria-hidden="true"></i>linen</button><button type="button" data-fabric="plum" aria-pressed="false"><i aria-hidden="true"></i>plum</button><button type="button" data-fabric="ink" aria-pressed="false"><i aria-hidden="true"></i>ink</button></div>
+          <p id="curtain-note" role="status">Touch the pull beside the window to draw the curtains.</p>
         </section>
         <section class="room-light" aria-label="Desk lighting">
           <div class="light-heading"><h3>Desk light</h3><span id="light-state">amber · on</span></div>

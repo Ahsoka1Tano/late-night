@@ -2147,14 +2147,41 @@ function rememberLight(key, value) {
 
 /* Cloth sits above the weather, below the readable window controls. */
 let curtainAmount = 25;
-function setCurtains(value) {
+let curtainFabric = "linen";
+const CURTAIN_FABRICS = ["linen", "plum", "ink"];
+function validCurtains(value) {
+  return Boolean(value && typeof value === "object" && Number.isFinite(value.amount)
+    && value.amount >= 0 && value.amount <= 100 && CURTAIN_FABRICS.includes(value.fabric));
+}
+try {
+  const saved = JSON.parse(localStorage.getItem("lateNight.curtains") || "null");
+  if (validCurtains(saved)) { curtainAmount = Math.round(saved.amount); curtainFabric = saved.fabric; }
+} catch { /* Keep the folds open around this visit. */ }
+function setCurtains(value, { fabric = curtainFabric, save = true } = {}) {
   curtainAmount = Number.isFinite(Number(value)) ? Math.min(100, Math.max(0, Math.round(Number(value)))) : 25;
+  curtainFabric = CURTAIN_FABRICS.includes(fabric) ? fabric : "linen";
   windowView.style.setProperty("--curtain-width", `${curtainAmount * .3}%`);
   windowView.dataset.curtains = String(curtainAmount);
+  windowView.dataset.fabric = curtainFabric;
   document.querySelectorAll("button[data-curtain]").forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.curtain) === curtainAmount)));
+  document.querySelectorAll("button[data-fabric]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.fabric === curtainFabric)));
+  document.getElementById("curtain-amount").value = String(curtainAmount);
+  document.getElementById("curtain-level").value = `${curtainAmount}%`;
+  document.getElementById("curtain-amount").setAttribute("aria-valuetext", `${curtainAmount} percent drawn`);
+  document.getElementById("curtain-pull").setAttribute("aria-label", `${curtainAmount === 100 ? "Open" : "Draw"} the curtains${curtainAmount > 0 && curtainAmount < 100 ? " further" : ""}. Currently ${curtainAmount} percent drawn`);
+  document.getElementById("curtain-note").textContent = curtainAmount === 0
+    ? "The whole window is yours. Touch the pull to draw the curtains."
+    : `${curtainFabric} · ${curtainAmount}% drawn. Touch the pull to change the folds.`;
+  if (save) {
+    try { localStorage.setItem("lateNight.curtains", JSON.stringify({ amount: curtainAmount, fabric: curtainFabric })); }
+    catch { document.getElementById("curtain-note").textContent = "Adjusted for this visit. Couldn't save on this device."; }
+  }
 }
 document.querySelectorAll("button[data-curtain]").forEach(button => button.addEventListener("click", () => setCurtains(Number(button.dataset.curtain))));
-setCurtains(curtainAmount);
+document.querySelectorAll("button[data-fabric]").forEach(button => button.addEventListener("click", () => setCurtains(curtainAmount, { fabric: button.dataset.fabric })));
+document.getElementById("curtain-amount").addEventListener("input", event => setCurtains(Number(event.target.value)));
+document.getElementById("curtain-pull").addEventListener("click", () => setCurtains(curtainAmount === 0 ? 25 : curtainAmount < 100 ? 100 : 0));
+setCurtains(curtainAmount, { save: false });
 
 const neighbourWindows = [];
 const cityMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
