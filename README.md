@@ -30,6 +30,30 @@ The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
 
+## A collection of your own evenings
+
+Open **Your collected evenings**, just below the ready-made cards. Settle the
+room, give it a name and press **collect this room**. Up to eight named setups
+can stay on this device, each with a small illustration of its view, sky and
+curtains. Collecting and renaming do not change the current room or its playback.
+
+Open a collected card to restore its mood, view, rain, ambient choice, lighting,
+drink, cat and curtains, including saved off and paused states. A room saved with
+active sound starts that sound when opened. As with the original quick save,
+the selected cassette and volume settings remain managed by the player; focus
+sessions, sound deadlines and journal notes continue independently.
+
+**Rename** changes only the name. **Remove** makes space; **undo removal** brings
+back the most recently removed card during this visit, unless all eight places
+have since been filled. Names are plain text and can be up to 40 characters.
+The original **keep this evening** shortcut remains separate from the collection.
+
+The collection lives in localStorage, with no account or upload. If saving fails,
+the previous collection and the name draft stay in place. Unreadable data is left
+untouched; reopening retries the read. There is no cloud backup.
+
+![A collection of named room setups](assets/collected-evenings.png)
+
 ## Draw the night in
 
 The window now has softly folded curtains with three fabrics: **linen**, **plum**

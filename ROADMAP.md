@@ -84,6 +84,9 @@ only purpose is filling a day.
 - [ ] local audio loops with soft fade in/out
 
 ## Evening rituals
+- [x] collect up to eight named room setups, independently of the original quick save
+- [x] illustrated collected evenings, inline renaming and last-removal undo
+- [x] quiet saves, remembered sound intent, safe storage recovery and keyboard / phone checks
 - [x] illustrated launch cards for rainy records, a mountain hideaway and the last light
 - [x] a personal saved evening: mood, view, weather, lighting and sound intent
 - [x] scene restoration preserves notes and off/paused states; storage failures keep the previous setup
