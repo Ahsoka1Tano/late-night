@@ -57,6 +57,13 @@
         </button>
       </div>
       <p class="scene-status" id="scene-status" role="status"></p>
+      <details class="evening-library" id="evening-library">
+        <summary>Your collected evenings <span id="evening-library-count">0 / 8</span></summary>
+        <div class="library-heading"><p class="desk-kicker">PLACES TO COME BACK TO</p><h3>A few corners of your own.</h3><p>Keep up to eight room setups. Saving stays quiet; opening one restores its sound choices.</p></div>
+        <form class="library-form" id="library-form"><label for="library-name">Name this evening<input id="library-name" type="text" maxlength="40" placeholder="Rain and records…" autocomplete="off" required /></label><button id="library-save" type="submit">＋ collect this room</button></form>
+        <p class="library-status" id="library-status" role="status"></p>
+        <div class="library-grid" id="library-grid"></div>
+      </details>
     </section>
     <section class="moods" aria-label="Choose a mood">
       <button class="mood" data-mood="calm" type="button" aria-pressed="false"><span class="mood-icon">&#127769;</span><span class="mood-name">Calm</span></button>

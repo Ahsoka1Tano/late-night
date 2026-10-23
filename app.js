@@ -2558,7 +2558,10 @@ let personalScene = readPersonalScene();
 
 function readPersonalScene() {
   try {
-    const value = JSON.parse(localStorage.getItem("lateNight.personalScene") || "null");
+    return normalizeEvening(JSON.parse(localStorage.getItem("lateNight.personalScene") || "null"));
+  } catch { return null; }
+}
+function normalizeEvening(value) {
     if (!value || typeof value !== "object" || Array.isArray(value)
         || !["calm", "music", "focus", "rain", "space", "sleep", "aurora"].includes(value.mood)
         || !["city", "mountains", "coast", "cafe"].includes(value.view) || !["amber", "moon", "dim"].includes(value.light)
@@ -2575,7 +2578,6 @@ function readPersonalScene() {
       ambience: value.ambience, playTape: value.playTape, drink: ["tea", "coffee"].includes(value.drink) ? value.drink : null,
       station: value.station === "radio" ? "radio" : "tape",
       radio: RADIOS.some(radio => radio.key === value.radio) ? value.radio : RADIOS[0].key };
-  } catch { return null; }
 }
 function paintPersonalScene() {
   personalCard.hidden = !personalScene;
@@ -2587,11 +2589,14 @@ function paintPersonalScene() {
   personalCard.dataset.personalView = personalScene.view;
   personalCard.dataset.personalSky = personalScene.sky || "mood";
 }
-document.getElementById("keep-evening").addEventListener("click", () => {
-  const snapshot = { name: "Your evening", mood: document.body.dataset.mood, view: windowScene,
+function captureEvening() {
+  return { name: "Your evening", mood: document.body.dataset.mood, view: windowScene,
     rainOn: musicRainEnabled, rain: rainLevel, light: lightTone, strength: lightStrength,
     lamp: deskLamp.getAttribute("aria-pressed") === "true", ambience: listening,
     playTape: tapeRunning, station, radio: radioKey, drink, sky: outsideSky, moon: moonShape, beacon: lighthouseOn, cat: { coat: catCoat, present: catPresent }, cafe: cafeOpen, ambientChoice, curtains: { amount: curtainAmount, fabric: curtainFabric } };
+}
+document.getElementById("keep-evening").addEventListener("click", () => {
+  const snapshot = captureEvening();
   try { localStorage.setItem("lateNight.personalScene", JSON.stringify(snapshot)); }
   catch { sceneStatus.textContent = "Couldn't keep this evening on this device."; return; }
   personalScene = snapshot;
@@ -2675,6 +2680,89 @@ sceneObserver.observe(windowView, { attributes: true, attributeFilter: ["data-li
 sceneObserver.observe(deskLamp, { attributes: true, attributeFilter: ["aria-pressed"] });
 sceneObserver.observe(musicRainButton, { attributes: true, attributeFilter: ["aria-pressed"] });
 sceneObserver.observe(cupButton, { attributes: true, attributeFilter: ["data-drink"] });
+
+/* A small collection of rooms, kept on this device. */
+const EVENING_LIBRARY_KEY = "lateNight.evenings";
+const libraryGrid = document.getElementById("library-grid");
+const libraryStatus = document.getElementById("library-status");
+const libraryName = document.getElementById("library-name");
+function readEveningLibrary() {
+  const stored = localStorage.getItem(EVENING_LIBRARY_KEY);
+  if (stored === null) return [];
+  const value = JSON.parse(stored);
+  if (!value || value.version !== 1 || !Array.isArray(value.items) || value.items.length > 8) throw new Error("Unreadable collection");
+  const seen = new Set();
+  return value.items.map(item => {
+    const scene = normalizeEvening(item?.scene);
+    if (!scene || typeof item.id !== "string" || !/^[a-zA-Z0-9-]{1,64}$/.test(item.id)
+        || seen.has(item.id) || typeof item.name !== "string" || !item.name.trim() || item.name.length > 40) throw new Error("Unreadable evening");
+    seen.add(item.id);
+    return { id: item.id, name: item.name.trim(), scene };
+  });
+}
+function writeEveningLibrary(items) {
+  try { localStorage.setItem(EVENING_LIBRARY_KEY, JSON.stringify({ version: 1, items })); return true; }
+  catch { libraryStatus.textContent = "Couldn't save the collection. Your previous evenings are still kept."; return false; }
+}
+function renderEveningLibrary() {
+  let items;
+  try { items = readEveningLibrary(); }
+  catch {
+    libraryGrid.replaceChildren();
+    document.getElementById("library-save").disabled = true;
+    document.getElementById("evening-library-count").textContent = "unavailable";
+    libraryStatus.textContent = "Couldn't read the collection. Reopen to retry; saved data has been left in place.";
+    return;
+  }
+  document.getElementById("library-save").disabled = items.length >= 8;
+  document.getElementById("evening-library-count").textContent = `${items.length} / 8`;
+  libraryGrid.replaceChildren();
+  if (!items.length) libraryStatus.textContent = "No collected evenings yet. Settle the room, give it a name, keep it here.";
+  for (const item of items) {
+    const card = document.createElement("article");
+    card.className = "saved-evening";
+    card.dataset.savedEvening = item.id;
+    const open = document.createElement("button");
+    open.type = "button";
+    open.className = "saved-evening-open";
+    const title = document.createElement("strong");
+    title.textContent = item.name;
+    const recipe = document.createElement("span");
+    recipe.textContent = `${item.scene.view} · ${item.scene.mood} · ${item.scene.light} light`;
+    open.append(title, recipe);
+    open.addEventListener("click", () => {
+      try {
+        const latest = readEveningLibrary().find(entry => entry.id === item.id);
+        if (!latest) { renderEveningLibrary(); libraryStatus.textContent = "This evening was removed in another tab."; return; }
+        applyEveningScene({ ...latest.scene, name: latest.name });
+        libraryStatus.textContent = `${latest.name} · make yourself at home.`;
+      } catch { libraryStatus.textContent = "Couldn't open this evening. Reopen the collection to retry."; }
+    });
+    card.append(open);
+    libraryGrid.append(card);
+  }
+}
+document.getElementById("library-form").addEventListener("submit", event => {
+  event.preventDefault();
+  const name = libraryName.value.trim().slice(0,40);
+  if (!name) { libraryName.focus(); return; }
+  let items;
+  try { items = readEveningLibrary(); }
+  catch { renderEveningLibrary(); return; }
+  if (items.length >= 8) { libraryStatus.textContent = "Eight corners are kept. Remove one to make room."; return; }
+  items.push({ id: crypto.randomUUID(), name, scene: captureEvening() });
+  if (!writeEveningLibrary(items)) return;
+  libraryName.value = "";
+  renderEveningLibrary();
+  libraryStatus.textContent = `${name} collected on this device.`;
+});
+document.getElementById("evening-library").addEventListener("toggle", event => {
+  if (event.target.open) { libraryStatus.textContent = ""; renderEveningLibrary(); }
+});
+window.addEventListener("storage", event => {
+  if (event.key === EVENING_LIBRARY_KEY || event.key === null) { libraryStatus.textContent = ""; renderEveningLibrary(); }
+});
+renderEveningLibrary();
 
 /* --- something left in the room for whoever pokes around --- */
 const SECRET_WORD = "moon";
