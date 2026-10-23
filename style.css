@@ -2336,6 +2336,18 @@ body[data-view='city'] .mountain-lake::before, body[data-view='city'] .mountain-
 .saved-evening-open { display: grid; gap: 10px; width: 100%; padding: 18px; border: 0; background: transparent; text-align: left; color: var(--text); font: inherit; cursor: pointer; }
 .saved-evening-open strong { overflow-wrap: anywhere; font-size: 17px; font-weight: 400; }
 .saved-evening-open > span { color: var(--text-dim); font-size: 11px; line-height: 1.7; }
+.saved-evening-open .scene-art { height: 120px; flex: none; width: 100%; margin-bottom: 4px; border-radius: 9px; }
+.saved-evening-open small { color: #aa9eb6; font-size: 10px; line-height: 1.7; }
+.saved-evening-open em { color: #d3b6e3; font-size: 11px; font-style: normal; }
+.saved-evening-open:hover { background: #b89aca09; }
+.library-drapes { position: absolute; inset: 0; z-index: 2; background: linear-gradient(90deg,#726070 0 var(--mini-curtain),transparent var(--mini-curtain) calc(100% - var(--mini-curtain)),#726070 calc(100% - var(--mini-curtain)) 100%); }
+.library-rain { position: absolute; inset: 0; background: repeating-linear-gradient(104deg,transparent 0 16px,#b8c5e033 16px 17px,transparent 17px 28px); }
+.library-card-actions { display: flex; gap: 8px; border-top: 1px solid #ffffff0b; padding: 8px 14px; }
+.library-card-actions button, .library-rename button, .library-undo { min-height: 44px; padding: 8px 12px; border: 1px solid #b7a4c12b; border-radius: 9px; background: #ffffff03; color: #b9abc8; font: inherit; font-size: 11px; cursor: pointer; }
+.library-card-actions button:last-child { margin-left: auto; }
+.library-rename { display: flex; flex-wrap: wrap; gap: 7px; padding: 12px 14px; border-top: 1px solid #ffffff0b; }
+.library-rename input { flex: 1 0 100%; width: 100%; min-width: 0; min-height: 44px; padding: 9px; background: #0c1019; border: 1px solid #b0a4c044; border-radius: 8px; color: var(--text); font: inherit; font-size: 12px; }
+.library-undo { margin-bottom: 18px; }
 .evening-library :is(button,input,summary):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 @media(max-width:760px) { .library-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media(max-width:500px) { .evening-library { padding: 0 16px; } .library-form { flex-direction: column; align-items: stretch; } .library-grid { grid-template-columns: 1fr; } }

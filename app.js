@@ -409,7 +409,7 @@ document.addEventListener("keydown", (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
 
   const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "");
-  if (typing || document.activeElement?.closest(".journal-history")) return;
+  if (typing || document.activeElement?.closest(".journal-history, .evening-library")) return;
 
   const number = Number(e.key);
   if (number >= 1 && number <= moodButtons.length) {
@@ -2686,6 +2686,12 @@ const EVENING_LIBRARY_KEY = "lateNight.evenings";
 const libraryGrid = document.getElementById("library-grid");
 const libraryStatus = document.getElementById("library-status");
 const libraryName = document.getElementById("library-name");
+let removedEvening = null;
+const libraryUndo = document.getElementById("library-undo");
+function focusCollectedEvening(id, action = "open") {
+  const card = [...libraryGrid.children].find(element => element.dataset.savedEvening === id);
+  (card?.querySelector(`[data-library-action="${action}"]`) || libraryName).focus();
+}
 function readEveningLibrary() {
   const stored = localStorage.getItem(EVENING_LIBRARY_KEY);
   if (stored === null) return [];
@@ -2705,6 +2711,9 @@ function writeEveningLibrary(items) {
   catch { libraryStatus.textContent = "Couldn't save the collection. Your previous evenings are still kept."; return false; }
 }
 function renderEveningLibrary() {
+  const focusedCard = document.activeElement?.closest(".saved-evening");
+  const focusedId = focusedCard?.dataset.savedEvening;
+  const focusedAction = document.activeElement?.dataset.libraryAction;
   let items;
   try { items = readEveningLibrary(); }
   catch {
@@ -2725,11 +2734,31 @@ function renderEveningLibrary() {
     const open = document.createElement("button");
     open.type = "button";
     open.className = "saved-evening-open";
+    open.dataset.libraryAction = "open";
+    open.dataset.personalView = item.scene.view;
+    open.dataset.personalSky = item.scene.sky || "mood";
+    const art = document.createElement("span");
+    art.className = "scene-art art-personal";
+    art.setAttribute("aria-hidden", "true");
+    const lamp = document.createElement("i");
+    lamp.hidden = !item.scene.lamp;
+    const drapes = document.createElement("span");
+    drapes.className = "library-drapes";
+    drapes.style.setProperty("--mini-curtain", `${(item.scene.curtains?.amount || 0) * .3}%`);
+    const rain = document.createElement("span");
+    rain.className = "library-rain";
+    rain.hidden = item.scene.mood !== "rain" && !(item.scene.mood === "music" && item.scene.rainOn);
+    art.append(lamp, rain, drapes);
     const title = document.createElement("strong");
     title.textContent = item.name;
     const recipe = document.createElement("span");
     recipe.textContent = `${item.scene.view} · ${item.scene.mood} · ${item.scene.light} light`;
-    open.append(title, recipe);
+    const sound = document.createElement("small");
+    const background = { ocean: "ocean", fire: "fireplace", space: "space", rain: "rain" }[item.scene.ambientChoice];
+    sound.textContent = `${background ? `${background} background · ` : ""}${item.scene.curtains?.fabric || "soft"} curtains`;
+    const invitation = document.createElement("em");
+    invitation.textContent = "come back here ↗";
+    open.append(art, title, recipe, sound, invitation);
     open.addEventListener("click", () => {
       try {
         const latest = readEveningLibrary().find(entry => entry.id === item.id);
@@ -2739,9 +2768,90 @@ function renderEveningLibrary() {
       } catch { libraryStatus.textContent = "Couldn't open this evening. Reopen the collection to retry."; }
     });
     card.append(open);
+    const actions = document.createElement("div");
+    actions.className = "library-card-actions";
+    const rename = document.createElement("button");
+    rename.type = "button";
+    rename.textContent = "rename";
+    rename.dataset.libraryAction = "rename";
+    rename.setAttribute("aria-label", `Rename ${item.name}`);
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.textContent = "remove";
+    remove.dataset.libraryAction = "remove";
+    remove.setAttribute("aria-label", `Remove ${item.name}`);
+    const editor = document.createElement("form");
+    editor.className = "library-rename";
+    editor.hidden = true;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.maxLength = 40;
+    input.required = true;
+    input.value = item.name;
+    input.setAttribute("aria-label", "New name for this evening");
+    const save = document.createElement("button");
+    save.type = "submit";
+    save.textContent = "keep name";
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.textContent = "cancel";
+    const closeEditor = () => { editor.hidden = true; actions.hidden = false; rename.focus(); };
+    cancel.addEventListener("click", closeEditor);
+    editor.addEventListener("keydown", event => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); closeEditor(); } });
+    rename.addEventListener("click", () => { editor.hidden = false; actions.hidden = true; input.focus(); input.select(); });
+    editor.addEventListener("submit", event => {
+      event.preventDefault();
+      const name = input.value.trim().slice(0,40);
+      if (!name) return;
+      try {
+        const latest = readEveningLibrary();
+        const entry = latest.find(value => value.id === item.id);
+        if (!entry) { renderEveningLibrary(); libraryStatus.textContent = "This evening was removed in another tab."; return; }
+        entry.name = name;
+        if (!writeEveningLibrary(latest)) return;
+        renderEveningLibrary();
+        focusCollectedEvening(item.id, "rename");
+        libraryStatus.textContent = `Now called ${name}. The room setup is unchanged.`;
+      } catch { libraryStatus.textContent = "Couldn't rename this evening. Saved data has been left in place."; }
+    });
+    remove.addEventListener("click", () => {
+      try {
+        const latest = readEveningLibrary();
+        const index = latest.findIndex(value => value.id === item.id);
+        if (index < 0) { renderEveningLibrary(); return; }
+        const deleted = latest[index];
+        latest.splice(index,1);
+        if (!writeEveningLibrary(latest)) return;
+        removedEvening = { item: deleted, index };
+        libraryUndo.hidden = false;
+        renderEveningLibrary();
+        focusCollectedEvening(latest[Math.min(index,latest.length-1)]?.id);
+        libraryStatus.textContent = `${deleted.name} removed. You can undo this removal.`;
+      } catch { libraryStatus.textContent = "Couldn't remove this evening. Saved data has been left in place."; }
+    });
+    editor.append(input,save,cancel);
+    actions.append(rename,remove);
+    card.append(actions,editor);
     libraryGrid.append(card);
   }
+  if (focusedId) focusCollectedEvening(focusedId, focusedAction || "open");
 }
+libraryUndo.addEventListener("click", () => {
+  if (!removedEvening) return;
+  try {
+    const items = readEveningLibrary();
+    if (items.some(item => item.id === removedEvening.item.id)) { removedEvening = null; libraryUndo.hidden = true; renderEveningLibrary(); libraryName.focus(); return; }
+    if (items.length >= 8) { libraryStatus.textContent = "The collection is full. Remove another evening before undoing."; return; }
+    items.splice(Math.min(removedEvening.index,items.length),0,removedEvening.item);
+    if (!writeEveningLibrary(items)) return;
+    const restored = removedEvening.item;
+    removedEvening = null;
+    libraryUndo.hidden = true;
+    renderEveningLibrary();
+    focusCollectedEvening(restored.id);
+    libraryStatus.textContent = `${restored.name} is back in the collection.`;
+  } catch { libraryStatus.textContent = "Couldn't restore this evening. Reopen the collection to retry."; }
+});
 document.getElementById("library-form").addEventListener("submit", event => {
   event.preventDefault();
   const name = libraryName.value.trim().slice(0,40);
