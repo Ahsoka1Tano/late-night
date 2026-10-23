@@ -2332,7 +2332,7 @@ body[data-view='city'] .mountain-lake::before, body[data-view='city'] .mountain-
 .library-form button:disabled { opacity: .5; cursor: default; }
 .library-status { min-height: 22px; margin: 14px 0; }
 .library-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; padding-bottom: 22px; }
-.saved-evening { min-width: 0; overflow: hidden; border: 1px solid #bba7c52b; border-radius: 14px; background: #121723; }
+.saved-evening { display: flex; flex-direction: column; min-width: 0; overflow: hidden; border: 1px solid #bba7c52b; border-radius: 14px; background: #121723; }
 .saved-evening-open { display: grid; gap: 10px; width: 100%; padding: 18px; border: 0; background: transparent; text-align: left; color: var(--text); font: inherit; cursor: pointer; }
 .saved-evening-open strong { overflow-wrap: anywhere; font-size: 17px; font-weight: 400; }
 .saved-evening-open > span { color: var(--text-dim); font-size: 11px; line-height: 1.7; }
@@ -2340,9 +2340,9 @@ body[data-view='city'] .mountain-lake::before, body[data-view='city'] .mountain-
 .saved-evening-open small { color: #aa9eb6; font-size: 10px; line-height: 1.7; }
 .saved-evening-open em { color: #d3b6e3; font-size: 11px; font-style: normal; }
 .saved-evening-open:hover { background: #b89aca09; }
-.library-drapes { position: absolute; inset: 0; z-index: 2; background: linear-gradient(90deg,#726070 0 var(--mini-curtain),transparent var(--mini-curtain) calc(100% - var(--mini-curtain)),#726070 calc(100% - var(--mini-curtain)) 100%); }
+.library-drapes { position: absolute; inset: 0; z-index: 2; background: linear-gradient(90deg,var(--mini-cloth) 0 var(--mini-curtain),transparent var(--mini-curtain) calc(100% - var(--mini-curtain)),var(--mini-cloth) calc(100% - var(--mini-curtain)) 100%); }
 .library-rain { position: absolute; inset: 0; background: repeating-linear-gradient(104deg,transparent 0 16px,#b8c5e033 16px 17px,transparent 17px 28px); }
-.library-card-actions { display: flex; gap: 8px; border-top: 1px solid #ffffff0b; padding: 8px 14px; }
+.library-card-actions { display: flex; gap: 8px; border-top: 1px solid #ffffff0b; padding: 8px 14px; margin-top: auto; }
 .library-card-actions button, .library-rename button, .library-undo { min-height: 44px; padding: 8px 12px; border: 1px solid #b7a4c12b; border-radius: 9px; background: #ffffff03; color: #b9abc8; font: inherit; font-size: 11px; cursor: pointer; }
 .library-card-actions button:last-child { margin-left: auto; }
 .library-rename { display: flex; flex-wrap: wrap; gap: 7px; padding: 12px 14px; border-top: 1px solid #ffffff0b; }

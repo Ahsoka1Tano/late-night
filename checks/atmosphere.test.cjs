@@ -70,6 +70,158 @@ async function openRoom(t, width = 1280, motion = 'reduce') {
   return page;
 }
 
+async function openEveningLibrary(page) {
+  if (!await page.locator('#evening-library').evaluate(el => el.open)) await page.locator('#evening-library summary').click();
+  await page.locator('#library-name').waitFor({state:'visible'});
+}
+async function collectRoom(page,name) {
+  await openEveningLibrary(page);
+  await page.locator('#library-name').fill(name);
+  await page.locator('#library-save').click();
+}
+
+test('collected evenings save distinct rooms quietly and restore complete settings without replacing the quick save', async t => {
+  const page = await openRoom(t);
+  await page.locator('#journal-note').fill('The room is mine.');
+  await page.locator('#keep-evening').click();
+  const quickSave = await page.evaluate(() => localStorage.getItem('lateNight.personalScene'));
+  await page.locator('.view-switch button[data-view="coast"]').click();
+  await page.locator('button[data-ambient="ocean"]').click();
+  await page.locator('button[data-fabric="plum"]').click();
+  await page.locator('#curtain-amount').fill('67');
+  await page.locator('#light-brightness').fill('32');
+  await collectRoom(page,'  Sea before sleep  ');
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  await page.locator('.view-switch button[data-view="mountains"]').click();
+  await page.locator('button[data-ambient="fire"]').click();
+  await collectRoom(page,'Mountain records');
+  assert.equal(await page.locator('.saved-evening').count(),2);
+  await page.reload();
+  await openEveningLibrary(page);
+  await page.locator('.saved-evening-open').filter({hasText:'Sea before sleep'}).click();
+  assert.equal(await page.locator('body').getAttribute('data-view'),'coast');
+  assert.equal(await page.locator('body').getAttribute('data-ambient'),'ocean');
+  assert.equal(await page.locator('#window-view').getAttribute('data-curtains'),'67');
+  assert.equal(await page.locator('#window-view').getAttribute('data-fabric'),'plum');
+  assert.equal(await page.locator('#light-brightness').inputValue(),'32');
+  assert.equal(await page.locator('#journal-note').inputValue(),'The room is mine.');
+  assert.equal(await page.locator('#listen').getAttribute('aria-pressed'),'false');
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.personalScene')),quickSave);
+});
+
+test('collected room opening restores active sound intent while saving and managing names stay quiet', async t => {
+  const page = await openRoom(t);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(3000);
+  await page.evaluate(() => { window.collectionTape = tapeAudio; window.collectionRain = ambienceTrack; });
+  await collectRoom(page,'Rain in the city');
+  assert.equal(await page.evaluate(() => tapeAudio === window.collectionTape && ambienceTrack === window.collectionRain),true);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(1600);
+  await page.locator('.saved-evening-open').click();
+  await page.clock.runFor(3000);
+  assert.equal(await page.evaluate(() => tapeRunning && listening),true);
+  await page.locator('[data-library-action="rename"]').click();
+  await page.locator('.library-rename input').fill('A quieter city');
+  await page.locator('.library-rename button[type="submit"]').click();
+  assert.equal(await page.evaluate(() => tapeAudio === window.collectionTape && ambienceTrack === window.collectionRain),true);
+  assert.equal(await page.locator('.saved-evening-open strong').textContent(),'A quieter city');
+});
+
+test('collected evening names are literal text and renaming supports Escape, Enter and keyboard focus', async t => {
+  const page = await openRoom(t);
+  const literal = '<img src=x onerror=alert(1)>';
+  await collectRoom(page,literal);
+  assert.equal(await page.locator('.saved-evening-open strong').textContent(),literal);
+  assert.equal(await page.locator('#library-grid img').count(),0);
+  const rename = page.locator('[data-library-action="rename"]');
+  await rename.focus();
+  await page.keyboard.press('Enter');
+  await page.locator('.library-rename input').fill('Not yet');
+  await page.keyboard.press('Escape');
+  assert.equal(await rename.evaluate(el => el === document.activeElement),true);
+  assert.equal(await page.locator('.saved-evening-open strong').textContent(),literal);
+  await rename.click();
+  assert.equal(await page.locator('.library-rename input').inputValue(),literal);
+  await page.locator('.library-rename input').fill('Window number 1');
+  await page.keyboard.press('Enter');
+  assert.equal(await page.locator('.saved-evening-open strong').textContent(),'Window number 1');
+  assert.equal(await page.locator('[data-library-action="rename"]').evaluate(el => el === document.activeElement),true);
+  await page.locator('#evening-library summary').focus();
+  await page.keyboard.press('1');
+  assert.equal(await page.locator('body').getAttribute('data-mood'),'music');
+});
+
+test('eight collected rooms can be removed and restored without overwriting rooms added in another tab', async t => {
+  const page = await openRoom(t);
+  await page.evaluate(() => localStorage.setItem('lateNight.evenings',JSON.stringify({version:1,items:Array.from({length:8},(_,i) => ({id:`room-${i}`,name:`Room ${i}`,scene:captureEvening()}))})));
+  await openEveningLibrary(page);
+  assert.equal(await page.locator('.saved-evening').count(),8);
+  assert.equal(await page.locator('#library-save').isDisabled(),true);
+  await page.locator('[data-library-action="remove"]').first().click();
+  assert.equal(await page.locator('.saved-evening').count(),7);
+  assert.equal(await page.locator('#library-save').isDisabled(),false);
+  await page.evaluate(() => { const value = JSON.parse(localStorage.getItem('lateNight.evenings')); value.items.push({id:'another-tab',name:'Another tab',scene:captureEvening()}); localStorage.setItem('lateNight.evenings',JSON.stringify(value)); });
+  await page.locator('#library-undo').click();
+  assert.match(await page.locator('#library-status').textContent(),/collection is full/);
+  assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('lateNight.evenings')).items.length),8);
+  await page.locator('[data-library-action="remove"]').first().click();
+  await page.locator('#library-undo').click();
+  assert.equal(await page.locator('.saved-evening').count(),8);
+  assert.equal(await page.locator('#library-undo').isVisible(),false);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+});
+
+test('unreadable evening collections are preserved and failed writes keep the previous rooms and name draft', async t => {
+  const page = await openRoom(t);
+  await collectRoom(page,'One quiet room');
+  const stored = await page.evaluate(() => localStorage.getItem('lateNight.evenings'));
+  await page.evaluate(() => { const original = Storage.prototype.setItem; Storage.prototype.setItem = function(key,value) { if (key === 'lateNight.evenings') throw new Error('quota'); return original.call(this,key,value); }; });
+  await collectRoom(page,'Still a draft');
+  assert.equal(await page.locator('#library-name').inputValue(),'Still a draft');
+  assert.match(await page.locator('#library-status').textContent(),/Couldn't save/);
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.evenings')),stored);
+  await page.reload();
+  await page.evaluate(() => localStorage.setItem('lateNight.evenings','{broken'));
+  await page.reload();
+  await openEveningLibrary(page);
+  assert.equal(await page.locator('#library-save').isDisabled(),true);
+  assert.match(await page.locator('#library-status').textContent(),/Couldn't read/);
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.evenings')),'{broken');
+  await page.evaluate(value => { localStorage.setItem('lateNight.evenings',value); window.dispatchEvent(new StorageEvent('storage',{key:'lateNight.evenings'})); },stored);
+  assert.equal(await page.locator('.saved-evening').count(),1);
+  assert.equal(await page.locator('#library-save').isDisabled(),false);
+});
+
+test('illustrated evening collection fits phones and desktop with long names and accessible card actions', async t => {
+  for (const width of [320,768,1440]) {
+    const page = await openRoom(t,width);
+    await collectRoom(page,'Rain and records');
+    await page.locator('.view-switch button[data-view="coast"]').click();
+    await page.locator('button[data-ambient="ocean"]').click();
+    await collectRoom(page,'A'.repeat(40));
+    await page.locator('.view-switch button[data-view="mountains"]').click();
+    await collectRoom(page,'A mountain hideaway');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
+    for (const button of await page.locator('.saved-evening button').all()) {
+      if (!await button.isVisible()) continue;
+      const box = await button.boundingBox();
+      assert.ok(box.height >= 44 && box.width >= 44 && box.x >= 0 && box.x + box.width <= width);
+    }
+    await page.locator('[data-library-action="remove"]').first().click();
+    await page.locator('#library-undo').click();
+    assert.equal(await page.locator('.saved-evening-open').first().evaluate(el => el === document.activeElement),true);
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) {
+      const coast = page.locator('.saved-evening').nth(1);
+      await coast.locator('[data-library-action="rename"]').click();
+      await coast.locator('.library-rename input').fill('The quiet coast');
+      await coast.locator('.library-rename button[type="submit"]').click();
+      await page.locator('#evening-library').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`evening-library-${width}.png`)});
+    }
+    await page.close();
+  }
+});
+
 test('curtain folds and fabrics persist without starting or replacing room audio', async t => {
   const page = await openRoom(t);
   await page.locator('#evening-toggle').click();

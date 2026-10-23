@@ -2745,6 +2745,7 @@ function renderEveningLibrary() {
     const drapes = document.createElement("span");
     drapes.className = "library-drapes";
     drapes.style.setProperty("--mini-curtain", `${(item.scene.curtains?.amount || 0) * .3}%`);
+    drapes.style.setProperty("--mini-cloth", { linen: "#887277", plum: "#715276", ink: "#38475e" }[item.scene.curtains?.fabric] || "#726070");
     const rain = document.createElement("span");
     rain.className = "library-rain";
     rain.hidden = item.scene.mood !== "rain" && !(item.scene.mood === "music" && item.scene.rainOn);
@@ -2798,7 +2799,7 @@ function renderEveningLibrary() {
     const closeEditor = () => { editor.hidden = true; actions.hidden = false; rename.focus(); };
     cancel.addEventListener("click", closeEditor);
     editor.addEventListener("keydown", event => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); closeEditor(); } });
-    rename.addEventListener("click", () => { editor.hidden = false; actions.hidden = true; input.focus(); input.select(); });
+    rename.addEventListener("click", () => { input.value = item.name; editor.hidden = false; actions.hidden = true; input.focus(); input.select(); });
     editor.addEventListener("submit", event => {
       event.preventDefault();
       const name = input.value.trim().slice(0,40);
