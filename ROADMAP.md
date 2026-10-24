@@ -84,6 +84,10 @@ only purpose is filling a day.
 - [ ] local audio loops with soft fade in/out
 
 ## Evening rituals
+- [x] paper lanterns with three glowing colours and optional temporary notes
+- [x] thirty-second flights, clear sky and keyboard release from the quiet window
+- [x] remembered lantern colours in saved evenings, without storing notes or flights
+- [x] still lanterns for reduced motion, sleeping-tab expiry and narrow-screen checks
 - [x] collect up to eight named room setups, independently of the original quick save
 - [x] illustrated collected evenings, inline renaming and last-removal undo
 - [x] quiet saves, remembered sound intent, safe storage recovery and keyboard / phone checks

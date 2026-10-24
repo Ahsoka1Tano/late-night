@@ -54,6 +54,25 @@ untouched; reopening retries the read. There is no cloud backup.
 
 ![A collection of named room setups](assets/collected-evenings.png)
 
+## Let it drift
+
+Release a glowing paper lantern outside the window. In **Let it drift**, choose
+**amber**, **rose** or **moon**, then press **release a lantern**. You can add a
+short passing thought, or leave it blank. The room brings you back to the window
+to watch it rise. The small lantern button beside the glass also works in
+**Quiet room**, with Enter or Space.
+
+Up to three lanterns can drift at once. Each passes in 30 seconds; **clear the
+sky** removes them sooner. Notes exist only for their flight: they are never
+saved or sent. The colour is remembered on this device and included in your
+saved evenings, without saving notes or launching lanterns when restored.
+
+Music, rain and focus continue independently. Hidden tabs pause the animation
+and remove expired flights on return. With reduced motion, lanterns stay still
+before disappearing.
+
+![Paper lanterns above the late city](assets/paper-lanterns.png)
+
 ## Draw the night in
 
 The window now has softly folded curtains with three fabrics: **linen**, **plum**
