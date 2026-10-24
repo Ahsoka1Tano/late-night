@@ -2190,11 +2190,21 @@ const lanternThought = document.getElementById("lantern-thought");
 const lanternNote = document.getElementById("lantern-note");
 const lanternTones = ["amber", "rose", "moon"];
 let lanternTone = "amber";
+try {
+  const saved = localStorage.getItem("lateNight.lanternTone");
+  if (lanternTones.includes(saved)) lanternTone = saved;
+} catch { /* A warm light is enough for this visit. */ }
 let lanternSerial = 0;
 let skyLanterns = [];
-function setLanternTone(tone) {
+let lanternExpiryTick = null;
+const lanternMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+function setLanternTone(tone, { save = true } = {}) {
   lanternTone = lanternTones.includes(tone) ? tone : "amber";
   document.querySelectorAll("button[data-lantern-tone]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.lanternTone === lanternTone)));
+  if (save) {
+    try { localStorage.setItem("lateNight.lanternTone", lanternTone); }
+    catch { lanternNote.textContent = "Colour chosen for this visit. Couldn't save it on this device."; }
+  }
 }
 function paintLanternControls() {
   document.getElementById("lantern-release").disabled = skyLanterns.length >= 3;
@@ -2202,6 +2212,7 @@ function paintLanternControls() {
   document.getElementById("lantern-clear").hidden = skyLanterns.length === 0;
 }
 function releaseLantern(note = "") {
+  settleLanterns();
   if (skyLanterns.length >= 3) return false;
   const element = document.createElement("div");
   element.className = "paper-lantern";
@@ -2217,32 +2228,57 @@ function releaseLantern(note = "") {
   thought.textContent = String(note).trim().slice(0,60);
   element.append(thought);
   lanternSky.append(element);
-  const entry = { element, createdAt: Date.now(), timer: null };
-  entry.timer = setTimeout(() => {
-    element.remove();
-    skyLanterns = skyLanterns.filter(item => item !== entry);
-    paintLanternControls();
-  },30000);
+  const entry = { element, createdAt: Date.now() };
   skyLanterns.push(entry);
-  paintLanternControls();
+  settleLanterns();
   lanternNote.textContent = `${skyLanterns.length} of 3 lanterns drifting. Notes disappear after 30 seconds; nothing is saved or sent.`;
   document.getElementById("lantern-window-status").textContent = `${lanternTone} lantern released. ${skyLanterns.length} drifting.`;
   return true;
 }
+function settleLanterns({ align = false } = {}) {
+  clearInterval(lanternExpiryTick);
+  lanternExpiryTick = null;
+  const now = Date.now();
+  const before = skyLanterns.length;
+  skyLanterns = skyLanterns.filter(item => {
+    if (now - item.createdAt < 30000) return true;
+    item.element.remove();
+    return false;
+  });
+  lanternSky.classList.toggle("is-suspended", document.hidden);
+  if (align) skyLanterns.forEach(item => {
+    item.element.style.setProperty("--lantern-flight", `${lanternSky.clientHeight + 180}px`);
+    item.element.getAnimations().forEach(animation => { animation.currentTime = Math.max(0,now - item.createdAt); });
+  });
+  if (before !== skyLanterns.length) lanternNote.textContent = skyLanterns.length
+    ? `${skyLanterns.length} lanterns drifting. Nothing is saved or sent.` : "The lanterns have passed. Their notes are gone.";
+  paintLanternControls();
+  if (skyLanterns.length && !document.hidden) lanternExpiryTick = setInterval(settleLanterns,1000);
+}
 document.querySelectorAll("button[data-lantern-tone]").forEach(button => button.addEventListener("click", () => setLanternTone(button.dataset.lanternTone)));
 document.getElementById("lantern-form").addEventListener("submit", event => {
   event.preventDefault();
-  if (releaseLantern(lanternThought.value)) lanternThought.value = "";
+  if (releaseLantern(lanternThought.value)) {
+    lanternThought.value = "";
+    windowView.scrollIntoView({ behavior: lanternMotion.matches ? "instant" : "smooth", block: "center" });
+    windowView.focus({ preventScroll: true });
+  }
 });
 document.getElementById("window-lantern").addEventListener("click", () => releaseLantern());
 document.getElementById("lantern-clear").addEventListener("click", () => {
-  skyLanterns.forEach(item => { clearTimeout(item.timer); item.element.remove(); });
+  clearInterval(lanternExpiryTick);
+  lanternExpiryTick = null;
+  skyLanterns.forEach(item => item.element.remove());
   skyLanterns = [];
   paintLanternControls();
   document.getElementById("lantern-release").focus();
   lanternNote.textContent = "The sky is clear. Notes are gone.";
   document.getElementById("lantern-window-status").textContent = "Lanterns cleared.";
 });
+document.addEventListener("visibilitychange", () => settleLanterns({ align: true }));
+lanternMotion.addEventListener("change", () => settleLanterns({ align: true }));
+window.addEventListener("resize", () => settleLanterns({ align: true }));
+setLanternTone(lanternTone, { save: false });
 paintLanternControls();
 
 const neighbourWindows = [];
@@ -2636,6 +2672,7 @@ function normalizeEvening(value) {
       cafe: typeof value.cafe === "boolean" ? value.cafe : null,
       curtains: validCurtains(value.curtains) ? { amount: Math.round(value.curtains.amount), fabric: value.curtains.fabric } : null,
       ambientChoice: AMBIENT_CHOICES.includes(value.ambientChoice) ? value.ambientChoice : "auto",
+      lanternTone: lanternTones.includes(value.lanternTone) ? value.lanternTone : null,
       ambience: value.ambience, playTape: value.playTape, drink: ["tea", "coffee"].includes(value.drink) ? value.drink : null,
       station: value.station === "radio" ? "radio" : "tape",
       radio: RADIOS.some(radio => radio.key === value.radio) ? value.radio : RADIOS[0].key };
@@ -2654,7 +2691,7 @@ function captureEvening() {
   return { name: "Your evening", mood: document.body.dataset.mood, view: windowScene,
     rainOn: musicRainEnabled, rain: rainLevel, light: lightTone, strength: lightStrength,
     lamp: deskLamp.getAttribute("aria-pressed") === "true", ambience: listening,
-    playTape: tapeRunning, station, radio: radioKey, drink, sky: outsideSky, moon: moonShape, beacon: lighthouseOn, cat: { coat: catCoat, present: catPresent }, cafe: cafeOpen, ambientChoice, curtains: { amount: curtainAmount, fabric: curtainFabric } };
+    playTape: tapeRunning, station, radio: radioKey, drink, sky: outsideSky, moon: moonShape, beacon: lighthouseOn, cat: { coat: catCoat, present: catPresent }, cafe: cafeOpen, ambientChoice, curtains: { amount: curtainAmount, fabric: curtainFabric }, lanternTone };
 }
 document.getElementById("keep-evening").addEventListener("click", () => {
   const snapshot = captureEvening();
@@ -2700,6 +2737,7 @@ function applyEveningScene(scene) {
   if (scene.cat) setCatCompanion(scene.cat.coat, scene.cat.present);
   if (typeof scene.cafe === "boolean") setCafeLight(scene.cafe);
   if (scene.curtains) setCurtains(scene.curtains.amount, { fabric: scene.curtains.fabric });
+  if (scene.lanternTone) setLanternTone(scene.lanternTone);
   storeEveningSetting("lateNight.deskLamp", scene.lamp ? "1" : "0");
   setMood(scene.mood);
   if (scene.mood === "music" && scene.station === "radio") {
@@ -2726,7 +2764,8 @@ function paintSceneCards() {
       && (typeof scene.beacon !== "boolean" || scene.beacon === lighthouseOn)
       && (!scene.cat || scene.cat.coat === catCoat && scene.cat.present === catPresent)
       && ambientChoice === (scene.ambientChoice || "auto")
-      && (!scene.curtains || scene.curtains.amount === curtainAmount && scene.curtains.fabric === curtainFabric);
+      && (!scene.curtains || scene.curtains.amount === curtainAmount && scene.curtains.fabric === curtainFabric)
+      && (!scene.lanternTone || scene.lanternTone === lanternTone);
     const cafeMatches = typeof scene.cafe !== "boolean" || scene.cafe === cafeOpen;
     button.setAttribute("aria-pressed", String(matches && cafeMatches));
   });
@@ -2741,6 +2780,7 @@ sceneObserver.observe(windowView, { attributes: true, attributeFilter: ["data-li
 sceneObserver.observe(deskLamp, { attributes: true, attributeFilter: ["aria-pressed"] });
 sceneObserver.observe(musicRainButton, { attributes: true, attributeFilter: ["aria-pressed"] });
 sceneObserver.observe(cupButton, { attributes: true, attributeFilter: ["data-drink"] });
+document.querySelectorAll("button[data-lantern-tone]").forEach(button => sceneObserver.observe(button, { attributes: true, attributeFilter: ["aria-pressed"] }));
 
 /* A small collection of rooms, kept on this device. */
 const EVENING_LIBRARY_KEY = "lateNight.evenings";

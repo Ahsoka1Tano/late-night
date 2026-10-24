@@ -1976,6 +1976,7 @@ button[data-fabric="ink"] i { background: #657d9b; }
 .paper-lantern { --lantern-paper: #dca474; --lantern-core: #ffdf9a; position: absolute; bottom: -140px; width: clamp(48px,7vw,78px); margin-left: -24px; animation: lanternFlight 30s linear both; }
 .paper-lantern[data-tone="rose"] { --lantern-paper: #c486a6; --lantern-core: #ffceda; }
 .paper-lantern[data-tone="moon"] { --lantern-paper: #9aafcb; --lantern-core: #d7eaff; }
+.sky-lanterns.is-suspended .paper-lantern { animation-play-state: paused; }
 .paper-lantern svg { display: block; width: 100%; overflow: visible; }
 .paper-glow { fill: var(--lantern-core); opacity: .18; filter: blur(7px); }
 .paper-body { fill: var(--lantern-paper); fill-opacity: .82; stroke: var(--lantern-core); stroke-opacity: .6; stroke-width: .7; }
