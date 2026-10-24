@@ -70,6 +70,128 @@ async function openRoom(t, width = 1280, motion = 'reduce') {
   return page;
 }
 
+test('paper lantern notes are literal, temporary and absent from saved room data', async t => {
+  const page = await openRoom(t);
+  const thought = '<img src=x onerror=alert(1)> let go';
+  await page.locator('#lantern-thought').fill(thought);
+  await page.locator('#lantern-release').click();
+  assert.equal(await page.locator('.paper-lantern').count(),1);
+  assert.equal(await page.locator('.lantern-message').textContent(),thought);
+  assert.equal(await page.locator('#sky-lanterns img').count(),0);
+  assert.equal(await page.locator('#lantern-thought').inputValue(),'');
+  assert.equal(await page.locator('#window-view').evaluate(el => el === document.activeElement),true);
+  await page.locator('#keep-evening').click();
+  await collectRoom(page,'A passing light');
+  assert.equal(await page.evaluate(value => JSON.stringify(localStorage).includes(value),thought),false);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  await page.clock.fastForward(31000);
+  assert.equal(await page.locator('.paper-lantern').count(),0);
+  assert.equal(await page.locator('#lantern-clear').isVisible(),false);
+  assert.match(await page.locator('#lantern-note').textContent(),/notes are gone/);
+});
+
+test('lantern capacity, draft retention and clearing work with the quiet-window keyboard button', async t => {
+  const page = await openRoom(t);
+  await page.locator('#quiet-room').click();
+  const button = page.locator('#window-lantern');
+  await button.focus();
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Space');
+  await page.keyboard.press('Enter');
+  assert.equal(await page.locator('.paper-lantern').count(),3);
+  assert.equal(await button.isDisabled(),true);
+  await page.keyboard.press('Escape');
+  await page.locator('#lantern-thought').fill('Keep this draft');
+  await page.evaluate(() => document.getElementById('lantern-form').requestSubmit());
+  assert.equal(await page.locator('#lantern-thought').inputValue(),'Keep this draft');
+  assert.equal(await page.locator('.paper-lantern').count(),3);
+  await page.locator('#lantern-clear').click();
+  assert.equal(await page.locator('.paper-lantern').count(),0);
+  assert.equal(await button.isDisabled(),false);
+  assert.equal(await page.locator('#lantern-release').evaluate(el => el === document.activeElement),true);
+  assert.equal(await page.locator('#lantern-thought').inputValue(),'Keep this draft');
+});
+
+test('lantern motion pauses in hidden tabs and expired notes vanish when the room wakes', async t => {
+  const page = await openRoom(t,1280,'no-preference');
+  await page.locator('#window-lantern').click();
+  assert.equal(await page.locator('.paper-lantern').evaluate(el => getComputedStyle(el).animationName),'lanternFlight');
+  await page.evaluate(() => { Object.defineProperty(document,'hidden',{configurable:true,value:true}); document.dispatchEvent(new Event('visibilitychange')); });
+  assert.equal(await page.locator('.paper-lantern').evaluate(el => getComputedStyle(el).animationPlayState),'paused');
+  assert.equal(await page.evaluate(() => lanternExpiryTick),null);
+  await page.clock.fastForward(31000);
+  await page.evaluate(() => { Object.defineProperty(document,'hidden',{configurable:true,value:false}); document.dispatchEvent(new Event('visibilitychange')); });
+  assert.equal(await page.locator('.paper-lantern').count(),0);
+  assert.equal(await page.evaluate(() => lanternExpiryTick),null);
+  assert.equal(await page.locator('#window-lantern').isDisabled(),false);
+});
+
+test('lantern colours persist and restore from quick saves and collected rooms without launching flights', async t => {
+  const page = await openRoom(t);
+  await page.locator('button[data-lantern-tone="rose"]').click();
+  await page.locator('#keep-evening').click();
+  await collectRoom(page,'Rose lights');
+  await page.locator('button[data-lantern-tone="moon"]').click();
+  await page.reload();
+  assert.equal(await page.locator('button[data-lantern-tone="moon"]').getAttribute('aria-pressed'),'true');
+  await page.locator('[data-evening="personal"]').click();
+  assert.equal(await page.locator('button[data-lantern-tone="rose"]').getAttribute('aria-pressed'),'true');
+  await page.locator('button[data-lantern-tone="amber"]').click();
+  await openEveningLibrary(page);
+  await page.locator('.saved-evening-open').click();
+  assert.equal(await page.locator('button[data-lantern-tone="rose"]').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.locator('.paper-lantern').count(),0);
+  await page.evaluate(() => { const old = JSON.parse(localStorage.getItem('lateNight.personalScene')); delete old.lanternTone; localStorage.setItem('lateNight.personalScene',JSON.stringify(old)); });
+  await page.reload();
+  await page.locator('button[data-lantern-tone="moon"]').click();
+  await page.locator('[data-evening="personal"]').click();
+  assert.equal(await page.locator('button[data-lantern-tone="moon"]').getAttribute('aria-pressed'),'true');
+});
+
+test('invalid lantern preferences and colour storage failures keep the ritual usable', async t => {
+  const page = await openRoom(t);
+  await page.evaluate(() => localStorage.setItem('lateNight.lanternTone','unknown'));
+  await page.reload();
+  assert.equal(await page.locator('button[data-lantern-tone="amber"]').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.lanternTone')),'unknown');
+  await page.evaluate(() => { const original = Storage.prototype.setItem; Storage.prototype.setItem = function(key,value) { if (key === 'lateNight.lanternTone') throw new Error('quota'); return original.call(this,key,value); }; });
+  await page.locator('button[data-lantern-tone="moon"]').click();
+  assert.match(await page.locator('#lantern-note').textContent(),/Couldn't save/);
+  await page.locator('#window-lantern').click();
+  assert.equal(await page.locator('.paper-lantern').getAttribute('data-tone'),'moon');
+  await page.reload();
+  assert.equal(await page.locator('.paper-lantern').count(),0);
+  assert.equal(await page.locator('#lantern-thought').inputValue(),'');
+});
+
+test('lanterns fit phones and desktop without replacing music, rain or the running focus clock', async t => {
+  for (const width of [320,768,1440]) {
+    const page = await openRoom(t,width);
+    await page.locator('#evening-toggle').click();
+    await page.clock.runFor(3000);
+    await page.evaluate(() => { window.beforeLanternTape = tapeAudio; window.beforeLanternRain = ambienceTrack; startFocus(); window.beforeLanternFocus = focusEndsAt; });
+    await page.locator('#lantern-thought').fill('The rest can wait.');
+    await page.locator('#lantern-release').click();
+    await page.locator('button[data-lantern-tone="rose"]').click();
+    await page.locator('#window-lantern').click();
+    assert.equal(await page.evaluate(() => tapeAudio === window.beforeLanternTape && ambienceTrack === window.beforeLanternRain && focusEndsAt === window.beforeLanternFocus),true);
+    assert.equal(await page.locator('.paper-lantern').first().evaluate(el => getComputedStyle(el).animationName),'none');
+    assert.equal(await page.locator('#sky-lanterns').evaluate(el => getComputedStyle(el).pointerEvents),'none');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
+    const button = await page.locator('#window-lantern').boundingBox();
+    const pull = await page.locator('#curtain-pull').boundingBox();
+    assert.ok(button.width >= 44 && button.height >= 44 && button.x >= 0 && button.x + button.width <= width);
+    assert.ok(button.y >= pull.y + pull.height);
+    await page.locator('#quiet-room').click();
+    await page.locator('#window-lantern').click();
+    assert.equal(await page.locator('.paper-lantern').count(),3);
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`lantern-window-${width}.png`)});
+    await page.keyboard.press('Escape');
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#lantern-room').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`lantern-controls-${width}.png`)});
+    await page.close();
+  }
+});
+
 async function openEveningLibrary(page) {
   if (!await page.locator('#evening-library').evaluate(el => el.open)) await page.locator('#evening-library summary').click();
   await page.locator('#library-name').waitFor({state:'visible'});

@@ -1973,7 +1973,7 @@ button[data-fabric="ink"] i { background: #657d9b; }
 .room-curtains button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 @media(prefers-reduced-motion:reduce) { .curtain-panel, .curtain-pull span { transition: none; } .curtain-pull:active span { transform: none; } }
 .sky-lanterns { position: absolute; inset: 0; overflow: hidden; z-index: 3; pointer-events: none; }
-.paper-lantern { --lantern-paper: #dca474; --lantern-core: #ffdf9a; position: absolute; bottom: -140px; width: clamp(48px,7vw,78px); margin-left: -24px; animation: lanternFlight 30s linear both; }
+.paper-lantern { --lantern-paper: #dca474; --lantern-core: #ffdf9a; --lantern-width: clamp(48px,7vw,78px); position: absolute; bottom: -140px; width: var(--lantern-width); margin-left: calc(var(--lantern-width) / -2); animation: lanternFlight 30s linear both; }
 .paper-lantern[data-tone="rose"] { --lantern-paper: #c486a6; --lantern-core: #ffceda; }
 .paper-lantern[data-tone="moon"] { --lantern-paper: #9aafcb; --lantern-core: #d7eaff; }
 .sky-lanterns.is-suspended .paper-lantern { animation-play-state: paused; }
