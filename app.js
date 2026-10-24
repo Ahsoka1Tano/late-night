@@ -2184,6 +2184,67 @@ document.getElementById("curtain-amount").addEventListener("input", event => set
 document.getElementById("curtain-pull").addEventListener("click", () => setCurtains(curtainAmount === 0 ? 25 : curtainAmount < 100 ? 100 : 0));
 setCurtains(curtainAmount, { save: false });
 
+/* Paper and light, briefly outside the window. Notes never enter storage. */
+const lanternSky = document.getElementById("sky-lanterns");
+const lanternThought = document.getElementById("lantern-thought");
+const lanternNote = document.getElementById("lantern-note");
+const lanternTones = ["amber", "rose", "moon"];
+let lanternTone = "amber";
+let lanternSerial = 0;
+let skyLanterns = [];
+function setLanternTone(tone) {
+  lanternTone = lanternTones.includes(tone) ? tone : "amber";
+  document.querySelectorAll("button[data-lantern-tone]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.lanternTone === lanternTone)));
+}
+function paintLanternControls() {
+  document.getElementById("lantern-release").disabled = skyLanterns.length >= 3;
+  document.getElementById("window-lantern").disabled = skyLanterns.length >= 3;
+  document.getElementById("lantern-clear").hidden = skyLanterns.length === 0;
+}
+function releaseLantern(note = "") {
+  if (skyLanterns.length >= 3) return false;
+  const element = document.createElement("div");
+  element.className = "paper-lantern";
+  element.dataset.tone = lanternTone;
+  const slot = lanternSerial++ % 3;
+  element.style.left = `${[71,48,30][slot]}%`;
+  element.style.setProperty("--lantern-drift", `${[14,-18,23][slot]}px`);
+  element.style.setProperty("--lantern-flight", `${lanternSky.clientHeight + 180}px`);
+  element.style.setProperty("--lantern-rest", `${[12,34,22][slot]}%`);
+  element.innerHTML = '<svg viewBox="0 0 80 110"><ellipse class="paper-glow" cx="40" cy="48" rx="36" ry="42"/><path class="paper-body" d="M20 17Q40 5 60 17l6 53Q40 84 14 70Z"/><path class="paper-ribs" d="M20 17q20 12 40 0M15 68q25-10 50 0M30 21l-4 49m14-46v49m10-52 4 49"/><ellipse class="paper-core" cx="40" cy="70" rx="14" ry="4"/><path class="paper-ties" d="m28 78 6 15m18-15-6 15m-6-9v16"/></svg>';
+  const thought = document.createElement("p");
+  thought.className = "lantern-message";
+  thought.textContent = String(note).trim().slice(0,60);
+  element.append(thought);
+  lanternSky.append(element);
+  const entry = { element, createdAt: Date.now(), timer: null };
+  entry.timer = setTimeout(() => {
+    element.remove();
+    skyLanterns = skyLanterns.filter(item => item !== entry);
+    paintLanternControls();
+  },30000);
+  skyLanterns.push(entry);
+  paintLanternControls();
+  lanternNote.textContent = `${skyLanterns.length} of 3 lanterns drifting. Notes disappear after 30 seconds; nothing is saved or sent.`;
+  document.getElementById("lantern-window-status").textContent = `${lanternTone} lantern released. ${skyLanterns.length} drifting.`;
+  return true;
+}
+document.querySelectorAll("button[data-lantern-tone]").forEach(button => button.addEventListener("click", () => setLanternTone(button.dataset.lanternTone)));
+document.getElementById("lantern-form").addEventListener("submit", event => {
+  event.preventDefault();
+  if (releaseLantern(lanternThought.value)) lanternThought.value = "";
+});
+document.getElementById("window-lantern").addEventListener("click", () => releaseLantern());
+document.getElementById("lantern-clear").addEventListener("click", () => {
+  skyLanterns.forEach(item => { clearTimeout(item.timer); item.element.remove(); });
+  skyLanterns = [];
+  paintLanternControls();
+  document.getElementById("lantern-release").focus();
+  lanternNote.textContent = "The sky is clear. Notes are gone.";
+  document.getElementById("lantern-window-status").textContent = "Lanterns cleared.";
+});
+paintLanternControls();
+
 const neighbourWindows = [];
 const cityMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 let cityLightsTimer = null;

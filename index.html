@@ -200,6 +200,7 @@
       </div>
       <div class="night-train" aria-hidden="true"><span class="train-beam"></span><img src="assets/night-express.svg?v=042f6ba1a95c" alt="" width="660" height="80" /></div>
       <div class="window-crossbar" aria-hidden="true"></div>
+      <div class="sky-lanterns" id="sky-lanterns" aria-hidden="true"></div>
       <div class="window-curtains" aria-hidden="true"><div class="curtain-panel curtain-left"><i></i></div><div class="curtain-panel curtain-right"><i></i></div><div class="curtain-rail"></div></div>
       <div class="window-time"><p>NO PLACE TO BE. NOTHING TO PROVE.</p>
         <time id="window-clock">--:--</time><p id="window-whisper">let the city carry on.</p></div>
@@ -213,6 +214,8 @@
     </div>
     <div class="window-sill" aria-hidden="true"></div>
     <button class="curtain-pull" id="curtain-pull" type="button" aria-label="Draw the curtains further"><span aria-hidden="true"></span></button>
+    <button class="window-lantern" id="window-lantern" type="button" aria-label="Release a paper lantern"><svg viewBox="0 0 32 40" aria-hidden="true"><path d="M8 6Q16 1 24 6l3 22q-11 7-22 0Z"/><path d="M8 7q8 5 16 0M5 27q11-5 22 0M13 7l-2 20m8-20 2 20M16 32v5"/></svg></button>
+    <p class="visually-hidden" id="lantern-window-status" role="status"></p>
     <div class="desk-glow" aria-hidden="true"></div>
     <button class="window-cat" id="window-cat" type="button" aria-label="Pet the sleeping cat">
       <svg viewBox="0 0 240 130" aria-hidden="true">
@@ -400,6 +403,13 @@
           <input id="curtain-amount" type="range" min="0" max="100" step="1" value="25" />
           <div class="curtain-fabrics" aria-label="Curtain fabric"><button type="button" data-fabric="linen" aria-pressed="true"><i aria-hidden="true"></i>linen</button><button type="button" data-fabric="plum" aria-pressed="false"><i aria-hidden="true"></i>plum</button><button type="button" data-fabric="ink" aria-pressed="false"><i aria-hidden="true"></i>ink</button></div>
           <p id="curtain-note" role="status">Touch the pull beside the window to draw the curtains.</p>
+        </section>
+        <section class="lantern-room" id="lantern-room" aria-labelledby="lantern-title">
+          <p class="desk-kicker">SOMETHING SMALL, INTO THE NIGHT</p><h3 id="lantern-title">Let it drift.</h3>
+          <p>A paper lantern. A passing thought, if you like.</p>
+          <div class="lantern-tones" aria-label="Lantern colour"><button type="button" data-lantern-tone="amber" aria-pressed="true"><i aria-hidden="true"></i>amber</button><button type="button" data-lantern-tone="rose" aria-pressed="false"><i aria-hidden="true"></i>rose</button><button type="button" data-lantern-tone="moon" aria-pressed="false"><i aria-hidden="true"></i>moon</button></div>
+          <form id="lantern-form"><label for="lantern-thought">A note for this flight · optional<input id="lantern-thought" type="text" maxlength="60" placeholder="Something to leave in the night…" autocomplete="off" /></label><div class="lantern-actions"><button id="lantern-release" type="submit">release a lantern ↗</button><button id="lantern-clear" type="button" hidden>clear the sky</button></div></form>
+          <p class="lantern-note" id="lantern-note">Notes disappear with the lantern after 30 seconds. They aren't saved or sent.</p>
         </section>
         <section class="room-light" aria-label="Desk lighting">
           <div class="light-heading"><h3>Desk light</h3><span id="light-state">amber · on</span></div>
