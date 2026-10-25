@@ -79,6 +79,7 @@ test('midnight garden is a remembered fifth view that leaves the room and its so
   await page.locator('.view-switch button[data-view="garden"]').click();
   assert.equal(await page.locator('body').getAttribute('data-view'),'garden');
   assert.equal(await page.locator('#window-view').getAttribute('aria-label'),'Your midnight garden window');
+  await page.locator('.garden-view').evaluate(el => el.getAnimations().forEach(animation => animation.finish()));
   assert.equal(await page.locator('.garden-view').evaluate(el => getComputedStyle(el).opacity),'1');
   assert.equal(await page.locator('.skyline').first().evaluate(el => getComputedStyle(el).opacity),'0');
   assert.equal(await page.locator('#journal-note').inputValue(),'Leaves after midnight.');
@@ -87,6 +88,69 @@ test('midnight garden is a remembered fifth view that leaves the room and its so
   await page.reload();
   assert.equal(await page.locator('body').getAttribute('data-view'),'garden');
   assert.equal(await page.locator('.view-switch button[data-view="garden"]').getAttribute('aria-pressed'),'true');
+});
+
+test('garden controls and all seven evening cards fit phones, tablets and the quiet window', async t => {
+  for (const width of [320,768,1440]) {
+    const page = await openRoom(t,width);
+    await page.locator('[data-evening="garden"]').click();
+    await page.locator('#keep-evening').click();
+    for (const card of await page.locator('.scene-card').all()) {
+      const box = await card.boundingBox();
+      assert.ok(box.x >= 0 && box.x + box.width <= width);
+    }
+    for (const button of await page.locator('.view-switch button').all()) {
+      const box = await button.boundingBox();
+      const room = await page.locator('#window-view').boundingBox();
+      assert.ok(box.x >= room.x && box.x + box.width <= room.x + room.width);
+      assert.ok(box.height >= 36);
+    }
+    await page.locator('#garden-switch').focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await page.locator('#garden-switch').getAttribute('aria-pressed'),'false');
+    await page.keyboard.press('Space');
+    assert.equal(await page.locator('#garden-switch').getAttribute('aria-pressed'),'true');
+    const sign = await page.locator('#garden-switch').boundingBox();
+    const whisper = await page.locator('#window-whisper').boundingBox();
+    assert.ok(sign.y + sign.height <= whisper.y);
+    await page.locator('#garden-switch').blur();
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) {
+      await page.locator('.scene-cards').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`garden-evenings-${width}.png`)});
+      await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`garden-window-${width}.png`)});
+    }
+    await page.locator('#quiet-room').click();
+    await page.locator('#garden-switch').click();
+    const box = await page.locator('#garden-switch').boundingBox();
+    assert.ok(box.width >= 44 && box.height >= 44 && box.x >= 0 && box.x + box.width <= width);
+    assert.equal(await page.locator('#window-view').getAttribute('data-garden-light'),'false');
+    await page.keyboard.press('Escape');
+    await page.close();
+  }
+});
+
+test('garden fireflies and pond follow weather, view visibility and reduced motion', async t => {
+  const page = await openRoom(t,1280,'no-preference');
+  await page.locator('.view-switch button[data-view="garden"]').click();
+  const fly = page.locator('.garden-fireflies circle').first();
+  const pond = page.locator('.garden-pond-rings');
+  assert.equal(await fly.evaluate(el => getComputedStyle(el).animationName),'garden-drift');
+  assert.equal(await fly.evaluate(el => getComputedStyle(el).animationPlayState),'running');
+  assert.equal(await pond.evaluate(el => getComputedStyle(el).animationDuration),'16s');
+  await page.locator('#music-rain').click();
+  assert.equal(await pond.evaluate(el => getComputedStyle(el).animationDuration),'7s');
+  await page.locator('.view-switch button[data-view="city"]').click();
+  assert.equal(await fly.evaluate(el => getComputedStyle(el).animationPlayState),'paused');
+  await page.locator('.view-switch button[data-view="garden"]').click();
+  await page.evaluate(() => {
+    Object.defineProperty(document,'hidden',{configurable:true,value:true});
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  assert.equal(await fly.evaluate(el => getComputedStyle(el).animationPlayState),'paused');
+  assert.equal(await pond.evaluate(el => getComputedStyle(el).animationPlayState),'paused');
+  await page.emulateMedia({reducedMotion:'reduce'});
+  assert.equal(await fly.evaluate(el => getComputedStyle(el).animationName),'none');
+  assert.equal(await pond.evaluate(el => getComputedStyle(el).animationName),'none');
 });
 
 test('paper lantern notes are literal, temporary and absent from saved room data', async t => {
