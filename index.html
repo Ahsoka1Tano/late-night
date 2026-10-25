@@ -125,7 +125,9 @@
         <g class="garden-path-lights" fill="#dcc48d"><path d="M759 510h9v23h-9zm155-50h7v19h-7zm-240 99h10v28h-10z"/><ellipse cx="763" cy="533" rx="32" ry="5" opacity=".13"/><ellipse cx="918" cy="479" rx="25" ry="4" opacity=".13"/><ellipse cx="679" cy="587" rx="40" ry="6" opacity=".13"/></g>
         <g fill="#0d252b"><path d="M0 554q90-36 177 3t164 8 190 18l50 17H0Zm868 46q58-71 135-42t197-25v67Z"/></g>
         <g opacity=".8"><use href="#garden-fern" transform="translate(63 584) scale(1.2)"/><use href="#garden-fern" transform="translate(186 591) scale(.8)"/><use href="#garden-fern" transform="translate(1041 589)"/><use href="#garden-fern" transform="translate(1141 579) scale(1.3)"/></g>
+        <g class="garden-fireflies" fill="#e3e9aa"><circle cx="193" cy="404" r="2"/><circle cx="346" cy="444" r="2.5"/><circle cx="484" cy="391" r="2"/><circle cx="560" cy="464" r="1.8"/><circle cx="735" cy="492" r="2"/><circle cx="1035" cy="477" r="2.5"/><circle cx="1120" cy="400" r="1.8"/><circle cx="433" cy="538" r="2"/><circle cx="82" cy="467" r="2"/></g>
       </svg>
+      <button class="garden-switch" id="garden-switch" data-garden-only type="button" aria-label="Greenhouse light" aria-pressed="true" hidden>GLASSHOUSE · LIT</button>
       <svg class="cafe-view" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
         <defs><linearGradient id="cafe-wall" x2="1" y2="1"><stop stop-color="#34333f"/><stop offset="1" stop-color="#191f31"/></linearGradient><linearGradient id="cafe-warmth" x2="0" y2="1"><stop stop-color="#d8a66c"/><stop offset=".5" stop-color="#947058"/><stop offset="1" stop-color="#654f4c"/></linearGradient></defs>
         <path fill="#151e30" d="M0 175h220V70h150v100h90v370H0Z"/>
@@ -486,6 +488,12 @@
           <p class="meteor-note" id="meteor-note" role="status">For clear mountain skies or Space.</p>
           <button class="beacon-button" id="beacon-button" type="button" aria-pressed="true" hidden>lighthouse beam · on</button>
           <button class="cafe-light-button" id="cafe-light-button" data-cafe-only type="button" aria-pressed="true" hidden>café lights · on</button>
+          <div class="garden-controls" data-garden-only hidden>
+            <p class="sky-kicker">THE MIDNIGHT GARDEN</p>
+            <button id="garden-light" type="button" aria-pressed="true">greenhouse light · on</button>
+            <button id="garden-flies" type="button" aria-pressed="true">fireflies · here</button>
+            <p id="garden-status" role="status">A little light among the leaves.</p>
+          </div>
         </details>
       </aside>
     </div>

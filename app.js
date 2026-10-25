@@ -2344,6 +2344,7 @@ function setWindowScene(scene, { save = true } = {}) {
   windowScene = ["mountains", "coast", "cafe", "garden"].includes(scene) ? scene : "city";
   document.body.dataset.view = windowScene;
   document.querySelectorAll("[data-cafe-only]").forEach(element => { element.hidden = windowScene !== "cafe"; });
+  document.querySelectorAll("[data-garden-only]").forEach(element => { element.hidden = windowScene !== "garden"; });
   document.querySelectorAll(".view-switch button").forEach(button => {
     button.setAttribute("aria-pressed", String(button.dataset.view === windowScene));
   });
@@ -2643,6 +2644,39 @@ function setCafeLight(on, { save = true } = {}) {
 document.getElementById("cafe-sign").addEventListener("click", () => setCafeLight(!cafeOpen));
 document.getElementById("cafe-light-button").addEventListener("click", () => setCafeLight(!cafeOpen));
 setCafeLight(cafeOpen, { save: false });
+
+/* Light and life outside, independent of the desk and its sounds. */
+let garden = { light: true, flies: true };
+function validGarden(value) {
+  return value && typeof value === "object" && !Array.isArray(value)
+    && typeof value.light === "boolean" && typeof value.flies === "boolean";
+}
+try {
+  const saved = JSON.parse(localStorage.getItem("lateNight.garden") || "null");
+  if (validGarden(saved)) garden = { light: saved.light, flies: saved.flies };
+} catch { /* Leave unreadable preferences untouched until a deliberate change. */ }
+function setGarden(value, { save = true } = {}) {
+  if (!validGarden(value)) return;
+  garden = { light: value.light, flies: value.flies };
+  windowView.dataset.gardenLight = String(garden.light);
+  windowView.dataset.gardenFlies = String(garden.flies);
+  document.getElementById("garden-light").setAttribute("aria-pressed", String(garden.light));
+  document.getElementById("garden-light").textContent = `greenhouse light · ${garden.light ? "on" : "off"}`;
+  document.getElementById("garden-switch").setAttribute("aria-pressed", String(garden.light));
+  document.getElementById("garden-switch").textContent = garden.light ? "GLASSHOUSE · LIT" : "GLASSHOUSE · RESTING";
+  document.getElementById("garden-flies").setAttribute("aria-pressed", String(garden.flies));
+  document.getElementById("garden-flies").textContent = `fireflies · ${garden.flies ? "here" : "away"}`;
+  const status = document.getElementById("garden-status");
+  status.textContent = garden.light ? "A little light among the leaves." : "Moonlight is enough for now.";
+  if (save) {
+    try { localStorage.setItem("lateNight.garden", JSON.stringify(garden)); }
+    catch { status.textContent = "The garden changed for this visit. Couldn't remember it on this device."; }
+  }
+}
+document.getElementById("garden-light").addEventListener("click", () => setGarden({ ...garden, light: !garden.light }));
+document.getElementById("garden-switch").addEventListener("click", () => setGarden({ ...garden, light: !garden.light }));
+document.getElementById("garden-flies").addEventListener("click", () => setGarden({ ...garden, flies: !garden.flies }));
+setGarden(garden, { save: false });
 
 /* --- a whole evening, chosen with one deliberate gesture --- */
 const EVENING_SCENES = {
