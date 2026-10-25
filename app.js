@@ -2680,6 +2680,7 @@ setGarden(garden, { save: false });
 
 /* --- a whole evening, chosen with one deliberate gesture --- */
 const EVENING_SCENES = {
+  garden: { name: "Midnight garden", mood: "music", view: "garden", rainOn: true, rain: "drizzle", light: "amber", strength: 35, lamp: true, ambience: true, drink: "tea", sky: "midnight", moon: "crescent", garden: { light: true, flies: true }, curtains: { amount: 0, fabric: "linen" } },
   cafe: { name: "The last café", mood: "music", view: "cafe", rainOn: true, rain: "drizzle", light: "amber", strength: 45, lamp: true, ambience: true, drink: "coffee", sky: "midnight", moon: "half", cafe: true, curtains: { amount: 25, fabric: "plum" } },
   harbour: { name: "Harbour after hours", mood: "calm", view: "coast", rainOn: false, rain: "drizzle", light: "amber", strength: 45, lamp: true, ambience: true, drink: "tea", sky: "midnight", moon: "full", beacon: true, curtains: { amount: 0, fabric: "linen" } },
   records: { name: "Rainy records", mood: "music", view: "city", rainOn: true, rain: "steady", light: "amber", strength: 70, lamp: true, ambience: true, drink: "tea", sky: "mood", moon: "full", curtains: { amount: 25, fabric: "linen" } },
@@ -2699,7 +2700,7 @@ function readPersonalScene() {
 function normalizeEvening(value) {
     if (!value || typeof value !== "object" || Array.isArray(value)
         || !["calm", "music", "focus", "rain", "space", "sleep", "aurora"].includes(value.mood)
-        || !["city", "mountains", "coast", "cafe"].includes(value.view) || !["amber", "moon", "dim"].includes(value.light)
+        || !["city", "mountains", "coast", "cafe", "garden"].includes(value.view) || !["amber", "moon", "dim"].includes(value.light)
         || !RAIN_ORDER.includes(value.rain) || !Number.isFinite(value.strength)
         || value.strength < 10 || value.strength > 100
         || ["rainOn", "lamp", "ambience", "playTape"].some(key => typeof value[key] !== "boolean")) return null;
@@ -2708,6 +2709,7 @@ function normalizeEvening(value) {
       sky: SKY_PALETTES.includes(value.sky) ? value.sky : null, moon: MOON_SHAPES.includes(value.moon) ? value.moon : null, beacon: typeof value.beacon === "boolean" ? value.beacon : null,
       cat: value.cat && CAT_COATS.includes(value.cat.coat) && typeof value.cat.present === "boolean" ? { coat: value.cat.coat, present: value.cat.present } : null,
       cafe: typeof value.cafe === "boolean" ? value.cafe : null,
+      garden: validGarden(value.garden) ? { light: value.garden.light, flies: value.garden.flies } : null,
       curtains: validCurtains(value.curtains) ? { amount: Math.round(value.curtains.amount), fabric: value.curtains.fabric } : null,
       ambientChoice: AMBIENT_CHOICES.includes(value.ambientChoice) ? value.ambientChoice : "auto",
       lanternTone: lanternTones.includes(value.lanternTone) ? value.lanternTone : null,
@@ -2729,7 +2731,7 @@ function captureEvening() {
   return { name: "Your evening", mood: document.body.dataset.mood, view: windowScene,
     rainOn: musicRainEnabled, rain: rainLevel, light: lightTone, strength: lightStrength,
     lamp: deskLamp.getAttribute("aria-pressed") === "true", ambience: listening,
-    playTape: tapeRunning, station, radio: radioKey, drink, sky: outsideSky, moon: moonShape, beacon: lighthouseOn, cat: { coat: catCoat, present: catPresent }, cafe: cafeOpen, ambientChoice, curtains: { amount: curtainAmount, fabric: curtainFabric }, lanternTone };
+    playTape: tapeRunning, station, radio: radioKey, drink, sky: outsideSky, moon: moonShape, beacon: lighthouseOn, cat: { coat: catCoat, present: catPresent }, cafe: cafeOpen, garden: { ...garden }, ambientChoice, curtains: { amount: curtainAmount, fabric: curtainFabric }, lanternTone };
 }
 document.getElementById("keep-evening").addEventListener("click", () => {
   const snapshot = captureEvening();
@@ -2774,6 +2776,7 @@ function applyEveningScene(scene) {
   if (typeof scene.beacon === "boolean") setLighthouse(scene.beacon);
   if (scene.cat) setCatCompanion(scene.cat.coat, scene.cat.present);
   if (typeof scene.cafe === "boolean") setCafeLight(scene.cafe);
+  if (scene.garden) setGarden(scene.garden);
   if (scene.curtains) setCurtains(scene.curtains.amount, { fabric: scene.curtains.fabric });
   if (scene.lanternTone) setLanternTone(scene.lanternTone);
   storeEveningSetting("lateNight.deskLamp", scene.lamp ? "1" : "0");
@@ -2805,7 +2808,8 @@ function paintSceneCards() {
       && (!scene.curtains || scene.curtains.amount === curtainAmount && scene.curtains.fabric === curtainFabric)
       && (!scene.lanternTone || scene.lanternTone === lanternTone);
     const cafeMatches = typeof scene.cafe !== "boolean" || scene.cafe === cafeOpen;
-    button.setAttribute("aria-pressed", String(matches && cafeMatches));
+    const gardenMatches = !scene.garden || scene.garden.light === garden.light && scene.garden.flies === garden.flies;
+    button.setAttribute("aria-pressed", String(matches && cafeMatches && gardenMatches));
   });
 }
 document.querySelectorAll(".scene-card").forEach(button => button.addEventListener("click", () => {
@@ -2814,7 +2818,7 @@ document.querySelectorAll(".scene-card").forEach(button => button.addEventListen
 }));
 const sceneObserver = new MutationObserver(paintSceneCards);
 sceneObserver.observe(document.body, { attributes: true, attributeFilter: ["data-mood", "data-view", "data-rain", "data-station", "data-ambient"] });
-sceneObserver.observe(windowView, { attributes: true, attributeFilter: ["data-light", "style", "data-sky", "data-moon", "data-beacon", "data-cat-coat", "data-cat-present", "data-cafe-open", "data-curtains", "data-fabric"] });
+sceneObserver.observe(windowView, { attributes: true, attributeFilter: ["data-light", "style", "data-sky", "data-moon", "data-beacon", "data-cat-coat", "data-cat-present", "data-cafe-open", "data-garden-light", "data-garden-flies", "data-curtains", "data-fabric"] });
 sceneObserver.observe(deskLamp, { attributes: true, attributeFilter: ["aria-pressed"] });
 sceneObserver.observe(musicRainButton, { attributes: true, attributeFilter: ["aria-pressed"] });
 sceneObserver.observe(cupButton, { attributes: true, attributeFilter: ["data-drink"] });

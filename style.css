@@ -2743,12 +2743,16 @@ body[data-station='radio'] .tape-status { display: none; }
 .window-sound-timer:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 body.has-sound-timer .scene-signature { display: none; }
 #sound-timer-note { margin-top: 12px; min-height: 36px; }
-.scene-cards { grid-template-columns: repeat(5,minmax(0,1fr)); }
+.scene-cards { grid-template-columns: repeat(3,minmax(0,1fr)); }
 .scene-cards.has-personal { grid-template-columns: repeat(3,minmax(0,1fr)); }
 .art-cafe { background: linear-gradient(#1a2339 40%,#977356 41% 78%,#242b3b 79%); }
 .art-cafe::before { inset: 36% 0 auto; height: 12px; clip-path: none; background: repeating-linear-gradient(90deg,#a08382 0 12px,#3c3544 12px 24px); }
 .art-cafe i { position: absolute; inset: 55% 12% 16%; border-left: 3px solid #302d3c; border-right: 3px solid #302d3c; background: linear-gradient(90deg,transparent 48%,#302d3c 48% 53%,transparent 53%); }
 .art-personal { transition: background 1s; }
 [data-personal-view='cafe'] .art-personal::before { inset: 40% 0 10%; clip-path: none; background: repeating-linear-gradient(90deg,#bd9565 0 18%,#353142 18% 22%); border-top: 9px solid #7e656d; }
-@media(max-width:1000px) { .scene-cards,.scene-cards.has-personal { grid-template-columns: repeat(2,minmax(0,1fr)); } .scene-cards:not(.has-personal) [data-evening='cafe'] { grid-column: 1 / -1; } .scene-cards.has-personal [data-evening='personal'] { grid-column: auto; } }
+.art-garden,[data-personal-view='garden'] .art-personal { background: radial-gradient(ellipse at 27% 83%,#72918b88 0 15%,transparent 16%),radial-gradient(circle at 25% 60%,#d8e3a5 0 1px,transparent 2px),linear-gradient(#162938 46%,#25433e 47%,#102a2e); }
+.art-garden::before,[data-personal-view='garden'] .art-personal::before { inset: 36% 7% 17% 51%; clip-path: polygon(50% 0,100% 29%,100% 100%,0 100%,0 29%); background: repeating-linear-gradient(90deg,#b0ac786e 0 15%,#557264 15% 18%); }
+.scene-cards.has-personal [data-evening='personal'] { grid-column: 1 / -1; flex-direction: row; align-items: center; }
+.scene-cards.has-personal [data-evening='personal'] .scene-art { flex: 0 0 86px; width: 86px; height: 70px; }
+@media(max-width:1000px) { .scene-cards,.scene-cards.has-personal { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media(max-width:600px) { body.is-quiet .window-view { height: max(500px,calc(100svh - 150px)); } }
