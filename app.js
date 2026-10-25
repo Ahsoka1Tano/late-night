@@ -32,14 +32,14 @@ const moodButtons = document.querySelectorAll(".mood");
 let moodLineTimer = null;
 let musicRainEnabled = localStorage.getItem("lateNight.musicRain") === "1";
 let windowScene = "city";
-try { const saved = localStorage.getItem("lateNight.view"); if (["mountains", "coast", "cafe"].includes(saved)) windowScene = saved; } catch { /* Keep the city. */ }
+try { const saved = localStorage.getItem("lateNight.view"); if (["mountains", "coast", "cafe", "garden"].includes(saved)) windowScene = saved; } catch { /* Keep the city. */ }
 
 function isRainScene(mood = document.body.dataset.mood) {
   return mood === "rain" || (mood === "music" && musicRainEnabled);
 }
 
 function hasStarSky(mood = document.body.dataset.mood) {
-  return mood === "space" || mood === "aurora" || (["mountains", "coast"].includes(windowScene) && !isRainScene(mood));
+  return mood === "space" || mood === "aurora" || (["mountains", "coast", "garden"].includes(windowScene) && !isRainScene(mood));
 }
 function syncWindowSky() {
   if (!document.hidden && !cityMotion.matches && hasStarSky()) startStars();
@@ -57,6 +57,10 @@ function paintWeather() {
 
 function paintSceneCaption() {
   const mood = document.body.dataset.mood;
+  if (windowScene === "garden") {
+    document.getElementById("scene-caption").textContent = isRainScene() ? "RAIN ON THE GLASS. A GARDEN STILL GROWING." : "A LITTLE LIGHT AMONG THE LEAVES.";
+    return;
+  }
   if (windowScene === "cafe") {
     document.getElementById("scene-caption").textContent = isRainScene() ? "WARM WINDOWS. RAIN BETWEEN US." : "SOMEWHERE, THE KETTLE IS STILL ON.";
     return;
@@ -2337,14 +2341,14 @@ document.addEventListener("visibilitychange", syncCityLife);
 cityMotion.addEventListener("change", () => { syncCityLife(); syncWindowSky(); });
 
 function setWindowScene(scene, { save = true } = {}) {
-  windowScene = ["mountains", "coast", "cafe"].includes(scene) ? scene : "city";
+  windowScene = ["mountains", "coast", "cafe", "garden"].includes(scene) ? scene : "city";
   document.body.dataset.view = windowScene;
   document.querySelectorAll("[data-cafe-only]").forEach(element => { element.hidden = windowScene !== "cafe"; });
   document.querySelectorAll(".view-switch button").forEach(button => {
     button.setAttribute("aria-pressed", String(button.dataset.view === windowScene));
   });
-  windowView.setAttribute("aria-label", { cafe: "Your late-night café window", coast: "Your coastal window", mountains: "Your mountain window", city: "Your night city window" }[windowScene]);
-  document.getElementById("window-whisper").textContent = { cafe: "there is still a light on.", coast: "let the tide take its time.", mountains: "let the world wait.", city: "let the city carry on." }[windowScene];
+  windowView.setAttribute("aria-label", { garden: "Your midnight garden window", cafe: "Your late-night café window", coast: "Your coastal window", mountains: "Your mountain window", city: "Your night city window" }[windowScene]);
+  document.getElementById("window-whisper").textContent = { garden: "some things grow quietly.", cafe: "there is still a light on.", coast: "let the tide take its time.", mountains: "let the world wait.", city: "let the city carry on." }[windowScene];
   paintSceneCaption();
   syncCityLife();
   syncWindowSky();

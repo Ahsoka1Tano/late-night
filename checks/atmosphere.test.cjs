@@ -70,6 +70,25 @@ async function openRoom(t, width = 1280, motion = 'reduce') {
   return page;
 }
 
+test('midnight garden is a remembered fifth view that leaves the room and its sound intact', async t => {
+  const page = await openRoom(t,1440);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(3000);
+  await page.locator('#journal-note').fill('Leaves after midnight.');
+  await page.evaluate(() => { window.gardenTape = tapeAudio; window.gardenRain = ambienceTrack; startFocus(); window.gardenFocus = focusEndsAt; });
+  await page.locator('.view-switch button[data-view="garden"]').click();
+  assert.equal(await page.locator('body').getAttribute('data-view'),'garden');
+  assert.equal(await page.locator('#window-view').getAttribute('aria-label'),'Your midnight garden window');
+  assert.equal(await page.locator('.garden-view').evaluate(el => getComputedStyle(el).opacity),'1');
+  assert.equal(await page.locator('.skyline').first().evaluate(el => getComputedStyle(el).opacity),'0');
+  assert.equal(await page.locator('#journal-note').inputValue(),'Leaves after midnight.');
+  assert.equal(await page.evaluate(() => tapeAudio === window.gardenTape && ambienceTrack === window.gardenRain && focusEndsAt === window.gardenFocus),true);
+  if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'midnight-garden-1440.png')});
+  await page.reload();
+  assert.equal(await page.locator('body').getAttribute('data-view'),'garden');
+  assert.equal(await page.locator('.view-switch button[data-view="garden"]').getAttribute('aria-pressed'),'true');
+});
+
 test('paper lantern notes are literal, temporary and absent from saved room data', async t => {
   const page = await openRoom(t);
   const thought = '<img src=x onerror=alert(1)> let go';

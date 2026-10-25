@@ -86,11 +86,46 @@
             <button type="button" data-view="mountains" aria-pressed="false">Mountains</button>
             <button type="button" data-view="coast" aria-pressed="false">Coast</button>
             <button type="button" data-view="cafe" aria-pressed="false">Café</button>
+            <button type="button" data-view="garden" aria-pressed="false">Garden</button>
           </div>
         </div>
     <div class="window-outside" id="window-outside">
       <canvas class="stars-layer" id="stars" aria-hidden="true"></canvas>
       <canvas class="rain-layer" id="rain" aria-hidden="true"></canvas>
+      <svg class="garden-view" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="garden-ground" x2="0" y2="1"><stop stop-color="#233d3b"/><stop offset="1" stop-color="#0b1c25"/></linearGradient>
+          <linearGradient id="garden-glass" x2="0" y2="1"><stop stop-color="#c8af74" stop-opacity=".6"/><stop offset="1" stop-color="#456258" stop-opacity=".8"/></linearGradient>
+          <radialGradient id="garden-pool"><stop stop-color="#7e9f97" stop-opacity=".45"/><stop offset="1" stop-color="#19383f"/></radialGradient>
+          <radialGradient id="garden-warmth"><stop stop-color="#e6c58c" stop-opacity=".23"/><stop offset="1" stop-color="#d9bc8200"/></radialGradient>
+          <g id="garden-tree"><path d="M0 0v-210m0 110-35-46m35 4 30-42" stroke="#243c3c" stroke-width="8"/><path d="M-5-232q-65-8-53 51-49 18-22 59-5 44 61 35 48 24 75-12 45-16 18-62 2-55-51-48Z" fill="#1d3838"/><path d="M-9-209q-35-3-33 31-29 10-17 36 37-30 67-17 36-11 27-39-10-20-44-11Z" fill="#2c4843" opacity=".55"/></g>
+          <g id="garden-fern" fill="none" stroke="#56776a" stroke-width="3"><path d="M0 0q3-34-13-58M0-6q25-22 35-22M-2-17q-22-21-30-19M-4-29q18-19 29-19M-7-40l-17-11"/></g>
+        </defs>
+        <path d="M0 321q140-51 290-11t310-12 290 10 310-22V600H0Z" fill="#132b30"/>
+        <g opacity=".65"><use href="#garden-tree" transform="translate(105 395) scale(.85)"/><use href="#garden-tree" transform="translate(255 378) scale(.65)"/><use href="#garden-tree" transform="translate(1120 396) scale(.95)"/></g>
+        <path d="M0 405q210-61 417-4t450-8 333 5v202H0Z" fill="url(#garden-ground)"/>
+        <path d="M993 410q-127 34-176 73t-87 117H516q55-74 164-123t313-67Z" fill="#48544d" opacity=".65"/>
+        <g class="garden-greenhouse">
+          <ellipse cx="861" cy="395" rx="255" ry="147" fill="url(#garden-warmth)"/>
+          <path d="M660 299 858 188l223 111v149H660Z" fill="#192f35" stroke="#668079" stroke-width="3"/>
+          <path class="garden-lit-glass" d="m672 305 186-104 211 104v131H672Z" fill="url(#garden-glass)"/>
+          <g class="garden-plants" fill="#284e42"><path d="m703 425-21-68 28 28 7-63 16 60 27-21-21 64zm80 0-27-54 28 12 14-70 12 66 28-24-17 70zm184 0-17-74 26 30 21-65-1 73 34-24-24 60zm70 0-18-46 20 13 9-47 12 80Z"/></g>
+          <g stroke="#59746c" fill="none" stroke-width="4"><path d="m660 299 198-111 223 111M660 301h421M706 278v170m51-200v200m51-229v229m50-260v260m52-234v234m55-207v207m55-179v179M661 374h420"/></g>
+          <path d="M819 447v-93h82v93" fill="#31493f" stroke="#779080" stroke-width="3"/><path d="M829 364h62v66h-62Z" fill="#aca77b" opacity=".3"/>
+          <circle cx="887" cy="403" r="3" fill="#d6bf8d"/>
+          <g class="garden-hanging-light"><path d="M930 249v48" stroke="#829183" stroke-width="2"/><path d="m917 296 26 0 7 13h-40Z" fill="#d2bd8a"/><ellipse cx="930" cy="310" rx="16" ry="3" fill="#f9dba0"/></g>
+          <path d="M648 447h445v10H648Z" fill="#4d6057"/>
+        </g>
+        <ellipse cx="350" cy="505" rx="269" ry="59" fill="#0d252c"/>
+        <ellipse cx="350" cy="500" rx="250" ry="47" fill="url(#garden-pool)" stroke="#446558" stroke-width="3"/>
+        <g class="garden-pond-rings" fill="none" stroke="#9ab3a1" stroke-width="1" opacity=".4"><ellipse cx="290" cy="495" rx="54" ry="5"/><ellipse cx="467" cy="518" rx="30" ry="3"/><ellipse cx="391" cy="480" rx="21" ry="2"/></g>
+        <g fill="#456b59"><ellipse cx="235" cy="501" rx="22" ry="6"/><ellipse cx="448" cy="490" rx="16" ry="5"/></g><path d="m240 496 7 7m199-17 8 6" stroke="#193d3b" stroke-width="2"/>
+        <g stroke="#5b6c61" stroke-width="4" fill="none"><path d="M129 510v-69m-13 36 13 13 13-24m-30 47v-52m435 37v-79m-13 33 13 16 16-31m-1 64v-57"/></g>
+        <g fill="#9b9976"><path d="M124 441v-20h10v20zm418-22v-24h10v24z"/></g>
+        <g class="garden-path-lights" fill="#dcc48d"><path d="M759 510h9v23h-9zm155-50h7v19h-7zm-240 99h10v28h-10z"/><ellipse cx="763" cy="533" rx="32" ry="5" opacity=".13"/><ellipse cx="918" cy="479" rx="25" ry="4" opacity=".13"/><ellipse cx="679" cy="587" rx="40" ry="6" opacity=".13"/></g>
+        <g fill="#0d252b"><path d="M0 554q90-36 177 3t164 8 190 18l50 17H0Zm868 46q58-71 135-42t197-25v67Z"/></g>
+        <g opacity=".8"><use href="#garden-fern" transform="translate(63 584) scale(1.2)"/><use href="#garden-fern" transform="translate(186 591) scale(.8)"/><use href="#garden-fern" transform="translate(1041 589)"/><use href="#garden-fern" transform="translate(1141 579) scale(1.3)"/></g>
+      </svg>
       <svg class="cafe-view" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
         <defs><linearGradient id="cafe-wall" x2="1" y2="1"><stop stop-color="#34333f"/><stop offset="1" stop-color="#191f31"/></linearGradient><linearGradient id="cafe-warmth" x2="0" y2="1"><stop stop-color="#d8a66c"/><stop offset=".5" stop-color="#947058"/><stop offset="1" stop-color="#654f4c"/></linearGradient></defs>
         <path fill="#151e30" d="M0 175h220V70h150v100h90v370H0Z"/>

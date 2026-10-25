@@ -2558,6 +2558,12 @@ body:not([data-view='cafe']) .cafe-pavement,body:not([data-view='cafe']) .cafe-r
 @keyframes cat-dream { 0%,78%,88%,100% { transform: rotate(0); } 83% { transform: rotate(-3deg); } }
 @keyframes cat-thanks { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-5deg); } }
 @media (prefers-reduced-motion: reduce) { .cat-breath,.cat-tail,.cat-tail-stripes { animation: none !important; } .cat-head,.cat-open-eyes,.cat-sleep-eyes { transition: none; } }
+/* A small botanical garden beyond the same glass. */
+.garden-view { position: absolute; inset: 12% 0 0; width: 100%; height: 88%; z-index: 2; opacity: 0; pointer-events: none; transition: opacity 1.5s; }
+body[data-view='garden'] .garden-view { opacity: 1; }
+body[data-view='garden'] .skyline,body[data-view='garden'] .night-train,body[data-view='garden'] .railway-bridge { opacity: 0; }
+body[data-view='garden'] .night-flight { display: none; }
+body[data-view='garden'] .stars-layer { mask-image: linear-gradient(#000 0 30%,transparent 65%); }
 .coast-view { position: absolute; inset: auto 0 0; height: 53%; z-index: 2; opacity: 0; pointer-events: none; transition: opacity 1.8s; }
 .coast-view svg { display: block; width: 100%; height: 100%; }
 .sea-water { position: absolute; inset: auto 0 0; height: 25%; z-index: 1; opacity: 0; background: linear-gradient(#344e63,#12283c); pointer-events: none; transition: opacity 1.8s; }
