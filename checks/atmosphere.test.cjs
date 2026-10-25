@@ -120,6 +120,7 @@ test('garden controls and all seven evening cards fit phones, tablets and the qu
       await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`garden-window-${width}.png`)});
     }
     await page.locator('#quiet-room').click();
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`garden-quiet-${width}.png`)});
     await page.locator('#garden-switch').click();
     const box = await page.locator('#garden-switch').boundingBox();
     assert.ok(box.width >= 44 && box.height >= 44 && box.x >= 0 && box.x + box.width <= width);
@@ -151,6 +152,97 @@ test('garden fireflies and pond follow weather, view visibility and reduced moti
   await page.emulateMedia({reducedMotion:'reduce'});
   assert.equal(await fly.evaluate(el => getComputedStyle(el).animationName),'none');
   assert.equal(await pond.evaluate(el => getComputedStyle(el).animationName),'none');
+});
+
+async function openGardenControls(page) {
+  if (!await page.locator('#outside-sky').evaluate(el => el.open)) await page.locator('#outside-sky summary').click();
+}
+
+test('garden evening pairs a real tape and drizzle while its lights and fireflies remain independent', async t => {
+  const page = await openRoom(t);
+  await page.locator('[data-evening="garden"]').click();
+  await page.clock.runFor(3000);
+  assert.equal(await page.locator('body').getAttribute('data-view'),'garden');
+  assert.equal(await page.locator('body').getAttribute('data-rain'),'drizzle');
+  assert.equal(await page.locator('body').evaluate(el => el.classList.contains('has-rain')),true);
+  assert.equal(await page.evaluate(() => tapeRunning && listening && !tapeAudio.paused && !ambienceTrack.paused),true);
+  assert.equal(await page.locator('[data-evening="garden"]').getAttribute('aria-pressed'),'true');
+  await page.evaluate(() => { window.gardenTape = tapeAudio; window.gardenRain = ambienceTrack; });
+  await openGardenControls(page);
+  await page.locator('#garden-flies').click();
+  await page.locator('#garden-light').click();
+  assert.equal(await page.locator('[data-evening="garden"]').getAttribute('aria-pressed'),'false');
+  assert.equal(await page.locator('#window-view').getAttribute('data-garden-flies'),'false');
+  assert.equal(await page.locator('#garden-switch').getAttribute('aria-pressed'),'false');
+  assert.equal(await page.evaluate(() => tapeAudio === window.gardenTape && ambienceTrack === window.gardenRain && !tapeAudio.paused && !ambienceTrack.paused),true);
+  await page.locator('.view-switch button[data-view="cafe"]').click();
+  assert.equal(await page.locator('#garden-switch').isVisible(),false);
+  assert.equal(await page.locator('#garden-flies').isVisible(),false);
+  await page.locator('.view-switch button[data-view="garden"]').click();
+  assert.equal(await page.locator('#garden-light').getAttribute('aria-pressed'),'false');
+  await page.reload();
+  assert.equal(await page.locator('#window-view').getAttribute('data-garden-light'),'false');
+  assert.equal(await page.locator('#window-view').getAttribute('data-garden-flies'),'false');
+  assert.equal(await page.evaluate(() => tapeRunning),false);
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.listen')),'1');
+});
+
+test('garden preferences restore in quick and collected evenings while legacy saves keep the current garden', async t => {
+  const page = await openRoom(t);
+  await page.locator('.view-switch button[data-view="garden"]').click();
+  await openGardenControls(page);
+  await page.locator('#garden-light').click();
+  await page.locator('#garden-flies').click();
+  await page.locator('#keep-evening').click();
+  await collectRoom(page,'Moonlight in the garden');
+  const quick = await page.evaluate(() => JSON.parse(localStorage.getItem('lateNight.personalScene')));
+  assert.deepEqual(quick.garden,{light:false,flies:false});
+  await page.evaluate(() => setGarden({light:true,flies:true}));
+  assert.deepEqual(quick.garden,{light:false,flies:false});
+  await page.locator('[data-evening="personal"]').click();
+  assert.equal(await page.locator('#window-view').getAttribute('data-garden-flies'),'false');
+  await page.evaluate(() => setGarden({light:true,flies:true}));
+  await openEveningLibrary(page);
+  await page.locator('.saved-evening-open').filter({hasText:'Moonlight in the garden'}).click();
+  assert.equal(await page.locator('#window-view').getAttribute('data-garden-light'),'false');
+  assert.equal(await page.locator('#window-view').getAttribute('data-garden-flies'),'false');
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  await page.evaluate(() => {
+    const old = JSON.parse(localStorage.getItem('lateNight.personalScene'));
+    delete old.garden;
+    localStorage.setItem('lateNight.personalScene',JSON.stringify(old));
+    setGarden({light:true,flies:false});
+  });
+  await page.reload();
+  await page.locator('[data-evening="personal"]').click();
+  assert.equal(await page.locator('#window-view').getAttribute('data-garden-light'),'true');
+  assert.equal(await page.locator('#window-view').getAttribute('data-garden-flies'),'false');
+});
+
+test('malformed garden preferences and failed writes preserve stored data and leave controls usable', async t => {
+  const page = await openRoom(t);
+  for (const broken of ['{broken','{"light":"no","flies":false}','[true,false]']) {
+    await page.evaluate(value => localStorage.setItem('lateNight.garden',value),broken);
+    await page.reload();
+    assert.equal(await page.locator('#window-view').getAttribute('data-garden-light'),'true');
+    assert.equal(await page.locator('#window-view').getAttribute('data-garden-flies'),'true');
+    assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.garden')),broken);
+  }
+  await page.locator('.view-switch button[data-view="garden"]').click();
+  await openGardenControls(page);
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function(key,value) {
+      if (key === 'lateNight.garden') throw new DOMException('full','QuotaExceededError');
+      return original.call(this,key,value);
+    };
+  });
+  await page.locator('#garden-light').click();
+  assert.equal(await page.locator('#window-view').getAttribute('data-garden-light'),'false');
+  assert.match(await page.locator('#garden-status').textContent(),/Couldn't remember/);
+  await page.locator('#garden-flies').click();
+  assert.equal(await page.locator('#window-view').getAttribute('data-garden-flies'),'false');
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.garden')),'[true,false]');
 });
 
 test('paper lantern notes are literal, temporary and absent from saved room data', async t => {

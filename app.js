@@ -31,8 +31,9 @@ const moodLine = document.getElementById("mood-line");
 const moodButtons = document.querySelectorAll(".mood");
 let moodLineTimer = null;
 let musicRainEnabled = localStorage.getItem("lateNight.musicRain") === "1";
+const WINDOW_VIEWS = ["city", "mountains", "coast", "cafe", "garden"];
 let windowScene = "city";
-try { const saved = localStorage.getItem("lateNight.view"); if (["mountains", "coast", "cafe", "garden"].includes(saved)) windowScene = saved; } catch { /* Keep the city. */ }
+try { const saved = localStorage.getItem("lateNight.view"); if (WINDOW_VIEWS.includes(saved)) windowScene = saved; } catch { /* Keep the city. */ }
 
 function isRainScene(mood = document.body.dataset.mood) {
   return mood === "rain" || (mood === "music" && musicRainEnabled);
@@ -2341,7 +2342,7 @@ document.addEventListener("visibilitychange", syncCityLife);
 cityMotion.addEventListener("change", () => { syncCityLife(); syncWindowSky(); });
 
 function setWindowScene(scene, { save = true } = {}) {
-  windowScene = ["mountains", "coast", "cafe", "garden"].includes(scene) ? scene : "city";
+  windowScene = WINDOW_VIEWS.includes(scene) ? scene : "city";
   document.body.dataset.view = windowScene;
   document.querySelectorAll("[data-cafe-only]").forEach(element => { element.hidden = windowScene !== "cafe"; });
   document.querySelectorAll("[data-garden-only]").forEach(element => { element.hidden = windowScene !== "garden"; });
@@ -2700,7 +2701,7 @@ function readPersonalScene() {
 function normalizeEvening(value) {
     if (!value || typeof value !== "object" || Array.isArray(value)
         || !["calm", "music", "focus", "rain", "space", "sleep", "aurora"].includes(value.mood)
-        || !["city", "mountains", "coast", "cafe", "garden"].includes(value.view) || !["amber", "moon", "dim"].includes(value.light)
+        || !WINDOW_VIEWS.includes(value.view) || !["amber", "moon", "dim"].includes(value.light)
         || !RAIN_ORDER.includes(value.rain) || !Number.isFinite(value.strength)
         || value.strength < 10 || value.strength > 100
         || ["rainOn", "lamp", "ambience", "playTape"].some(key => typeof value[key] !== "boolean")) return null;
