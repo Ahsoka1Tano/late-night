@@ -18,6 +18,7 @@ The illustrated cards at the top set up a whole evening with one click:
 - **The last light**: Sleep, distant recorded rain, mountains and a dim lamp.
 - **Harbour after hours**: Calm, a real ocean recording, the coast, amber light and tea.
 - **The last café**: a lo-fi tape, real light rain, coffee and a warm shop across the street.
+- **Midnight garden**: a lo-fi tape, real drizzle, tea and a glowing greenhouse beside a pond.
 
 Choosing a card starts its sounds. You can then change any dial; the selected
 card loses its highlight when the setup no longer matches. Existing notes remain.
@@ -53,6 +54,29 @@ the previous collection and the name draft stay in place. Unreadable data is lef
 untouched; reopening retries the read. There is no cloud backup.
 
 ![A collection of named room setups](assets/collected-evenings.png)
+
+## The midnight garden
+
+Choose **Garden** above the window for a fifth view: a glass greenhouse, layered
+trees, a lily pond and small path lights. Changing the view keeps your current
+music, rain, focus session and journal. **Midnight garden** at the top sets up a
+whole evening with a lo-fi tape, real recorded drizzle, tea and a low amber lamp.
+
+Touch **GLASSHOUSE · LIT** in the window to let the greenhouse rest. The same
+button works in **Quiet room**, including with Enter or Space. In **Outside
+sky**, garden controls switch the greenhouse light and fireflies independently.
+The desk lamp and sounds keep their own settings.
+
+Fireflies wander slowly above the pond, appearing fainter in rain. Pond rings
+move more quickly in wet weather. These animations pause when the tab is hidden
+or another view is selected; reduced motion leaves a still garden.
+
+Light and firefly choices are remembered on this device, including in both quick
+saved evenings and your named collection. Older saved evenings leave the current
+garden choices in place. If storage is unavailable, the controls still work for
+the current visit and explain that the choice could not be remembered.
+
+![A greenhouse, lily pond and fireflies beyond the late-night window](assets/midnight-garden.png)
 
 ## Let it drift
 

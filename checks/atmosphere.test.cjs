@@ -1614,6 +1614,8 @@ test('running and paused focus sessions survive refresh without starting audio',
 
 test('an overdue saved session completes once and finished breaks restore separately', async t => {
   const page = await openRoom(t);
+  // Keep navigation time from consuming an extra second at the break boundary.
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.evaluate(() => {
     localStorage.setItem('lateNight.focusSession', JSON.stringify({minutes:15,phase:'focus',left:900000,endsAt:Date.now()-1000,done:false}));
   });

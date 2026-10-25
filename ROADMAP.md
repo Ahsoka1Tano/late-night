@@ -112,6 +112,10 @@ only purpose is filling a day.
 - [x] gentle streak counter
 
 ## Always
+- [x] a fifth view: midnight garden with an illustrated greenhouse, lily pond and layered trees
+- [x] independent greenhouse lights and fireflies, remembered in personal and collected evenings
+- [x] Midnight garden: lo-fi, real drizzle, tea and a low amber lamp in one gesture
+- [x] weather-aware pond and fireflies, sleeping animations and five accessible phone view buttons
 - [x] softly folded window curtains, three fabrics, preset positions and a continuous slider
 - [x] remembered folds, saved-evening support and a keyboard-accessible pull in quiet mode
 - [x] lamp-aware fabric, reduced motion and phone layout checks for curtain controls
