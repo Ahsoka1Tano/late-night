@@ -242,6 +242,7 @@
       <div class="night-train" aria-hidden="true"><span class="train-beam"></span><img src="assets/night-express.svg?v=042f6ba1a95c" alt="" width="660" height="80" /></div>
       <div class="window-crossbar" aria-hidden="true"></div>
       <div class="sky-lanterns" id="sky-lanterns" aria-hidden="true"></div>
+      <canvas class="glass-sketch" id="glass-sketch" aria-hidden="true" hidden></canvas>
       <div class="window-curtains" aria-hidden="true"><div class="curtain-panel curtain-left"><i></i></div><div class="curtain-panel curtain-right"><i></i></div><div class="curtain-rail"></div></div>
       <div class="window-time"><p>NO PLACE TO BE. NOTHING TO PROVE.</p>
         <time id="window-clock">--:--</time><p id="window-whisper">let the city carry on.</p></div>
@@ -444,6 +445,12 @@
           <input id="curtain-amount" type="range" min="0" max="100" step="1" value="25" />
           <div class="curtain-fabrics" aria-label="Curtain fabric"><button type="button" data-fabric="linen" aria-pressed="true"><i aria-hidden="true"></i>linen</button><button type="button" data-fabric="plum" aria-pressed="false"><i aria-hidden="true"></i>plum</button><button type="button" data-fabric="ink" aria-pressed="false"><i aria-hidden="true"></i>ink</button></div>
           <p id="curtain-note" role="status">Touch the pull beside the window to draw the curtains.</p>
+        </section>
+        <section class="glass-room" id="glass-room" aria-labelledby="glass-title">
+          <p class="desk-kicker">A MOMENT ON THE WINDOW</p><h3 id="glass-title">Draw on the glass.</h3>
+          <p>A little mist. A fingertip. Nothing to keep.</p>
+          <div class="glass-actions"><button id="glass-draw" type="button" aria-pressed="false">start drawing</button><button id="glass-mist" type="button" disabled>mist over again</button><button id="glass-clear" type="button" disabled>let it clear</button></div>
+          <p class="glass-note" id="glass-note" role="status">Draw with a mouse or finger. Marks stay only for this visit.</p>
         </section>
         <section class="lantern-room" id="lantern-room" aria-labelledby="lantern-title">
           <p class="desk-kicker">SOMETHING SMALL, INTO THE NIGHT</p><h3 id="lantern-title">Let it drift.</h3>

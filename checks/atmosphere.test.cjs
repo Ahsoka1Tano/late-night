@@ -70,6 +70,32 @@ async function openRoom(t, width = 1280, motion = 'reduce') {
   return page;
 }
 
+test('glass sketches wipe real transparent paths into temporary mist and can be paused or cleared', async t => {
+  const page = await openRoom(t);
+  assert.equal(await page.locator('#glass-sketch').isVisible(),false);
+  await page.locator('#glass-draw').click();
+  await page.clock.runFor(50);
+  assert.equal(await page.locator('#glass-draw').getAttribute('aria-pressed'),'true');
+  const box = await page.locator('#glass-sketch').boundingBox();
+  await page.mouse.move(box.x + box.width * .72,box.y + box.height * .65);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * .82,box.y + box.height * .75,{steps:12});
+  await page.mouse.up();
+  await page.clock.runFor(50);
+  assert.equal(await page.evaluate(() => glassStrokes.length),1);
+  assert.ok(await page.evaluate(() => glassStrokes[0].points.length) > 1);
+  assert.equal(await page.locator('#glass-sketch').evaluate(el => el.getContext('2d').getImageData(Math.round(el.width * .72),Math.round(el.height * .65),1,1).data[3]),0);
+  assert.ok(await page.locator('#glass-sketch').evaluate(el => el.getContext('2d').getImageData(1,1,1,1).data[3]) > 0);
+  await page.locator('#glass-draw').click();
+  assert.equal(await page.locator('#glass-sketch').evaluate(el => getComputedStyle(el).pointerEvents),'none');
+  assert.equal(await page.evaluate(() => glassStrokes.length),1);
+  await page.locator('#glass-mist').click();
+  assert.equal(await page.evaluate(() => glassStrokes.length),0);
+  await page.locator('#glass-clear').click();
+  assert.equal(await page.locator('#glass-sketch').isVisible(),false);
+  assert.equal(await page.locator('#glass-draw').evaluate(el => el === document.activeElement),true);
+});
+
 test('midnight garden is a remembered fifth view that leaves the room and its sound intact', async t => {
   const page = await openRoom(t,1440);
   await page.locator('#evening-toggle').click();

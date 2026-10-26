@@ -2137,6 +2137,126 @@ setRainLevel(rainLevel, { save: false });
 
 /* --- the room's window and desk lamp --- */
 const windowView = document.getElementById("window-view");
+
+/* A temporary fingertip sketch in the mist; no drawing is stored. */
+const glassCanvas = document.getElementById("glass-sketch");
+const glassContext = glassCanvas.getContext("2d");
+const glassNote = document.getElementById("glass-note");
+let glassMisted = false;
+let glassDrawing = false;
+let glassPointer = null;
+let glassStrokes = [];
+let glassFrame = null;
+let glassWidth = 1, glassHeight = 1;
+
+function paintGlass() {
+  glassFrame = null;
+  const ctx = glassContext;
+  if (!ctx || !glassMisted) return;
+  ctx.globalCompositeOperation = "source-over";
+  ctx.clearRect(0,0,glassWidth,glassHeight);
+  const mist = ctx.createLinearGradient(0,0,0,glassHeight);
+  mist.addColorStop(0,"#bdced97a");
+  mist.addColorStop(.48,"#adc5d659");
+  mist.addColorStop(1,"#d1dce58a");
+  ctx.fillStyle = mist;
+  ctx.fillRect(0,0,glassWidth,glassHeight);
+  // Fixed, low-contrast droplets make this feel like glass, not a drawing board.
+  ctx.fillStyle = "#e2ebee16";
+  for (let i = 0; i < 70; i++) {
+    const x = ((i * 137 + 31) % 997) / 997 * glassWidth;
+    const y = ((i * 83 + 17) % 991) / 991 * glassHeight;
+    ctx.beginPath(); ctx.ellipse(x,y,1 + i % 2,2 + i % 4,0,0,Math.PI * 2); ctx.fill();
+  }
+  ctx.globalCompositeOperation = "destination-out";
+  ctx.lineCap = ctx.lineJoin = "round";
+  ctx.strokeStyle = ctx.fillStyle = "#000";
+  for (const stroke of glassStrokes) {
+    ctx.lineWidth = stroke.width * Math.min(glassWidth,glassHeight);
+    ctx.beginPath();
+    stroke.points.forEach(([x,y],i) => i ? ctx.lineTo(x * glassWidth,y * glassHeight) : ctx.moveTo(x * glassWidth,y * glassHeight));
+    ctx.stroke();
+    if (stroke.points.length === 1) {
+      const [x,y] = stroke.points[0];
+      ctx.beginPath(); ctx.arc(x * glassWidth,y * glassHeight,ctx.lineWidth / 2,0,Math.PI * 2); ctx.fill();
+    }
+  }
+  ctx.globalCompositeOperation = "source-over";
+}
+function queueGlassPaint() {
+  if (glassFrame === null) glassFrame = requestAnimationFrame(paintGlass);
+}
+function sizeGlass() {
+  const box = glassCanvas.getBoundingClientRect();
+  if (!glassMisted || !box.width || !box.height || !glassContext) return;
+  glassWidth = box.width; glassHeight = box.height;
+  const ratio = Math.min(window.devicePixelRatio || 1,2);
+  glassCanvas.width = Math.round(glassWidth * ratio);
+  glassCanvas.height = Math.round(glassHeight * ratio);
+  glassContext.setTransform(ratio,0,0,ratio,0,0);
+  queueGlassPaint();
+}
+function paintGlassControls() {
+  glassCanvas.hidden = !glassMisted;
+  glassCanvas.classList.toggle("is-drawing",glassDrawing);
+  document.getElementById("glass-draw").setAttribute("aria-pressed",String(glassDrawing));
+  document.getElementById("glass-draw").textContent = glassDrawing ? "pause drawing" : glassMisted ? "draw some more" : "start drawing";
+  document.getElementById("glass-mist").disabled = !glassMisted;
+  document.getElementById("glass-clear").disabled = !glassMisted;
+}
+function endGlassStroke() {
+  const pointer = glassPointer;
+  glassPointer = null;
+  if (pointer !== null && glassCanvas.hasPointerCapture(pointer)) glassCanvas.releasePointerCapture(pointer);
+}
+function setGlassDrawing(on) {
+  endGlassStroke();
+  glassDrawing = Boolean(on) && Boolean(glassContext);
+  if (glassDrawing) glassMisted = true;
+  paintGlassControls(); sizeGlass();
+  glassNote.textContent = glassDrawing ? "Trace on the window with a mouse or finger. Pause drawing to use the glass normally." : "Your marks can rest here. Nothing is saved or sent.";
+}
+function glassPoint(event) {
+  const box = glassCanvas.getBoundingClientRect();
+  return [Math.min(1,Math.max(0,(event.clientX - box.left) / box.width)),Math.min(1,Math.max(0,(event.clientY - box.top) / box.height))];
+}
+glassCanvas.addEventListener("pointerdown",event => {
+  if (!glassDrawing || glassPointer !== null || event.button !== 0) return;
+  event.preventDefault(); glassPointer = event.pointerId;
+  glassCanvas.setPointerCapture(event.pointerId);
+  glassStrokes.push({ width: .038, points: [glassPoint(event)] });
+  if (glassStrokes.length > 48) glassStrokes.shift();
+  queueGlassPaint();
+});
+glassCanvas.addEventListener("pointermove",event => {
+  if (event.pointerId !== glassPointer) return;
+  const points = glassStrokes[glassStrokes.length - 1].points;
+  const point = glassPoint(event), last = points[points.length - 1];
+  if (Math.hypot((point[0] - last[0]) * glassWidth,(point[1] - last[1]) * glassHeight) < 2) return;
+  points.push(point);
+  if (points.length > 512) points.splice(1,points.length - 2,...points.slice(1,-1).filter((_,i) => i % 2 === 0));
+  queueGlassPaint();
+});
+["pointerup","pointercancel","lostpointercapture"].forEach(name => glassCanvas.addEventListener(name,event => { if (event.pointerId === glassPointer) endGlassStroke(); }));
+document.getElementById("glass-draw").addEventListener("click",() => {
+  setGlassDrawing(!glassDrawing);
+  if (glassDrawing) {
+    windowView.scrollIntoView({behavior:"instant",block:"center"});
+    windowView.focus({preventScroll:true});
+  }
+});
+document.getElementById("glass-mist").addEventListener("click",() => {
+  endGlassStroke(); glassStrokes = []; queueGlassPaint();
+  glassNote.textContent = "A fresh veil of mist. Nothing needs keeping.";
+});
+document.getElementById("glass-clear").addEventListener("click",() => {
+  endGlassStroke(); glassDrawing = glassMisted = false; glassStrokes = [];
+  if (glassFrame !== null) cancelAnimationFrame(glassFrame);
+  glassFrame = null; paintGlassControls();
+  document.getElementById("glass-draw").focus({preventScroll:true});
+  glassNote.textContent = "Clear glass. The marks are gone.";
+});
+new ResizeObserver(sizeGlass).observe(document.getElementById("window-outside"));
 const deskLamp = document.getElementById("desk-lamp");
 const lightState = document.getElementById("light-state");
 const lightButtons = document.querySelectorAll(".light-tones button");
