@@ -84,6 +84,10 @@ only purpose is filling a day.
 - [ ] local audio loops with soft fade in/out
 
 ## Evening rituals
+- [x] temporary fingertip drawings through mist on the window, with mouse, touch and pen input
+- [x] keyboard hearts and moons, two remembered brushes and quiet-window drawing / clearing
+- [x] fresh mist, pause, Escape, proportional resize and interrupted-gesture handling
+- [x] no saved drawings; audio, focus, journal and collected evenings stay independent
 - [x] paper lanterns with three glowing colours and optional temporary notes
 - [x] thirty-second flights, clear sky and keyboard release from the quiet window
 - [x] remembered lantern colours in saved evenings, without storing notes or flights

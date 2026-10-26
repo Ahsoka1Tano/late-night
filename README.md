@@ -78,6 +78,29 @@ the current visit and explain that the choice could not be remembered.
 
 ![A greenhouse, lily pond and fireflies beyond the late-night window](assets/midnight-garden.png)
 
+## Draw on the glass
+
+In **Draw on the glass**, press **start drawing**. A veil of mist settles over
+the window; trace through it with a mouse, finger or pen to reveal the view.
+Choose **fingertip** or **a little wider** for the next stroke. The brush width
+is remembered on this device; the drawing itself is never saved or sent.
+
+**Pause drawing** leaves the marks in place and lets you use the window normally.
+Escape also pauses drawing. **Mist over again** starts a fresh misted pane;
+**let it clear** removes the mist and every mark. Reloading also clears drawings.
+
+For a small ready-made trace, use **trace a heart** or **a small moon**. These
+buttons work with the keyboard and bring the window into view. The **♡** button
+beside the window traces a heart directly, including in **Quiet room**; it becomes
+**×** to clear the glass without leaving the window.
+
+Drawings keep their proportions when the window changes size. An interrupted
+touch or a hidden tab releases the gesture; painting only runs when the glass
+changes. Views, curtains, music, real rain, focus sessions and journal notes
+continue independently. Saved evenings keep room settings, never the marks.
+
+![A heart traced through mist on the midnight garden window](assets/window-sketches.png)
+
 ## Let it drift
 
 Release a glowing paper lantern outside the window. In **Let it drift**, choose
