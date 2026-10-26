@@ -257,6 +257,8 @@
     <div class="window-sill" aria-hidden="true"></div>
     <button class="curtain-pull" id="curtain-pull" type="button" aria-label="Draw the curtains further"><span aria-hidden="true"></span></button>
     <button class="window-lantern" id="window-lantern" type="button" aria-label="Release a paper lantern"><svg viewBox="0 0 32 40" aria-hidden="true"><path d="M8 6Q16 1 24 6l3 22q-11 7-22 0Z"/><path d="M8 7q8 5 16 0M5 27q11-5 22 0M13 7l-2 20m8-20 2 20M16 32v5"/></svg></button>
+    <button class="window-glass" id="window-glass" type="button" aria-label="Trace a heart on misted glass">♡</button>
+    <p class="visually-hidden" id="glass-window-status" role="status"></p>
     <p class="visually-hidden" id="lantern-window-status" role="status"></p>
     <div class="desk-glow" aria-hidden="true"></div>
     <button class="window-cat" id="window-cat" type="button" aria-label="Pet the sleeping cat">
@@ -449,6 +451,8 @@
         <section class="glass-room" id="glass-room" aria-labelledby="glass-title">
           <p class="desk-kicker">A MOMENT ON THE WINDOW</p><h3 id="glass-title">Draw on the glass.</h3>
           <p>A little mist. A fingertip. Nothing to keep.</p>
+          <div class="glass-brushes" aria-label="Width of the trace"><button type="button" data-glass-brush="fine" aria-pressed="false">fingertip</button><button type="button" data-glass-brush="wide" aria-pressed="true">a little wider</button></div>
+          <div class="glass-shapes"><button id="glass-heart" type="button">trace a heart ♡</button><button id="glass-moon" type="button">a small moon ☾</button></div>
           <div class="glass-actions"><button id="glass-draw" type="button" aria-pressed="false">start drawing</button><button id="glass-mist" type="button" disabled>mist over again</button><button id="glass-clear" type="button" disabled>let it clear</button></div>
           <p class="glass-note" id="glass-note" role="status">Draw with a mouse or finger. Marks stay only for this visit.</p>
         </section>

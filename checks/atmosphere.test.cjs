@@ -96,6 +96,34 @@ test('glass sketches wipe real transparent paths into temporary mist and can be 
   assert.equal(await page.locator('#glass-draw').evaluate(el => el === document.activeElement),true);
 });
 
+test('glass sketches offer keyboard hearts and moons with a remembered brush but no saved drawings', async t => {
+  const page = await openRoom(t);
+  await page.locator('button[data-glass-brush="fine"]').click();
+  await page.locator('#glass-heart').focus();
+  await page.keyboard.press('Enter');
+  await page.clock.runFor(50);
+  assert.equal(await page.evaluate(() => glassStrokes.length),1);
+  assert.equal(await page.evaluate(() => glassDrawing),false);
+  assert.equal(await page.evaluate(() => glassStrokes[0].width),.018);
+  assert.equal(await page.locator('#window-view').evaluate(el => el === document.activeElement),true);
+  assert.match(await page.locator('#glass-window-status').textContent(),/heart/);
+  await page.locator('#glass-moon').click();
+  assert.equal(await page.evaluate(() => glassStrokes.length),2);
+  await page.locator('#keep-evening').click();
+  await collectRoom(page,'A drawing for tonight');
+  assert.equal(await page.evaluate(() => Object.keys(localStorage).some(key => /sketch|stroke|drawing/i.test(key))),false);
+  assert.equal(await page.evaluate(() => JSON.stringify(localStorage).includes('"points"')),false);
+  await page.reload();
+  assert.equal(await page.locator('button[data-glass-brush="fine"]').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.evaluate(() => glassStrokes.length),0);
+  assert.equal(await page.locator('#glass-sketch').isVisible(),false);
+  await page.locator('#quiet-room').click();
+  await page.locator('#window-glass').focus();
+  await page.keyboard.press('Space');
+  assert.equal(await page.evaluate(() => glassStrokes.length),1);
+  assert.equal(await page.locator('#glass-sketch').isVisible(),true);
+});
+
 test('midnight garden is a remembered fifth view that leaves the room and its sound intact', async t => {
   const page = await openRoom(t,1440);
   await page.locator('#evening-toggle').click();

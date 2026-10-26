@@ -2148,6 +2148,23 @@ let glassPointer = null;
 let glassStrokes = [];
 let glassFrame = null;
 let glassWidth = 1, glassHeight = 1;
+const GLASS_BRUSHES = { fine: .018, wide: .038 };
+let glassBrush = "wide";
+try {
+  const saved = localStorage.getItem("lateNight.glassBrush");
+  if (Object.hasOwn(GLASS_BRUSHES,saved)) glassBrush = saved;
+} catch { /* The brush still works for this visit. */ }
+function setGlassBrush(brush, { save = true } = {}) {
+  if (!Object.hasOwn(GLASS_BRUSHES,brush)) return;
+  glassBrush = brush;
+  document.querySelectorAll("button[data-glass-brush]").forEach(button => button.setAttribute("aria-pressed",String(button.dataset.glassBrush === brush)));
+  if (save) {
+    try { localStorage.setItem("lateNight.glassBrush",brush); }
+    catch { glassNote.textContent = "The brush changed for this visit. Couldn't remember it on this device."; }
+  }
+}
+document.querySelectorAll("button[data-glass-brush]").forEach(button => button.addEventListener("click",() => setGlassBrush(button.dataset.glassBrush)));
+setGlassBrush(glassBrush, { save: false });
 
 function paintGlass() {
   glassFrame = null;
@@ -2224,7 +2241,7 @@ glassCanvas.addEventListener("pointerdown",event => {
   if (!glassDrawing || glassPointer !== null || event.button !== 0) return;
   event.preventDefault(); glassPointer = event.pointerId;
   glassCanvas.setPointerCapture(event.pointerId);
-  glassStrokes.push({ width: .038, points: [glassPoint(event)] });
+  glassStrokes.push({ width: GLASS_BRUSHES[glassBrush], points: [glassPoint(event)] });
   if (glassStrokes.length > 48) glassStrokes.shift();
   queueGlassPaint();
 });
@@ -2257,6 +2274,41 @@ document.getElementById("glass-clear").addEventListener("click",() => {
   glassNote.textContent = "Clear glass. The marks are gone.";
 });
 new ResizeObserver(sizeGlass).observe(document.getElementById("window-outside"));
+
+function traceGlassShape(shape) {
+  if (!glassContext) return;
+  endGlassStroke(); glassMisted = true;
+  paintGlassControls(); sizeGlass();
+  const points = [];
+  // Draw in physical proportions so a narrow phone still gets a round heart.
+  const size = Math.min(glassWidth * .36,glassHeight * .32);
+  const cx = glassWidth * .73, cy = glassHeight * .63;
+  for (let i = 0; i <= 96; i++) {
+    const t = i / 96 * Math.PI * 2;
+    let x, y;
+    if (shape === "heart") {
+      x = Math.pow(Math.sin(t),3);
+      y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)) / 16;
+    } else {
+      // Two smooth arcs meet at the tips of a crescent.
+      const a = i <= 48 ? -Math.PI / 2 + i / 48 * Math.PI : Math.PI / 2 - (i - 48) / 48 * Math.PI;
+      x = i <= 48 ? -Math.cos(a) * .85 : -Math.cos(a) * .5;
+      y = Math.sin(a);
+    }
+    points.push([(cx + x * size / 2) / glassWidth,(cy + y * size / 2) / glassHeight]);
+  }
+  glassStrokes.push({ width: GLASS_BRUSHES[glassBrush], points });
+  if (glassStrokes.length > 48) glassStrokes.shift();
+  queueGlassPaint();
+  glassNote.textContent = `A ${shape === "heart" ? "heart" : "little moon"} on the glass. Here for this visit, never saved or sent.`;
+  document.getElementById("glass-window-status").textContent = glassNote.textContent;
+}
+["heart","moon"].forEach(shape => document.getElementById(`glass-${shape}`).addEventListener("click",() => {
+  traceGlassShape(shape);
+  windowView.scrollIntoView({behavior:"instant",block:"center"});
+  windowView.focus({preventScroll:true});
+}));
+document.getElementById("window-glass").addEventListener("click",() => traceGlassShape("heart"));
 const deskLamp = document.getElementById("desk-lamp");
 const lightState = document.getElementById("light-state");
 const lightButtons = document.querySelectorAll(".light-tones button");

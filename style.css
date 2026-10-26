@@ -1983,6 +1983,11 @@ button[data-fabric="ink"] i { background: #657d9b; }
 .glass-room button:disabled { opacity: .35; cursor: default; }
 .glass-room button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .glass-room .glass-note { margin-top: 14px; min-height: 42px; font-size: 10px; }
+.glass-brushes,.glass-shapes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.glass-brushes button { border-radius: 999px; }
+.window-glass { position: absolute; right: 2%; top: 53%; z-index: 9; width: 44px; height: 44px; padding: 0; border: 1px solid #a4b9cf33; border-radius: 50%; color: #c2d2e0; background: #151e2baa; font: inherit; font-size: 24px; cursor: pointer; }
+.window-glass:hover { background: #35455b99; }
+.window-glass:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .sky-lanterns { position: absolute; inset: 0; overflow: hidden; z-index: 3; pointer-events: none; }
 .paper-lantern { --lantern-paper: #dca474; --lantern-core: #ffdf9a; --lantern-width: clamp(48px,7vw,78px); position: absolute; bottom: -140px; width: var(--lantern-width); margin-left: calc(var(--lantern-width) / -2); animation: lanternFlight 30s linear both; }
 .paper-lantern[data-tone="rose"] { --lantern-paper: #c486a6; --lantern-core: #ffceda; }
