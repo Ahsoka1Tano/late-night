@@ -2150,6 +2150,10 @@ let glassFrame = null;
 let glassWidth = 1, glassHeight = 1;
 const GLASS_BRUSHES = { fine: .018, wide: .038 };
 let glassBrush = "wide";
+function describeGlass(message) {
+  glassNote.textContent = message;
+  document.getElementById("glass-window-status").textContent = message;
+}
 try {
   const saved = localStorage.getItem("lateNight.glassBrush");
   if (Object.hasOwn(GLASS_BRUSHES,saved)) glassBrush = saved;
@@ -2160,7 +2164,7 @@ function setGlassBrush(brush, { save = true } = {}) {
   document.querySelectorAll("button[data-glass-brush]").forEach(button => button.setAttribute("aria-pressed",String(button.dataset.glassBrush === brush)));
   if (save) {
     try { localStorage.setItem("lateNight.glassBrush",brush); }
-    catch { glassNote.textContent = "The brush changed for this visit. Couldn't remember it on this device."; }
+    catch { describeGlass("The brush changed for this visit. Couldn't remember it on this device."); }
   }
 }
 document.querySelectorAll("button[data-glass-brush]").forEach(button => button.addEventListener("click",() => setGlassBrush(button.dataset.glassBrush)));
@@ -2201,6 +2205,7 @@ function paintGlass() {
   ctx.globalCompositeOperation = "source-over";
 }
 function queueGlassPaint() {
+  if (!glassMisted || document.hidden) return;
   if (glassFrame === null) glassFrame = requestAnimationFrame(paintGlass);
 }
 function sizeGlass() {
@@ -2220,6 +2225,10 @@ function paintGlassControls() {
   document.getElementById("glass-draw").textContent = glassDrawing ? "pause drawing" : glassMisted ? "draw some more" : "start drawing";
   document.getElementById("glass-mist").disabled = !glassMisted;
   document.getElementById("glass-clear").disabled = !glassMisted;
+  const quick = document.getElementById("window-glass");
+  quick.textContent = glassMisted ? "×" : "♡";
+  quick.setAttribute("aria-pressed",String(glassMisted));
+  quick.setAttribute("aria-label",glassMisted ? "Clear misted glass" : "Trace a heart on misted glass");
 }
 function endGlassStroke() {
   const pointer = glassPointer;
@@ -2231,7 +2240,7 @@ function setGlassDrawing(on) {
   glassDrawing = Boolean(on) && Boolean(glassContext);
   if (glassDrawing) glassMisted = true;
   paintGlassControls(); sizeGlass();
-  glassNote.textContent = glassDrawing ? "Trace on the window with a mouse or finger. Pause drawing to use the glass normally." : "Your marks can rest here. Nothing is saved or sent.";
+  describeGlass(glassDrawing ? "Trace on the window with a mouse or finger. Pause drawing or press Escape to use the glass normally." : "Your marks can rest here. Nothing is saved or sent.");
 }
 function glassPoint(event) {
   const box = glassCanvas.getBoundingClientRect();
@@ -2264,16 +2273,31 @@ document.getElementById("glass-draw").addEventListener("click",() => {
 });
 document.getElementById("glass-mist").addEventListener("click",() => {
   endGlassStroke(); glassStrokes = []; queueGlassPaint();
-  glassNote.textContent = "A fresh veil of mist. Nothing needs keeping.";
+  describeGlass("A fresh veil of mist. Nothing needs keeping.");
 });
-document.getElementById("glass-clear").addEventListener("click",() => {
+function clearGlass() {
   endGlassStroke(); glassDrawing = glassMisted = false; glassStrokes = [];
   if (glassFrame !== null) cancelAnimationFrame(glassFrame);
+  glassCanvas.width = glassCanvas.width;
   glassFrame = null; paintGlassControls();
+  describeGlass("Clear glass. The marks are gone.");
+}
+document.getElementById("glass-clear").addEventListener("click",() => {
+  clearGlass();
   document.getElementById("glass-draw").focus({preventScroll:true});
-  glassNote.textContent = "Clear glass. The marks are gone.";
 });
 new ResizeObserver(sizeGlass).observe(document.getElementById("window-outside"));
+document.addEventListener("visibilitychange",() => {
+  if (document.hidden) {
+    endGlassStroke();
+    if (glassFrame !== null) cancelAnimationFrame(glassFrame);
+    glassFrame = null;
+  } else if (glassMisted) sizeGlass();
+});
+document.addEventListener("keydown",event => {
+  if (event.key === "Escape" && glassDrawing) setGlassDrawing(false);
+});
+window.addEventListener("blur",endGlassStroke);
 
 function traceGlassShape(shape) {
   if (!glassContext) return;
@@ -2300,15 +2324,14 @@ function traceGlassShape(shape) {
   glassStrokes.push({ width: GLASS_BRUSHES[glassBrush], points });
   if (glassStrokes.length > 48) glassStrokes.shift();
   queueGlassPaint();
-  glassNote.textContent = `A ${shape === "heart" ? "heart" : "little moon"} on the glass. Here for this visit, never saved or sent.`;
-  document.getElementById("glass-window-status").textContent = glassNote.textContent;
+  describeGlass(`A ${shape === "heart" ? "heart" : "little moon"} on the glass. Here for this visit, never saved or sent.`);
 }
 ["heart","moon"].forEach(shape => document.getElementById(`glass-${shape}`).addEventListener("click",() => {
   traceGlassShape(shape);
   windowView.scrollIntoView({behavior:"instant",block:"center"});
   windowView.focus({preventScroll:true});
 }));
-document.getElementById("window-glass").addEventListener("click",() => traceGlassShape("heart"));
+document.getElementById("window-glass").addEventListener("click",() => glassMisted ? clearGlass() : traceGlassShape("heart"));
 const deskLamp = document.getElementById("desk-lamp");
 const lightState = document.getElementById("light-state");
 const lightButtons = document.querySelectorAll(".light-tones button");

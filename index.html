@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=d3760ccdf2c5" />
+  <link rel="stylesheet" href="style.css?v=347160d561ca" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -257,7 +257,7 @@
     <div class="window-sill" aria-hidden="true"></div>
     <button class="curtain-pull" id="curtain-pull" type="button" aria-label="Draw the curtains further"><span aria-hidden="true"></span></button>
     <button class="window-lantern" id="window-lantern" type="button" aria-label="Release a paper lantern"><svg viewBox="0 0 32 40" aria-hidden="true"><path d="M8 6Q16 1 24 6l3 22q-11 7-22 0Z"/><path d="M8 7q8 5 16 0M5 27q11-5 22 0M13 7l-2 20m8-20 2 20M16 32v5"/></svg></button>
-    <button class="window-glass" id="window-glass" type="button" aria-label="Trace a heart on misted glass">♡</button>
+    <button class="window-glass" id="window-glass" type="button" aria-label="Trace a heart on misted glass" aria-pressed="false" aria-controls="glass-sketch">♡</button>
     <p class="visually-hidden" id="glass-window-status" role="status"></p>
     <p class="visually-hidden" id="lantern-window-status" role="status"></p>
     <div class="desk-glow" aria-hidden="true"></div>
@@ -454,7 +454,7 @@
           <div class="glass-brushes" aria-label="Width of the trace"><button type="button" data-glass-brush="fine" aria-pressed="false">fingertip</button><button type="button" data-glass-brush="wide" aria-pressed="true">a little wider</button></div>
           <div class="glass-shapes"><button id="glass-heart" type="button">trace a heart ♡</button><button id="glass-moon" type="button">a small moon ☾</button></div>
           <div class="glass-actions"><button id="glass-draw" type="button" aria-pressed="false">start drawing</button><button id="glass-mist" type="button" disabled>mist over again</button><button id="glass-clear" type="button" disabled>let it clear</button></div>
-          <p class="glass-note" id="glass-note" role="status">Draw with a mouse or finger. Marks stay only for this visit.</p>
+          <p class="glass-note" id="glass-note">Draw with a mouse or finger. Marks stay only for this visit.</p>
         </section>
         <section class="lantern-room" id="lantern-room" aria-labelledby="lantern-title">
           <p class="desk-kicker">SOMETHING SMALL, INTO THE NIGHT</p><h3 id="lantern-title">Let it drift.</h3>
@@ -572,6 +572,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=4eabc98c8c0d"></script>
+  <script src="app.js?v=675a3cd1a7dd"></script>
 </body>
 </html>

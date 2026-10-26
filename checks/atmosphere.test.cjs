@@ -124,6 +124,63 @@ test('glass sketches offer keyboard hearts and moons with a remembered brush but
   assert.equal(await page.locator('#glass-sketch').isVisible(),true);
 });
 
+test('glass sketches keep normalized traces on resize and stop captured gestures on hide or Escape', async t => {
+  const page = await openRoom(t);
+  await page.locator('#glass-heart').click();
+  await page.clock.runFor(50);
+  const points = await page.evaluate(() => glassStrokes[0].points);
+  await page.setViewportSize({width:768,height:900});
+  await page.clock.runFor(100);
+  assert.deepEqual(await page.evaluate(() => glassStrokes[0].points),points);
+  const size = await page.locator('#glass-sketch').boundingBox();
+  assert.equal(await page.locator('#glass-sketch').evaluate(el => el.width),Math.round(size.width));
+  await page.locator('#glass-draw').click();
+  const box = await page.locator('#glass-sketch').boundingBox();
+  await page.mouse.move(box.x + box.width * .8,box.y + box.height * .8);
+  await page.mouse.down();
+  assert.notEqual(await page.evaluate(() => glassPointer),null);
+  await page.evaluate(() => {
+    Object.defineProperty(document,'hidden',{configurable:true,value:true});
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  assert.equal(await page.evaluate(() => glassPointer),null);
+  assert.equal(await page.evaluate(() => glassFrame),null);
+  await page.mouse.up();
+  await page.evaluate(() => {
+    Object.defineProperty(document,'hidden',{configurable:true,value:false});
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await page.clock.runFor(50);
+  await page.keyboard.press('Escape');
+  assert.equal(await page.evaluate(() => glassDrawing),false);
+  assert.equal(await page.locator('#glass-sketch').evaluate(el => getComputedStyle(el).pointerEvents),'none');
+  assert.equal(await page.locator('#window-glass').getAttribute('aria-label'),'Clear misted glass');
+  await page.locator('#window-glass').click();
+  assert.equal(await page.evaluate(() => glassStrokes.length),0);
+  assert.equal(await page.locator('#glass-sketch').isVisible(),false);
+  assert.equal(await page.locator('#glass-sketch').evaluate(el => el.getContext('2d').getImageData(1,1,1,1).data[3]),0);
+});
+
+test('glass sketches accept a real touch gesture without scrolling the room', async t => {
+  const page = await openRoom(t,320);
+  await page.locator('#glass-draw').click();
+  await page.clock.runFor(50);
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:true});
+  const box = await page.locator('#glass-sketch').boundingBox();
+  const scroll = await page.evaluate(() => scrollY);
+  const x = Math.round(box.x + box.width * .8), y = Math.round(box.y + box.height * .7);
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y,id:1}]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x-25,y:y+35,id:1}]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await page.clock.runFor(50);
+  assert.equal(await page.evaluate(() => glassStrokes.length),1);
+  assert.ok(await page.evaluate(() => glassStrokes[0].points.length) > 1);
+  assert.equal(await page.evaluate(() => glassPointer),null);
+  assert.equal(await page.evaluate(() => scrollY),scroll);
+  await cdp.detach();
+});
+
 test('midnight garden is a remembered fifth view that leaves the room and its sound intact', async t => {
   const page = await openRoom(t,1440);
   await page.locator('#evening-toggle').click();
