@@ -2193,13 +2193,16 @@ function paintGlass() {
   ctx.lineCap = ctx.lineJoin = "round";
   ctx.strokeStyle = ctx.fillStyle = "#000";
   for (const stroke of glassStrokes) {
-    ctx.lineWidth = stroke.width * Math.min(glassWidth,glassHeight);
+    const frameWidth = Math.min(glassWidth,glassHeight * stroke.aspect);
+    const frameHeight = frameWidth / stroke.aspect;
+    const left = (glassWidth - frameWidth) / 2, top = (glassHeight - frameHeight) / 2;
+    ctx.lineWidth = stroke.width * Math.min(frameWidth,frameHeight);
     ctx.beginPath();
-    stroke.points.forEach(([x,y],i) => i ? ctx.lineTo(x * glassWidth,y * glassHeight) : ctx.moveTo(x * glassWidth,y * glassHeight));
+    stroke.points.forEach(([x,y],i) => i ? ctx.lineTo(left + x * frameWidth,top + y * frameHeight) : ctx.moveTo(left + x * frameWidth,top + y * frameHeight));
     ctx.stroke();
     if (stroke.points.length === 1) {
       const [x,y] = stroke.points[0];
-      ctx.beginPath(); ctx.arc(x * glassWidth,y * glassHeight,ctx.lineWidth / 2,0,Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(left + x * frameWidth,top + y * frameHeight,ctx.lineWidth / 2,0,Math.PI * 2); ctx.fill();
     }
   }
   ctx.globalCompositeOperation = "source-over";
@@ -2211,6 +2214,7 @@ function queueGlassPaint() {
 function sizeGlass() {
   const box = glassCanvas.getBoundingClientRect();
   if (!glassMisted || !box.width || !box.height || !glassContext) return;
+  if (Math.abs(box.width - glassWidth) > .5 || Math.abs(box.height - glassHeight) > .5) endGlassStroke();
   glassWidth = box.width; glassHeight = box.height;
   const ratio = Math.min(window.devicePixelRatio || 1,2);
   glassCanvas.width = Math.round(glassWidth * ratio);
@@ -2250,7 +2254,7 @@ glassCanvas.addEventListener("pointerdown",event => {
   if (!glassDrawing || glassPointer !== null || event.button !== 0) return;
   event.preventDefault(); glassPointer = event.pointerId;
   glassCanvas.setPointerCapture(event.pointerId);
-  glassStrokes.push({ width: GLASS_BRUSHES[glassBrush], points: [glassPoint(event)] });
+  glassStrokes.push({ width: GLASS_BRUSHES[glassBrush], aspect: glassWidth / glassHeight, points: [glassPoint(event)] });
   if (glassStrokes.length > 48) glassStrokes.shift();
   queueGlassPaint();
 });
@@ -2321,7 +2325,7 @@ function traceGlassShape(shape) {
     }
     points.push([(cx + x * size / 2) / glassWidth,(cy + y * size / 2) / glassHeight]);
   }
-  glassStrokes.push({ width: GLASS_BRUSHES[glassBrush], points });
+  glassStrokes.push({ width: GLASS_BRUSHES[glassBrush], aspect: glassWidth / glassHeight, points });
   if (glassStrokes.length > 48) glassStrokes.shift();
   queueGlassPaint();
   describeGlass(`A ${shape === "heart" ? "heart" : "little moon"} on the glass. Here for this visit, never saved or sent.`);

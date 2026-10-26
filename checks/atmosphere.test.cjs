@@ -181,6 +181,77 @@ test('glass sketches accept a real touch gesture without scrolling the room', as
   await cdp.detach();
 });
 
+test('glass sketches fit phones and every view without replacing music, radio or focus sessions', async t => {
+  for (const width of [320,768,1440]) {
+    const page = await openRoom(t,width);
+    await page.locator('#evening-toggle').click();
+    await page.clock.runFor(2000);
+    await page.locator('#journal-note').fill('Just a heart on the window.');
+    await page.evaluate(() => { window.glassTape = tapeAudio; window.glassRain = ambienceTrack; startFocus(); window.glassFocus = focusEndsAt; });
+    await page.locator('#glass-heart').click();
+    await page.clock.runFor(50);
+    assert.equal(await page.evaluate(() => tapeAudio === window.glassTape && ambienceTrack === window.glassRain && focusEndsAt === window.glassFocus && !tapeAudio.paused && !ambienceTrack.paused),true);
+    assert.equal(await page.locator('#journal-note').inputValue(),'Just a heart on the window.');
+    for (const view of ['city','mountains','coast','cafe','garden']) {
+      await page.locator(`.view-switch button[data-view="${view}"]`).click();
+      assert.equal(await page.evaluate(() => glassStrokes.length),1);
+      assert.equal(await page.locator('#glass-sketch').isVisible(),true);
+    }
+    for (const button of await page.locator('#glass-room button').all()) {
+      const box = await button.boundingBox();
+      assert.ok(box.height >= 44 && box.x >= 0 && box.x + box.width <= width);
+    }
+    const quick = await page.locator('#window-glass').boundingBox();
+    const lantern = await page.locator('#window-lantern').boundingBox();
+    assert.ok(quick.width >= 44 && quick.height >= 44 && quick.y >= lantern.y + lantern.height);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#glass-room').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`glass-controls-${width}.png`)});
+    await page.locator('#quiet-room').click();
+    await page.clock.runFor(100);
+    const ratio = await page.locator('#glass-sketch').evaluate(el => {
+      const {data,width,height} = el.getContext('2d').getImageData(0,0,el.width,el.height);
+      let left = width, right = 0, top = height, bottom = 0;
+      for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) if (data[(y * width + x) * 4 + 3] < 5) {
+        left = Math.min(left,x); right = Math.max(right,x); top = Math.min(top,y); bottom = Math.max(bottom,y);
+      }
+      return (right - left) / (bottom - top);
+    });
+    assert.ok(ratio > .8 && ratio < 1.3,`a heart keeps its proportions in quiet mode: ${ratio}`);
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`glass-window-${width}.png`)});
+    await page.locator('#window-glass').click();
+    assert.equal(await page.locator('#glass-sketch').isVisible(),false);
+    await page.keyboard.press('Escape');
+    await page.locator('[data-station="radio"]').click();
+    const source = await page.locator('#radio-frame iframe').getAttribute('src');
+    await page.locator('#glass-moon').click();
+    await page.locator('#glass-clear').click();
+    assert.equal(await page.locator('#radio-frame iframe').getAttribute('src'),source);
+    await page.close();
+  }
+});
+
+test('glass sketches preserve invalid brush preferences and stay usable after storage failures', async t => {
+  const page = await openRoom(t);
+  await page.evaluate(() => localStorage.setItem('lateNight.glassBrush','toString'));
+  await page.reload();
+  assert.equal(await page.locator('button[data-glass-brush="wide"]').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.glassBrush')),'toString');
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function(key,value) {
+      if (key === 'lateNight.glassBrush') throw new DOMException('full','QuotaExceededError');
+      return original.call(this,key,value);
+    };
+  });
+  await page.locator('button[data-glass-brush="fine"]').click();
+  assert.match(await page.locator('#glass-window-status').textContent(),/Couldn't remember/);
+  await page.locator('#glass-heart').click();
+  assert.equal(await page.evaluate(() => glassStrokes[0].width),.018);
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.glassBrush')),'toString');
+  await page.locator('#glass-clear').click();
+  assert.equal(await page.evaluate(() => glassStrokes.length),0);
+});
+
 test('midnight garden is a remembered fifth view that leaves the room and its sound intact', async t => {
   const page = await openRoom(t,1440);
   await page.locator('#evening-toggle').click();
