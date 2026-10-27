@@ -125,6 +125,56 @@ test('tape queue reorders with keyboard controls and supports removal, undo and 
   assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
 });
 
+test('tape queue restores quietly, enforces eight unique recordings and preserves unreadable saved data', async t => {
+  const page = await openRoom(t);
+  await page.waitForFunction(() => TAPES.length > 8);
+  const sources = await page.evaluate(() => {
+    TAPES.slice(0,10).forEach(tape => queueTape(tape.src)); queueTape(TAPES[0].src);
+    return TAPES.slice(0,8).map(tape => tape.src);
+  });
+  assert.deepEqual(await page.evaluate(() => tapeQueue),sources);
+  await page.reload();
+  await page.waitForFunction(() => TAPES.length > 8);
+  assert.deepEqual(await page.evaluate(() => tapeQueue),sources);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  await page.locator('#queue-next').click();
+  assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('lateNight.tapeQueue')).tracks),sources.slice(1));
+  await page.evaluate(() => localStorage.setItem('lateNight.tapeQueue','{broken'));
+  await page.reload();
+  assert.match(await page.locator('#queue-note').textContent(),/Couldn't read/);
+  await page.locator('#queue-add').click();
+  assert.equal(await page.evaluate(() => tapeQueue.length),1);
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.tapeQueue')),'{broken');
+});
+
+test('tape queue handles failed writes and unavailable catalogue entries without fetching arbitrary sources', async t => {
+  const page = await openRoom(t);
+  await page.waitForFunction(() => TAPES.length > 8);
+  await page.locator('#queue-add').click();
+  const previous = await page.evaluate(() => localStorage.getItem('lateNight.tapeQueue'));
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function(key,value) {
+      if (key === 'lateNight.tapeQueue') throw new DOMException('full','QuotaExceededError');
+      return original.call(this,key,value);
+    };
+    queueTape(TAPES.find(tape => tape.src !== tapeQueue[0]).src);
+  });
+  assert.match(await page.locator('#queue-note').textContent(),/Couldn't save/);
+  assert.equal(await page.evaluate(() => tapeQueue.length),2);
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.tapeQueue')),previous);
+  await page.reload();
+  const available = await page.evaluate(() => TAPES[0].src);
+  await page.evaluate(src => localStorage.setItem('lateNight.tapeQueue',JSON.stringify({version:1,tracks:['https://example.invalid/untrusted.mp3',src]})),available);
+  await page.reload();
+  await page.waitForFunction(() => TAPES.length > 8);
+  assert.match(await page.locator('#queue-list li').first().textContent(),/not in the current shelf/);
+  await page.locator('#queue-next').click();
+  assert.equal(await page.evaluate(() => TAPES[tapeIndex].src),available);
+  assert.deepEqual(await page.evaluate(() => tapeQueue),['https://example.invalid/untrusted.mp3']);
+  assert.equal(await page.evaluate(() => window.media.some(a => a.src.includes('example.invalid'))),false);
+});
+
 test('glass sketches wipe real transparent paths into temporary mist and can be paused or cleared', async t => {
   const page = await openRoom(t);
   assert.equal(await page.locator('#glass-sketch').isVisible(),false);

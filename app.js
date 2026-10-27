@@ -1478,9 +1478,32 @@ const keptTapes = new Set(readKeptTapes());
 let tapeCollectionOpen = false;
 let tapeSearch = "";
 let rackVisible = 12;
-let tapeQueue = [];
+let queueStorageBroken = false;
+function readTapeQueue() {
+  try {
+    const stored = localStorage.getItem("lateNight.tapeQueue");
+    if (stored === null) return [];
+    const value = JSON.parse(stored);
+    if (!value || value.version !== 1 || !Array.isArray(value.tracks) || value.tracks.length > 8
+        || value.tracks.some(src => typeof src !== "string" || !src.length || src.length > 2048)
+        || new Set(value.tracks).size !== value.tracks.length) throw new Error("Unreadable queue");
+    return [...value.tracks];
+  } catch { queueStorageBroken = true; return []; }
+}
+let tapeQueue = readTapeQueue();
 let removedQueueTape = null;
 const queueNote = document.getElementById("queue-note");
+if (queueStorageBroken) queueNote.textContent = "Couldn't read the saved queue. Changes stay for this visit; previous data is left in place. Reload to retry.";
+function rememberTapeQueue(message) {
+  if (queueStorageBroken) {
+    queueNote.textContent = "Queue changed for this visit. Couldn't read the saved queue; previous data is left in place.";
+    return;
+  }
+  try {
+    localStorage.setItem("lateNight.tapeQueue",JSON.stringify({version:1,tracks:tapeQueue}));
+    queueNote.textContent = message;
+  } catch { queueNote.textContent = "Queue changed for this visit. Couldn't save on this device; the previously saved order stays in place."; }
+}
 function focusQueueTape(src,action = "remove") {
   const row = [...document.getElementById("queue-list").children].find(item => item.dataset.queueSrc === src);
   (row?.querySelector(`[data-queue-action="${action}"]:not(:disabled)`) || row?.querySelector('button:not(:disabled)') || document.getElementById("queue-add")).focus({preventScroll:true});
@@ -1522,7 +1545,7 @@ function paintTapeQueue() {
           [tapeQueue[index],tapeQueue[next]] = [tapeQueue[next],tapeQueue[index]];
         }
         paintTapeQueue(); paintTapeCollection();
-        queueNote.textContent = action === "remove" ? "Removed from up next. The playing tape stays on." : "Order changed. Playback stays where it is.";
+        rememberTapeQueue(action === "remove" ? "Removed from up next. The playing tape stays on." : "Order changed. Playback stays where it is.");
         focusQueueTape(action === "remove" ? tapeQueue[Math.min(index,tapeQueue.length-1)] : src,action);
       }); tools.append(button);
     });
@@ -1533,7 +1556,7 @@ function queueTape(src) {
   if (!TAPES.some(tape => tape.src === src) || tapeQueue.includes(src) || tapeQueue.length >= 8) return;
   tapeQueue.push(src);
   paintTapeQueue(); paintTapeCollection();
-  queueNote.textContent = "Added to the evening. The current recording keeps its place.";
+  rememberTapeQueue("Added to the evening and kept on this device. The current recording keeps its place.");
 }
 document.getElementById("queue-add").addEventListener("click",() => queueTape(TAPES[tapeIndex].src));
 function takeQueuedTape() {
@@ -1542,14 +1565,14 @@ function takeQueuedTape() {
   if (position < 0) return false;
   const [src] = tapeQueue.splice(position,1);
   chooseTape(src);
-  queueNote.textContent = `Next up: ${TAPES[tapeIndex].title}. ${tapeQueue.length ? `${tapeQueue.length} still lined up.` : "The regular shelf follows after this tape."}`;
+  rememberTapeQueue(`Next up: ${TAPES[tapeIndex].title}. ${tapeQueue.length ? `${tapeQueue.length} still lined up.` : "The regular shelf follows after this tape."}`);
   return true;
 }
 document.getElementById("queue-next").addEventListener("click",takeQueuedTape);
 document.getElementById("queue-clear").addEventListener("click",() => {
   tapeQueue = []; removedQueueTape = null;
   paintTapeQueue(); paintTapeCollection();
-  queueNote.textContent = "Queue cleared. The current recording keeps playing.";
+  rememberTapeQueue("Queue cleared. The current recording keeps playing.");
   document.getElementById("queue-add").focus({preventScroll:true});
 });
 document.getElementById("queue-undo").addEventListener("click",() => {
@@ -1560,7 +1583,7 @@ document.getElementById("queue-undo").addEventListener("click",() => {
   const {src,index} = removedQueueTape;
   tapeQueue.splice(Math.min(index,tapeQueue.length),0,src); removedQueueTape = null;
   paintTapeQueue(); paintTapeCollection();
-  queueNote.textContent = "That recording is back in up next."; focusQueueTape(src);
+  rememberTapeQueue("That recording is back in up next."); focusQueueTape(src);
 });
 function paintTapeCollection() {
   const collection = document.getElementById("tape-collection");
