@@ -175,6 +175,52 @@ test('tape queue handles failed writes and unavailable catalogue entries without
   assert.equal(await page.evaluate(() => window.media.some(a => a.src.includes('example.invalid'))),false);
 });
 
+test('tape queue fits phones and desktop with reachable cassette actions and long titles', async t => {
+  for (const width of [320,768,1440]) {
+    const page = await openRoom(t,width);
+    await page.waitForFunction(() => TAPES.length > 8);
+    const originalTitle = await page.evaluate(() => TAPES[0].title);
+    await page.evaluate(() => { TAPES[0].title = 'A small recording for a very long rainy evening — ' + 'quiet '.repeat(10); TAPES.slice(0,3).forEach(tape => queueTape(tape.src)); });
+    for (const button of await page.locator('#tape-queue button:visible').all()) {
+      const box = await button.boundingBox();
+      assert.ok(box.height >= 44 && box.x >= 0 && box.x + box.width <= width);
+    }
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
+    for (const label of await page.locator('.queue-label').all()) assert.ok((await label.boundingBox()).width >= 85);
+    await page.evaluate(title => { TAPES[0].title = title; paintTapeQueue(); },originalTitle);
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#tape-queue').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`tape-queue-${width}.png`)});
+    await page.locator('#browse-tapes').click();
+    const add = page.locator('.cassette-queue').nth(4);
+    await add.click();
+    const parent = page.locator('.cassette-item').nth(4);
+    assert.equal(await parent.evaluate(el => el.contains(document.activeElement)),true);
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#cassette-grid').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`queued-shelf-${width}.png`)});
+    await page.close();
+  }
+});
+
+test('tape queue stays untouched by radio, stopped playback and late recording failures', async t => {
+  const page = await openRoom(t);
+  await page.waitForFunction(() => TAPES.length > 8);
+  await page.evaluate(() => { TAPES.slice(0,3).forEach(tape => queueTape(tape.src)); window.originalQueue = [...tapeQueue]; });
+  await page.locator('.station[data-station="radio"]').click();
+  const source = await page.locator('#radio-frame iframe').getAttribute('src');
+  await page.evaluate(() => { nextTape(); takeQueuedTape(); });
+  assert.deepEqual(await page.evaluate(() => tapeQueue),await page.evaluate(() => originalQueue));
+  assert.equal(await page.locator('#radio-frame iframe').getAttribute('src'),source);
+  await page.locator('.station[data-station="tape"]').click();
+  await page.evaluate(() => { window.failAudio = true; });
+  await page.locator('#player-play').click();
+  await page.clock.runFor(100);
+  assert.equal(await page.locator('#player-play').textContent(),'retry');
+  assert.deepEqual(await page.evaluate(() => tapeQueue),await page.evaluate(() => originalQueue));
+  await page.evaluate(() => tapeAudio.dispatchEvent(new Event('ended')));
+  assert.deepEqual(await page.evaluate(() => tapeQueue),await page.evaluate(() => originalQueue));
+  await page.locator('#player-next').click();
+  assert.equal(await page.evaluate(() => tapeQueue.length),2);
+  assert.equal(await page.evaluate(() => tapeRunning),false);
+});
+
 test('glass sketches wipe real transparent paths into temporary mist and can be paused or cleared', async t => {
   const page = await openRoom(t);
   assert.equal(await page.locator('#glass-sketch').isVisible(),false);
