@@ -140,6 +140,36 @@ light draws ink curtains, and the café has plum fabric around its warm street.
 
 ![Curtains around the late-night café](assets/curtained-window.png)
 
+## A few records for later
+
+**Up next** sits below the tape player. Add the current recording with **＋ this
+tape**, or open the cassette shelf and use **＋ up next** under any recording.
+Up to eight different tapes can wait in order. Adding a tape does not start or
+replace the current recording.
+
+Use **↑** and **↓** to change the order. **×** removes one upcoming tape;
+**undo removal** brings back the last removed item during this visit, if there
+is still room. **Clear queue** removes the upcoming list without stopping music.
+All actions work with the keyboard and have names that include the recording.
+
+**Cue next** and the player's **next** button choose the first available queued
+recording. Playing stays playing; paused stays paused. When a playing tape ends,
+the next queued recording follows automatically. Real rain keeps playing through
+the change. When the queue is empty, Next follows the regular shelf and its saved
+tapes filter. Radio channels keep their own player and do not consume the queue.
+
+The upcoming order is remembered on this device, separately from saved room setups.
+Reloading restores the list without starting a tape. A recording missing from the
+current catalogue stays labelled in the list and is skipped for playback; you can
+remove it or wait for the catalogue to return. Queue entries only play recordings
+already in the curated shelf.
+
+If saving fails, edits work for this visit and the previously saved order remains.
+Unreadable stored data is left untouched; reload retries the read. A failed audio
+load offers the existing retry controls rather than silently consuming more tapes.
+
+![Three illustrated cassettes waiting in Up next](assets/up-next.png)
+
 ## Somewhere else: a shelf of sound
 
 In the room controls, **Somewhere else** has four illustrated recording cards:

@@ -221,6 +221,23 @@ test('tape queue stays untouched by radio, stopped playback and late recording f
   assert.equal(await page.evaluate(() => tapeRunning),false);
 });
 
+test('tape queue retains a built-in recording added before the full catalogue arrives', async t => {
+  const page = await openRoom(t);
+  let releaseCatalogue;
+  const waiting = new Promise(resolve => { releaseCatalogue = resolve; });
+  await page.route('**/tapes.json',async route => { await waiting; await route.continue(); });
+  await page.evaluate(() => { localStorage.removeItem('lateNight.tape'); localStorage.removeItem('lateNight.tapeQueue'); });
+  await page.reload();
+  const source = await page.evaluate(() => TAPES[tapeIndex].src);
+  await page.locator('#queue-add').click();
+  releaseCatalogue();
+  await page.waitForFunction(() => TAPES.length > 8);
+  assert.equal(await page.evaluate(src => TAPES.some(tape => tape.src === src),source),true);
+  assert.deepEqual(await page.evaluate(() => tapeQueue),[source]);
+  assert.doesNotMatch(await page.locator('#queue-list').textContent(),/not in the current shelf/);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+});
+
 test('glass sketches wipe real transparent paths into temporary mist and can be paused or cleared', async t => {
   const page = await openRoom(t);
   assert.equal(await page.locator('#glass-sketch').isVisible(),false);

@@ -1440,7 +1440,7 @@ async function loadTapeRack() {
     const current = TAPES[tapeIndex];
     const rackTapes = [...shelf, ...extra];
     if (!rackTapes.length) return;
-    if ((tapeRunning || tapeAudio || rememberedTape() === current.src)
+    if ((tapeRunning || tapeAudio || rememberedTape() === current.src || tapeQueue.includes(current.src))
         && !rackTapes.some(tape => tape.src === current.src)) rackTapes.unshift(current);
     TAPES = rackTapes;
     const wanted = tapeRunning ? current.src : rememberedTape();

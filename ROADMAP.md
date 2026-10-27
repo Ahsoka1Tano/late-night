@@ -42,6 +42,10 @@ only purpose is filling a day.
 - [x] real rain recordings, one per intensity, with an honest retry when unavailable
 
 ## Music mood
+- [x] Up next: eight ordered recordings, added quietly from the current tape or cassette shelf
+- [x] queued transitions at tape endings and Next, preserving rain and paused playback
+- [x] keyboard reordering, removal with undo and clearing without stopping the current tape
+- [x] remembered queue, unavailable catalogue entries, safe storage failures and responsive illustrated rows
 - [x] choose a recording by name and remember the selected tape between visits
 - [x] save favourite tapes locally and let Next cycle through the saved collection
 - [x] changing recordings preserves rain; late playback failures cannot replace a new tape
