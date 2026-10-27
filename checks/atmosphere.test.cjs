@@ -107,6 +107,24 @@ test('tape queue advances at the end while rain continues and stale ended events
   assert.equal(await page.evaluate(() => TAPES[tapeIndex].src),next);
 });
 
+test('tape queue reorders with keyboard controls and supports removal, undo and clearing without playback', async t => {
+  const page = await openRoom(t);
+  await page.waitForFunction(() => TAPES.length > 8);
+  const sources = await page.evaluate(() => { TAPES.slice(0,3).forEach(tape => queueTape(tape.src)); return TAPES.slice(0,3).map(tape => tape.src); });
+  await page.locator('#queue-list li').nth(1).locator('[data-queue-action="up"]').focus();
+  await page.keyboard.press('Enter');
+  assert.deepEqual(await page.evaluate(() => tapeQueue),[sources[1],sources[0],sources[2]]);
+  assert.equal(await page.locator('#queue-list li').first().evaluate(el => el.contains(document.activeElement)),true);
+  await page.locator('#queue-list li').first().locator('[data-queue-action="remove"]').click();
+  assert.deepEqual(await page.evaluate(() => tapeQueue),[sources[0],sources[2]]);
+  await page.locator('#queue-undo').click();
+  assert.deepEqual(await page.evaluate(() => tapeQueue),[sources[1],sources[0],sources[2]]);
+  await page.locator('#queue-clear').click();
+  assert.equal(await page.evaluate(() => tapeQueue.length),0);
+  assert.equal(await page.locator('#queue-add').evaluate(el => el === document.activeElement),true);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+});
+
 test('glass sketches wipe real transparent paths into temporary mist and can be paused or cleared', async t => {
   const page = await openRoom(t);
   assert.equal(await page.locator('#glass-sketch').isVisible(),false);

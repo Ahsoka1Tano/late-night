@@ -1479,11 +1479,18 @@ let tapeCollectionOpen = false;
 let tapeSearch = "";
 let rackVisible = 12;
 let tapeQueue = [];
+let removedQueueTape = null;
 const queueNote = document.getElementById("queue-note");
+function focusQueueTape(src,action = "remove") {
+  const row = [...document.getElementById("queue-list").children].find(item => item.dataset.queueSrc === src);
+  (row?.querySelector(`[data-queue-action="${action}"]:not(:disabled)`) || row?.querySelector('button:not(:disabled)') || document.getElementById("queue-add")).focus({preventScroll:true});
+}
 function paintTapeQueue() {
   document.getElementById("queue-count").textContent = `${tapeQueue.length} / 8`;
   document.getElementById("queue-add").disabled = tapeQueue.length >= 8 || tapeQueue.includes(TAPES[tapeIndex].src);
   document.getElementById("queue-next").disabled = !tapeQueue.some(src => TAPES.some(tape => tape.src === src));
+  document.getElementById("queue-clear").disabled = tapeQueue.length === 0;
+  document.getElementById("queue-undo").hidden = !removedQueueTape;
   const list = document.getElementById("queue-list");
   list.replaceChildren();
   tapeQueue.forEach((src,position) => {
@@ -1498,7 +1505,28 @@ function paintTapeQueue() {
     title.className = "queue-label";
     const number = document.createElement("small"); number.textContent = `SIDE ${String(position + 1).padStart(2,"0")}`;
     const name = document.createElement("strong"); name.textContent = tape?.title || "Recording not in the current shelf";
-    title.append(number,name); row.append(art,title); list.append(row);
+    title.append(number,name); row.append(art,title);
+    const tools = document.createElement("div"); tools.className = "queue-row-actions";
+    [["up","↑","Move earlier",position === 0],["down","↓","Move later",position === tapeQueue.length - 1],["remove","×","Remove",false]].forEach(([action,label,description,disabled]) => {
+      const button = document.createElement("button"); button.type = "button";
+      button.dataset.queueAction = action; button.textContent = label; button.disabled = disabled;
+      button.setAttribute("aria-label",`${description}: ${tape?.title || "unavailable recording"}`);
+      button.addEventListener("click",() => {
+        const index = tapeQueue.indexOf(src);
+        if (index < 0) return;
+        if (action === "remove") {
+          removedQueueTape = { src,index }; tapeQueue.splice(index,1);
+        } else {
+          const next = index + (action === "up" ? -1 : 1);
+          if (next < 0 || next >= tapeQueue.length) return;
+          [tapeQueue[index],tapeQueue[next]] = [tapeQueue[next],tapeQueue[index]];
+        }
+        paintTapeQueue(); paintTapeCollection();
+        queueNote.textContent = action === "remove" ? "Removed from up next. The playing tape stays on." : "Order changed. Playback stays where it is.";
+        focusQueueTape(action === "remove" ? tapeQueue[Math.min(index,tapeQueue.length-1)] : src,action);
+      }); tools.append(button);
+    });
+    row.append(tools); list.append(row);
   });
 }
 function queueTape(src) {
@@ -1518,6 +1546,22 @@ function takeQueuedTape() {
   return true;
 }
 document.getElementById("queue-next").addEventListener("click",takeQueuedTape);
+document.getElementById("queue-clear").addEventListener("click",() => {
+  tapeQueue = []; removedQueueTape = null;
+  paintTapeQueue(); paintTapeCollection();
+  queueNote.textContent = "Queue cleared. The current recording keeps playing.";
+  document.getElementById("queue-add").focus({preventScroll:true});
+});
+document.getElementById("queue-undo").addEventListener("click",() => {
+  if (!removedQueueTape) return;
+  if (tapeQueue.length >= 8 || tapeQueue.includes(removedQueueTape.src)) {
+    queueNote.textContent = "Make room first, or remove the copy already in the queue."; return;
+  }
+  const {src,index} = removedQueueTape;
+  tapeQueue.splice(Math.min(index,tapeQueue.length),0,src); removedQueueTape = null;
+  paintTapeQueue(); paintTapeCollection();
+  queueNote.textContent = "That recording is back in up next."; focusQueueTape(src);
+});
 function paintTapeCollection() {
   const collection = document.getElementById("tape-collection");
   const visible = tapeCollectionOpen && document.body.dataset.mood === "music" && document.body.dataset.station !== "radio";
@@ -1527,6 +1571,7 @@ function paintTapeCollection() {
   const grid = document.getElementById("cassette-grid");
   const focusedSrc = document.activeElement?.closest(".cassette-item")?.dataset.tapeSrc;
   const focusedSave = document.activeElement?.classList.contains("cassette-save");
+  const focusedQueue = document.activeElement?.classList.contains("cassette-queue");
   let restoredFocus = false;
   grid.replaceChildren();
   const matching = TAPES.map((tape,index) => ({tape,index})).filter(({tape}) => (!savedTapesOnly || keptTapes.has(tape.src)) && tape.title.toLocaleLowerCase().includes(tapeSearch));
@@ -1583,7 +1628,7 @@ function paintTapeCollection() {
     queue.addEventListener("click",() => queueTape(tape.src));
     item.append(card,save,queue);
     grid.append(item);
-    if (focusedSrc === tape.src) { (focusedSave ? save : card).focus({preventScroll:true}); restoredFocus = true; }
+    if (focusedSrc === tape.src) { (focusedQueue && !queue.disabled ? queue : focusedSave ? save : card).focus({preventScroll:true}); restoredFocus = true; }
   });
   if (focusedSrc && !restoredFocus && visible) document.getElementById("collection-search").focus({preventScroll:true});
 }
