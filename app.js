@@ -1478,6 +1478,36 @@ const keptTapes = new Set(readKeptTapes());
 let tapeCollectionOpen = false;
 let tapeSearch = "";
 let rackVisible = 12;
+let tapeQueue = [];
+const queueNote = document.getElementById("queue-note");
+function paintTapeQueue() {
+  document.getElementById("queue-count").textContent = `${tapeQueue.length} / 8`;
+  document.getElementById("queue-add").disabled = tapeQueue.length >= 8 || tapeQueue.includes(TAPES[tapeIndex].src);
+  document.getElementById("queue-next").disabled = !tapeQueue.some(src => TAPES.some(tape => tape.src === src));
+  const list = document.getElementById("queue-list");
+  list.replaceChildren();
+  tapeQueue.forEach((src,position) => {
+    const tape = TAPES.find(item => item.src === src);
+    const row = document.createElement("li");
+    row.dataset.queueSrc = src;
+    const art = document.createElement("span");
+    art.className = "queue-tape"; art.setAttribute("aria-hidden","true");
+    art.style.setProperty("--queue-hue",String([272,193,28,340,150,225][position % 6]));
+    art.append(document.createElement("i"),document.createElement("i"));
+    const title = document.createElement("span");
+    title.className = "queue-label";
+    const number = document.createElement("small"); number.textContent = `SIDE ${String(position + 1).padStart(2,"0")}`;
+    const name = document.createElement("strong"); name.textContent = tape?.title || "Recording not in the current shelf";
+    title.append(number,name); row.append(art,title); list.append(row);
+  });
+}
+function queueTape(src) {
+  if (!TAPES.some(tape => tape.src === src) || tapeQueue.includes(src) || tapeQueue.length >= 8) return;
+  tapeQueue.push(src);
+  paintTapeQueue(); paintTapeCollection();
+  queueNote.textContent = "Added to the evening. The current recording keeps its place.";
+}
+document.getElementById("queue-add").addEventListener("click",() => queueTape(TAPES[tapeIndex].src));
 function paintTapeCollection() {
   const collection = document.getElementById("tape-collection");
   const visible = tapeCollectionOpen && document.body.dataset.mood === "music" && document.body.dataset.station !== "radio";
@@ -1534,7 +1564,14 @@ function paintTapeCollection() {
     save.setAttribute("aria-pressed",String(kept));
     save.setAttribute("aria-label",`${kept ? "Remove" : "Save"} ${tape.title}${kept ? " from saved tapes" : ""}`);
     save.addEventListener("click",() => toggleKeptTape(tape.src));
-    item.append(card,save);
+    const queue = document.createElement("button");
+    queue.type = "button"; queue.className = "cassette-queue";
+    const queued = tapeQueue.includes(tape.src);
+    queue.textContent = queued ? "✓ up next" : "＋ up next";
+    queue.disabled = queued || tapeQueue.length >= 8;
+    queue.setAttribute("aria-label",`${queued ? "Already queued" : "Queue"}: ${tape.title}`);
+    queue.addEventListener("click",() => queueTape(tape.src));
+    item.append(card,save,queue);
     grid.append(item);
     if (focusedSrc === tape.src) { (focusedSave ? save : card).focus({preventScroll:true}); restoredFocus = true; }
   });
@@ -1603,6 +1640,7 @@ function paintTapeShelf() {
   tapeFilter.textContent = `saved tapes · ${count}`;
   tapeFilter.disabled = count === 0;
   tapeFilter.setAttribute("aria-pressed", String(savedTapesOnly));
+  paintTapeQueue();
   paintTapeCollection();
 }
 function chooseTape(src) {

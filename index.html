@@ -348,6 +348,13 @@
         <p class="tape-kept-note" id="tape-kept-note" role="status"></p>
         <div class="tape-position"><div><span id="tape-elapsed">00:00</span><span id="tape-duration">--:--</span></div><input id="tape-seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek in this recording" disabled /><a id="tape-source" target="_blank" rel="noopener noreferrer">recording and credits ↗</a></div>
         <button class="browse-tapes" id="browse-tapes" type="button" aria-expanded="false" aria-controls="tape-collection">▤ browse the cassette shelf</button>
+        <section class="tape-queue" id="tape-queue" aria-labelledby="queue-title">
+          <header><div><p class="desk-kicker">A FEW RECORDS FOR LATER</p><h3 id="queue-title">Up next.</h3></div><span id="queue-count">0 / 8</span></header>
+          <p class="queue-copy">Line up a few tapes. Let the evening play.</p>
+          <div class="queue-actions"><button id="queue-add" type="button">＋ this tape</button><button id="queue-next" type="button" disabled>cue next ↗</button></div>
+          <ol id="queue-list" aria-label="Upcoming recordings"></ol>
+          <p class="queue-note" id="queue-note" role="status">Choose tapes from the cassette shelf, or add the current one. Adding stays quiet.</p>
+        </section>
       </div>
     </div>
 

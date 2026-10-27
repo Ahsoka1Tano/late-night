@@ -1972,6 +1972,23 @@ button[data-fabric="ink"] i { background: #657d9b; }
 .curtain-pull:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .room-curtains button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 @media(prefers-reduced-motion:reduce) { .curtain-panel, .curtain-pull span { transition: none; } .curtain-pull:active span { transform: none; } }
+.tape-queue { margin-top: 24px; padding: 20px; border: 1px solid #a99ac42e; border-radius: 15px; background: radial-gradient(ellipse at 0 0,#8260a51b,transparent 75%),#0e1420; }
+.tape-queue header { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.tape-queue h3 { margin-top: 7px; font-size: 24px; font-weight: 300; }
+#queue-count { font-size: 10px; color: #b7a7c9; white-space: nowrap; }
+.queue-copy,.queue-note { color: var(--text-dim); font-size: 10px; line-height: 1.8; margin-top: 12px; }
+.queue-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+.queue-actions button,.cassette-queue { min-height: 44px; padding: 8px 11px; border: 1px solid #af9dc93b; border-radius: 9px; background: #ffffff03; color: #c3b5d4; font: inherit; font-size: 10px; cursor: pointer; }
+.queue-actions button:disabled,.cassette-queue:disabled { opacity: .4; cursor: default; }
+#queue-list { list-style: none; display: grid; gap: 9px; margin: 17px 0 0; padding: 0; }
+#queue-list li { display: flex; gap: 12px; align-items: center; padding: 11px; border: 1px solid #ab98c21b; border-radius: 10px; background: #ffffff02; }
+.queue-tape { position: relative; display: flex; align-items: center; justify-content: space-evenly; flex: 0 0 50px; height: 34px; border: 3px solid hsl(var(--queue-hue) 15% 28%); border-radius: 4px; background: linear-gradient(hsl(var(--queue-hue) 18% 38%) 0 22%,#1b2031 23% 76%,hsl(var(--queue-hue) 15% 27%) 77%); }
+.queue-tape i { width: 11px; height: 11px; border: 3px solid #c3b9cb; border-radius: 50%; }
+.queue-label { min-width: 0; display: grid; gap: 5px; }
+.queue-label small { font-size: 7px; letter-spacing: .15em; color: #9385a5; }
+.queue-label strong { font-size: 11px; font-weight: 400; line-height: 1.6; overflow-wrap: anywhere; }
+.cassette-queue { width: 100%; margin-top: 6px; }
+.tape-queue button:focus-visible,.cassette-queue:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .glass-sketch { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
 .glass-sketch.is-drawing { pointer-events: auto; touch-action: none; cursor: crosshair; }
 .glass-room { margin-top: 25px; padding-top: 24px; border-top: 1px solid #ffffff12; }
