@@ -70,6 +70,43 @@ async function openRoom(t, width = 1280, motion = 'reduce') {
   return page;
 }
 
+test('tape queue adds quietly and cues tracks without starting a paused player', async t => {
+  const page = await openRoom(t);
+  await page.waitForFunction(() => TAPES.length > 8);
+  const sources = await page.evaluate(() => TAPES.slice(0,3).map(tape => tape.src));
+  await page.locator('#browse-tapes').click();
+  await page.locator('.cassette-queue').nth(1).click();
+  await page.locator('.cassette-queue').nth(2).click();
+  assert.deepEqual(await page.evaluate(() => tapeQueue),sources.slice(1));
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  await page.locator('#queue-next').click();
+  assert.equal(await page.evaluate(() => TAPES[tapeIndex].src),sources[1]);
+  assert.deepEqual(await page.evaluate(() => tapeQueue),[sources[2]]);
+  assert.equal(await page.evaluate(() => tapeRunning),false);
+  await page.locator('#player-next').click();
+  assert.equal(await page.evaluate(() => TAPES[tapeIndex].src),sources[2]);
+  assert.deepEqual(await page.evaluate(() => tapeQueue),[]);
+});
+
+test('tape queue advances at the end while rain continues and stale ended events do nothing', async t => {
+  const page = await openRoom(t);
+  await page.waitForFunction(() => TAPES.length > 8);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(2000);
+  const next = await page.evaluate(() => {
+    window.queueOldTrack = tapeAudio; window.queueRain = ambienceTrack;
+    const source = TAPES.find(tape => tape.src !== TAPES[tapeIndex].src).src;
+    queueTape(source); return source;
+  });
+  await page.evaluate(() => queueOldTrack.dispatchEvent(new Event('ended')));
+  await page.clock.runFor(100);
+  assert.equal(await page.evaluate(() => TAPES[tapeIndex].src),next);
+  assert.equal(await page.evaluate(() => tapeRunning && !tapeAudio.paused && ambienceTrack === window.queueRain && !ambienceTrack.paused),true);
+  assert.equal(await page.evaluate(() => tapeQueue.length),0);
+  await page.evaluate(() => queueOldTrack.dispatchEvent(new Event('ended')));
+  assert.equal(await page.evaluate(() => TAPES[tapeIndex].src),next);
+});
+
 test('glass sketches wipe real transparent paths into temporary mist and can be paused or cleared', async t => {
   const page = await openRoom(t);
   assert.equal(await page.locator('#glass-sketch').isVisible(),false);

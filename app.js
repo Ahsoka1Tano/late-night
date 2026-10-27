@@ -1508,6 +1508,16 @@ function queueTape(src) {
   queueNote.textContent = "Added to the evening. The current recording keeps its place.";
 }
 document.getElementById("queue-add").addEventListener("click",() => queueTape(TAPES[tapeIndex].src));
+function takeQueuedTape() {
+  if (station !== "tape") return false;
+  const position = tapeQueue.findIndex(src => TAPES.some(tape => tape.src === src));
+  if (position < 0) return false;
+  const [src] = tapeQueue.splice(position,1);
+  chooseTape(src);
+  queueNote.textContent = `Next up: ${TAPES[tapeIndex].title}. ${tapeQueue.length ? `${tapeQueue.length} still lined up.` : "The regular shelf follows after this tape."}`;
+  return true;
+}
+document.getElementById("queue-next").addEventListener("click",takeQueuedTape);
 function paintTapeCollection() {
   const collection = document.getElementById("tape-collection");
   const visible = tapeCollectionOpen && document.body.dataset.mood === "music" && document.body.dataset.station !== "radio";
@@ -1793,6 +1803,7 @@ function pauseTape() {
 }
 
 function nextTape() {
+  if (station !== "tape" || takeQueuedTape()) return;
   const shelf = savedTapesOnly ? TAPES.filter(tape => keptTapes.has(tape.src)) : TAPES;
   const current = shelf.findIndex(tape => tape.src === TAPES[tapeIndex].src);
   if (shelf.length) chooseTape(shelf[(current + 1) % shelf.length].src);
