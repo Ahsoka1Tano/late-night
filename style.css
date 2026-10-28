@@ -2133,6 +2133,14 @@ body.knows-aurora .room .mood-secret { display: flex; }
 .journey-note { color: #a6a1b6; margin-top: 15px; min-height: 19px; font-size: 11px; line-height: 1.8; }
 .journey-pocket { display: flex; align-items: center; gap: 6px; }
 .journey-pocket span { font-size: 11px; color: #c3b5d2; max-width: 180px; }
+.journey-ticket { position: absolute; right: 7%; bottom: 9%; z-index: 3; width: 145px; padding: 12px 14px; border: 1px solid #c6bfd333; border-radius: 12px; background: #101724c9; backdrop-filter: blur(10px); box-shadow: 0 5px 25px #080c1c44; pointer-events: none; }
+.journey-ticket small { display: block; color: #c6b3d7; font-size: 8px; text-transform: uppercase; letter-spacing: .17em; }
+.journey-ticket strong { display: block; margin: 8px 0; color: #e4d9eb; font-weight: 300; font-size: 20px; }
+.journey-ticket > span { color: #a6a2b8; font-size: 9px; letter-spacing: .1em; }
+.journey-wait { height: 2px; background: #e4d9eb22; margin-top: 12px; overflow: hidden; }
+.journey-wait i { display: block; height: 100%; background: #cebadf; transform-origin: left; }
+body.has-journey :is(.garden-view,.cafe-view,.mountain-view,.coast-view) { transition-duration: 3s; }
+@media(prefers-reduced-motion:reduce) { .journey-card:hover { transform: none; } .journey-wait i { transform: scaleX(1); } }
 .quiet-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin: 0 0 14px; flex-wrap: wrap; }
 .quiet-toolbar p { color: var(--text-dim); font-size: 8px; letter-spacing: .17em; }
 .quiet-toolbar button { min-height: 44px; padding: 8px 14px; border: 1px solid #ffffff20; border-radius: 999px; background: #ffffff04; color: var(--text); font: inherit; font-size: 11px; cursor: pointer; }

@@ -109,6 +109,26 @@ test('night journeys preserve the same tape, rain and focus session across views
   assert.equal(await page.evaluate(() => tapeAudio === window.journeyTape && ambienceTrack === window.journeyRain),true);
 });
 
+test('night journeys show the current stop on glass and stay controllable in Quiet room', async t => {
+  const page = await openRoom(t,1440,'no-preference');
+  await page.locator('[data-journey="afterhours"]').click();
+  assert.equal(await page.locator('#journey-ticket-view').textContent(),'City');
+  assert.equal(await page.evaluate(() => journeyProgress.playState),'running');
+  await page.locator('#quiet-room').click();
+  await page.locator('#journey-pocket-next').click();
+  assert.equal(await page.locator('#journey-ticket-view').textContent(),'Café');
+  await page.locator('#journey-pocket-toggle').focus();
+  await page.keyboard.press('Enter');
+  assert.equal(await page.evaluate(() => journeyState),'paused');
+  assert.equal(await page.evaluate(() => journeyProgress.playState),'paused');
+  assert.match(await page.locator('#journey-ticket-stop').textContent(),/resting/);
+  assert.equal(await page.locator('#journey-pocket-toggle').evaluate(el => el === document.activeElement),true);
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.waitForFunction(() => journeyProgress === null);
+  await page.keyboard.press('Escape');
+  assert.equal(await page.evaluate(() => journeyState),'paused');
+});
+
 test('tape queue adds quietly and cues tracks without starting a paused player', async t => {
   const page = await openRoom(t);
   await page.waitForFunction(() => TAPES.length > 8);

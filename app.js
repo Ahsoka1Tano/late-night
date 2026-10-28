@@ -2687,10 +2687,26 @@ const JOURNEYS = {
 const VIEW_NAMES = { city: "City", cafe: "Café", garden: "Garden", mountains: "Mountains", coast: "Coast" };
 let journeyRoute = "afterhours", journeySeconds = 60, journeyIndex = 0;
 let journeyState = "idle", journeyTimer = null, journeyDeadline = 0, journeyRemaining = 60000;
+let journeyProgress = null;
+
+function syncJourneyProgress() {
+  journeyProgress?.cancel(); journeyProgress = null;
+  const bar = document.getElementById("journey-progress");
+  if (journeyState === "idle" || cityMotion.matches) return;
+  journeyProgress = bar.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: journeySeconds * 1000, fill: "both" });
+  const remaining = journeyState === "running" ? Math.max(0, journeyDeadline - Date.now()) : journeyRemaining;
+  journeyProgress.currentTime = journeySeconds * 1000 - remaining;
+  if (journeyState !== "running" || document.hidden) journeyProgress.pause();
+}
 
 function paintJourney(message) {
   const active = journeyState !== "idle";
   const route = JOURNEYS[journeyRoute];
+  document.body.classList.toggle("has-journey", active);
+  document.getElementById("journey-ticket").hidden = !active;
+  document.getElementById("journey-ticket-route").textContent = route.name;
+  document.getElementById("journey-ticket-view").textContent = VIEW_NAMES[windowScene];
+  document.getElementById("journey-ticket-stop").textContent = `${String(journeyIndex + 1).padStart(2, "0")} / ${String(route.stops.length).padStart(2, "0")}${journeyState === "paused" ? " · resting" : ""}`;
   document.querySelectorAll("[data-journey]").forEach(button => button.setAttribute("aria-pressed", String(active && button.dataset.journey === journeyRoute)));
   document.querySelectorAll("[data-journey-seconds]").forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.journeySeconds) === journeySeconds)));
   ["journey-toggle", "journey-next", "journey-stop"].forEach(id => { document.getElementById(id).disabled = !active; });
@@ -2710,6 +2726,7 @@ function paintJourney(message) {
     item.append(button); stops.append(item);
   });
   if (message) document.getElementById("journey-note").textContent = message;
+  syncJourneyProgress();
 }
 function scheduleJourney() {
   clearTimeout(journeyTimer); journeyTimer = null;
@@ -2722,8 +2739,8 @@ function visitJourneyStop(index) {
   journeyIndex = (index + route.stops.length) % route.stops.length;
   setWindowScene(route.stops[journeyIndex]);
   journeyRemaining = journeySeconds * 1000;
-  paintJourney(`${route.name} · ${journeyIndex + 1} / ${route.stops.length} · ${VIEW_NAMES[windowScene]}${journeyState === "paused" ? " · paused" : ""}`);
   scheduleJourney();
+  paintJourney(`${route.name} · ${journeyIndex + 1} / ${route.stops.length} · ${VIEW_NAMES[windowScene]}${journeyState === "paused" ? " · paused" : ""}`);
 }
 function startJourney(key) {
   if (!Object.hasOwn(JOURNEYS, key)) return;
@@ -2751,6 +2768,7 @@ document.querySelectorAll("[data-journey-seconds]").forEach(button => button.add
 ["journey-toggle", "journey-pocket-toggle"].forEach(id => document.getElementById(id).addEventListener("click", toggleJourney));
 ["journey-next", "journey-pocket-next"].forEach(id => document.getElementById(id).addEventListener("click", () => visitJourneyStop(journeyIndex + 1)));
 document.getElementById("journey-stop").addEventListener("click", stopJourney);
+cityMotion.addEventListener("change", syncJourneyProgress);
 paintJourney();
 
 function setDeskLamp(on) {
