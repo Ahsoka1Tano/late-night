@@ -2657,7 +2657,8 @@ function syncCityLife() {
 document.addEventListener("visibilitychange", syncCityLife);
 cityMotion.addEventListener("change", () => { syncCityLife(); syncWindowSky(); });
 
-function setWindowScene(scene, { save = true } = {}) {
+function setWindowScene(scene, { save = true, journey = false } = {}) {
+  if (!journey && journeyState !== "idle") stopJourney({ message: "Journey ended. Your chosen window stays." });
   windowScene = WINDOW_VIEWS.includes(scene) ? scene : "city";
   document.body.dataset.view = windowScene;
   document.querySelectorAll("[data-cafe-only]").forEach(element => { element.hidden = windowScene !== "cafe"; });
@@ -2694,7 +2695,7 @@ function syncJourneyProgress() {
   const bar = document.getElementById("journey-progress");
   if (journeyState === "idle" || cityMotion.matches) return;
   journeyProgress = bar.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: journeySeconds * 1000, fill: "both" });
-  const remaining = journeyState === "running" ? Math.max(0, journeyDeadline - Date.now()) : journeyRemaining;
+  const remaining = journeyState === "running" && !document.hidden ? Math.max(0, journeyDeadline - Date.now()) : journeyRemaining;
   journeyProgress.currentTime = journeySeconds * 1000 - remaining;
   if (journeyState !== "running" || document.hidden) journeyProgress.pause();
 }
@@ -2715,29 +2716,33 @@ function paintJourney(message) {
   document.getElementById("journey-pocket-label").textContent = `${route.name} · ${VIEW_NAMES[windowScene]}`;
   document.getElementById("journey-pocket-toggle").textContent = journeyState === "paused" ? "resume" : "pause";
   const stops = document.getElementById("journey-stops");
+  const focusedStop = stops.contains(document.activeElement) ? document.activeElement.dataset.journeyStop : null;
   stops.hidden = !active;
   stops.replaceChildren();
   route.stops.forEach((view, index) => {
     const item = document.createElement("li"), button = document.createElement("button");
     button.type = "button";
+    button.dataset.journeyStop = String(index);
     button.textContent = `${String(index + 1).padStart(2, "0")} · ${VIEW_NAMES[view]}`;
     if (index === journeyIndex) button.setAttribute("aria-current", "step");
     button.addEventListener("click", () => visitJourneyStop(index));
     item.append(button); stops.append(item);
   });
+  if (active && focusedStop !== null) stops.querySelector(`[data-journey-stop="${focusedStop}"]`)?.focus({ preventScroll: true });
   if (message) document.getElementById("journey-note").textContent = message;
   syncJourneyProgress();
 }
 function scheduleJourney() {
   clearTimeout(journeyTimer); journeyTimer = null;
-  if (journeyState !== "running") return;
+  if (journeyState !== "running" || document.hidden) return;
   journeyDeadline = Date.now() + journeyRemaining;
   journeyTimer = setTimeout(() => visitJourneyStop(journeyIndex + 1), journeyRemaining);
 }
 function visitJourneyStop(index) {
+  if (journeyState === "idle") return;
   const route = JOURNEYS[journeyRoute];
   journeyIndex = (index + route.stops.length) % route.stops.length;
-  setWindowScene(route.stops[journeyIndex]);
+  setWindowScene(route.stops[journeyIndex], { journey: true });
   journeyRemaining = journeySeconds * 1000;
   scheduleJourney();
   paintJourney(`${route.name} · ${journeyIndex + 1} / ${route.stops.length} · ${VIEW_NAMES[windowScene]}${journeyState === "paused" ? " · paused" : ""}`);
@@ -2751,14 +2756,15 @@ function startJourney(key) {
 function toggleJourney() {
   if (journeyState === "idle") return;
   if (journeyState === "running") {
-    journeyRemaining = Math.max(0, journeyDeadline - Date.now());
+    if (!document.hidden) journeyRemaining = Math.max(0, journeyDeadline - Date.now());
     journeyState = "paused"; clearTimeout(journeyTimer); journeyTimer = null;
   } else { journeyState = "running"; scheduleJourney(); }
   paintJourney(`${JOURNEYS[journeyRoute].name} · ${VIEW_NAMES[windowScene]} · ${journeyState === "paused" ? "paused, stay as long as you like." : "wandering again."}`);
 }
-function stopJourney() {
+function stopJourney({ message = `Staying in ${VIEW_NAMES[windowScene]}. The rest of the room carries on.`, focus = false } = {}) {
   journeyState = "idle"; clearTimeout(journeyTimer); journeyTimer = null;
-  paintJourney(`Staying in ${VIEW_NAMES[windowScene]}. The rest of the room carries on.`);
+  paintJourney(message);
+  if (focus) (document.body.classList.contains("is-quiet") ? quietRoomButton : document.querySelector(`[data-journey="${journeyRoute}"]`)).focus({ preventScroll: true });
 }
 document.querySelectorAll("[data-journey]").forEach(button => button.addEventListener("click", () => startJourney(button.dataset.journey)));
 document.querySelectorAll("[data-journey-seconds]").forEach(button => button.addEventListener("click", () => {
@@ -2767,7 +2773,16 @@ document.querySelectorAll("[data-journey-seconds]").forEach(button => button.add
 }));
 ["journey-toggle", "journey-pocket-toggle"].forEach(id => document.getElementById(id).addEventListener("click", toggleJourney));
 ["journey-next", "journey-pocket-next"].forEach(id => document.getElementById(id).addEventListener("click", () => visitJourneyStop(journeyIndex + 1)));
-document.getElementById("journey-stop").addEventListener("click", stopJourney);
+["journey-stop", "journey-pocket-stop"].forEach(id => document.getElementById(id).addEventListener("click", () => stopJourney({ focus: true })));
+document.addEventListener("visibilitychange", () => {
+  if (journeyState === "running") {
+    if (document.hidden) {
+      journeyRemaining = Math.max(0, journeyDeadline - Date.now());
+      clearTimeout(journeyTimer); journeyTimer = null;
+    } else scheduleJourney();
+  }
+  syncJourneyProgress();
+});
 cityMotion.addEventListener("change", syncJourneyProgress);
 paintJourney();
 

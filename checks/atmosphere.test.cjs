@@ -129,6 +129,50 @@ test('night journeys show the current stop on glass and stay controllable in Qui
   assert.equal(await page.evaluate(() => journeyState),'paused');
 });
 
+test('night journeys wait in hidden tabs and resume the unspent time without skipping views', async t => {
+  const page = await openRoom(t);
+  await page.locator('[data-journey-seconds="30"]').click();
+  await page.locator('[data-journey="afterhours"]').click();
+  await page.clock.fastForward(10000);
+  await page.evaluate(() => { Object.defineProperty(document,'hidden',{configurable:true,value:true}); document.dispatchEvent(new Event('visibilitychange')); });
+  assert.equal(await page.evaluate(() => journeyTimer),null);
+  await page.clock.fastForward(300000);
+  assert.equal(await page.evaluate(() => windowScene),'city');
+  await page.evaluate(() => { Object.defineProperty(document,'hidden',{configurable:true,value:false}); document.dispatchEvent(new Event('visibilitychange')); });
+  await page.clock.fastForward(19000);
+  assert.equal(await page.evaluate(() => windowScene),'city');
+  await page.clock.fastForward(1500);
+  assert.equal(await page.evaluate(() => windowScene),'cafe');
+  await page.locator('#journey-toggle').click();
+  await page.evaluate(() => { Object.defineProperty(document,'hidden',{configurable:true,value:true}); document.dispatchEvent(new Event('visibilitychange')); });
+  await page.clock.fastForward(300000);
+  await page.evaluate(() => { Object.defineProperty(document,'hidden',{configurable:true,value:false}); document.dispatchEvent(new Event('visibilitychange')); });
+  assert.equal(await page.evaluate(() => journeyState),'paused');
+  assert.equal(await page.evaluate(() => journeyTimer),null);
+});
+
+test('night journeys yield to manual windows and saved evenings, with stable keyboard focus', async t => {
+  const page = await openRoom(t);
+  await page.locator('[data-journey="afterhours"]').click();
+  await page.locator('[data-journey-stop="2"]').focus();
+  await page.keyboard.press('Enter');
+  assert.equal(await page.evaluate(() => windowScene),'garden');
+  assert.equal(await page.locator('[data-journey-stop="2"]').evaluate(el => el === document.activeElement),true);
+  await page.locator('.view-switch [data-view="coast"]').click();
+  assert.equal(await page.evaluate(() => journeyState),'idle');
+  await page.clock.fastForward(180000);
+  assert.equal(await page.evaluate(() => windowScene),'coast');
+  await page.locator('[data-journey="faraway"]').click();
+  await page.locator('[data-evening="records"]').click();
+  assert.equal(await page.evaluate(() => journeyState),'idle');
+  assert.equal(await page.evaluate(() => windowScene),'city');
+  await page.locator('[data-journey="afterhours"]').click();
+  await page.locator('#quiet-room').click();
+  await page.locator('#journey-pocket-stop').click();
+  assert.equal(await page.locator('#quiet-room').evaluate(el => el === document.activeElement),true);
+  assert.equal(await page.locator('#journey-pocket').isVisible(),false);
+});
+
 test('tape queue adds quietly and cues tracks without starting a paused player', async t => {
   const page = await openRoom(t);
   await page.waitForFunction(() => TAPES.length > 8);
