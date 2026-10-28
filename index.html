@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=7538cf2bdb35" />
+  <link rel="stylesheet" href="style.css?v=c2850b88a84e" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -82,7 +82,7 @@
 
 
     <section class="night-journeys" id="night-journeys" aria-labelledby="journey-title">
-      <header class="journey-heading"><div><p class="desk-kicker">NO NEED TO GO ANYWHERE</p><h2 id="journey-title">Let the window wander.</h2></div><p>A slow loop through the night.<br />Your music and rain come along.</p></header>
+      <header class="journey-heading"><div><p class="desk-kicker">NO NEED TO GO ANYWHERE</p><h2 id="journey-title">Let the window wander.</h2></div><p>A slow loop through the night. <br />Your music and rain come along.</p></header>
       <div class="journey-routes" aria-label="Start a night journey">
         <button class="journey-card" data-journey="afterhours" type="button" aria-pressed="false">
           <svg viewBox="0 0 300 90" aria-hidden="true"><path fill="#283146" d="M0 78V43h27V25h26v53h22V53h32v25Z"/><path fill="#6e5360" d="M133 40h60v38h-60z"/><path fill="#c7a47b" d="M142 51h16v19h-16zm24 0h18v19h-18z"/><path fill="#3b6156" d="m230 78 27-40 27 40zm20 0 23-55 27 55z"/><path d="M20 84h260" stroke="#d7b79a" stroke-dasharray="2 5"/><g fill="#e8c7a3"><circle cx="40" cy="84" r="3"/><circle cx="163" cy="84" r="3"/><circle cx="266" cy="84" r="3"/></g><circle cx="256" cy="15" r="7" fill="#d4c5bc"/></svg>
@@ -100,6 +100,7 @@
       <div class="journey-settings"><div class="journey-pace" aria-label="Time at each view"><button data-journey-seconds="30" type="button" aria-pressed="false">30 sec</button><button data-journey-seconds="60" type="button" aria-pressed="true">1 min</button><button data-journey-seconds="180" type="button" aria-pressed="false">3 min</button><span>at each window</span></div><div class="journey-actions"><button id="journey-toggle" type="button" disabled>pause journey</button><button id="journey-next" type="button" disabled>next view ↗</button><button id="journey-stop" type="button" disabled>stay here</button></div></div>
       <ol id="journey-stops" aria-label="Journey stops" hidden></ol>
       <p class="journey-note" id="journey-note" role="status">Choose a route. Only the view changes.</p>
+      <p class="journey-memory" id="journey-memory" role="status"></p>
     </section>
     <div class="quiet-toolbar"><p>JUST THE WINDOW. A LITTLE MORE SPACE.</p><div class="journey-pocket" id="journey-pocket" hidden><span id="journey-pocket-label"></span><button id="journey-pocket-toggle" type="button">pause</button><button id="journey-pocket-next" type="button" aria-label="Next journey view">↗</button><button id="journey-pocket-stop" type="button" aria-label="Stay at this view and end journey">stay</button></div><div class="quiet-toolbar-actions"><button id="breath-arrive" type="button">◯ take a breath</button><button id="quiet-room" type="button" aria-pressed="false">◌ quiet room</button></div></div>
     <div class="evening-layout">
@@ -600,6 +601,6 @@
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
-  <script src="app.js?v=878edb732d22"></script>
+  <script src="app.js?v=32682ee06231"></script>
 </body>
 </html>

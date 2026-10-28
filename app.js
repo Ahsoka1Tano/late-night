@@ -2689,6 +2689,26 @@ const VIEW_NAMES = { city: "City", cafe: "Café", garden: "Garden", mountains: "
 let journeyRoute = "afterhours", journeySeconds = 60, journeyIndex = 0;
 let journeyState = "idle", journeyTimer = null, journeyDeadline = 0, journeyRemaining = 60000;
 let journeyProgress = null;
+let journeyPreferenceBroken = false;
+try {
+  const saved = localStorage.getItem("lateNight.journey");
+  if (saved !== null) {
+    const value = JSON.parse(saved);
+    if (!value || value.version !== 1 || !Object.hasOwn(JOURNEYS, value.route) || ![30,60,180].includes(value.seconds)) throw new Error("Unreadable journey");
+    journeyRoute = value.route; journeySeconds = value.seconds; journeyRemaining = journeySeconds * 1000;
+    document.getElementById("journey-note").textContent = `Last route: ${JOURNEYS[journeyRoute].name}. Choose a route to begin again.`;
+  }
+} catch {
+  journeyPreferenceBroken = true;
+  document.getElementById("journey-memory").textContent = "Couldn't read your route preference. Saved data is untouched; journeys still work this visit.";
+}
+function rememberJourney() {
+  if (journeyPreferenceBroken) return;
+  try {
+    localStorage.setItem("lateNight.journey", JSON.stringify({ version: 1, route: journeyRoute, seconds: journeySeconds }));
+    document.getElementById("journey-memory").textContent = "";
+  } catch { document.getElementById("journey-memory").textContent = "Couldn't save this route preference. Your previous choice is kept; this journey still works."; }
+}
 
 function syncJourneyProgress() {
   journeyProgress?.cancel(); journeyProgress = null;
@@ -2750,6 +2770,7 @@ function visitJourneyStop(index) {
 function startJourney(key) {
   if (!Object.hasOwn(JOURNEYS, key)) return;
   journeyRoute = key; journeyState = "running";
+  rememberJourney();
   const current = JOURNEYS[key].stops.indexOf(windowScene);
   visitJourneyStop(Math.max(0, current));
 }
@@ -2766,9 +2787,14 @@ function stopJourney({ message = `Staying in ${VIEW_NAMES[windowScene]}. The res
   paintJourney(message);
   if (focus) (document.body.classList.contains("is-quiet") ? quietRoomButton : document.querySelector(`[data-journey="${journeyRoute}"]`)).focus({ preventScroll: true });
 }
-document.querySelectorAll("[data-journey]").forEach(button => button.addEventListener("click", () => startJourney(button.dataset.journey)));
+document.querySelectorAll("[data-journey]").forEach(button => button.addEventListener("click", () => {
+  startJourney(button.dataset.journey);
+  windowView.focus({ preventScroll: true });
+  windowView.scrollIntoView({ block: "center", behavior: "instant" });
+}));
 document.querySelectorAll("[data-journey-seconds]").forEach(button => button.addEventListener("click", () => {
   journeySeconds = Number(button.dataset.journeySeconds); journeyRemaining = journeySeconds * 1000;
+  rememberJourney();
   scheduleJourney(); paintJourney(`${journeySeconds === 30 ? "30 seconds" : journeySeconds / 60 + " minute" + (journeySeconds > 60 ? "s" : "")} at each window.`);
 }));
 ["journey-toggle", "journey-pocket-toggle"].forEach(id => document.getElementById(id).addEventListener("click", toggleJourney));

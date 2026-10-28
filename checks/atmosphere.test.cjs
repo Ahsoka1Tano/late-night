@@ -74,6 +74,7 @@ test('night journeys follow their route, loop, pause and leave the room quiet', 
   const page = await openRoom(t);
   await page.locator('[data-journey-seconds="30"]').click();
   await page.locator('[data-journey="afterhours"]').click();
+  assert.equal(await page.locator('#window-view').evaluate(el => el === document.activeElement),true);
   assert.equal(await page.evaluate(() => windowScene),'city');
   await page.clock.fastForward(30100);
   assert.equal(await page.evaluate(() => windowScene),'cafe');
@@ -171,6 +172,60 @@ test('night journeys yield to manual windows and saved evenings, with stable key
   await page.locator('#journey-pocket-stop').click();
   assert.equal(await page.locator('#quiet-room').evaluate(el => el === document.activeElement),true);
   assert.equal(await page.locator('#journey-pocket').isVisible(),false);
+});
+
+test('night journeys remember only route and pace, start quietly after reload and preserve damaged preferences', async t => {
+  const page = await openRoom(t);
+  await page.locator('[data-journey="faraway"]').click();
+  await page.locator('[data-journey-seconds="180"]').click();
+  assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('lateNight.journey'))),{version:1,route:'faraway',seconds:180});
+  await page.reload();
+  assert.equal(await page.evaluate(() => journeyState),'idle');
+  assert.equal(await page.evaluate(() => journeyTimer),null);
+  assert.equal(await page.locator('[data-journey-seconds="180"]').getAttribute('aria-pressed'),'true');
+  assert.match(await page.locator('#journey-note').textContent(),/Last route: Far away/);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  for (const value of ['{broken',JSON.stringify({version:1,route:'__proto__',seconds:30}),JSON.stringify({version:1,route:'faraway',seconds:0})]) {
+    await page.evaluate(value => localStorage.setItem('lateNight.journey',value),value);
+    await page.reload();
+    assert.match(await page.locator('#journey-memory').textContent(),/Couldn't read/);
+    await page.locator('[data-journey="afterhours"]').click();
+    assert.equal(await page.evaluate(() => journeyState),'running');
+    assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.journey')),value);
+  }
+  await page.evaluate(() => localStorage.removeItem('lateNight.journey'));
+  await page.reload();
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function(key,value) { if (key === 'lateNight.journey') throw new DOMException('full','QuotaExceededError'); return original.call(this,key,value); };
+  });
+  await page.locator('[data-journey="longway"]').click();
+  assert.match(await page.locator('#journey-memory').textContent(),/Couldn't save/);
+  assert.equal(await page.evaluate(() => journeyState),'running');
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.journey')),null);
+});
+
+test('night journeys keep phone, tablet and desktop controls readable and touch sized', async t => {
+  for (const width of [320,768,1440]) {
+    const page = await openRoom(t,width);
+    await page.locator('[data-journey="longway"]').click();
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
+    const cards = await page.locator('.journey-card').evaluateAll(els => els.map(el => ({width:el.clientWidth,overflow:el.scrollWidth > el.clientWidth,title:el.querySelector('strong').getBoundingClientRect().width})));
+    assert.equal(cards.every(card => !card.overflow && card.title >= 100),true,JSON.stringify({width,cards}));
+    for (const selector of ['.journey-actions button','.journey-pace button','#journey-stops button']) {
+      assert.equal(await page.locator(selector).evaluateAll(els => els.every(el => el.getBoundingClientRect().height >= 44)),true);
+    }
+    await page.locator('#journey-stop').click();
+    assert.equal(await page.locator('[data-journey="longway"]').evaluate(el => el === document.activeElement),true);
+    await page.locator('[data-journey="afterhours"]').click();
+    await page.locator('#journey-toggle').click();
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#night-journeys').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`night-journeys-${width}.png`)});
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`journey-room-${width}.png`)});
+    await page.locator('#quiet-room').click();
+    assert.equal(await page.locator('#journey-pocket button').evaluateAll(els => els.every(el => el.getBoundingClientRect().height >= 44)),true);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`journey-window-${width}.png`)});
+  }
 });
 
 test('tape queue adds quietly and cues tracks without starting a paused player', async t => {
