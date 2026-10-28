@@ -70,6 +70,45 @@ async function openRoom(t, width = 1280, motion = 'reduce') {
   return page;
 }
 
+test('night journeys follow their route, loop, pause and leave the room quiet', async t => {
+  const page = await openRoom(t);
+  await page.locator('[data-journey-seconds="30"]').click();
+  await page.locator('[data-journey="afterhours"]').click();
+  assert.equal(await page.evaluate(() => windowScene),'city');
+  await page.clock.fastForward(30100);
+  assert.equal(await page.evaluate(() => windowScene),'cafe');
+  await page.locator('#journey-toggle').click();
+  await page.clock.fastForward(60000);
+  assert.equal(await page.evaluate(() => windowScene),'cafe');
+  await page.locator('#journey-next').click();
+  assert.equal(await page.evaluate(() => windowScene),'garden');
+  assert.equal(await page.evaluate(() => journeyState),'paused');
+  await page.locator('#journey-toggle').click();
+  await page.clock.fastForward(30100);
+  assert.equal(await page.evaluate(() => windowScene),'city');
+  await page.locator('#journey-stop').click();
+  await page.clock.fastForward(60000);
+  assert.equal(await page.evaluate(() => windowScene),'city');
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+});
+
+test('night journeys preserve the same tape, rain and focus session across views', async t => {
+  const page = await openRoom(t);
+  await page.locator('.mood[data-mood="focus"]').click();
+  await page.locator('#focus-toggle').click();
+  await page.locator('.mood[data-mood="music"]').click();
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(1800);
+  await page.evaluate(() => { window.journeyTape = tapeAudio; window.journeyRain = ambienceTrack; });
+  const before = await page.locator('#focus-time').textContent();
+  await page.locator('[data-journey="faraway"]').click();
+  await page.locator('#journey-next').click();
+  assert.equal(await page.evaluate(() => windowScene),'coast');
+  assert.equal(await page.locator('#focus-time').textContent(),before);
+  assert.equal(await page.locator('#focus-toggle').textContent(),'pause');
+  assert.equal(await page.evaluate(() => tapeAudio === window.journeyTape && ambienceTrack === window.journeyRain),true);
+});
+
 test('tape queue adds quietly and cues tracks without starting a paused player', async t => {
   const page = await openRoom(t);
   await page.waitForFunction(() => TAPES.length > 8);

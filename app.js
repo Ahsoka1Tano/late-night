@@ -2678,6 +2678,81 @@ document.querySelectorAll(".view-switch button").forEach(button => {
   button.addEventListener("click", () => setWindowScene(button.dataset.view));
 });
 
+/* The window can wander; every other part of the room stays where it is. */
+const JOURNEYS = {
+  afterhours: { name: "After hours", stops: ["city", "cafe", "garden"] },
+  faraway: { name: "Far away", stops: ["mountains", "coast", "garden"] },
+  longway: { name: "The long way", stops: ["city", "cafe", "garden", "mountains", "coast"] },
+};
+const VIEW_NAMES = { city: "City", cafe: "Café", garden: "Garden", mountains: "Mountains", coast: "Coast" };
+let journeyRoute = "afterhours", journeySeconds = 60, journeyIndex = 0;
+let journeyState = "idle", journeyTimer = null, journeyDeadline = 0, journeyRemaining = 60000;
+
+function paintJourney(message) {
+  const active = journeyState !== "idle";
+  const route = JOURNEYS[journeyRoute];
+  document.querySelectorAll("[data-journey]").forEach(button => button.setAttribute("aria-pressed", String(active && button.dataset.journey === journeyRoute)));
+  document.querySelectorAll("[data-journey-seconds]").forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.journeySeconds) === journeySeconds)));
+  ["journey-toggle", "journey-next", "journey-stop"].forEach(id => { document.getElementById(id).disabled = !active; });
+  document.getElementById("journey-toggle").textContent = journeyState === "paused" ? "resume journey" : "pause journey";
+  document.getElementById("journey-pocket").hidden = !active;
+  document.getElementById("journey-pocket-label").textContent = `${route.name} · ${VIEW_NAMES[windowScene]}`;
+  document.getElementById("journey-pocket-toggle").textContent = journeyState === "paused" ? "resume" : "pause";
+  const stops = document.getElementById("journey-stops");
+  stops.hidden = !active;
+  stops.replaceChildren();
+  route.stops.forEach((view, index) => {
+    const item = document.createElement("li"), button = document.createElement("button");
+    button.type = "button";
+    button.textContent = `${String(index + 1).padStart(2, "0")} · ${VIEW_NAMES[view]}`;
+    if (index === journeyIndex) button.setAttribute("aria-current", "step");
+    button.addEventListener("click", () => visitJourneyStop(index));
+    item.append(button); stops.append(item);
+  });
+  if (message) document.getElementById("journey-note").textContent = message;
+}
+function scheduleJourney() {
+  clearTimeout(journeyTimer); journeyTimer = null;
+  if (journeyState !== "running") return;
+  journeyDeadline = Date.now() + journeyRemaining;
+  journeyTimer = setTimeout(() => visitJourneyStop(journeyIndex + 1), journeyRemaining);
+}
+function visitJourneyStop(index) {
+  const route = JOURNEYS[journeyRoute];
+  journeyIndex = (index + route.stops.length) % route.stops.length;
+  setWindowScene(route.stops[journeyIndex]);
+  journeyRemaining = journeySeconds * 1000;
+  paintJourney(`${route.name} · ${journeyIndex + 1} / ${route.stops.length} · ${VIEW_NAMES[windowScene]}${journeyState === "paused" ? " · paused" : ""}`);
+  scheduleJourney();
+}
+function startJourney(key) {
+  if (!Object.hasOwn(JOURNEYS, key)) return;
+  journeyRoute = key; journeyState = "running";
+  const current = JOURNEYS[key].stops.indexOf(windowScene);
+  visitJourneyStop(Math.max(0, current));
+}
+function toggleJourney() {
+  if (journeyState === "idle") return;
+  if (journeyState === "running") {
+    journeyRemaining = Math.max(0, journeyDeadline - Date.now());
+    journeyState = "paused"; clearTimeout(journeyTimer); journeyTimer = null;
+  } else { journeyState = "running"; scheduleJourney(); }
+  paintJourney(`${JOURNEYS[journeyRoute].name} · ${VIEW_NAMES[windowScene]} · ${journeyState === "paused" ? "paused, stay as long as you like." : "wandering again."}`);
+}
+function stopJourney() {
+  journeyState = "idle"; clearTimeout(journeyTimer); journeyTimer = null;
+  paintJourney(`Staying in ${VIEW_NAMES[windowScene]}. The rest of the room carries on.`);
+}
+document.querySelectorAll("[data-journey]").forEach(button => button.addEventListener("click", () => startJourney(button.dataset.journey)));
+document.querySelectorAll("[data-journey-seconds]").forEach(button => button.addEventListener("click", () => {
+  journeySeconds = Number(button.dataset.journeySeconds); journeyRemaining = journeySeconds * 1000;
+  scheduleJourney(); paintJourney(`${journeySeconds === 30 ? "30 seconds" : journeySeconds / 60 + " minute" + (journeySeconds > 60 ? "s" : "")} at each window.`);
+}));
+["journey-toggle", "journey-pocket-toggle"].forEach(id => document.getElementById(id).addEventListener("click", toggleJourney));
+["journey-next", "journey-pocket-next"].forEach(id => document.getElementById(id).addEventListener("click", () => visitJourneyStop(journeyIndex + 1)));
+document.getElementById("journey-stop").addEventListener("click", stopJourney);
+paintJourney();
+
 function setDeskLamp(on) {
   windowView.classList.toggle("lamp-off", !on);
   deskLamp.setAttribute("aria-pressed", String(on));
