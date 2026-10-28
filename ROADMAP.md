@@ -88,6 +88,10 @@ only purpose is filling a day.
 - [ ] local audio loops with soft fade in/out
 
 ## Evening rituals
+- [x] Night journeys: three illustrated routes that slowly loop through existing views, keeping the room and audio
+- [x] selectable 30-second / one-minute / three-minute stops, pause, direct stops, next and stay-here controls
+- [x] a live stop ticket on the glass, Quiet room controls and immediate arrival at the window
+- [x] hidden-tab waiting, remembered route and pace without automatic restart, safe storage and phone / keyboard checks
 - [x] temporary fingertip drawings through mist on the window, with mouse, touch and pen input
 - [x] keyboard hearts and moons, two remembered brushes and quiet-window drawing / clearing
 - [x] fresh mist, pause, Escape, proportional resize and interrupted-gesture handling

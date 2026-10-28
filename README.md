@@ -31,6 +31,35 @@ The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
 
+## Let the window wander
+
+Under the mood buttons, choose a **Night journey**. The illustrated routes move
+only the view, keeping your current tape or radio, rain, light and desk objects.
+
+- **After hours**: City → Café → Garden.
+- **Far away**: Mountains → Coast → Garden.
+- **The long way**: City → Café → Garden → Mountains → Coast.
+
+Choose **30 sec**, **1 min** or **3 min** at each window, then press a route card.
+You arrive at the window immediately. If your current view is on that route,
+the journey begins there; otherwise it starts at the first stop. Routes loop.
+A small ticket on the glass shows your current stop and a gentle progress line.
+
+**Pause** stays at the current view and keeps the unspent time. **Next view** or
+a numbered stop changes the view immediately, even while paused. **Stay here**
+ends the route without moving you. The compact controls above the window also
+work in **Quiet room**. Choosing a view yourself or opening a saved evening
+ends the journey so your choice can stay.
+
+Hidden tabs wait at their current stop; returning resumes the remaining time,
+without skipping through places you missed. Reduced motion keeps the progress
+line still and removes animated scene transitions. Your last route and pace are
+remembered locally, but a reload never starts a journey automatically. Saved
+room setups keep the current view, with no running journey attached. Focus
+sessions, journal entries, the tape queue and sound deadlines stay independent.
+
+![Three illustrated routes through the night, with pace and stop controls](assets/night-journeys.png)
+
 ## A collection of your own evenings
 
 Open **Your collected evenings**, just below the ready-made cards. Settle the
