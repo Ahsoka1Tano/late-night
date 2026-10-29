@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=7f549cf83177" />
+  <link rel="stylesheet" href="style.css?v=5bb4ff741bd2" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -605,9 +605,16 @@
     <div class="pocket-strip">
       <span class="pocket-art" aria-hidden="true"><i></i><i></i></span>
       <button class="pocket-copy" id="pocket-source" type="button" aria-label="Open full sound controls"><small id="pocket-status">TAPE · PAUSED</small><strong id="pocket-title">A tape for tonight</strong><span id="pocket-room-state">room sound off</span></button>
-      <div class="pocket-transport"><button id="pocket-play" type="button" aria-label="Play tape">▶</button><button id="pocket-next" type="button" aria-label="Next tape, including queued recordings">↗</button></div>
+      <div class="pocket-transport"><button id="pocket-play" type="button" aria-label="Play tape">▶</button><button id="pocket-next" type="button" aria-label="Next tape, including queued recordings">↗</button><button id="pocket-mix-toggle" type="button" aria-label="Open listening mix" aria-expanded="false" aria-controls="pocket-mix">≋</button></div>
     </div>
+    <section class="pocket-mix" id="pocket-mix" aria-labelledby="pocket-mix-title" hidden>
+      <header><div><small>YOUR OWN BALANCE</small><h2 id="pocket-mix-title">A little closer. A little softer.</h2></div><button id="pocket-mix-close" type="button" aria-label="Close listening mix">×</button></header>
+      <div class="pocket-channel" id="pocket-tape-channel"><label for="pocket-tape-volume">Tape <output id="pocket-tape-level" for="pocket-tape-volume">55%</output></label><input id="pocket-tape-volume" type="range" min="0" max="100" step="1" value="55" /><p>Just the music. Rain keeps its own level.</p></div>
+      <p class="pocket-radio-note" id="pocket-radio-note" hidden>YouTube keeps its own play and volume controls. <button id="pocket-radio-open" type="button">open radio ↗</button></p>
+      <div class="pocket-channel"><label for="pocket-room-volume">Room sound <output id="pocket-room-level" for="pocket-room-volume">100%</output></label><input id="pocket-room-volume" type="range" min="0" max="100" step="1" value="100" /><div class="pocket-sound-row"><span id="pocket-sound-name"></span><button id="pocket-room-toggle" type="button">listen</button><button id="pocket-rain" type="button">add real rain ＋</button></div></div>
+      <footer><button id="pocket-stop" type="button">all quiet ◇</button><p id="pocket-note" role="status">Music and the room, at your own levels.</p></footer>
+    </section>
   </section>
-  <script src="app.js?v=3c3063e8a67d"></script>
+  <script src="app.js?v=c648d6f52c07"></script>
 </body>
 </html>

@@ -2181,6 +2181,26 @@ body.has-journey :is(.garden-view,.cafe-view,.mountain-view,.coast-view) { trans
 .pocket-transport { display: flex; gap: 7px; flex-shrink: 0; }
 .pocket-transport button { min-width: 44px; min-height: 44px; padding: 10px; border: 1px solid #b4a2c63b; border-radius: 50%; color: #ebdff0; background: #bc9fd018; font: inherit; font-size: 13px; cursor: pointer; }
 .pocket-player button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.pocket-player input:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.pocket-player { display: flex; flex-direction: column; }
+.pocket-mix { order: -1; padding: 20px; border-bottom: 1px solid #c9b6db25; max-height: min(480px,60svh); overflow-y: auto; overscroll-behavior: contain; }
+.pocket-mix header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.pocket-mix small { font-size: 8px; letter-spacing: .17em; color: #bca9cc; }
+.pocket-mix h2 { font-size: 20px; font-weight: 300; margin-top: 8px; }
+.pocket-mix button { min-height: 44px; padding: 8px 13px; border: 1px solid #c4b2d339; border-radius: 10px; background: #a48abf12; color: #e0d2e8; font: inherit; font-size: 11px; cursor: pointer; }
+.pocket-mix header > button { min-width: 44px; flex-shrink: 0; font-size: 20px; }
+.pocket-channel + .pocket-channel { margin-top: 22px; }
+.pocket-channel label { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; }
+.pocket-channel output { color: #baa7cb; font-size: 11px; }
+.pocket-channel input { width: 100%; display: block; min-height: 44px; accent-color: #bca3d0; cursor: pointer; }
+.pocket-channel p,.pocket-radio-note { font-size: 11px; line-height: 1.8; color: #a7a4b9; }
+.pocket-radio-note { margin-bottom: 18px; }
+.pocket-radio-note button { margin-left: 8px; }
+.pocket-sound-row { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; }
+.pocket-sound-row span { flex: 1 0 100%; color: #aaa2b8; font-size: 11px; overflow-wrap: anywhere; line-height: 1.7; }
+.pocket-mix footer { display: flex; align-items: center; gap: 14px; border-top: 1px solid #baabd522; padding-top: 18px; margin-top: 20px; }
+.pocket-mix footer p { color: #a8a1b5; font-size: 10px; line-height: 1.8; flex: 1; }
+.pocket-mix button:disabled,.pocket-mix input:disabled { opacity: .4; cursor: default; }
 body.has-pocket-player { padding-bottom: 125px; }
 .city-is-hidden .pocket-art i { animation-play-state: paused; }
 @keyframes pocket-reel { to { transform: rotate(360deg); } }

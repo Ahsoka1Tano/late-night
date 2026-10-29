@@ -3642,7 +3642,7 @@ function pocketMode() {
 function paintPocketPlayer() {
   const mode = pocketMode();
   const sound = ambienceFor(document.body.dataset.mood);
-  pocketPlayer.hidden = document.body.dataset.mood !== "music" && !tapeRunning && !listening;
+  pocketPlayer.hidden = document.body.dataset.mood !== "music" && !sound && !tapeRunning && !listening;
   document.body.classList.toggle("has-pocket-player", !pocketPlayer.hidden);
   pocketPlayer.dataset.mode = mode;
   pocketPlayer.classList.toggle("is-playing", mode === "tape" && tapeState === "playing");
@@ -3659,8 +3659,24 @@ function paintPocketPlayer() {
   play.textContent = mode === "radio" ? "radio ↗" : running ? "Ⅱ" : "▶";
   play.setAttribute("aria-label", mode === "radio" ? "Open the YouTube radio controls" : `${running ? "Pause" : failed ? "Retry" : "Play"} ${mode === "tape" ? "tape" : "room sound"}`);
   document.getElementById("pocket-next").hidden = mode !== "tape";
+  document.getElementById("pocket-tape-channel").hidden = mode !== "tape";
+  document.getElementById("pocket-radio-note").hidden = mode !== "radio";
+  document.getElementById("pocket-tape-volume").value = String(Math.round(tapeVolume * 100));
+  document.getElementById("pocket-tape-level").textContent = `${Math.round(tapeVolume * 100)}%`;
+  document.getElementById("pocket-room-volume").value = String(Math.round(roomVolume * 100));
+  document.getElementById("pocket-room-level").textContent = `${Math.round(roomVolume * 100)}%`;
+  document.getElementById("pocket-room-volume").disabled = !sound;
+  document.getElementById("pocket-sound-name").textContent = sound?.name || "No room recording selected.";
+  const roomToggle = document.getElementById("pocket-room-toggle");
+  roomToggle.disabled = !sound;
+  roomToggle.textContent = ambienceLoading ? "cancel loading" : listening ? "pause sound" : ambienceError ? "retry sound" : "listen";
+  roomToggle.setAttribute("aria-label", `${listening ? "Pause" : ambienceError ? "Retry" : "Play"} room sound`);
+  const rain = document.getElementById("pocket-rain");
+  rain.hidden = document.body.dataset.mood !== "music";
+  rain.textContent = musicRainEnabled && ambientChoice === "auto" ? "remove rain −" : "add real rain ＋";
 }
 function openPocketSource() {
+  setPocketMix(false);
   if (document.body.classList.contains("is-quiet")) setQuietRoom(false);
   const mode = pocketMode();
   const target = document.getElementById(mode === "radio" ? "radio-frame" : mode === "tape" ? "tape-choice" : "listen");
@@ -3675,5 +3691,44 @@ document.getElementById("pocket-play").addEventListener("click", () => {
 });
 document.getElementById("pocket-next").addEventListener("click", nextTape);
 document.getElementById("pocket-source").addEventListener("click", openPocketSource);
+function setPocketMix(open, { returnFocus = false } = {}) {
+  document.getElementById("pocket-mix").hidden = !open;
+  const toggle = document.getElementById("pocket-mix-toggle");
+  toggle.setAttribute("aria-expanded", String(open));
+  toggle.setAttribute("aria-label", `${open ? "Close" : "Open"} listening mix`);
+  if (returnFocus) toggle.focus({ preventScroll: true });
+}
+document.getElementById("pocket-mix-toggle").addEventListener("click", () => setPocketMix(document.getElementById("pocket-mix").hidden));
+document.getElementById("pocket-mix-close").addEventListener("click", () => setPocketMix(false, { returnFocus: true }));
+document.getElementById("pocket-radio-open").addEventListener("click", () => { openRadio(); openPocketSource(); });
+document.getElementById("pocket-room-toggle").addEventListener("click", () => listenButton.click());
+document.getElementById("pocket-rain").addEventListener("click", () => {
+  // Use the room's existing rain switch, including its loading and retry states.
+  if (musicRainEnabled && ambientChoice !== "auto") {
+    setAmbientChoice("auto");
+  } else musicRainButton.click();
+});
+function changePocketVolume(kind, value) {
+  if (kind === "tape") setVolume(value, { save: false });
+  else setRoomVolume(value, { save: false });
+  try {
+    localStorage.setItem(kind === "tape" ? "lateNight.volume" : "lateNight.roomVolume", String(value));
+    document.getElementById("pocket-note").textContent = "Music and the room, at your own levels.";
+  } catch { document.getElementById("pocket-note").textContent = "Volume changed for this visit. Couldn't save the new level on this device."; }
+}
+document.getElementById("pocket-tape-volume").addEventListener("input", event => changePocketVolume("tape", Number(event.target.value) / 100));
+document.getElementById("pocket-room-volume").addEventListener("input", event => changePocketVolume("room", Number(event.target.value) / 100));
+document.getElementById("pocket-stop").addEventListener("click", () => {
+  stopEveningSound();
+  document.getElementById("pocket-note").textContent = "All quiet. Your focus and view carry on.";
+});
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && !document.getElementById("pocket-mix").hidden) {
+    event.preventDefault(); event.stopPropagation(); setPocketMix(false, { returnFocus: true });
+  }
+}, { capture: true });
+document.addEventListener("pointerdown", event => {
+  if (!pocketPlayer.contains(event.target)) setPocketMix(false);
+});
 pocketPlayerReady = true;
 paintPocketPlayer();

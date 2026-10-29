@@ -112,6 +112,76 @@ test('pocket player reports recording failures and opens real radio controls wit
   assert.equal(await page.locator('#radio-frame iframe').evaluate(el => el === document.activeElement),true);
 });
 
+test('pocket player mixes layers independently and closes its top layer before leaving Quiet room', async t => {
+  const page = await openRoom(t);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(2000);
+  await page.evaluate(() => { window.pocketTape = tapeAudio; window.pocketRain = ambienceTrack; });
+  await page.locator('#quiet-room').click();
+  await page.locator('#pocket-mix-toggle').click();
+  await page.locator('#pocket-tape-volume').fill('23');
+  await page.locator('#pocket-room-volume').fill('38');
+  assert.equal(await page.locator('#player-volume').inputValue(),'23');
+  assert.equal(await page.locator('#room-volume').inputValue(),'38');
+  assert.equal(await page.evaluate(() => tapeAudio === pocketTape && ambienceTrack === pocketRain),true);
+  assert.equal(await page.evaluate(() => tapeAudio.volume),.23);
+  assert.equal(await page.evaluate(() => ambienceTrack.volume === levelOf(ambienceFor(document.body.dataset.mood))),true);
+  await page.locator('#pocket-room-toggle').click();
+  assert.equal(await page.evaluate(() => listening),false);
+  assert.equal(await page.evaluate(() => tapeRunning),true);
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('#pocket-mix').isVisible(),false);
+  assert.equal(await page.locator('#pocket-mix-toggle').evaluate(el => el === document.activeElement),true);
+  assert.equal(await page.evaluate(() => document.body.classList.contains('is-quiet')),true);
+  await page.keyboard.press('Escape');
+  assert.equal(await page.evaluate(() => document.body.classList.contains('is-quiet')),false);
+  await page.locator('#pocket-mix-toggle').click();
+  await page.locator('.title').click();
+  assert.equal(await page.locator('#pocket-mix-toggle').getAttribute('aria-expanded'),'false');
+});
+
+test('pocket player offers real rain and all-quiet without ending focus or the window journey', async t => {
+  const page = await openRoom(t);
+  await page.locator('.mood[data-mood="focus"]').click();
+  await page.locator('#focus-toggle').click();
+  await page.locator('.mood[data-mood="music"]').click();
+  await page.locator('[data-journey="faraway"]').click();
+  await page.locator('#pocket-play').click();
+  await page.locator('#pocket-mix-toggle').click();
+  await page.locator('#pocket-rain').click();
+  await page.clock.runFor(1500);
+  assert.equal(await page.evaluate(() => listening && musicRainEnabled && ambienceTrack.src.includes('relaxingrainsounds')),true);
+  await page.locator('#pocket-stop').click();
+  assert.equal(await page.evaluate(() => window.media.every(a => a.paused)),true);
+  assert.equal(await page.evaluate(() => !listening && !tapeRunning),true);
+  assert.equal(await page.locator('#focus-toggle').textContent(),'pause');
+  assert.equal(await page.evaluate(() => journeyState),'running');
+  assert.equal(await page.locator('#pocket-mix').isVisible(),true);
+  await page.locator('#pocket-mix-close').click();
+  await page.locator('.mood[data-mood="calm"]').click();
+  assert.equal(await page.locator('#pocket-player').getAttribute('data-mode'),'ambient');
+  await page.locator('#pocket-play').click();
+  assert.equal(await page.evaluate(() => listening),true);
+});
+
+test('pocket player leaves stored volume intact when persistence fails and can still apply both knobs', async t => {
+  const page = await openRoom(t);
+  await page.locator('#pocket-mix-toggle').click();
+  await page.locator('#pocket-tape-volume').fill('44');
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function(key,value) { if (['lateNight.volume','lateNight.roomVolume'].includes(key)) throw new DOMException('full','QuotaExceededError'); return original.call(this,key,value); };
+  });
+  await page.locator('#pocket-tape-volume').fill('18');
+  assert.equal(await page.evaluate(() => tapeVolume),.18);
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.volume')),'0.44');
+  assert.match(await page.locator('#pocket-note').textContent(),/Couldn't save/);
+  await page.locator('#pocket-rain').click();
+  await page.locator('#pocket-room-volume').fill('31');
+  assert.equal(await page.evaluate(() => roomVolume),.31);
+  assert.match(await page.locator('#pocket-note').textContent(),/Couldn't save/);
+});
+
 test('night journeys follow their route, loop, pause and leave the room quiet', async t => {
   const page = await openRoom(t);
   await page.locator('[data-journey-seconds="30"]').click();
