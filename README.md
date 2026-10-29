@@ -31,6 +31,38 @@ The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
 
+## A player within reach
+
+The **Pocket player** stays at the bottom of the screen, including in **Quiet
+room**. It follows the current tape, official radio or room recording, so you
+can keep listening without scrolling back to the desk.
+
+- **Play / pause** controls the tape, or the room recording in other moods.
+  Pausing a tape leaves rain playing. **Next** follows your tape queue first.
+- **≋** opens a small mixer with separate tape and room volume, an independent
+  room-sound switch, and the existing real-rain switch in Music mood.
+- **All quiet** stops tapes, room recordings and the radio. Your focus session,
+  window journey and sound deadline keep their own state.
+
+The mixer shows the full recording name. When a tape supplies a duration,
+its position appears here too; seeking while paused keeps it paused. The
+ordinary desk controls and the Pocket player share the same audio and levels.
+Loading, unavailable recordings and muted levels have their own labels.
+
+YouTube keeps its own transport and volume controls. **Radio ↗** takes you to
+the existing embedded player, leaving Quiet room if necessary. The Pocket
+player reports whether that player is open; it does not guess whether YouTube
+is currently audible. Opening the controls preserves an existing iframe.
+
+**Minimize player** inside the mixer folds it into a small title button. Click
+that button to expand it. Resizing keeps playback unchanged, and the layout is
+remembered on this device. Remembering the layout does not start any audio.
+Escape closes the mixer first; another Escape can then leave Quiet room.
+Clicking outside also closes the mixer. Reels rest in hidden tabs and with
+reduced motion. Narrow screens and short landscape windows can scroll the mixer.
+
+![The Pocket player and separate music and rain controls in Quiet room](assets/pocket-player.png)
+
 ## Let the window wander
 
 Under the mood buttons, choose a **Night journey**. The illustrated routes move

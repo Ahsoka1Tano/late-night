@@ -42,6 +42,10 @@ only purpose is filling a day.
 - [x] real rain recordings, one per intensity, with an honest retry when unavailable
 
 ## Music mood
+- [x] Pocket player: shared tape / queue controls and honest playback states at the bottom of the room
+- [x] independent tape and ambient mix, real-rain switch, all-quiet action and original YouTube controls
+- [x] shared paused seeking, remembered compact layout and keyboard access without leaving Quiet room
+- [x] phone and landscape layouts, safe storage failures, still reels and space for the quiet-window footer
 - [x] Up next: eight ordered recordings, added quietly from the current tape or cassette shelf
 - [x] queued transitions at tape endings and Next, preserving rain and paused playback
 - [x] keyboard reordering, removal with undo and clearing without stopping the current tape

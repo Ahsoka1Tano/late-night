@@ -2219,6 +2219,8 @@ body.pocket-is-compact.is-quiet .window-view { height: max(500px,calc(100svh - 1
 #pocket-mix-toggle { font-size: 22px; }
 @media(max-width:600px) { .pocket-player { width: calc(100vw - 24px); bottom: max(12px,env(safe-area-inset-bottom)); } .pocket-mix { padding: 16px; grid-template-columns: 1fr; } .pocket-channel + .pocket-radio-note + .pocket-channel { margin-top: 18px; } .pocket-mix h2 { font-size: 19px; } .pocket-transport { gap: 5px; } }
 body.has-pocket-player { padding-bottom: 125px; }
+body.has-pocket-player .room { padding-bottom: 165px; }
+body.pocket-is-compact .room { padding-bottom: 95px; }
 body.city-is-hidden .pocket-player.is-playing .pocket-art i { animation-play-state: paused; }
 @keyframes pocket-reel { to { transform: rotate(360deg); } }
 @media(prefers-reduced-motion:reduce) { .pocket-player.is-playing .pocket-art i { animation: none; } }
