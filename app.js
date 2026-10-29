@@ -1792,6 +1792,7 @@ function paintTapePosition() {
   seek.disabled = !seekable;
   seek.value = seekable ? String(Math.min(1000,elapsed / duration * 1000)) : "0";
   seek.setAttribute("aria-valuetext",seekable ? `${tapeTime(elapsed)} of ${tapeTime(duration)}` : "Duration available when the recording loads");
+  if (pocketPlayerReady) paintPocketPosition();
 }
 document.getElementById("tape-seek").addEventListener("input",event => {
   if (!tapeAudio || !Number.isFinite(tapeAudio.duration) || tapeAudio.duration <= 0) return;
@@ -3634,6 +3635,12 @@ restoreFocusSession();
 
 /* A little listening desk, always within reach of the window. */
 const pocketPlayer = document.getElementById("pocket-player");
+let pocketCompact = false, pocketLayoutBroken = false;
+try {
+  const saved = localStorage.getItem("lateNight.pocketCompact");
+  if (saved !== null && saved !== "0" && saved !== "1") throw new Error("Unreadable player layout");
+  pocketCompact = saved === "1";
+} catch { pocketLayoutBroken = true; }
 function pocketMode() {
   if (document.body.dataset.mood === "music" && station === "radio") return "radio";
   if (document.body.dataset.mood === "music" || tapeRunning) return "tape";
@@ -3648,6 +3655,10 @@ function paintPocketPlayer() {
   pocketPlayer.classList.toggle("is-playing", mode === "tape" && tapeState === "playing");
   const title = mode === "radio" ? `Lofi Girl · ${currentRadio().name}` : mode === "tape" ? TAPES[tapeIndex].title : sound?.name || "A quiet room";
   document.getElementById("pocket-title").textContent = title;
+  document.getElementById("pocket-compact-title").textContent = title;
+  document.getElementById("pocket-unfold").setAttribute("aria-label", `Expand pocket player: ${title}`);
+  document.getElementById("pocket-recording").textContent = title;
+  document.getElementById("pocket-source").setAttribute("aria-label", `Open full sound controls: ${title}`);
   const status = mode === "radio" ? radioFrame.firstChild ? "YOUTUBE · PLAYER OPEN" : "YOUTUBE · PLAYER CLOSED"
     : mode === "tape" ? tapeState === "loading" ? "TAPE · FINDING THE RECORDING" : tapeError ? "TAPE · UNAVAILABLE" : tapeRunning ? tapeVolume === 0 ? "TAPE · MUTED" : "TAPE · PLAYING" : "TAPE · PAUSED"
     : ambienceLoading ? "ROOM SOUND · LOADING" : ambienceError ? "ROOM SOUND · UNAVAILABLE" : listening ? roomVolume === 0 ? "ROOM SOUND · MUTED" : "ROOM SOUND · LISTENING" : "ROOM SOUND · PAUSED";
@@ -3674,6 +3685,16 @@ function paintPocketPlayer() {
   const rain = document.getElementById("pocket-rain");
   rain.hidden = document.body.dataset.mood !== "music";
   rain.textContent = musicRainEnabled && ambientChoice === "auto" ? "remove rain −" : "add real rain ＋";
+  paintPocketPosition();
+}
+function paintPocketPosition() {
+  const original = document.getElementById("tape-seek"), seek = document.getElementById("pocket-seek");
+  seek.disabled = original.disabled;
+  seek.closest(".pocket-position").hidden = original.disabled;
+  seek.value = original.value;
+  seek.setAttribute("aria-valuetext", original.getAttribute("aria-valuetext"));
+  document.getElementById("pocket-elapsed").textContent = document.getElementById("tape-elapsed").textContent;
+  document.getElementById("pocket-duration").textContent = document.getElementById("tape-duration").textContent;
 }
 function openPocketSource() {
   setPocketMix(false);
@@ -3691,6 +3712,27 @@ document.getElementById("pocket-play").addEventListener("click", () => {
 });
 document.getElementById("pocket-next").addEventListener("click", nextTape);
 document.getElementById("pocket-source").addEventListener("click", openPocketSource);
+document.getElementById("pocket-seek").addEventListener("input", event => {
+  const original = document.getElementById("tape-seek");
+  if (original.disabled) return;
+  original.value = event.target.value;
+  original.dispatchEvent(new Event("input", { bubbles: true }));
+});
+function setPocketCompact(on, { save = true, focus = false } = {}) {
+  pocketCompact = on;
+  setPocketMix(false);
+  pocketPlayer.classList.toggle("is-compact", on);
+  document.body.classList.toggle("pocket-is-compact", on);
+  pocketPlayer.querySelector(".pocket-strip").hidden = on;
+  document.getElementById("pocket-unfold").hidden = !on;
+  if (save && !pocketLayoutBroken) {
+    try { localStorage.setItem("lateNight.pocketCompact", on ? "1" : "0"); }
+    catch { document.getElementById("pocket-note").textContent = "Player resized for this visit. Couldn't save its layout on this device."; }
+  } else if (pocketLayoutBroken) document.getElementById("pocket-note").textContent = "Couldn't read the saved player layout. Saved data is untouched; resizing still works this visit.";
+  if (focus) document.getElementById(on ? "pocket-unfold" : "pocket-mix-toggle").focus({ preventScroll: true });
+}
+document.getElementById("pocket-fold").addEventListener("click", () => setPocketCompact(true, { focus: true }));
+document.getElementById("pocket-unfold").addEventListener("click", () => setPocketCompact(false, { focus: true }));
 function setPocketMix(open, { returnFocus = false } = {}) {
   document.getElementById("pocket-mix").hidden = !open;
   const toggle = document.getElementById("pocket-mix-toggle");
@@ -3731,4 +3773,5 @@ document.addEventListener("pointerdown", event => {
   if (!pocketPlayer.contains(event.target)) setPocketMix(false);
 });
 pocketPlayerReady = true;
+setPocketCompact(pocketCompact, { save: false });
 paintPocketPlayer();

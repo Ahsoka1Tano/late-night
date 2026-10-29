@@ -182,6 +182,101 @@ test('pocket player leaves stored volume intact when persistence fails and can s
   assert.match(await page.locator('#pocket-note').textContent(),/Couldn't save/);
 });
 
+test('pocket player folds without stopping audio and restores its layout quietly with safe storage failures', async t => {
+  const page = await openRoom(t);
+  await page.locator('#pocket-mix-toggle').click();
+  await page.locator('#pocket-fold').click();
+  assert.equal(await page.locator('#pocket-unfold').evaluate(el => el === document.activeElement),true);
+  assert.equal(await page.locator('#pocket-source').isVisible(),false);
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.pocketCompact')),'1');
+  await page.reload();
+  assert.equal(await page.locator('#pocket-unfold').isVisible(),true);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  await page.locator('#pocket-unfold').click();
+  await page.locator('#pocket-play').click();
+  await page.clock.runFor(1500);
+  await page.evaluate(() => { window.foldTrack = tapeAudio; });
+  await page.locator('#pocket-mix-toggle').click();
+  await page.locator('#pocket-fold').click();
+  assert.equal(await page.evaluate(() => tapeAudio === foldTrack && !tapeAudio.paused && tapeRunning),true);
+  await page.locator('#pocket-unfold').click();
+  assert.equal(await page.locator('#pocket-mix-toggle').evaluate(el => el === document.activeElement),true);
+  await page.evaluate(() => localStorage.setItem('lateNight.pocketCompact','unreadable'));
+  await page.reload();
+  await page.locator('#pocket-mix-toggle').click();
+  assert.match(await page.locator('#pocket-note').textContent(),/Couldn't read/);
+  await page.locator('#pocket-fold').click();
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.pocketCompact')),'unreadable');
+  await page.evaluate(() => localStorage.removeItem('lateNight.pocketCompact'));
+  await page.reload();
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function(key,value) { if (key === 'lateNight.pocketCompact') throw new DOMException('full','QuotaExceededError'); return original.call(this,key,value); };
+  });
+  await page.locator('#pocket-mix-toggle').click();
+  await page.locator('#pocket-fold').click();
+  await page.locator('#pocket-unfold').click();
+  await page.locator('#pocket-mix-toggle').click();
+  assert.match(await page.locator('#pocket-note').textContent(),/Couldn't save/);
+});
+
+test('pocket player seeks a paused recording through shared controls and reflects muting and stale events', async t => {
+  const page = await openRoom(t);
+  await page.locator('#pocket-play').click();
+  await page.locator('#pocket-play').click();
+  await page.clock.runFor(1400);
+  await page.evaluate(() => { tapeAudio.duration = 600; tapeAudio.currentTime = 90; tapeAudio.dispatchEvent(new Event('loadedmetadata')); window.seekOldTrack = tapeAudio; });
+  await page.locator('#pocket-mix-toggle').click();
+  assert.equal(await page.locator('#pocket-elapsed').textContent(),'01:30');
+  assert.equal(await page.locator('#pocket-duration').textContent(),'10:00');
+  await page.locator('#pocket-seek').fill('500');
+  assert.equal(await page.evaluate(() => tapeAudio.currentTime),300);
+  assert.equal(await page.evaluate(() => tapeAudio.paused),true);
+  assert.equal(await page.locator('#tape-elapsed').textContent(),'05:00');
+  await page.locator('#pocket-tape-volume').fill('0');
+  await page.locator('#pocket-play').click();
+  await page.waitForFunction(() => tapeState === 'playing');
+  assert.match(await page.locator('#pocket-status').textContent(),/MUTED/);
+  await page.locator('#pocket-next').click();
+  await page.evaluate(() => { seekOldTrack.currentTime = 400; seekOldTrack.dispatchEvent(new Event('timeupdate')); });
+  assert.equal(await page.locator('#pocket-elapsed').textContent(),'00:00');
+  assert.equal(await page.locator('#pocket-seek').isDisabled(),true);
+});
+
+test('pocket player fits phones, tablets and landscape with reachable controls and still reels for reduced motion', async t => {
+  for (const [width,height] of [[320,720],[768,900],[1440,900],[844,390]]) {
+    const page = await openRoom(t,width);
+    await page.setViewportSize({width,height});
+    await page.locator('#evening-toggle').click();
+    await page.locator('#quiet-room').click();
+    const bar = await page.locator('#pocket-player').boundingBox();
+    assert.ok(bar.x >= 0 && bar.x + bar.width <= width && bar.y + bar.height <= height);
+    if (height >= 900) {
+      const footer = await page.locator('#evening-toggle').boundingBox();
+      assert.ok(footer.y + footer.height <= bar.y);
+    }
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`pocket-window-${width}.png`)});
+    await page.locator('#pocket-mix-toggle').click();
+    const expanded = await page.locator('#pocket-player').boundingBox();
+    assert.ok(expanded.y >= 0 && expanded.y + expanded.height <= height);
+    assert.equal(await page.locator('#pocket-player button:visible').evaluateAll(els => els.every(el => el.getBoundingClientRect().height >= 44)),true);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
+    assert.equal(await page.locator('.pocket-art i').first().evaluate(el => getComputedStyle(el).animationName),'none');
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`pocket-player-${width}.png`)});
+    if (width === 1440) {
+      await page.emulateMedia({reducedMotion:'no-preference'});
+      await page.waitForFunction(() => getComputedStyle(document.querySelector('.pocket-art i')).animationName === 'pocket-reel');
+      await page.evaluate(() => { Object.defineProperty(document,'hidden',{configurable:true,value:true}); document.dispatchEvent(new Event('visibilitychange')); });
+      assert.equal(await page.locator('.pocket-art i').first().evaluate(el => getComputedStyle(el).animationPlayState),'paused');
+      await page.evaluate(() => { Object.defineProperty(document,'hidden',{configurable:true,value:false}); document.dispatchEvent(new Event('visibilitychange')); });
+    }
+    await page.locator('#pocket-fold').click();
+    const compact = await page.locator('#pocket-player').boundingBox();
+    assert.ok(compact.width <= 280 && compact.x >= 0 && compact.x + compact.width <= width);
+    await page.close();
+  }
+});
+
 test('night journeys follow their route, loop, pause and leave the room quiet', async t => {
   const page = await openRoom(t);
   await page.locator('[data-journey-seconds="30"]').click();
