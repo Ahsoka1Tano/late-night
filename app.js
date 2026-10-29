@@ -1,5 +1,6 @@
 /* Late Night — a tiny digital room for quiet evenings. */
 let eveningSoundGain = 1;
+let pocketPlayerReady = false;
 
 const clockEl = document.getElementById("clock");
 const windowClock = document.getElementById("window-clock");
@@ -1774,6 +1775,7 @@ function paintTape() {
     sourceLink.href = source.hostname === "archive.org" && item ? `https://archive.org/details/${item[1]}` : source.href;
     sourceLink.hidden = source.protocol !== "https:";
   } catch { sourceLink.hidden = true; }
+  if (pocketPlayerReady) paintPocketPlayer();
 }
 function tapeTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return "--:--";
@@ -1933,10 +1935,12 @@ function openRadio() {
   frame.referrerPolicy = "strict-origin-when-cross-origin";
   frame.loading = "lazy";
   radioFrame.append(frame);
+  if (pocketPlayerReady) paintPocketPlayer();
 }
 
 function closeRadio() {
   radioFrame.replaceChildren();
+  if (pocketPlayerReady) paintPocketPlayer();
 }
 
 function setStation(next) {
@@ -1983,6 +1987,7 @@ function setVolume(value, { save = true } = {}) {
   }
 
   if (save) localStorage.setItem("lateNight.volume", String(tapeVolume));
+  if (pocketPlayerReady) paintPocketPlayer();
 }
 
 volumeSlider.addEventListener("input", () => setVolume(Number(volumeSlider.value) / 100));
@@ -2104,6 +2109,7 @@ function paintAmbience() {
     sourceLink.href = item ? `https://archive.org/details/${item[1]}` : "https://opengameart.org/content/floating-in-space";
   } else sourceLink.removeAttribute("href");
   document.getElementById("sound-shelf").classList.toggle("is-playing", listening && !ambienceLoading && !ambienceError && Boolean(sound));
+  if (pocketPlayerReady) paintPocketPlayer();
 }
 
 // Every playback attempt owns its callbacks. Leaving a mood invalidates them.
@@ -2201,6 +2207,7 @@ function setRoomVolume(value, { save = true } = {}) {
   }
 
   if (save) localStorage.setItem("lateNight.roomVolume", String(roomVolume));
+  if (pocketPlayerReady) paintPocketPlayer();
 }
 
 roomSlider.addEventListener("input", () => setRoomVolume(Number(roomSlider.value) / 100));
@@ -3624,3 +3631,49 @@ paintSoundTimer();
 setWindowScene(windowScene, { save: false });
 setMood(localStorage.getItem("lateNight.mood") || "music", { save: false });
 restoreFocusSession();
+
+/* A little listening desk, always within reach of the window. */
+const pocketPlayer = document.getElementById("pocket-player");
+function pocketMode() {
+  if (document.body.dataset.mood === "music" && station === "radio") return "radio";
+  if (document.body.dataset.mood === "music" || tapeRunning) return "tape";
+  return "ambient";
+}
+function paintPocketPlayer() {
+  const mode = pocketMode();
+  const sound = ambienceFor(document.body.dataset.mood);
+  pocketPlayer.hidden = document.body.dataset.mood !== "music" && !tapeRunning && !listening;
+  document.body.classList.toggle("has-pocket-player", !pocketPlayer.hidden);
+  pocketPlayer.dataset.mode = mode;
+  pocketPlayer.classList.toggle("is-playing", mode === "tape" && tapeState === "playing");
+  const title = mode === "radio" ? `Lofi Girl · ${currentRadio().name}` : mode === "tape" ? TAPES[tapeIndex].title : sound?.name || "A quiet room";
+  document.getElementById("pocket-title").textContent = title;
+  const status = mode === "radio" ? radioFrame.firstChild ? "YOUTUBE · PLAYER OPEN" : "YOUTUBE · PLAYER CLOSED"
+    : mode === "tape" ? tapeState === "loading" ? "TAPE · FINDING THE RECORDING" : tapeError ? "TAPE · UNAVAILABLE" : tapeRunning ? tapeVolume === 0 ? "TAPE · MUTED" : "TAPE · PLAYING" : "TAPE · PAUSED"
+    : ambienceLoading ? "ROOM SOUND · LOADING" : ambienceError ? "ROOM SOUND · UNAVAILABLE" : listening ? roomVolume === 0 ? "ROOM SOUND · MUTED" : "ROOM SOUND · LISTENING" : "ROOM SOUND · PAUSED";
+  document.getElementById("pocket-status").textContent = status;
+  document.getElementById("pocket-room-state").textContent = !sound ? "room sound off" : ambienceLoading ? "room sound loading…" : ambienceError ? "room sound unavailable" : listening ? `room sound · ${Math.round(roomVolume * 100)}%` : "room sound paused";
+  const play = document.getElementById("pocket-play");
+  const running = mode === "tape" ? tapeRunning : listening;
+  const failed = mode === "tape" ? Boolean(tapeError) : Boolean(ambienceError);
+  play.textContent = mode === "radio" ? "radio ↗" : running ? "Ⅱ" : "▶";
+  play.setAttribute("aria-label", mode === "radio" ? "Open the YouTube radio controls" : `${running ? "Pause" : failed ? "Retry" : "Play"} ${mode === "tape" ? "tape" : "room sound"}`);
+  document.getElementById("pocket-next").hidden = mode !== "tape";
+}
+function openPocketSource() {
+  if (document.body.classList.contains("is-quiet")) setQuietRoom(false);
+  const mode = pocketMode();
+  const target = document.getElementById(mode === "radio" ? "radio-frame" : mode === "tape" ? "tape-choice" : "listen");
+  target.scrollIntoView({ block: "center", behavior: "instant" });
+  (mode === "radio" ? target.querySelector("iframe") : target)?.focus({ preventScroll: true });
+}
+document.getElementById("pocket-play").addEventListener("click", () => {
+  const mode = pocketMode();
+  if (mode === "radio") { openRadio(); openPocketSource(); }
+  else if (mode === "tape") setTape(!tapeRunning);
+  else listenButton.click();
+});
+document.getElementById("pocket-next").addEventListener("click", nextTape);
+document.getElementById("pocket-source").addEventListener("click", openPocketSource);
+pocketPlayerReady = true;
+paintPocketPlayer();

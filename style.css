@@ -2166,6 +2166,26 @@ body.has-journey :is(.garden-view,.cafe-view,.mountain-view,.coast-view) { trans
   .journey-ticket > span { font-size: 8px; white-space: nowrap; }
   .journey-wait { flex: 1; min-width: 15px; margin: 0; }
 }
+.pocket-player { position: fixed; z-index: 30; left: 50%; bottom: max(16px,env(safe-area-inset-bottom)); transform: translateX(-50%); width: min(720px,calc(100vw - 32px)); border: 1px solid #baabc54a; border-radius: 18px; background: linear-gradient(120deg,#2a2437ee,#111a29f5); box-shadow: 0 15px 60px #0009,0 0 40px #9470b511; backdrop-filter: blur(20px); }
+.pocket-strip { display: flex; align-items: center; gap: 16px; padding: 14px 18px; }
+.pocket-art { flex: 0 0 64px; height: 44px; display: flex; justify-content: space-around; align-items: center; padding: 6px; border: 1px solid #d3bcc34a; border-radius: 6px; background: linear-gradient(#b8a09230 0 42%,#161b2d 42% 75%,#af92b42b 75%); box-shadow: inset 0 0 0 4px #131a25; }
+.pocket-art i { width: 18px; height: 18px; border: 3px dotted #c3aec6; border-radius: 50%; box-shadow: 0 0 0 2px #101521; }
+.pocket-player.is-playing .pocket-art i { animation: pocket-reel 6s linear infinite; }
+.pocket-player[data-mode='radio'] .pocket-art { border-radius: 50%; background: radial-gradient(circle,#b6a1c23b,transparent 65%); }
+.pocket-player[data-mode='radio'] .pocket-art i { border-style: solid; border-color: #b6a1c266; }
+.pocket-player[data-mode='ambient'] .pocket-art { background: linear-gradient(160deg,#56809644,#59736122); }
+.pocket-copy { flex: 1; min-width: 0; display: grid; gap: 5px; text-align: left; border: 0; background: none; color: var(--text); font: inherit; cursor: pointer; }
+.pocket-copy small { font-size: 8px; letter-spacing: .12em; color: #bfa9ce; }
+.pocket-copy strong { font-size: 14px; line-height: 1.5; font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pocket-copy > span { color: #a2a6b9; font-size: 10px; }
+.pocket-transport { display: flex; gap: 7px; flex-shrink: 0; }
+.pocket-transport button { min-width: 44px; min-height: 44px; padding: 10px; border: 1px solid #b4a2c63b; border-radius: 50%; color: #ebdff0; background: #bc9fd018; font: inherit; font-size: 13px; cursor: pointer; }
+.pocket-player button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+body.has-pocket-player { padding-bottom: 125px; }
+.city-is-hidden .pocket-art i { animation-play-state: paused; }
+@keyframes pocket-reel { to { transform: rotate(360deg); } }
+@media(prefers-reduced-motion:reduce) { .pocket-player.is-playing .pocket-art i { animation: none; } }
+@media(max-width:600px) { .pocket-strip { padding: 12px; gap: 10px; } .pocket-art { display: none; } .pocket-copy strong { font-size: 12px; } .pocket-copy small { font-size: 7px; letter-spacing: .07em; } .pocket-copy > span { font-size: 9px; } }
 .quiet-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin: 0 0 14px; flex-wrap: wrap; }
 .quiet-toolbar p { color: var(--text-dim); font-size: 8px; letter-spacing: .17em; }
 .quiet-toolbar button { min-height: 44px; padding: 8px 14px; border: 1px solid #ffffff20; border-radius: 999px; background: #ffffff04; color: var(--text); font: inherit; font-size: 11px; cursor: pointer; }

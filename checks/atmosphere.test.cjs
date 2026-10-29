@@ -70,6 +70,48 @@ async function openRoom(t, width = 1280, motion = 'reduce') {
   return page;
 }
 
+test('pocket player cues and advances real tapes while rain keeps its own playback', async t => {
+  const page = await openRoom(t);
+  await page.waitForFunction(() => TAPES.length > 8);
+  assert.equal(await page.locator('#pocket-player').isVisible(),true);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(2000);
+  await page.evaluate(() => { window.pocketRain = ambienceTrack; queueTape(TAPES.find(t => t.src !== TAPES[tapeIndex].src).src); });
+  const queued = await page.evaluate(() => tapeQueue[0]);
+  await page.locator('#pocket-next').click();
+  assert.equal(await page.evaluate(() => TAPES[tapeIndex].src),queued);
+  assert.equal(await page.locator('#pocket-title').textContent(),await page.evaluate(() => TAPES[tapeIndex].title));
+  assert.equal(await page.evaluate(() => ambienceTrack === pocketRain && !ambienceTrack.paused),true);
+  await page.locator('#pocket-play').click();
+  assert.equal(await page.evaluate(() => tapeRunning),false);
+  assert.match(await page.locator('#pocket-status').textContent(),/PAUSED/);
+  assert.equal(await page.evaluate(() => listening && ambienceTrack === pocketRain),true);
+  await page.locator('#pocket-play').click();
+  assert.equal(await page.evaluate(() => tapeRunning),true);
+});
+
+test('pocket player reports recording failures and opens real radio controls without replacing an existing player', async t => {
+  const page = await openRoom(t);
+  await page.evaluate(() => { window.failAudio = true; });
+  await page.locator('#pocket-play').click();
+  await page.waitForFunction(() => tapeState === 'error');
+  assert.match(await page.locator('#pocket-status').textContent(),/UNAVAILABLE/);
+  assert.equal(await page.locator('#pocket-play').getAttribute('aria-label'),'Retry tape');
+  await page.evaluate(() => { window.failAudio = false; });
+  await page.locator('#pocket-play').click();
+  await page.waitForFunction(() => tapeState === 'playing');
+  await page.locator('button.station[data-station="radio"]').click();
+  await page.evaluate(() => { window.pocketRadio = document.querySelector('#radio-frame iframe'); });
+  assert.match(await page.locator('#pocket-status').textContent(),/YOUTUBE · PLAYER OPEN/);
+  assert.equal(await page.locator('#pocket-next').isVisible(),false);
+  await page.locator('#quiet-room').click();
+  await page.locator('#pocket-play').click();
+  assert.equal(await page.evaluate(() => document.querySelector('#radio-frame iframe') === pocketRadio),true);
+  assert.equal(await page.evaluate(() => document.body.classList.contains('is-quiet')),false);
+  assert.equal(await page.locator('#radio-frame iframe').evaluate(el => el === document.activeElement),true);
+});
+
 test('night journeys follow their route, loop, pause and leave the room quiet', async t => {
   const page = await openRoom(t);
   await page.locator('[data-journey-seconds="30"]').click();
