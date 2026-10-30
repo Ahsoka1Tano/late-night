@@ -149,6 +149,65 @@ test('room finishes round the orbital viewport and rest its hull light in hidden
   }
 });
 
+test('room finishes restore quietly and keep unreadable preferences or failed writes intact', async t => {
+  const page = await openRoom(t);
+  await page.locator('#room-finish').click();
+  await page.locator('[data-room-finish="orbit"]').click();
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.roomFinish')),'orbit');
+  await page.reload();
+  assert.equal(await page.locator('#window-view').getAttribute('data-finish'),'orbit');
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  for (const value of ['unreadable','__proto__']) {
+    await page.evaluate(value => localStorage.setItem('lateNight.roomFinish',value),value);
+    await page.reload();
+    await page.locator('#room-finish').click();
+    assert.match(await page.locator('#finish-storage-note').textContent(),/Couldn't read/);
+    await page.locator('[data-room-finish="orbit"]').click();
+    assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.roomFinish')),value);
+  }
+  await page.evaluate(() => localStorage.setItem('lateNight.roomFinish','steel'));
+  await page.reload();
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function(key,value) { if (key === 'lateNight.roomFinish') throw new DOMException('full','QuotaExceededError'); return original.call(this,key,value); };
+  });
+  await page.locator('#room-finish').click();
+  await page.locator('[data-room-finish="cedar"]').click();
+  assert.equal(await page.locator('#window-view').getAttribute('data-finish'),'cedar');
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.roomFinish')),'steel');
+  assert.match(await page.locator('#finish-storage-note').textContent(),/Couldn't save/);
+});
+
+test('room finishes travel with personal and collected evenings while legacy rooms keep the current material', async t => {
+  const page = await openRoom(t);
+  await page.locator('#room-finish').click();
+  await page.locator('[data-room-finish="orbit"]').click();
+  await page.locator('#room-finish-close').click();
+  await page.locator('#keep-evening').click();
+  assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('lateNight.personalScene')).finish),'orbit');
+  await page.locator('#room-finish').click();
+  await page.locator('[data-room-finish="steel"]').click();
+  await page.locator('#room-finish-close').click();
+  await page.waitForFunction(() => document.querySelector('[data-evening="personal"]').getAttribute('aria-pressed') === 'false');
+  await page.locator('[data-evening="personal"]').click();
+  assert.equal(await page.locator('#window-view').getAttribute('data-finish'),'orbit');
+  assert.equal(await page.locator('[data-evening="personal"]').getAttribute('data-personal-finish'),'orbit');
+  await page.locator('#evening-library summary').click();
+  await page.locator('#library-name').fill('A cabin in orbit');
+  await page.locator('#library-save').click();
+  await page.locator('#room-finish').click();
+  await page.locator('[data-room-finish="cedar"]').click();
+  await page.locator('#room-finish-close').click();
+  await page.locator('.saved-evening-open').click();
+  assert.equal(await page.locator('#window-view').getAttribute('data-finish'),'orbit');
+  assert.equal(await page.locator('.saved-evening-open').getAttribute('data-personal-finish'),'orbit');
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  await page.evaluate(() => { const old = JSON.parse(localStorage.getItem('lateNight.personalScene')); delete old.finish; localStorage.setItem('lateNight.personalScene',JSON.stringify(old)); localStorage.setItem('lateNight.roomFinish','steel'); });
+  await page.reload();
+  await page.locator('[data-evening="personal"]').click();
+  assert.equal(await page.locator('#window-view').getAttribute('data-finish'),'steel');
+});
+
 test('pocket player cues and advances real tapes while rain keeps its own playback', async t => {
   const page = await openRoom(t);
   await page.waitForFunction(() => TAPES.length > 8);

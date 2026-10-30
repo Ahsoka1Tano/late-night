@@ -2265,15 +2265,31 @@ const windowView = document.getElementById("window-view");
 
 /* Three materials for the same window; sound and the view keep their own place. */
 const ROOM_FINISHES = { cedar: "Cedar", steel: "Midnight steel", orbit: "Orbital" };
-let roomFinish = "cedar";
+let roomFinish = "cedar", roomFinishUnreadable = false;
 const finishButton = document.getElementById("room-finish");
 const finishPanel = document.getElementById("room-finish-panel");
-function setRoomFinish(value) {
+try {
+  const saved = localStorage.getItem("lateNight.roomFinish");
+  if (saved !== null) {
+    if (!Object.hasOwn(ROOM_FINISHES, saved)) throw new Error("Unreadable room finish");
+    roomFinish = saved;
+  }
+} catch {
+  roomFinishUnreadable = true;
+  document.getElementById("finish-storage-note").textContent = "Couldn't read the saved finish. Saved data is untouched; previews still work this visit.";
+}
+function setRoomFinish(value, { save = true } = {}) {
   if (!Object.hasOwn(ROOM_FINISHES, value)) return;
   roomFinish = value;
   windowView.dataset.finish = value;
   document.querySelectorAll("button[data-room-finish]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.roomFinish === value)));
   document.getElementById("finish-note").textContent = `${ROOM_FINISHES[value]} · same music, same night.`;
+  if (save && !roomFinishUnreadable) {
+    try {
+      localStorage.setItem("lateNight.roomFinish", value);
+      document.getElementById("finish-storage-note").textContent = "";
+    } catch { document.getElementById("finish-storage-note").textContent = "Finish changed for this visit. Couldn't save it; your previous choice is kept."; }
+  }
 }
 function openRoomFinishes(open, { returnFocus = false } = {}) {
   finishPanel.hidden = !open;
@@ -2294,7 +2310,7 @@ document.addEventListener("keydown", event => {
 document.addEventListener("pointerdown", event => {
   if (!finishPanel.contains(event.target) && !finishButton.contains(event.target)) openRoomFinishes(false);
 });
-setRoomFinish(roomFinish);
+setRoomFinish(roomFinish, { save: false });
 
 /* A temporary fingertip sketch in the mist; no drawing is stored. */
 const glassCanvas = document.getElementById("glass-sketch");
@@ -3205,6 +3221,7 @@ function normalizeEvening(value) {
       curtains: validCurtains(value.curtains) ? { amount: Math.round(value.curtains.amount), fabric: value.curtains.fabric } : null,
       ambientChoice: AMBIENT_CHOICES.includes(value.ambientChoice) ? value.ambientChoice : "auto",
       lanternTone: lanternTones.includes(value.lanternTone) ? value.lanternTone : null,
+      finish: Object.hasOwn(ROOM_FINISHES, value.finish) ? value.finish : null,
       ambience: value.ambience, playTape: value.playTape, drink: ["tea", "coffee"].includes(value.drink) ? value.drink : null,
       station: value.station === "radio" ? "radio" : "tape",
       radio: RADIOS.some(radio => radio.key === value.radio) ? value.radio : RADIOS[0].key };
@@ -3218,12 +3235,14 @@ function paintPersonalScene() {
   document.getElementById("personal-recipe").textContent = `${personalScene.view} · ${personalScene.mood} · ${personalScene.light} light${savedSound ? ` · ${savedSound} sound` : ""}${personalScene.drink ? ` · ${personalScene.drink}` : ""}${personalScene.cat ? personalScene.cat.present ? ` · ${personalScene.cat.coat} cat` : " · solitude" : ""}`;
   personalCard.dataset.personalView = personalScene.view;
   personalCard.dataset.personalSky = personalScene.sky || "mood";
+  personalCard.dataset.personalFinish = personalScene.finish || "steel";
+  if (personalScene.finish) document.getElementById("personal-recipe").textContent += ` · ${ROOM_FINISHES[personalScene.finish]}`;
 }
 function captureEvening() {
   return { name: "Your evening", mood: document.body.dataset.mood, view: windowScene,
     rainOn: musicRainEnabled, rain: rainLevel, light: lightTone, strength: lightStrength,
     lamp: deskLamp.getAttribute("aria-pressed") === "true", ambience: listening,
-    playTape: tapeRunning, station, radio: radioKey, drink, sky: outsideSky, moon: moonShape, beacon: lighthouseOn, cat: { coat: catCoat, present: catPresent }, cafe: cafeOpen, garden: { ...garden }, ambientChoice, curtains: { amount: curtainAmount, fabric: curtainFabric }, lanternTone };
+    playTape: tapeRunning, station, radio: radioKey, drink, sky: outsideSky, moon: moonShape, beacon: lighthouseOn, cat: { coat: catCoat, present: catPresent }, cafe: cafeOpen, garden: { ...garden }, ambientChoice, curtains: { amount: curtainAmount, fabric: curtainFabric }, lanternTone, finish: roomFinish };
 }
 document.getElementById("keep-evening").addEventListener("click", () => {
   const snapshot = captureEvening();
@@ -3271,6 +3290,7 @@ function applyEveningScene(scene) {
   if (scene.garden) setGarden(scene.garden);
   if (scene.curtains) setCurtains(scene.curtains.amount, { fabric: scene.curtains.fabric });
   if (scene.lanternTone) setLanternTone(scene.lanternTone);
+  if (scene.finish) setRoomFinish(scene.finish);
   storeEveningSetting("lateNight.deskLamp", scene.lamp ? "1" : "0");
   setMood(scene.mood);
   if (scene.mood === "music" && scene.station === "radio") {
@@ -3298,7 +3318,8 @@ function paintSceneCards() {
       && (!scene.cat || scene.cat.coat === catCoat && scene.cat.present === catPresent)
       && ambientChoice === (scene.ambientChoice || "auto")
       && (!scene.curtains || scene.curtains.amount === curtainAmount && scene.curtains.fabric === curtainFabric)
-      && (!scene.lanternTone || scene.lanternTone === lanternTone);
+      && (!scene.lanternTone || scene.lanternTone === lanternTone)
+      && (!scene.finish || scene.finish === roomFinish);
     const cafeMatches = typeof scene.cafe !== "boolean" || scene.cafe === cafeOpen;
     const gardenMatches = !scene.garden || scene.garden.light === garden.light && scene.garden.flies === garden.flies;
     button.setAttribute("aria-pressed", String(matches && cafeMatches && gardenMatches));
@@ -3310,7 +3331,7 @@ document.querySelectorAll(".scene-card").forEach(button => button.addEventListen
 }));
 const sceneObserver = new MutationObserver(paintSceneCards);
 sceneObserver.observe(document.body, { attributes: true, attributeFilter: ["data-mood", "data-view", "data-rain", "data-station", "data-ambient"] });
-sceneObserver.observe(windowView, { attributes: true, attributeFilter: ["data-light", "style", "data-sky", "data-moon", "data-beacon", "data-cat-coat", "data-cat-present", "data-cafe-open", "data-garden-light", "data-garden-flies", "data-curtains", "data-fabric"] });
+sceneObserver.observe(windowView, { attributes: true, attributeFilter: ["data-light", "style", "data-sky", "data-moon", "data-beacon", "data-cat-coat", "data-cat-present", "data-cafe-open", "data-garden-light", "data-garden-flies", "data-curtains", "data-fabric", "data-finish"] });
 sceneObserver.observe(deskLamp, { attributes: true, attributeFilter: ["aria-pressed"] });
 sceneObserver.observe(musicRainButton, { attributes: true, attributeFilter: ["aria-pressed"] });
 sceneObserver.observe(cupButton, { attributes: true, attributeFilter: ["data-drink"] });
@@ -3372,6 +3393,7 @@ function renderEveningLibrary() {
     open.dataset.libraryAction = "open";
     open.dataset.personalView = item.scene.view;
     open.dataset.personalSky = item.scene.sky || "mood";
+    open.dataset.personalFinish = item.scene.finish || "steel";
     const art = document.createElement("span");
     art.className = "scene-art art-personal";
     art.setAttribute("aria-hidden", "true");
@@ -3389,6 +3411,7 @@ function renderEveningLibrary() {
     title.textContent = item.name;
     const recipe = document.createElement("span");
     recipe.textContent = `${item.scene.view} · ${item.scene.mood} · ${item.scene.light} light`;
+    if (item.scene.finish) recipe.textContent += ` · ${ROOM_FINISHES[item.scene.finish]}`;
     const sound = document.createElement("small");
     const background = { ocean: "ocean", fire: "fireplace", space: "space", rain: "rain" }[item.scene.ambientChoice];
     sound.textContent = `${background ? `${background} background · ` : ""}${item.scene.curtains?.fabric || "soft"} curtains`;

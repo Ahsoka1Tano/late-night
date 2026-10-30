@@ -2243,6 +2243,12 @@ body.city-is-hidden .pocket-player.is-playing .pocket-art i { animation-play-sta
 [data-room-finish='orbit'] .finish-preview i { background: linear-gradient(90deg,transparent 72%,#71899b 72% 75%,transparent 75%); }
 .room-finish-panel button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .finish-note { margin-top: 16px; min-height: 34px; color: #b4a8c1; font-size: 11px; line-height: 1.8; }
+.finish-storage-note { color: #cbb28f; font-size: 10px; line-height: 1.8; margin-top: 6px; }
+.finish-storage-note:empty { display: none; }
+[data-personal-finish='cedar'] .scene-art { border-color: #76513c; }
+[data-personal-finish='cedar'] .scene-art::after { background: linear-gradient(90deg,transparent 60%,#76513c 60% 65%,transparent 65%),linear-gradient(transparent 69%,#76513c 69% 73%,transparent 73%); }
+[data-personal-finish='orbit'] .scene-art { border-color: #526674; border-radius: 20px; box-shadow: inset 0 0 0 1px #afd6d1; }
+[data-personal-finish='orbit'] .scene-art::after { background: linear-gradient(90deg,transparent 72%,#526674 72% 75%,transparent 75%); }
 .room-casing,.finish-reflection { display: none; pointer-events: none; }
 /* Cedar: separate rails, long grain and a softly lit sill. */
 .window-view { --frame-top: 13%; }
