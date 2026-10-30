@@ -208,6 +208,56 @@ test('room finishes travel with personal and collected evenings while legacy roo
   assert.equal(await page.locator('#window-view').getAttribute('data-finish'),'steel');
 });
 
+test('room finishes fit phones and short windows with readable choices and casing aligned to the glass', async t => {
+  for (const [width,height] of [[320,740],[768,900],[1440,900],[844,390]]) {
+    const page = await openRoom(t,width);
+    await page.setViewportSize({width,height});
+    await page.locator('#room-finish').click();
+    const panel = await page.locator('#room-finish-panel').boundingBox();
+    const room = await page.locator('#window-view').boundingBox();
+    assert.ok(panel.x >= 0 && panel.x + panel.width <= width);
+    assert.ok(panel.y >= room.y && panel.y + panel.height <= room.y + room.height);
+    assert.equal(await page.locator('.finish-choices button').evaluateAll(els => els.every(el => el.clientWidth >= 55 && el.scrollWidth <= el.clientWidth && el.getBoundingClientRect().height >= 44)),true);
+    for (const finish of ['steel','cedar','orbit']) {
+      await page.locator(`[data-room-finish="${finish}"]`).click();
+      if (finish !== 'steel') {
+        const casing = await page.locator('.room-casing').boundingBox();
+        const glass = await page.locator('#window-outside').boundingBox();
+        assert.ok(casing.y < glass.y && casing.y + casing.height > glass.y + glass.height);
+      }
+    }
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#room-finish-panel').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`room-finishes-${width}.png`)});
+    await page.locator('#room-finish-close').click();
+    await page.locator('#quiet-room').click();
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`finished-window-${width}.png`)});
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
+    await page.close();
+  }
+});
+
+test('room finishes keep every view, temporary glass traces, lanterns and the existing radio independent', async t => {
+  const page = await openRoom(t);
+  await page.locator('button.station[data-station="radio"]').click();
+  await page.locator('#window-glass').click();
+  await page.locator('#window-lantern').click();
+  await page.evaluate(() => { window.finishRadio = document.querySelector('#radio-frame iframe'); window.finishTrace = JSON.stringify(glassStrokes); });
+  for (const finish of ['steel','cedar','orbit']) {
+    await page.locator('#room-finish').click();
+    await page.locator(`[data-room-finish="${finish}"]`).click();
+    await page.locator('#room-finish-close').click();
+    for (const view of ['city','mountains','coast','cafe','garden']) {
+      await page.locator(`.view-switch button[data-view="${view}"]`).click();
+      assert.equal(await page.locator('#window-view').getAttribute('data-finish'),finish);
+      assert.equal(await page.evaluate(() => document.querySelector('#radio-frame iframe') === finishRadio),true);
+      assert.equal(await page.evaluate(() => JSON.stringify(glassStrokes) === finishTrace),true);
+    }
+  }
+  assert.equal(await page.locator('.paper-lantern').count(),1);
+  await page.locator('#room-finish').click();
+  await page.locator('#quiet-room').click();
+  assert.equal(await page.locator('#room-finish-panel').isVisible(),false);
+});
+
 test('pocket player cues and advances real tapes while rain keeps its own playback', async t => {
   const page = await openRoom(t);
   await page.waitForFunction(() => TAPES.length > 8);
