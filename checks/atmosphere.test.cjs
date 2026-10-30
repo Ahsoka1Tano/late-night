@@ -130,6 +130,25 @@ test('room finishes give cedar a wooden frame and lamp-aware reflection while st
   }
 });
 
+test('room finishes round the orbital viewport and rest its hull light in hidden tabs and reduced motion', async t => {
+  const page = await openRoom(t,1280,'no-preference');
+  await page.locator('#room-finish').click();
+  await page.locator('[data-room-finish="orbit"]').click();
+  assert.equal(await page.locator('#window-outside').evaluate(el => getComputedStyle(el).borderTopLeftRadius),'42px');
+  assert.equal(await page.locator('.window-crossbar').evaluate(el => getComputedStyle(el,'::after').opacity),'0');
+  assert.equal(await page.locator('.room-casing').evaluate(el => getComputedStyle(el,'::after').animationName),'orbit-signal');
+  await page.evaluate(() => { Object.defineProperty(document,'hidden',{configurable:true,value:true}); document.dispatchEvent(new Event('visibilitychange')); });
+  assert.equal(await page.locator('.room-casing').evaluate(el => getComputedStyle(el,'::after').animationPlayState),'paused');
+  await page.evaluate(() => { Object.defineProperty(document,'hidden',{configurable:true,value:false}); document.dispatchEvent(new Event('visibilitychange')); });
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.waitForFunction(() => getComputedStyle(document.querySelector('.room-casing'),'::after').animationName === 'none');
+  if (process.env.ATMOSPHERE_PREVIEW_DIR) {
+    await page.locator('#room-finish-close').click();
+    await page.locator('#quiet-room').click();
+    await page.screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'orbital-room.png')});
+  }
+});
+
 test('pocket player cues and advances real tapes while rain keeps its own playback', async t => {
   const page = await openRoom(t);
   await page.waitForFunction(() => TAPES.length > 8);
