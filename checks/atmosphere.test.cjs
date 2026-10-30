@@ -106,6 +106,30 @@ test('room finishes support keyboard preview and close before leaving Quiet room
   assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
 });
 
+test('room finishes give cedar a wooden frame and lamp-aware reflection while steel keeps its original shape', async t => {
+  const page = await openRoom(t);
+  assert.equal(await page.locator('#window-view').getAttribute('data-finish'),'cedar');
+  const grain = await page.locator('.room-casing i').first().evaluate(el => getComputedStyle(el).backgroundImage);
+  assert.match(grain,/repeating-linear-gradient/);
+  assert.equal(await page.locator('.room-casing').isVisible(),true);
+  await page.locator('#desk-lamp').click();
+  await page.evaluate(() => document.querySelector('.finish-reflection').getAnimations().forEach(animation => animation.finish()));
+  assert.equal(await page.locator('.finish-reflection').evaluate(el => Number(getComputedStyle(el).opacity)),0);
+  await page.locator('#desk-lamp').click();
+  await page.evaluate(() => document.querySelector('.finish-reflection').getAnimations().forEach(animation => animation.finish()));
+  assert.ok(await page.locator('.finish-reflection').evaluate(el => Number(getComputedStyle(el).opacity)) > 0);
+  await page.locator('#room-finish').click();
+  await page.locator('[data-room-finish="steel"]').click();
+  assert.equal(await page.locator('.room-casing').isVisible(),false);
+  assert.equal(await page.locator('.finish-reflection').isVisible(),false);
+  if (process.env.ATMOSPHERE_PREVIEW_DIR) {
+    await page.locator('[data-room-finish="cedar"]').click();
+    await page.locator('#room-finish-close').click();
+    await page.locator('#quiet-room').click();
+    await page.screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'cedar-room.png')});
+  }
+});
+
 test('pocket player cues and advances real tapes while rain keeps its own playback', async t => {
   const page = await openRoom(t);
   await page.waitForFunction(() => TAPES.length > 8);
