@@ -70,6 +70,42 @@ async function openRoom(t, width = 1280, motion = 'reduce') {
   return page;
 }
 
+test('room finishes change the frame without replacing tape, rain, focus or the window journey', async t => {
+  const page = await openRoom(t);
+  await page.locator('.mood[data-mood="focus"]').click();
+  await page.locator('#focus-toggle').click();
+  await page.locator('.mood[data-mood="music"]').click();
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(1800);
+  await page.locator('[data-journey="afterhours"]').click();
+  await page.evaluate(() => { window.finishTape = tapeAudio; window.finishRain = ambienceTrack; });
+  await page.locator('#room-finish').click();
+  for (const finish of ['steel','orbit','cedar']) {
+    await page.locator(`[data-room-finish="${finish}"]`).click();
+    assert.equal(await page.locator('#window-view').getAttribute('data-finish'),finish);
+    assert.equal(await page.evaluate(() => tapeAudio === finishTape && ambienceTrack === finishRain && tapeRunning && listening),true);
+    assert.equal(await page.evaluate(() => journeyState),'running');
+    assert.equal(await page.locator('#focus-toggle').textContent(),'pause');
+  }
+});
+
+test('room finishes support keyboard preview and close before leaving Quiet room', async t => {
+  const page = await openRoom(t);
+  await page.locator('#quiet-room').click();
+  await page.locator('#room-finish').click();
+  assert.equal(await page.locator('[data-room-finish="cedar"]').evaluate(el => el === document.activeElement),true);
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Enter');
+  assert.equal(await page.locator('[data-room-finish="steel"]').getAttribute('aria-pressed'),'true');
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('#room-finish-panel').isVisible(),false);
+  assert.equal(await page.locator('#room-finish').evaluate(el => el === document.activeElement),true);
+  assert.equal(await page.evaluate(() => document.body.classList.contains('is-quiet')),true);
+  await page.keyboard.press('Escape');
+  assert.equal(await page.evaluate(() => document.body.classList.contains('is-quiet')),false);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+});
+
 test('pocket player cues and advances real tapes while rain keeps its own playback', async t => {
   const page = await openRoom(t);
   await page.waitForFunction(() => TAPES.length > 8);

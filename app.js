@@ -2263,6 +2263,39 @@ setRainLevel(rainLevel, { save: false });
 /* --- the room's window and desk lamp --- */
 const windowView = document.getElementById("window-view");
 
+/* Three materials for the same window; sound and the view keep their own place. */
+const ROOM_FINISHES = { cedar: "Cedar", steel: "Midnight steel", orbit: "Orbital" };
+let roomFinish = "cedar";
+const finishButton = document.getElementById("room-finish");
+const finishPanel = document.getElementById("room-finish-panel");
+function setRoomFinish(value) {
+  if (!Object.hasOwn(ROOM_FINISHES, value)) return;
+  roomFinish = value;
+  windowView.dataset.finish = value;
+  document.querySelectorAll("button[data-room-finish]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.roomFinish === value)));
+  document.getElementById("finish-note").textContent = `${ROOM_FINISHES[value]} · same music, same night.`;
+}
+function openRoomFinishes(open, { returnFocus = false } = {}) {
+  finishPanel.hidden = !open;
+  finishButton.setAttribute("aria-expanded", String(open));
+  if (open) {
+    windowView.scrollIntoView({ block: "center", behavior: "instant" });
+    finishPanel.querySelector(`[data-room-finish="${roomFinish}"]`).focus({ preventScroll: true });
+  } else if (returnFocus) finishButton.focus({ preventScroll: true });
+}
+finishButton.addEventListener("click", () => openRoomFinishes(finishPanel.hidden));
+document.getElementById("room-finish-close").addEventListener("click", () => openRoomFinishes(false, { returnFocus: true }));
+document.querySelectorAll("button[data-room-finish]").forEach(button => button.addEventListener("click", () => setRoomFinish(button.dataset.roomFinish)));
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && !finishPanel.hidden) {
+    event.preventDefault(); event.stopImmediatePropagation(); openRoomFinishes(false, { returnFocus: true });
+  }
+}, { capture: true });
+document.addEventListener("pointerdown", event => {
+  if (!finishPanel.contains(event.target) && !finishButton.contains(event.target)) openRoomFinishes(false);
+});
+setRoomFinish(roomFinish);
+
 /* A temporary fingertip sketch in the mist; no drawing is stored. */
 const glassCanvas = document.getElementById("glass-sketch");
 const glassContext = glassCanvas.getContext("2d");

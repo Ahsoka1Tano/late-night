@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=90b049a8b2eb" />
+  <link rel="stylesheet" href="style.css?v=5143cbcec4b2" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -102,9 +102,19 @@
       <p class="journey-note" id="journey-note" role="status">Choose a route. Only the view changes.</p>
       <p class="journey-memory" id="journey-memory" role="status"></p>
     </section>
-    <div class="quiet-toolbar"><p>JUST THE WINDOW. A LITTLE MORE SPACE.</p><div class="journey-pocket" id="journey-pocket" hidden><span id="journey-pocket-label"></span><button id="journey-pocket-toggle" type="button">pause</button><button id="journey-pocket-next" type="button" aria-label="Next journey view">↗</button><button id="journey-pocket-stop" type="button" aria-label="Stay at this view and end journey">stay</button></div><div class="quiet-toolbar-actions"><button id="breath-arrive" type="button">◯ take a breath</button><button id="quiet-room" type="button" aria-pressed="false">◌ quiet room</button></div></div>
+    <div class="quiet-toolbar"><p>JUST THE WINDOW. A LITTLE MORE SPACE.</p><div class="journey-pocket" id="journey-pocket" hidden><span id="journey-pocket-label"></span><button id="journey-pocket-toggle" type="button">pause</button><button id="journey-pocket-next" type="button" aria-label="Next journey view">↗</button><button id="journey-pocket-stop" type="button" aria-label="Stay at this view and end journey">stay</button></div><div class="quiet-toolbar-actions"><button id="room-finish" type="button" aria-expanded="false" aria-controls="room-finish-panel">◇ room finish</button><button id="breath-arrive" type="button">◯ take a breath</button><button id="quiet-room" type="button" aria-pressed="false">◌ quiet room</button></div></div>
     <div class="evening-layout">
       <section class="window-view" id="window-view" aria-label="Your night window" tabindex="-1">
+        <section class="room-finish-panel" id="room-finish-panel" role="dialog" aria-labelledby="room-finish-title" hidden>
+          <header><div><p class="desk-kicker">THE ROOM AROUND THE VIEW</p><h2 id="room-finish-title">Make yourself at home.</h2></div><button id="room-finish-close" type="button" aria-label="Close room finishes">×</button></header>
+          <div class="finish-choices" aria-label="Window finish">
+            <button data-room-finish="cedar" type="button" aria-pressed="true"><span class="finish-preview" aria-hidden="true"><i></i></span><strong>Cedar</strong><small>a warmer corner</small></button>
+            <button data-room-finish="steel" type="button" aria-pressed="false"><span class="finish-preview" aria-hidden="true"><i></i></span><strong>Midnight steel</strong><small>the original room</small></button>
+            <button data-room-finish="orbit" type="button" aria-pressed="false"><span class="finish-preview" aria-hidden="true"><i></i></span><strong>Orbital</strong><small>a little further out</small></button>
+          </div>
+          <p class="finish-note" id="finish-note" role="status">Same night. A different frame around it.</p>
+        </section>
+        <div class="room-casing" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
         <div class="view-switch" aria-label="View from the window">
           <span>THE VIEW</span><div>
             <button type="button" data-view="city" aria-pressed="true">City</button>
@@ -263,6 +273,7 @@
       </div>
       <div class="night-train" aria-hidden="true"><span class="train-beam"></span><img src="assets/night-express.svg?v=042f6ba1a95c" alt="" width="660" height="80" /></div>
       <div class="window-crossbar" aria-hidden="true"></div>
+      <div class="finish-reflection" aria-hidden="true"></div>
       <div class="sky-lanterns" id="sky-lanterns" aria-hidden="true"></div>
       <canvas class="glass-sketch" id="glass-sketch" aria-hidden="true" hidden></canvas>
       <div class="window-curtains" aria-hidden="true"><div class="curtain-panel curtain-left"><i></i></div><div class="curtain-panel curtain-right"><i></i></div><div class="curtain-rail"></div></div>
@@ -617,6 +628,6 @@
       <div class="pocket-footer-actions"><button id="pocket-stop" type="button">all quiet ◇</button><button id="pocket-fold" type="button">minimize player ↓</button></div><footer><p id="pocket-note" role="status">Music and the room, at your own levels.</p></footer>
     </section>
   </section>
-  <script src="app.js?v=5c2739390d33"></script>
+  <script src="app.js?v=cb0e42d390ac"></script>
 </body>
 </html>
