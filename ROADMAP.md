@@ -128,6 +128,10 @@ only purpose is filling a day.
 - [x] gentle streak counter
 
 ## Always
+- [x] three room finishes: Cedar, original Midnight steel and a rounded Orbital observation window
+- [x] wooden rails and sill, metallic hull rivets, lamplit reflections and a low orbital light
+- [x] immediate finish previews in Quiet room, remembered preferences and matching saved-room miniatures
+- [x] legacy room compatibility, storage recovery, keyboard / phone checks and independent sound and window rituals
 - [x] a fifth view: midnight garden with an illustrated greenhouse, lily pond and layered trees
 - [x] independent greenhouse lights and fireflies, remembered in personal and collected evenings
 - [x] Midnight garden: lo-fi, real drizzle, tea and a low amber lamp in one gesture

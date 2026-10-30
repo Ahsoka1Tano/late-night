@@ -459,8 +459,13 @@ test('pocket player fits phones, tablets and landscape with reachable controls a
       await page.evaluate(() => { Object.defineProperty(document,'hidden',{configurable:true,value:false}); document.dispatchEvent(new Event('visibilitychange')); });
     }
     await page.locator('#pocket-fold').click();
+    // Chromium may report the previous protocol box until the next layout pass.
+    await page.waitForFunction(() => {
+      const player = document.getElementById('pocket-player');
+      return player.classList.contains('is-compact') && player.getBoundingClientRect().width <= 280;
+    });
     const compact = await page.locator('#pocket-player').boundingBox();
-    assert.ok(compact.width <= 280 && compact.x >= 0 && compact.x + compact.width <= width);
+    assert.ok(compact.width <= 280 && compact.x >= 0 && compact.x + compact.width <= width,JSON.stringify({width,height,compact}));
     await page.close();
   }
 });

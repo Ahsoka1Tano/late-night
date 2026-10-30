@@ -31,6 +31,37 @@ The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
 
+## The room around the view
+
+Press **◇ room finish** above the window to try three materials:
+
+- **Cedar**: long wooden grain, warm window rails and a broad wooden sill.
+  It is the starting finish when no preference has been saved.
+- **Midnight steel**: the original dark frame and crossed panes.
+- **Orbital**: a rounded observation window, metal rim, small rivets and a
+  low light along the hull. The horizontal crossbar leaves the view open.
+
+Choices preview immediately. Keep the panel open to compare, close it with
+**×**, or press Escape. Escape closes the finish panel before leaving Quiet
+room; clicking outside also closes it. The control works in Quiet room and
+on a phone, with scrolling available in short windows.
+
+The finish stays independent of your mood and all five views. Tape, radio,
+rain, focus sessions, journeys, glass sketches and lantern flights keep their
+place. The lamp adds a faint edge reflection to Cedar and Orbital; switching
+the lamp off removes that reflection. The orbital hull light rests in hidden
+tabs and with reduced motion.
+
+Your choice is remembered locally and included in **Your evening** and named
+collected rooms, with matching small frames on their cards. Older saved rooms
+keep the current material. Choosing a ready-made evening also keeps the finish
+you chose. Storage failures leave the previous saved choice intact while the
+new look works for this visit.
+
+![Three room finishes previewed beside the window](assets/room-finishes.png)
+
+![The Orbital finish around the same quiet room](assets/orbital-room.png)
+
 ## A player within reach
 
 The **Pocket player** stays at the bottom of the screen, including in **Quiet
