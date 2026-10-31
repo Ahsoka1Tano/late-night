@@ -146,6 +146,52 @@ test('window postcards retain their draft after export failure and never copy or
   assert.equal(await page.evaluate(() => Object.values(localStorage).some(value => value.includes('Only on this postcard.'))),false);
 });
 
+test('window postcards keep keyboard shortcuts inside their editor and backdrop dismissal returns to the window', async t => {
+  const page = await openRoom(t);
+  await page.locator('#postcard-open').click();
+  await page.locator('[data-postcard-paper="night"]').focus();
+  const volume = await page.evaluate(() => tapeVolume);
+  await page.keyboard.press('1');
+  await page.keyboard.press('ArrowUp');
+  await page.keyboard.press('Space');
+  assert.equal(await page.evaluate(() => document.body.dataset.mood),'music');
+  assert.equal(await page.evaluate(() => tapeVolume),volume);
+  assert.equal(await page.locator('#focus-toggle').textContent(),'start');
+  for (let i=0;i<12;i++) {
+    await page.keyboard.press('Tab');
+    assert.equal(await page.locator('#postcard-dialog').evaluate(el => el.contains(document.activeElement) || el === document.activeElement),true);
+  }
+  await page.mouse.click(2,2);
+  assert.equal(await page.locator('#postcard-dialog').isVisible(),false);
+  assert.equal(await page.locator('#postcard-open').evaluate(el => el === document.activeElement),true);
+});
+
+test('window postcards fit phones and landscape and export light paper with rain, a caption and the captured time', async t => {
+  for (const [width,height] of [[320,740],[768,900],[1440,900],[844,390]]) {
+    const page = await openRoom(t,width);
+    await page.setViewportSize({width,height});
+    await page.locator('#evening-toggle').click();
+    await page.locator('#postcard-open').click();
+    await page.locator('#postcard-caption').fill('Tapes inside. Rain outside.');
+    await page.locator('[data-postcard-paper="moon"]').click();
+    await page.locator('#postcard-clock').check();
+    assert.match(await page.locator('#postcard-preview').textContent(),/Tapes inside\. Rain outside\./);
+    assert.match(await page.locator('#postcard-preview').textContent(),/\d{2}:\d{2}/);
+    const dialog = await page.locator('#postcard-dialog').boundingBox();
+    assert.ok(dialog.x >= 0 && dialog.x + dialog.width <= width && dialog.y >= 0 && dialog.y + dialog.height <= height);
+    assert.equal(await page.locator('#postcard-dialog').evaluate(el => el.scrollWidth <= el.clientWidth),true);
+    assert.equal(await page.locator('#postcard-dialog button').evaluateAll(els => els.every(el => el.getBoundingClientRect().height >= 44)),true);
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#postcard-dialog').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`postcard-workshop-${width}.png`)});
+    if (width === 1440) {
+      const downloadEvent = page.waitForEvent('download');
+      await page.locator('#postcard-download').click();
+      const download = await downloadEvent;
+      if (process.env.ATMOSPHERE_PREVIEW_DIR) await download.saveAs(path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'postcard-rain.png'));
+    }
+    await page.close();
+  }
+});
+
 test('room finishes change the frame without replacing tape, rain, focus or the window journey', async t => {
   const page = await openRoom(t);
   await page.locator('.mood[data-mood="focus"]').click();

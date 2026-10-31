@@ -92,6 +92,10 @@ only purpose is filling a day.
 - [ ] local audio loops with soft fade in/out
 
 ## Evening rituals
+- [x] window postcards: five local vector illustrations with sky, moon, rain and the chosen frame
+- [x] private caption, night / moon paper, optional time and a real 1280 × 920 PNG download
+- [x] frozen views with explicit recapture, safe export failures and no automatic journal copying
+- [x] touch layouts, modal keyboard focus and independent audio, focus and window journeys
 - [x] Night journeys: three illustrated routes that slowly loop through existing views, keeping the room and audio
 - [x] selectable 30-second / one-minute / three-minute stops, pause, direct stops, next and stay-here controls
 - [x] a live stop ticket on the glass, Quiet room controls and immediate arrival at the window

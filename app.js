@@ -3926,7 +3926,22 @@ document.getElementById("postcard-open").addEventListener("click", () => { captu
 function closePostcard() { postcardDialog.close(); document.getElementById("postcard-open").focus({preventScroll:true}); }
 document.getElementById("postcard-close").addEventListener("click",closePostcard);
 postcardDialog.addEventListener("cancel",event => { event.preventDefault(); closePostcard(); });
-postcardDialog.addEventListener("keydown",event => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); closePostcard(); } });
+postcardDialog.addEventListener("keydown",event => {
+  event.stopPropagation();
+  if (event.key === "Escape") { event.preventDefault(); closePostcard(); }
+  if (event.key === "Tab") {
+    const controls = [...postcardDialog.querySelectorAll("button:not(:disabled),input:not(:disabled),textarea:not(:disabled)")].filter(node => node.offsetParent !== null);
+    const first = controls[0], last = controls.at(-1);
+    if (event.shiftKey && document.activeElement === first || !event.shiftKey && document.activeElement === last) {
+      event.preventDefault(); (event.shiftKey ? last : first).focus();
+    }
+  }
+});
+postcardDialog.addEventListener("click",event => {
+  if (event.target !== postcardDialog) return;
+  const box = postcardDialog.getBoundingClientRect();
+  if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) closePostcard();
+});
 postcardCaption.addEventListener("input",paintPostcard);
 document.getElementById("postcard-clock").addEventListener("change",paintPostcard);
 document.querySelectorAll("[data-postcard-paper]").forEach(button => button.addEventListener("click",() => {

@@ -31,6 +31,27 @@ The selected tape is still managed separately by the tape shelf.
 
 ![Ready-made evenings and your own saved setup](assets/evening-scenes.png)
 
+## A postcard from your window
+
+Press **✉ postcard** above the window, including in Quiet room. A small workshop
+captures an illustration of the current view using the room's own vectors:
+city lights, mountains, the coast, the café or the midnight garden, with the
+current sky, moon, rain and frame finish.
+
+Add an optional caption of up to 80 characters, choose **night ink** or **moon
+paper**, and decide whether to **include the time** beside the date. **Keep as
+PNG** downloads a 1280 × 920 image. Nothing is uploaded or sent to a service.
+The caption is plain text and stays in this open page; journal text is never
+copied into a card automatically.
+
+The view is captured when the workshop opens. Music, focus and window journeys
+continue, while the card keeps that moment. **Capture this view again** takes
+a fresh illustration without clearing your caption. Closing and reopening also
+captures the latest view. Escape or the close button returns to the window;
+keyboard focus stays inside the workshop while it is open.
+
+![A downloaded postcard of the rainy city on moon paper](assets/window-postcard.png)
+
 ## The room around the view
 
 Press **◇ room finish** above the window to try three materials:
