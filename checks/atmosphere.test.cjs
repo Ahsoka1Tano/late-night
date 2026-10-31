@@ -107,6 +107,45 @@ test('window postcards keep playing audio and Quiet room intact, freeze their ca
   assert.equal(await page.locator('#postcard-open').evaluate(el => el === document.activeElement),true);
 });
 
+test('window postcards download real PNG images for every view and keep long captions inside the paper', async t => {
+  const page = await openRoom(t);
+  for (const view of ['city','mountains','coast','cafe','garden']) {
+    await page.locator(`.view-switch button[data-view="${view}"]`).click();
+    await page.locator('#postcard-open').click();
+    await page.locator('#postcard-caption').fill('W'.repeat(80));
+    const textBounds = await page.locator('#postcard-preview > svg > text').evaluateAll(els => els.map(el => { const b = el.getBBox(); return {x:b.x,right:b.x+b.width}; }));
+    assert.equal(textBounds.every(b => b.x >= 0 && b.right <= 1280),true);
+    const downloadEvent = page.waitForEvent('download');
+    await page.locator('#postcard-download').click();
+    const download = await downloadEvent;
+    assert.match(download.suggestedFilename(),new RegExp(`^late-night-${view}-\\d{4}-\\d{2}-\\d{2}\\.png$`));
+    const file = await fs.readFile(await download.path());
+    assert.deepEqual([...file.subarray(0,8)],[137,80,78,71,13,10,26,10]);
+    assert.equal(file.readUInt32BE(16),1280); assert.equal(file.readUInt32BE(20),920);
+    assert.ok(file.length > 15000);
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) await download.saveAs(path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`postcard-${view}.png`));
+    assert.equal(await page.locator('#postcard-download').isEnabled(),true);
+    await page.locator('#postcard-close').click();
+  }
+});
+
+test('window postcards retain their draft after export failure and never copy or save journal notes', async t => {
+  const page = await openRoom(t);
+  await page.locator('#journal-note').fill('A private journal sentence.');
+  const stored = await page.evaluate(() => localStorage.getItem('lateNight.journal'));
+  await page.locator('#postcard-open').click();
+  assert.equal(await page.locator('#postcard-caption').inputValue(),'');
+  assert.equal((await page.locator('#postcard-preview').textContent()).includes('A private journal sentence.'),false);
+  await page.locator('#postcard-caption').fill('Only on this postcard.');
+  await page.evaluate(() => { window.originalPostcardBlob = HTMLCanvasElement.prototype.toBlob; HTMLCanvasElement.prototype.toBlob = function(callback) { callback(null); }; });
+  await page.locator('#postcard-download').click();
+  await page.waitForFunction(() => document.getElementById('postcard-note').textContent.includes("Couldn't make"));
+  assert.equal(await page.locator('#postcard-caption').inputValue(),'Only on this postcard.');
+  assert.equal(await page.locator('#postcard-download').isEnabled(),true);
+  assert.equal(await page.evaluate(() => localStorage.getItem('lateNight.journal')),stored);
+  assert.equal(await page.evaluate(() => Object.values(localStorage).some(value => value.includes('Only on this postcard.'))),false);
+});
+
 test('room finishes change the frame without replacing tape, rain, focus or the window journey', async t => {
   const page = await openRoom(t);
   await page.locator('.mood[data-mood="focus"]').click();

@@ -3910,8 +3910,12 @@ function paintPostcard() {
   const framed = postcardElement("g",{"clip-path":"url(#postcard-window)"}); framed.append(scene); card.append(framed);
   card.append(postcardElement("rect",{x:56,y:100,width:1168,height:584,rx:radius,fill:"none",stroke:{cedar:"#79543d",steel:"#303d4c",orbit:"#647e8b"}[postcardScene.finish],"stroke-width":12}));
   const caption = postcardCaption.value.trim() || "A quiet place to come back to.";
-  const words = caption.split(/\s+/), lines = [""];
-  for (const word of words) { if ((lines.at(-1)+word).length > 52) lines.push(""); lines[lines.length-1] += `${word} `; }
+  const measure = document.createElement("canvas").getContext("2d"); measure.font = "26px Arial";
+  const lines = [""];
+  for (const character of caption.replace(/\s+/g," ")) {
+    if (measure.measureText(lines.at(-1)+character).width > 1164) lines.push(character.trimStart());
+    else lines[lines.length-1] += character;
+  }
   lines.slice(0,3).forEach((line,index) => card.append(postcardElement("text",{x:58,y:748+index*34,fill:ink,"font-size":26,"font-family":"Arial, sans-serif"},line.trim())));
   const date = postcardScene.date.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
   card.append(postcardElement("text",{x:58,y:872,fill:muted,"font-size":15,"letter-spacing":2,"font-family":"Arial, sans-serif"},`${VIEW_NAMES[postcardScene.view].toUpperCase()} / ${ROOM_FINISHES[postcardScene.finish].toUpperCase()}`));
@@ -3931,3 +3935,30 @@ document.querySelectorAll("[data-postcard-paper]").forEach(button => button.addE
   paintPostcard();
 }));
 document.getElementById("postcard-refresh").addEventListener("click",capturePostcard);
+document.getElementById("postcard-download").addEventListener("click",async () => {
+  const button = document.getElementById("postcard-download");
+  const note = document.getElementById("postcard-note");
+  const captured = postcardScene;
+  if (!captured || button.disabled) return;
+  button.disabled = true;
+  let sourceURL = null;
+  try {
+    const source = new XMLSerializer().serializeToString(document.querySelector("#postcard-preview > svg"));
+    sourceURL = URL.createObjectURL(new Blob([source],{type:"image/svg+xml;charset=utf-8"}));
+    const picture = new Image(); picture.src = sourceURL;
+    await picture.decode();
+    const canvas = document.createElement("canvas"); canvas.width = 1280; canvas.height = 920;
+    canvas.getContext("2d").drawImage(picture,0,0);
+    const file = await new Promise(resolve => canvas.toBlob(resolve,"image/png"));
+    if (!file) throw new Error("Image unavailable");
+    const downloadURL = URL.createObjectURL(file);
+    const link = document.createElement("a");
+    const date = captured.date;
+    const stamp = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+    link.href = downloadURL; link.download = `late-night-${captured.view}-${stamp}.png`; link.hidden = true;
+    postcardDialog.append(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(downloadURL),1000);
+    note.textContent = "Your postcard is ready in downloads. Keep a little of tonight.";
+  } catch { note.textContent = "Couldn't make the PNG. Your preview and caption are still here; try again."; }
+  finally { if (sourceURL) URL.revokeObjectURL(sourceURL); button.disabled = false; }
+});

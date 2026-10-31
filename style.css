@@ -2316,6 +2316,7 @@ body.city-is-hidden .window-view[data-finish='orbit'] .room-casing::after { anim
 .postcard-clock { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 12px; color: #bcaec9; cursor: pointer; }
 .postcard-clock input { width: 18px; height: 18px; accent-color: #c0a5d5; }
 .postcard-tools .postcard-download { color: #151b27; background: #c7b4d8; border-color: #d2bfe3; }
+.postcard-tools .postcard-download:disabled { opacity: .5; cursor: wait; }
 #postcard-note { font-size: 11px; line-height: 1.8; color: #a79db5; }
 .postcard-dialog :is(button,input,textarea):focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 @media(max-width:760px) { .postcard-workshop { grid-template-columns: minmax(0,1fr); gap: 22px; } .postcard-dialog > header { align-items: flex-start; } }
