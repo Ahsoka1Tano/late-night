@@ -70,6 +70,43 @@ async function openRoom(t, width = 1280, motion = 'reduce') {
   return page;
 }
 
+test('window postcards illustrate all five views and keep caption text literal without changing the room', async t => {
+  const page = await openRoom(t);
+  for (const view of ['city','mountains','coast','cafe','garden']) {
+    await page.locator(`.view-switch button[data-view="${view}"]`).click();
+    await page.locator('#postcard-open').click();
+    assert.equal(await page.locator('#postcard-preview svg[data-view]').getAttribute('data-view'),view);
+    assert.equal(await page.locator('#postcard-preview > svg').getAttribute('viewBox'),'0 0 1280 920');
+    await page.locator('#postcard-caption').fill('<script>quiet</script> & moonlight');
+    assert.match(await page.locator('#postcard-preview').textContent(),/<script>quiet<\/script> & moonlight/);
+    assert.equal(await page.locator('#postcard-preview script').count(),0);
+    assert.equal(await page.locator('#postcard-preview image').count(),0);
+    await page.locator('#postcard-close').click();
+    assert.equal(await page.evaluate(() => windowScene),view);
+  }
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+});
+
+test('window postcards keep playing audio and Quiet room intact, freeze their captured view and return focus on Escape', async t => {
+  const page = await openRoom(t);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(1800);
+  await page.locator('#quiet-room').click();
+  await page.evaluate(() => { window.postcardTape = tapeAudio; window.postcardRain = ambienceTrack; });
+  await page.locator('#postcard-open').click();
+  assert.equal(await page.evaluate(() => tapeAudio === postcardTape && ambienceTrack === postcardRain && tapeRunning && listening),true);
+  await page.evaluate(() => setWindowScene('garden'));
+  assert.equal(await page.locator('#postcard-preview svg[data-view]').getAttribute('data-view'),'city');
+  await page.locator('#postcard-refresh').click();
+  assert.equal(await page.locator('#postcard-preview svg[data-view]').getAttribute('data-view'),'garden');
+  await page.locator('[data-postcard-paper="moon"]').click();
+  assert.equal(await page.locator('[data-postcard-paper="moon"]').getAttribute('aria-pressed'),'true');
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('#postcard-dialog').isVisible(),false);
+  assert.equal(await page.evaluate(() => document.body.classList.contains('is-quiet')),true);
+  assert.equal(await page.locator('#postcard-open').evaluate(el => el === document.activeElement),true);
+});
+
 test('room finishes change the frame without replacing tape, rain, focus or the window journey', async t => {
   const page = await openRoom(t);
   await page.locator('.mood[data-mood="focus"]').click();

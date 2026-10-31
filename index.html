@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=a2f959f8805a" />
+  <link rel="stylesheet" href="style.css?v=e84e98135272" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -102,7 +102,7 @@
       <p class="journey-note" id="journey-note" role="status">Choose a route. Only the view changes.</p>
       <p class="journey-memory" id="journey-memory" role="status"></p>
     </section>
-    <div class="quiet-toolbar"><p>JUST THE WINDOW. A LITTLE MORE SPACE.</p><div class="journey-pocket" id="journey-pocket" hidden><span id="journey-pocket-label"></span><button id="journey-pocket-toggle" type="button">pause</button><button id="journey-pocket-next" type="button" aria-label="Next journey view">↗</button><button id="journey-pocket-stop" type="button" aria-label="Stay at this view and end journey">stay</button></div><div class="quiet-toolbar-actions"><button id="room-finish" type="button" aria-expanded="false" aria-controls="room-finish-panel">◇ room finish</button><button id="breath-arrive" type="button">◯ take a breath</button><button id="quiet-room" type="button" aria-pressed="false">◌ quiet room</button></div></div>
+    <div class="quiet-toolbar"><p>JUST THE WINDOW. A LITTLE MORE SPACE.</p><div class="journey-pocket" id="journey-pocket" hidden><span id="journey-pocket-label"></span><button id="journey-pocket-toggle" type="button">pause</button><button id="journey-pocket-next" type="button" aria-label="Next journey view">↗</button><button id="journey-pocket-stop" type="button" aria-label="Stay at this view and end journey">stay</button></div><div class="quiet-toolbar-actions"><button id="postcard-open" type="button" aria-haspopup="dialog">✉ postcard</button><button id="room-finish" type="button" aria-expanded="false" aria-controls="room-finish-panel">◇ room finish</button><button id="breath-arrive" type="button">◯ take a breath</button><button id="quiet-room" type="button" aria-pressed="false">◌ quiet room</button></div></div>
     <div class="evening-layout">
       <section class="window-view" id="window-view" aria-label="Your night window" tabindex="-1">
         <section class="room-finish-panel" id="room-finish-panel" role="dialog" aria-labelledby="room-finish-title" hidden>
@@ -629,6 +629,16 @@
       <div class="pocket-footer-actions"><button id="pocket-stop" type="button">all quiet ◇</button><button id="pocket-fold" type="button">minimize player ↓</button></div><footer><p id="pocket-note" role="status">Music and the room, at your own levels.</p></footer>
     </section>
   </section>
-  <script src="app.js?v=317a54bb76ee"></script>
+  <dialog class="postcard-dialog" id="postcard-dialog" aria-labelledby="postcard-title">
+    <header><div><p class="desk-kicker">A LITTLE PIECE OF TONIGHT</p><h2 id="postcard-title">A postcard from your window.</h2></div><button id="postcard-close" type="button" aria-label="Close postcard">×</button></header>
+    <div class="postcard-workshop"><div class="postcard-preview" id="postcard-preview" aria-label="Your illustrated postcard"></div><div class="postcard-tools">
+      <label for="postcard-caption">A line to keep · optional<textarea id="postcard-caption" maxlength="80" rows="3" placeholder="The rain was enough tonight…"></textarea></label>
+      <div class="postcard-paper" aria-label="Postcard paper"><button data-postcard-paper="night" type="button" aria-pressed="true">night ink</button><button data-postcard-paper="moon" type="button" aria-pressed="false">moon paper</button></div>
+      <label class="postcard-clock"><input id="postcard-clock" type="checkbox" /> include the time</label>
+      <button id="postcard-refresh" type="button">capture this view again ↻</button><button class="postcard-download" id="postcard-download" type="button">keep as PNG ↗</button>
+      <p id="postcard-note" role="status">Made here. Kept on your device.</p>
+    </div></div>
+  </dialog>
+  <script src="app.js?v=16f116f9389d"></script>
 </body>
 </html>

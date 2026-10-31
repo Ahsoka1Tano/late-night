@@ -3831,3 +3831,103 @@ document.addEventListener("pointerdown", event => {
 pocketPlayerReady = true;
 setPocketCompact(pocketCompact, { save: false });
 paintPocketPlayer();
+
+/* A portable illustration, made from the room's own vectors. No remote media. */
+const postcardDialog = document.getElementById("postcard-dialog");
+const postcardCaption = document.getElementById("postcard-caption");
+const postcardNS = "http://www.w3.org/2000/svg";
+let postcardScene = null, postcardPaper = "night";
+function postcardElement(name, attrs = {}, text) {
+  const node = document.createElementNS(postcardNS, name);
+  Object.entries(attrs).forEach(([key,value]) => node.setAttribute(key, String(value)));
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+function postcardVector(source, attrs = {}) {
+  const clone = source.cloneNode(true);
+  const originals = [source, ...source.querySelectorAll("*")], copies = [clone, ...clone.querySelectorAll("*")];
+  originals.forEach((original,index) => {
+    const style = getComputedStyle(original);
+    for (const property of ["fill","stroke","stroke-width","opacity","fill-opacity","stroke-opacity","stroke-linecap","stroke-linejoin","stop-color","stop-opacity","display","visibility","filter"]) {
+      const value = style.getPropertyValue(property).replace(/url\(["']?[^)#]*#([^)'"\s]+)["']?\)/g, "url(#$1)");
+      if (value) copies[index].style.setProperty(property,value);
+    }
+  });
+  Object.entries(attrs).forEach(([key,value]) => clone.setAttribute(key,String(value)));
+  clone.style.opacity = "1";
+  copies.forEach(node => node.removeAttribute("class"));
+  return clone;
+}
+function capturePostcard() {
+  const sky = getComputedStyle(windowView);
+  const art = postcardElement("svg", {viewBox:"0 0 1200 600",width:1200,height:600,"data-view":windowScene});
+  const defs = postcardElement("defs"), gradient = postcardElement("linearGradient",{id:"postcard-sky",x2:0,y2:1});
+  gradient.append(postcardElement("stop",{offset:0,"stop-color":sky.getPropertyValue("--sky-top").trim()}),postcardElement("stop",{offset:1,"stop-color":sky.getPropertyValue("--sky-bottom").trim()}));
+  defs.append(gradient); art.append(defs,postcardElement("rect",{width:1200,height:600,fill:"url(#postcard-sky)"}));
+  if (hasStarSky()) for (let i=0;i<48;i++) art.append(postcardElement("circle",{cx:(i*137+41)%1200,cy:(i*53+17)%350,r:i%4===0?1.8:1,fill:"#d3dce8",opacity:.3+(i%3)*.15}));
+  art.append(postcardVector(document.querySelector(".moon-disc"),{x:920,y:75,width:80,height:80}));
+  if (windowScene === "city") {
+    const bounds = document.getElementById("window-outside").getBoundingClientRect();
+    const rect = element => {
+      const box = element.getBoundingClientRect();
+      return {x:(box.x-bounds.x)/bounds.width*1200,y:(box.y-bounds.y)/bounds.height*600,width:box.width/bounds.width*1200,height:box.height/bounds.height*600};
+    };
+    for (const skyline of document.querySelectorAll(".skyline")) {
+      const layer = postcardElement("g",{opacity:getComputedStyle(skyline).opacity});
+      for (const building of skyline.children) {
+        layer.append(postcardElement("rect",{...rect(building),fill:getComputedStyle(building).backgroundColor}));
+        for (const light of building.querySelectorAll(".is-lit")) layer.append(postcardElement("rect",{...rect(light),fill:getComputedStyle(light).backgroundColor,opacity:getComputedStyle(light).opacity}));
+      }
+      art.append(layer);
+    }
+  } else if (windowScene === "mountains") {
+    art.append(postcardVector(document.querySelector(".mountain-view svg"),{x:0,y:258,width:1200,height:342}));
+    art.append(postcardElement("rect",{x:0,y:516,width:1200,height:84,fill:"#1b3046"}));
+    art.append(postcardVector(document.querySelector(".mountain-shore svg"),{x:0,y:510,width:1200,height:90}));
+  } else if (windowScene === "coast") {
+    art.append(postcardElement("rect",{x:0,y:450,width:1200,height:150,fill:"#203c50"}));
+    art.append(postcardVector(document.querySelector(".sea-swells"),{x:0,y:450,width:1200,height:150}));
+    art.append(postcardVector(document.querySelector(".coast-view svg"),{x:0,y:282,width:1200,height:318}));
+  } else art.append(postcardVector(document.querySelector(windowScene === "garden" ? ".garden-view" : ".cafe-view"),{x:0,y:0,width:1200,height:600}));
+  if (isRainScene()) {
+    const rain = postcardElement("g",{stroke:"#bacbd9","stroke-width":1.2,opacity:.3});
+    for (let i=0;i<65;i++) { const x=(i*173+21)%1200,y=(i*83)%600; rain.append(postcardElement("path",{d:`M${x} ${y}l-5 22`})); }
+    art.append(rain);
+  }
+  postcardScene = {art,view:windowScene,finish:roomFinish,mood:document.body.dataset.mood,time:windowClock.textContent,date:new Date()};
+  paintPostcard();
+}
+function paintPostcard() {
+  if (!postcardScene) return;
+  const light = postcardPaper === "moon", paper = light ? "#e8e1d4" : "#111724", ink = light ? "#303344" : "#ded5e7", muted = light ? "#6c6672" : "#a99eb7";
+  const card = postcardElement("svg",{xmlns:postcardNS,viewBox:"0 0 1280 920",width:1280,height:920,role:"img","aria-label":`${VIEW_NAMES[postcardScene.view]} · Late Night postcard`});
+  card.append(postcardElement("rect",{width:1280,height:920,fill:paper}),postcardElement("text",{x:58,y:58,fill:ink,"font-size":20,"letter-spacing":7,"font-family":"Arial, sans-serif"},"LATE NIGHT."));
+  card.append(postcardElement("text",{x:1222,y:57,fill:muted,"font-size":13,"text-anchor":"end","letter-spacing":2,"font-family":"Arial, sans-serif"},"A LITTLE PIECE OF TONIGHT"));
+  const radius = postcardScene.finish === "orbit" ? 66 : 10;
+  const clip = postcardElement("clipPath",{id:"postcard-window"}); clip.append(postcardElement("rect",{x:56,y:100,width:1168,height:584,rx:radius}));
+  const defs = postcardElement("defs"); defs.append(clip); card.append(defs);
+  const scene = postcardScene.art.cloneNode(true); scene.setAttribute("x","56"); scene.setAttribute("y","100"); scene.setAttribute("width","1168"); scene.setAttribute("height","584");
+  const framed = postcardElement("g",{"clip-path":"url(#postcard-window)"}); framed.append(scene); card.append(framed);
+  card.append(postcardElement("rect",{x:56,y:100,width:1168,height:584,rx:radius,fill:"none",stroke:{cedar:"#79543d",steel:"#303d4c",orbit:"#647e8b"}[postcardScene.finish],"stroke-width":12}));
+  const caption = postcardCaption.value.trim() || "A quiet place to come back to.";
+  const words = caption.split(/\s+/), lines = [""];
+  for (const word of words) { if ((lines.at(-1)+word).length > 52) lines.push(""); lines[lines.length-1] += `${word} `; }
+  lines.slice(0,3).forEach((line,index) => card.append(postcardElement("text",{x:58,y:748+index*34,fill:ink,"font-size":26,"font-family":"Arial, sans-serif"},line.trim())));
+  const date = postcardScene.date.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+  card.append(postcardElement("text",{x:58,y:872,fill:muted,"font-size":15,"letter-spacing":2,"font-family":"Arial, sans-serif"},`${VIEW_NAMES[postcardScene.view].toUpperCase()} / ${ROOM_FINISHES[postcardScene.finish].toUpperCase()}`));
+  card.append(postcardElement("text",{x:1222,y:872,fill:muted,"font-size":15,"text-anchor":"end","font-family":"Arial, sans-serif"},`${date}${document.getElementById("postcard-clock").checked ? ` · ${postcardScene.time}` : ""}`));
+  document.getElementById("postcard-preview").replaceChildren(card);
+}
+document.getElementById("postcard-open").addEventListener("click", () => { capturePostcard(); postcardDialog.showModal(); });
+function closePostcard() { postcardDialog.close(); document.getElementById("postcard-open").focus({preventScroll:true}); }
+document.getElementById("postcard-close").addEventListener("click",closePostcard);
+postcardDialog.addEventListener("cancel",event => { event.preventDefault(); closePostcard(); });
+postcardDialog.addEventListener("keydown",event => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); closePostcard(); } });
+postcardCaption.addEventListener("input",paintPostcard);
+document.getElementById("postcard-clock").addEventListener("change",paintPostcard);
+document.querySelectorAll("[data-postcard-paper]").forEach(button => button.addEventListener("click",() => {
+  postcardPaper = button.dataset.postcardPaper;
+  document.querySelectorAll("[data-postcard-paper]").forEach(item => item.setAttribute("aria-pressed",String(item === button)));
+  paintPostcard();
+}));
+document.getElementById("postcard-refresh").addEventListener("click",capturePostcard);

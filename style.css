@@ -2298,6 +2298,27 @@ body.city-is-hidden .window-view[data-finish='orbit'] .room-casing::after { anim
   .finish-note { font-size: 10px; margin-top: 12px; }
   .quiet-toolbar-actions #room-finish { flex: 1 0 100%; }
 }
+.postcard-dialog { width: min(1040px,calc(100vw - 32px)); max-height: calc(100svh - 32px); margin: auto; padding: clamp(18px,3vw,30px); border: 1px solid #c8b5db55; border-radius: 22px; color: var(--text); background: linear-gradient(135deg,#272236,#101924); box-shadow: 0 25px 90px #000a; overflow-y: auto; }
+.postcard-dialog::backdrop { background: #060a13bf; backdrop-filter: blur(10px); }
+.postcard-dialog > header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.postcard-dialog h2 { font-size: clamp(23px,3vw,34px); font-weight: 300; margin-top: 9px; }
+.postcard-dialog button { min-height: 44px; padding: 10px 14px; border: 1px solid #bfa9d13b; border-radius: 10px; background: #c5a5db0c; color: #e2d3ec; font: inherit; font-size: 11px; cursor: pointer; }
+.postcard-dialog header > button { min-width: 44px; flex-shrink: 0; font-size: 20px; border-radius: 50%; }
+.postcard-workshop { display: grid; grid-template-columns: minmax(0,1fr) 245px; gap: 26px; align-items: center; }
+.postcard-preview { min-width: 0; box-shadow: 0 15px 35px #0005; }
+.postcard-preview > svg { display: block; width: 100%; height: auto; }
+.postcard-tools { min-width: 0; display: grid; gap: 16px; }
+.postcard-tools > label:first-child { color: #b8abc6; font-size: 11px; line-height: 1.8; }
+.postcard-tools textarea { display: block; width: 100%; margin-top: 8px; min-height: 90px; resize: vertical; padding: 11px; border: 1px solid #bca5d140; border-radius: 10px; background: #0c14236e; color: #e6dceb; font: inherit; font-size: 13px; line-height: 1.7; }
+.postcard-paper { display: flex; gap: 7px; }
+.postcard-paper button { flex: 1; }
+.postcard-paper [aria-pressed='true'] { border-color: #d1b5e1; background: #be96d32b; }
+.postcard-clock { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 12px; color: #bcaec9; cursor: pointer; }
+.postcard-clock input { width: 18px; height: 18px; accent-color: #c0a5d5; }
+.postcard-tools .postcard-download { color: #151b27; background: #c7b4d8; border-color: #d2bfe3; }
+#postcard-note { font-size: 11px; line-height: 1.8; color: #a79db5; }
+.postcard-dialog :is(button,input,textarea):focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+@media(max-width:760px) { .postcard-workshop { grid-template-columns: minmax(0,1fr); gap: 22px; } .postcard-dialog > header { align-items: flex-start; } }
 .quiet-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin: 0 0 14px; flex-wrap: wrap; }
 .quiet-toolbar p { color: var(--text-dim); font-size: 8px; letter-spacing: .17em; }
 .quiet-toolbar button { min-height: 44px; padding: 8px 14px; border: 1px solid #ffffff20; border-radius: 999px; background: #ffffff04; color: var(--text); font: inherit; font-size: 11px; cursor: pointer; }
