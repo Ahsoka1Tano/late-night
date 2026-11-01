@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=ebae6f8cce89" />
+  <link rel="stylesheet" href="style.css?v=268c124aafd5" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -23,53 +23,10 @@
   <main class="room">
     <header class="intro">
       <div><h1 class="title">LATE NIGHT<span aria-hidden="true">.</span></h1>
-        <p class="tagline">a little corner of the night</p></div>
+        <p class="tagline">Your window. A little lo-fi. Real rain.</p></div>
       <p class="clock" id="clock">--:--</p>
     </header>
-    <section class="evening-scenes" aria-label="Ready-made evenings">
-      <div class="scenes-heading"><div><p class="desk-kicker">MAKE TONIGHT YOURS</p><h2>Where should tonight take you?</h2></div>
-        <div class="scenes-actions"><button id="keep-evening" type="button">＋ keep this evening</button><button id="forget-evening" type="button" hidden>forget saved setup</button></div>
-      </div>
-      <div class="scene-cards">
-        <button class="scene-card" data-evening="records" type="button" aria-pressed="false">
-          <span class="scene-art art-records" aria-hidden="true"><i></i></span>
-          <span class="scene-card-copy"><small>01 / STAY IN</small><strong>Rainy records</strong><span>Lo-fi tape · real rain · amber light</span><em>settle in ↗</em></span>
-        </button>
-        <button class="scene-card" data-evening="hideaway" type="button" aria-pressed="false">
-          <span class="scene-art art-hideaway" aria-hidden="true"><i></i></span>
-          <span class="scene-card-copy"><small>02 / GET AWAY</small><strong>Mountain hideaway</strong><span>Lo-fi tape · clear sky · moonlight</span><em>take a breath ↗</em></span>
-        </button>
-        <button class="scene-card" data-evening="lastlight" type="button" aria-pressed="false">
-          <span class="scene-art art-lastlight" aria-hidden="true"><i></i></span>
-          <span class="scene-card-copy"><small>03 / WIND DOWN</small><strong>The last light</strong><span>Distant rain · quiet peaks · dim lamp</span><em>let the day go ↗</em></span>
-        </button>
-        <button class="scene-card" data-evening="harbour" type="button" aria-pressed="false">
-          <span class="scene-art art-harbour" aria-hidden="true"><i></i></span>
-          <span class="scene-card-copy"><small>04 / BY THE SEA</small><strong>Harbour after hours</strong><span>Recorded ocean · coastal stars · amber light</span><em>follow the tide ↗</em></span>
-        </button>
-        <button class="scene-card" data-evening="cafe" type="button" aria-pressed="false">
-          <span class="scene-art art-cafe" aria-hidden="true"><i></i></span>
-          <span class="scene-card-copy"><small>05 / STILL OPEN</small><strong>The last café</strong><span>Lo-fi tape · light rain · coffee</span><em>stay a little longer ↗</em></span>
-        </button>
-        <button class="scene-card" data-evening="garden" type="button" aria-pressed="false">
-          <span class="scene-art art-garden" aria-hidden="true"><i></i></span>
-          <span class="scene-card-copy"><small>06 / AMONG THE LEAVES</small><strong>Midnight garden</strong><span>Lo-fi tape · real drizzle · greenhouse glow</span><em>take the garden seat ↗</em></span>
-        </button>
-        <button class="scene-card" data-evening="personal" type="button" aria-pressed="false" hidden>
-          <span class="scene-art art-personal" aria-hidden="true"><i></i></span>
-          <span class="scene-card-copy"><small>07 / YOUR CORNER</small><strong>Your evening</strong><span id="personal-recipe">Your own view, weather and light.</span><em>come back here ↗</em></span>
-        </button>
-      </div>
-      <p class="scene-status" id="scene-status" role="status"></p>
-      <details class="evening-library" id="evening-library">
-        <summary>Your collected evenings <span id="evening-library-count">0 / 8</span></summary>
-        <div class="library-heading"><p class="desk-kicker">PLACES TO COME BACK TO</p><h3>A few corners of your own.</h3><p>Keep up to eight room setups. Saving stays quiet; opening one restores its sound choices.</p></div>
-        <form class="library-form" id="library-form"><label for="library-name">Name this evening<input id="library-name" type="text" maxlength="40" placeholder="Rain and records…" autocomplete="off" required /></label><button id="library-save" type="submit">＋ collect this room</button></form>
-        <p class="library-status" id="library-status" role="status"></p>
-        <button class="library-undo" id="library-undo" type="button" hidden>undo removal</button>
-        <div class="library-grid" id="library-grid"></div>
-      </details>
-    </section>
+
     <section class="moods" aria-label="Choose a mood">
       <button class="mood" data-mood="calm" type="button" aria-pressed="false"><span class="mood-icon">&#127769;</span><span class="mood-name">Calm</span></button>
       <button class="mood" data-mood="music" type="button" aria-pressed="false"><span class="mood-icon">&#127911;</span><span class="mood-name">Music</span></button>
@@ -81,28 +38,8 @@
     </section>
 
 
-    <section class="night-journeys" id="night-journeys" aria-labelledby="journey-title">
-      <header class="journey-heading"><div><p class="desk-kicker">NO NEED TO GO ANYWHERE</p><h2 id="journey-title">Let the window wander.</h2></div><p>A slow loop through the night. <br />Your music and rain come along.</p></header>
-      <div class="journey-routes" aria-label="Start a night journey">
-        <button class="journey-card" data-journey="afterhours" type="button" aria-pressed="false">
-          <svg viewBox="0 0 300 90" aria-hidden="true"><path fill="#283146" d="M0 78V43h27V25h26v53h22V53h32v25Z"/><path fill="#6e5360" d="M133 40h60v38h-60z"/><path fill="#c7a47b" d="M142 51h16v19h-16zm24 0h18v19h-18z"/><path fill="#3b6156" d="m230 78 27-40 27 40zm20 0 23-55 27 55z"/><path d="M20 84h260" stroke="#d7b79a" stroke-dasharray="2 5"/><g fill="#e8c7a3"><circle cx="40" cy="84" r="3"/><circle cx="163" cy="84" r="3"/><circle cx="266" cy="84" r="3"/></g><circle cx="256" cy="15" r="7" fill="#d4c5bc"/></svg>
-          <span><small>01 / CLOSE TO HOME</small><strong>After hours</strong><em>City → Café → Garden</em><b>take the slow way ↗</b></span>
-        </button>
-        <button class="journey-card" data-journey="faraway" type="button" aria-pressed="false">
-          <svg viewBox="0 0 300 90" aria-hidden="true"><path fill="#35465c" d="m0 78 48-63 46 63zm50 0 46-48 44 48z"/><path fill="#8194a4" d="m34 34 14-19 14 19-13-5z"/><path fill="#31515c" d="M132 62q40-9 80 0t88 0v28H132z"/><path stroke="#87b2b8" d="M149 74h36m9-6h39m-4 13h44" opacity=".6"/><path fill="#6d797f" d="m250 55 3-30h8l3 30z"/><path fill="#dfc895" d="M250 24h14v6h-14z"/><path d="M20 84h260" stroke="#b1cdd3" stroke-dasharray="2 5"/><g fill="#bdcdd5"><circle cx="40" cy="84" r="3"/><circle cx="163" cy="84" r="3"/><circle cx="266" cy="84" r="3"/></g></svg>
-          <span><small>02 / BEYOND THE LIGHTS</small><strong>Far away</strong><em>Mountains → Coast → Garden</em><b>follow the horizon ↗</b></span>
-        </button>
-        <button class="journey-card" data-journey="longway" type="button" aria-pressed="false">
-          <svg viewBox="0 0 300 90" aria-hidden="true"><path fill="#3d354f" d="M0 78V41h24V25h20v53h18V52h23v26z"/><path fill="#46536a" d="m90 78 42-52 38 52z"/><path fill="#2e5356" d="M168 70q30-15 60 0t72 0v20H168z"/><path fill="#7b6762" d="M210 46h30v29h-30z"/><path fill="#ccad7e" d="M217 55h16v13h-16z"/><path fill="#456554" d="m254 77 20-45 22 45z"/><path d="M20 84h260" stroke="#cbb8de" stroke-dasharray="2 5"/><g fill="#d4c4e2"><circle cx="28" cy="84" r="3"/><circle cx="89" cy="84" r="3"/><circle cx="150" cy="84" r="3"/><circle cx="211" cy="84" r="3"/><circle cx="272" cy="84" r="3"/></g><circle cx="190" cy="21" r="8" fill="#c7b6d4"/></svg>
-          <span><small>03 / THE WHOLE NIGHT</small><strong>The long way</strong><em>All five views, nowhere to rush</em><b>see where it goes ↗</b></span>
-        </button>
-      </div>
-      <div class="journey-settings"><div class="journey-pace" aria-label="Time at each view"><button data-journey-seconds="30" type="button" aria-pressed="false">30 sec</button><button data-journey-seconds="60" type="button" aria-pressed="true">1 min</button><button data-journey-seconds="180" type="button" aria-pressed="false">3 min</button><span>at each window</span></div><div class="journey-actions"><button id="journey-toggle" type="button" disabled>pause journey</button><button id="journey-next" type="button" disabled>next view ↗</button><button id="journey-stop" type="button" disabled>stay here</button></div></div>
-      <ol id="journey-stops" aria-label="Journey stops" hidden></ol>
-      <p class="journey-note" id="journey-note" role="status">Choose a route. Only the view changes.</p>
-      <p class="journey-memory" id="journey-memory" role="status"></p>
-    </section>
-    <div class="quiet-toolbar"><p>JUST THE WINDOW. A LITTLE MORE SPACE.</p><div class="journey-pocket" id="journey-pocket" hidden><span id="journey-pocket-label"></span><button id="journey-pocket-toggle" type="button">pause</button><button id="journey-pocket-next" type="button" aria-label="Next journey view">↗</button><button id="journey-pocket-stop" type="button" aria-label="Stay at this view and end journey">stay</button></div><div class="quiet-toolbar-actions"><button id="postcard-open" type="button" aria-haspopup="dialog">✉ postcard</button><button id="room-finish" type="button" aria-expanded="false" aria-controls="room-finish-panel">◇ room finish</button><button id="breath-arrive" type="button">◯ take a breath</button><button id="quiet-room" type="button" aria-pressed="false">◌ quiet room</button></div></div>
+
+    <div class="quiet-toolbar"><p>PRESS LO-FI + RAIN. STAY A WHILE.</p><div class="journey-pocket" id="journey-pocket" hidden><span id="journey-pocket-label"></span><button id="journey-pocket-toggle" type="button">pause</button><button id="journey-pocket-next" type="button" aria-label="Next journey view">↗</button><button id="journey-pocket-stop" type="button" aria-label="Stay at this view and end journey">stay</button></div><div class="quiet-toolbar-actions"><button id="postcard-open" type="button" aria-haspopup="dialog">✉ postcard</button><button id="room-finish" type="button" aria-expanded="false" aria-controls="room-finish-panel">◇ room finish</button><button id="breath-arrive" type="button">◯ take a breath</button><button id="quiet-room" type="button" aria-pressed="false">◌ quiet room</button></div></div>
     <div class="evening-layout">
       <section class="window-view" id="window-view" aria-label="Your night window" tabindex="-1">
         <section class="room-finish-panel" id="room-finish-panel" role="dialog" aria-labelledby="room-finish-title" hidden>
@@ -552,6 +489,77 @@
           </div>
         </details>
       </aside>
+    </div>
+    <div class="evening-explore" aria-label="More ways to spend the evening">
+      <details class="explore-drawer" id="evening-options"><summary><span>Choose a ready-made evening<small>Lo-fi, rain and a room already set for you</small></span></summary>
+    <section class="evening-scenes" aria-label="Ready-made evenings">
+      <div class="scenes-heading"><div><p class="desk-kicker">MAKE TONIGHT YOURS</p><h2>Where should tonight take you?</h2></div>
+        <div class="scenes-actions"><button id="keep-evening" type="button">＋ keep this evening</button><button id="forget-evening" type="button" hidden>forget saved setup</button></div>
+      </div>
+      <div class="scene-cards">
+        <button class="scene-card" data-evening="records" type="button" aria-pressed="false">
+          <span class="scene-art art-records" aria-hidden="true"><i></i></span>
+          <span class="scene-card-copy"><small>01 / STAY IN</small><strong>Rainy records</strong><span>Lo-fi tape · real rain · amber light</span><em>settle in ↗</em></span>
+        </button>
+        <button class="scene-card" data-evening="hideaway" type="button" aria-pressed="false">
+          <span class="scene-art art-hideaway" aria-hidden="true"><i></i></span>
+          <span class="scene-card-copy"><small>02 / GET AWAY</small><strong>Mountain hideaway</strong><span>Lo-fi tape · clear sky · moonlight</span><em>take a breath ↗</em></span>
+        </button>
+        <button class="scene-card" data-evening="lastlight" type="button" aria-pressed="false">
+          <span class="scene-art art-lastlight" aria-hidden="true"><i></i></span>
+          <span class="scene-card-copy"><small>03 / WIND DOWN</small><strong>The last light</strong><span>Distant rain · quiet peaks · dim lamp</span><em>let the day go ↗</em></span>
+        </button>
+        <button class="scene-card" data-evening="harbour" type="button" aria-pressed="false">
+          <span class="scene-art art-harbour" aria-hidden="true"><i></i></span>
+          <span class="scene-card-copy"><small>04 / BY THE SEA</small><strong>Harbour after hours</strong><span>Recorded ocean · coastal stars · amber light</span><em>follow the tide ↗</em></span>
+        </button>
+        <button class="scene-card" data-evening="cafe" type="button" aria-pressed="false">
+          <span class="scene-art art-cafe" aria-hidden="true"><i></i></span>
+          <span class="scene-card-copy"><small>05 / STILL OPEN</small><strong>The last café</strong><span>Lo-fi tape · light rain · coffee</span><em>stay a little longer ↗</em></span>
+        </button>
+        <button class="scene-card" data-evening="garden" type="button" aria-pressed="false">
+          <span class="scene-art art-garden" aria-hidden="true"><i></i></span>
+          <span class="scene-card-copy"><small>06 / AMONG THE LEAVES</small><strong>Midnight garden</strong><span>Lo-fi tape · real drizzle · greenhouse glow</span><em>take the garden seat ↗</em></span>
+        </button>
+        <button class="scene-card" data-evening="personal" type="button" aria-pressed="false" hidden>
+          <span class="scene-art art-personal" aria-hidden="true"><i></i></span>
+          <span class="scene-card-copy"><small>07 / YOUR CORNER</small><strong>Your evening</strong><span id="personal-recipe">Your own view, weather and light.</span><em>come back here ↗</em></span>
+        </button>
+      </div>
+      <p class="scene-status" id="scene-status" role="status"></p>
+      <details class="evening-library" id="evening-library">
+        <summary>Your collected evenings <span id="evening-library-count">0 / 8</span></summary>
+        <div class="library-heading"><p class="desk-kicker">PLACES TO COME BACK TO</p><h3>A few corners of your own.</h3><p>Keep up to eight room setups. Saving stays quiet; opening one restores its sound choices.</p></div>
+        <form class="library-form" id="library-form"><label for="library-name">Name this evening<input id="library-name" type="text" maxlength="40" placeholder="Rain and records…" autocomplete="off" required /></label><button id="library-save" type="submit">＋ collect this room</button></form>
+        <p class="library-status" id="library-status" role="status"></p>
+        <button class="library-undo" id="library-undo" type="button" hidden>undo removal</button>
+        <div class="library-grid" id="library-grid"></div>
+      </details>
+    </section>
+      </details>
+      <details class="explore-drawer" id="journey-options"><summary><span>Let the view wander<small>Slow journeys through the five windows</small></span></summary>
+    <section class="night-journeys" id="night-journeys" aria-labelledby="journey-title">
+      <header class="journey-heading"><div><p class="desk-kicker">NO NEED TO GO ANYWHERE</p><h2 id="journey-title">Let the window wander.</h2></div><p>A slow loop through the night. <br />Your music and rain come along.</p></header>
+      <div class="journey-routes" aria-label="Start a night journey">
+        <button class="journey-card" data-journey="afterhours" type="button" aria-pressed="false">
+          <svg viewBox="0 0 300 90" aria-hidden="true"><path fill="#283146" d="M0 78V43h27V25h26v53h22V53h32v25Z"/><path fill="#6e5360" d="M133 40h60v38h-60z"/><path fill="#c7a47b" d="M142 51h16v19h-16zm24 0h18v19h-18z"/><path fill="#3b6156" d="m230 78 27-40 27 40zm20 0 23-55 27 55z"/><path d="M20 84h260" stroke="#d7b79a" stroke-dasharray="2 5"/><g fill="#e8c7a3"><circle cx="40" cy="84" r="3"/><circle cx="163" cy="84" r="3"/><circle cx="266" cy="84" r="3"/></g><circle cx="256" cy="15" r="7" fill="#d4c5bc"/></svg>
+          <span><small>01 / CLOSE TO HOME</small><strong>After hours</strong><em>City → Café → Garden</em><b>take the slow way ↗</b></span>
+        </button>
+        <button class="journey-card" data-journey="faraway" type="button" aria-pressed="false">
+          <svg viewBox="0 0 300 90" aria-hidden="true"><path fill="#35465c" d="m0 78 48-63 46 63zm50 0 46-48 44 48z"/><path fill="#8194a4" d="m34 34 14-19 14 19-13-5z"/><path fill="#31515c" d="M132 62q40-9 80 0t88 0v28H132z"/><path stroke="#87b2b8" d="M149 74h36m9-6h39m-4 13h44" opacity=".6"/><path fill="#6d797f" d="m250 55 3-30h8l3 30z"/><path fill="#dfc895" d="M250 24h14v6h-14z"/><path d="M20 84h260" stroke="#b1cdd3" stroke-dasharray="2 5"/><g fill="#bdcdd5"><circle cx="40" cy="84" r="3"/><circle cx="163" cy="84" r="3"/><circle cx="266" cy="84" r="3"/></g></svg>
+          <span><small>02 / BEYOND THE LIGHTS</small><strong>Far away</strong><em>Mountains → Coast → Garden</em><b>follow the horizon ↗</b></span>
+        </button>
+        <button class="journey-card" data-journey="longway" type="button" aria-pressed="false">
+          <svg viewBox="0 0 300 90" aria-hidden="true"><path fill="#3d354f" d="M0 78V41h24V25h20v53h18V52h23v26z"/><path fill="#46536a" d="m90 78 42-52 38 52z"/><path fill="#2e5356" d="M168 70q30-15 60 0t72 0v20H168z"/><path fill="#7b6762" d="M210 46h30v29h-30z"/><path fill="#ccad7e" d="M217 55h16v13h-16z"/><path fill="#456554" d="m254 77 20-45 22 45z"/><path d="M20 84h260" stroke="#cbb8de" stroke-dasharray="2 5"/><g fill="#d4c4e2"><circle cx="28" cy="84" r="3"/><circle cx="89" cy="84" r="3"/><circle cx="150" cy="84" r="3"/><circle cx="211" cy="84" r="3"/><circle cx="272" cy="84" r="3"/></g><circle cx="190" cy="21" r="8" fill="#c7b6d4"/></svg>
+          <span><small>03 / THE WHOLE NIGHT</small><strong>The long way</strong><em>All five views, nowhere to rush</em><b>see where it goes ↗</b></span>
+        </button>
+      </div>
+      <div class="journey-settings"><div class="journey-pace" aria-label="Time at each view"><button data-journey-seconds="30" type="button" aria-pressed="false">30 sec</button><button data-journey-seconds="60" type="button" aria-pressed="true">1 min</button><button data-journey-seconds="180" type="button" aria-pressed="false">3 min</button><span>at each window</span></div><div class="journey-actions"><button id="journey-toggle" type="button" disabled>pause journey</button><button id="journey-next" type="button" disabled>next view ↗</button><button id="journey-stop" type="button" disabled>stay here</button></div></div>
+      <ol id="journey-stops" aria-label="Journey stops" hidden></ol>
+      <p class="journey-note" id="journey-note" role="status">Choose a route. Only the view changes.</p>
+      <p class="journey-memory" id="journey-memory" role="status"></p>
+    </section>
+      </details>
     </div>
     <section class="tape-collection" id="tape-collection" aria-labelledby="collection-title" tabindex="-1" hidden>
       <header class="collection-heading"><div><p class="desk-kicker">RECORDINGS FOR STAYING IN</p><h2 id="collection-title">Pick a little soundtrack.</h2><p>Choose a cassette. Playing stays playing; paused stays paused.</p></div><button id="close-collection" type="button" aria-label="Close the cassette shelf">×</button></header>

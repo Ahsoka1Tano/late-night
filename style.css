@@ -3014,3 +3014,16 @@ body.has-sound-timer .scene-signature { display: none; }
 .scene-cards.has-personal [data-evening='personal'] .scene-art { flex: 0 0 86px; width: 86px; height: 70px; }
 @media(max-width:1000px) { .scene-cards,.scene-cards.has-personal { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media(max-width:600px) { body.is-quiet .window-view { height: max(500px,calc(100svh - 150px)); } }
+
+/* Start with the room; explore the rest when you feel like it. */
+.evening-explore { margin: 24px 0; display: grid; gap: 12px; }
+.explore-drawer { min-width: 0; border: 1px solid #bab1ce26; border-radius: 18px; background: #141722b3; }
+.explore-drawer > summary { display: flex; justify-content: space-between; align-items: center; gap: 18px; min-height: 76px; padding: 18px 24px; color: #ded7e7; cursor: pointer; list-style: none; font-size: 14px; }
+.explore-drawer > summary::-webkit-details-marker { display: none; }
+.explore-drawer > summary::after { content: '+'; color: #aca0bc; font-size: 23px; font-weight: 300; }
+.explore-drawer[open] > summary::after { content: '−'; }
+.explore-drawer summary small { display: block; margin-top: 6px; color: #a09aaa; font-size: 11px; line-height: 1.6; }
+.explore-drawer > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 18px; }
+.explore-drawer .evening-scenes { margin: 0; padding: 8px 24px 24px; }
+.explore-drawer .night-journeys { margin: 0; border: 0; border-radius: 0 0 18px 18px; background: none; padding-top: 8px; }
+@media(max-width:600px) { .explore-drawer > summary { padding: 16px; font-size: 13px; } .explore-drawer .evening-scenes { padding: 8px 16px 18px; } }
