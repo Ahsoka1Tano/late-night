@@ -791,7 +791,11 @@ function resetBreathing() {
   if (document.body.dataset.mood === "sleep") scheduleDoze();
   document.getElementById("breath-note").textContent = "A quiet rhythm. Nothing to achieve.";
   paintBreathing();
-  if (breathPanel.hidden || document.activeElement?.closest("#window-breathing")) document.getElementById("breath-arrive").focus({preventScroll:true});
+  if (breathPanel.hidden || document.activeElement?.closest("#window-breathing")) {
+    const arrive = document.getElementById("breath-arrive");
+    revealRoomControl(arrive);
+    arrive.focus({preventScroll:true});
+  }
 }
 document.querySelectorAll("[data-breath-toggle]").forEach(button => button.addEventListener("click", () => breathState === "running" ? pauseBreathing() : startBreathing()));
 document.querySelectorAll("[data-breath-reset]").forEach(button => button.addEventListener("click", resetBreathing));
@@ -1683,6 +1687,7 @@ document.getElementById("browse-tapes").addEventListener("click",() => {
 document.getElementById("close-collection").addEventListener("click",() => {
   tapeCollectionOpen = false;
   paintTapeCollection();
+  revealRoomControl(document.getElementById("browse-tapes"));
   document.getElementById("browse-tapes").focus();
 });
 new MutationObserver(paintTapeCollection).observe(document.body,{attributes:true,attributeFilter:["data-mood","data-station"]});
@@ -2297,7 +2302,10 @@ function openRoomFinishes(open, { returnFocus = false } = {}) {
   if (open) {
     windowView.scrollIntoView({ block: "center", behavior: "instant" });
     finishPanel.querySelector(`[data-room-finish="${roomFinish}"]`).focus({ preventScroll: true });
-  } else if (returnFocus) finishButton.focus({ preventScroll: true });
+  } else if (returnFocus) {
+    revealRoomControl(finishButton);
+    finishButton.focus({ preventScroll: true });
+  }
 }
 finishButton.addEventListener("click", () => openRoomFinishes(finishPanel.hidden));
 document.getElementById("room-finish-close").addEventListener("click", () => openRoomFinishes(false, { returnFocus: true }));
@@ -2842,7 +2850,11 @@ function toggleJourney() {
 function stopJourney({ message = `Staying in ${VIEW_NAMES[windowScene]}. The rest of the room carries on.`, focus = false } = {}) {
   journeyState = "idle"; clearTimeout(journeyTimer); journeyTimer = null;
   paintJourney(message);
-  if (focus) (document.body.classList.contains("is-quiet") ? quietRoomButton : document.querySelector(`[data-journey="${journeyRoute}"]`)).focus({ preventScroll: true });
+  if (focus) {
+    const target = document.body.classList.contains("is-quiet") ? quietRoomButton : document.querySelector(`[data-journey="${journeyRoute}"]`);
+    revealRoomControl(target);
+    target.focus({ preventScroll: true });
+  }
 }
 document.querySelectorAll("[data-journey]").forEach(button => button.addEventListener("click", () => {
   startJourney(button.dataset.journey);

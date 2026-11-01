@@ -6,6 +6,19 @@ Six moods, each eventually with its own life. The Rain and Music ones get the mo
 rain on the glass and a lo-fi hum are the nicest things to sit inside — but they stay
 two atmospheres in one shared room.
 
+## Clarity before another feature
+
+The window and **lo-fi + rain** are the starting point. Keep sound, room settings
+and small rituals inside their existing folded sections. Ready-made evenings and
+journeys are optional, below the window. Prefer improving an existing interaction
+over adding another visible card, toolbar button or panel. A new visitor should
+understand how to listen without reading a guide.
+
+- [x] window-first arrival with a clear combined lo-fi and real-rain action
+- [x] three folded desk sections; ready-made evenings and journeys below the room
+- [x] optional window extras and sound navigation that reveals its destination
+- [x] keyboard, phone and playback-continuity checks for the collapsed entry
+
 ## The next eight weeks
 
 Each evening starts with the current room and recent commits. Choose one complete,

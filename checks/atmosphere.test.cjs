@@ -175,6 +175,28 @@ test('uncluttered arrival and opened settings fit phones, tablets and desktop wi
   }
 });
 
+test('returning from a shelf, journey or rhythm reveals a folded keyboard destination', async t => {
+  const page = await openRoom(t,1280,'reduce',false);
+  await page.locator('#sound-options > summary').click();
+  await page.locator('#browse-tapes').click();
+  await page.locator('#sound-options > summary').click();
+  await page.locator('#close-collection').click();
+  assert.equal(await page.locator('#sound-options').evaluate(el=>el.open),true);
+  assert.equal(await page.locator('#browse-tapes').evaluate(el=>el===document.activeElement),true);
+  await page.locator('#journey-options > summary').click();
+  await page.locator('[data-journey="afterhours"]').click();
+  await page.locator('#journey-options > summary').click();
+  await page.locator('#journey-pocket-stop').click();
+  assert.equal(await page.locator('#journey-options').evaluate(el=>el.open),true);
+  assert.equal(await page.locator('[data-journey="afterhours"]').evaluate(el=>el===document.activeElement),true);
+  await page.locator('#window-extras > summary').click();
+  await page.locator('#breath-arrive').click();
+  await page.locator('#window-extras > summary').click();
+  await page.locator('#window-breathing [data-breath-reset]').click();
+  assert.equal(await page.locator('#window-extras').evaluate(el=>el.open),true);
+  assert.equal(await page.locator('#breath-arrive').evaluate(el=>el===document.activeElement),true);
+});
+
 test('window postcards illustrate all five views and keep caption text literal without changing the room', async t => {
   const page = await openRoom(t);
   for (const view of ['city','mountains','coast','cafe','garden']) {
