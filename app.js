@@ -3757,8 +3757,16 @@ function openPocketSource() {
   if (document.body.classList.contains("is-quiet")) setQuietRoom(false);
   const mode = pocketMode();
   const target = document.getElementById(mode === "radio" ? "radio-frame" : mode === "tape" ? "tape-choice" : "listen");
+  revealRoomControl(target);
   target.scrollIntoView({ block: "center", behavior: "instant" });
   (mode === "radio" ? target.querySelector("iframe") : target)?.focus({ preventScroll: true });
+}
+
+// Navigation reveals existing controls without recreating a player or its audio.
+function revealRoomControl(target) {
+  for (let parent = target?.parentElement; parent; parent = parent.parentElement) {
+    if (parent.tagName === "DETAILS") parent.open = true;
+  }
 }
 document.getElementById("pocket-play").addEventListener("click", () => {
   const mode = pocketMode();

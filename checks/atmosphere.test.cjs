@@ -77,6 +77,104 @@ async function openRoom(t, width = 1280, motion = 'reduce', expanded = true) {
   return page;
 }
 
+test('arrival puts the playable window ahead of optional features with no automatic sound', async t => {
+  const page = await openRoom(t,1280,'reduce',false);
+  assert.equal(await page.locator('.room-drawer[open],.explore-drawer[open],.window-extras[open]').count(),0);
+  assert.equal(await page.locator('#evening-toggle').isVisible(),true);
+  assert.equal(await page.locator('#player-play').isVisible(),false);
+  assert.equal(await page.locator('[data-evening="records"]').isVisible(),false);
+  assert.equal(await page.locator('[data-journey="afterhours"]').isVisible(),false);
+  assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
+  assert.equal(await page.evaluate(() => {
+    const windowTop=document.getElementById('window-view').getBoundingClientRect().top;
+    return windowTop < document.getElementById('evening-options').getBoundingClientRect().top && windowTop < 300;
+  }),true);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(1800);
+  assert.equal(await page.evaluate(() => tapeRunning && listening),true);
+});
+
+test('optional desk sections fold without replacing audio, clearing notes or resetting focus', async t => {
+  const page = await openRoom(t,1280,'reduce',false);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(1800);
+  await page.evaluate(() => { window.arrivalTape=tapeAudio; window.arrivalRain=ambienceTrack; });
+  for (const id of ['sound-options','room-options','ritual-options','evening-options','journey-options']) {
+    await page.locator(`#${id} > summary`).click();
+    assert.equal(await page.locator(`#${id}`).evaluate(el=>el.open),true);
+    await page.locator(`#${id} > summary`).click();
+    assert.equal(await page.locator(`#${id}`).evaluate(el=>el.open),false);
+  }
+  assert.equal(await page.evaluate(() => tapeAudio===arrivalTape && ambienceTrack===arrivalRain && tapeRunning && listening),true);
+  await page.locator('#journal-note').fill('A room with a little less noise.');
+  await page.locator('.mood[data-mood="focus"]').click();
+  await page.locator('#focus-toggle').click();
+  await page.clock.fastForward(60000);
+  await page.locator('#room-options > summary').click();
+  await page.locator('#room-options > summary').click();
+  assert.match(await page.locator('#focus-time').textContent(),/^23:|^24:/);
+  assert.equal(await page.locator('#journal-note').inputValue(),'A room with a little less noise.');
+});
+
+test('pocket navigation reveals the folded sound controls and keeps the same recording', async t => {
+  const page = await openRoom(t,1280,'reduce',false);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(1800);
+  await page.evaluate(() => { window.arrivalTape=tapeAudio; });
+  await page.locator('#pocket-source').click();
+  assert.equal(await page.locator('#sound-options').evaluate(el=>el.open),true);
+  assert.equal(await page.locator('#tape-choice').evaluate(el=>el===document.activeElement),true);
+  assert.equal(await page.evaluate(() => tapeAudio===arrivalTape && tapeRunning),true);
+  await page.locator('button[data-station="radio"]').click();
+  await page.evaluate(() => { window.arrivalFrame=document.querySelector('#radio-frame iframe'); });
+  await page.locator('#sound-options > summary').click();
+  await page.locator('#pocket-source').click();
+  assert.equal(await page.locator('#sound-options').evaluate(el=>el.open),true);
+  assert.equal(await page.evaluate(() => document.querySelector('#radio-frame iframe')===arrivalFrame && document.activeElement===arrivalFrame),true);
+});
+
+test('native section summaries and extras work with keyboard and return from a postcard', async t => {
+  const page = await openRoom(t,1280,'reduce',false);
+  await page.locator('#sound-options > summary').focus();
+  await page.keyboard.press('Space');
+  assert.equal(await page.locator('#sound-options').evaluate(el=>el.open),true);
+  assert.equal(await page.locator('#focus-time').textContent(),'25:00');
+  await page.keyboard.press('Enter');
+  assert.equal(await page.locator('#sound-options').evaluate(el=>el.open),false);
+  await page.locator('#window-extras > summary').focus();
+  await page.keyboard.press('Enter');
+  await page.locator('#postcard-open').click();
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('#postcard-open').evaluate(el=>el===document.activeElement),true);
+  assert.equal(await page.locator('#postcard-open').isVisible(),true);
+  await page.locator('#quiet-room').click();
+  assert.equal(await page.locator('#window-extras > summary').isVisible(),true);
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('#sound-options').isVisible(),true);
+});
+
+test('uncluttered arrival and opened settings fit phones, tablets and desktop windows', async t => {
+  for (const width of [320,768,1440,844]) {
+    const page = await openRoom(t,width,'reduce',false);
+    await page.evaluate(() => window.scrollTo(0,0));
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth<=innerWidth),true,`arrival ${width}`);
+    const windowBox=await page.locator('#window-view').boundingBox();
+    assert.ok(windowBox.width>width*.8,JSON.stringify({width,windowBox}));
+    await page.locator('#evening-toggle').scrollIntoViewIfNeeded();
+    assert.equal(await page.locator('#evening-toggle').evaluate(el=>{
+      const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));
+    }),true,`play is reachable ${width}`);
+    if(process.env.ATMOSPHERE_PREVIEW_DIR) {
+      await page.evaluate(() => window.scrollTo(0,0));
+      await page.screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`simpler-room-${width}.png`)});
+    }
+    for(const id of ['sound-options','room-options','ritual-options']) {
+      await page.locator(`#${id} > summary`).click();
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth<=innerWidth),true,`${id} ${width}`);
+    }
+  }
+});
+
 test('window postcards illustrate all five views and keep caption text literal without changing the room', async t => {
   const page = await openRoom(t);
   for (const view of ['city','mountains','coast','cafe','garden']) {
