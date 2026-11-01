@@ -39,7 +39,7 @@ after(async () => {
 });
 
 
-async function openRoom(t, width = 1280, motion = 'reduce') {
+async function openRoom(t, width = 1280, motion = 'reduce', expanded = true) {
   const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: motion });
   t.after(() => context.close());
   const page = await context.newPage();
@@ -47,6 +47,13 @@ async function openRoom(t, width = 1280, motion = 'reduce') {
   page.on('pageerror', error => errors.push(error.message));
   t.after(() => assert.deepEqual(errors, []));
   await page.route('**/*', route => route.request().url().startsWith(origin) ? route.continue() : route.abort());
+  // Existing feature checks work at an unpacked desk, including after reload.
+  // Arrival/navigation checks pass false and exercise the real collapsed entry.
+  if (expanded) await page.addInitScript(() => {
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.room-drawer,.explore-drawer,.window-extras').forEach(panel => { panel.open = true; });
+    }, { once: true });
+  });
   // Deterministic media double: remote availability is checked separately.
   await page.addInitScript(() => {
     window.media = [];

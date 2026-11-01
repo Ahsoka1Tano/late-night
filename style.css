@@ -3027,3 +3027,21 @@ body.has-sound-timer .scene-signature { display: none; }
 .explore-drawer .evening-scenes { margin: 0; padding: 8px 24px 24px; }
 .explore-drawer .night-journeys { margin: 0; border: 0; border-radius: 0 0 18px 18px; background: none; padding-top: 8px; }
 @media(max-width:600px) { .explore-drawer > summary { padding: 16px; font-size: 13px; } .explore-drawer .evening-scenes { padding: 8px 16px 18px; } }
+
+/* The window is the destination; the desk is optional. */
+.evening-layout { display: block; }
+.window-view { position: relative; top: auto; height: clamp(430px,64svh,720px); }
+.room-desk { margin-top: 24px; padding: 0; border: 0; background: none; }
+.desk-heading { display: none; }
+.room-desk > .focus { max-width: 480px; margin: 24px auto; padding: 24px; border: 1px solid #bcb0d331; border-radius: 18px; background: #171824; }
+.room-drawer { border: 1px solid #bab1ce26; border-radius: 18px; background: #141722b3; margin-top: 12px; }
+.room-drawer > summary { display: flex; justify-content: space-between; align-items: center; min-height: 76px; gap: 18px; padding: 18px 24px; list-style: none; cursor: pointer; color: #ded7e7; font-size: 14px; }
+.room-drawer > summary::-webkit-details-marker { display: none; }
+.room-drawer > summary::after { content: '+'; font-size: 23px; color: #aca0bc; }
+.room-drawer[open] > summary::after { content: '−'; }
+.room-drawer > summary small { display: block; margin-top: 6px; font-size: 11px; line-height: 1.6; color: #a09aaa; }
+.room-drawer > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 18px; }
+.room-drawer-body { max-width: 680px; margin: auto; padding: 0 24px 24px; }
+.room-drawer-body > :first-child { margin-top: 8px; }
+.room-desk .tape-shelf { min-width: 0; }
+@media(max-width:760px) { .window-view { height: clamp(360px,55svh,500px); } .room-drawer > summary { padding: 16px; font-size: 13px; } .room-drawer-body { padding: 0 16px 20px; } }
