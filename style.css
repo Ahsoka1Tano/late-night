@@ -3073,3 +3073,5 @@ body.has-sound-timer .scene-signature { display: none; }
 .scene-footer[data-listening='error'] .window-listening strong { color: #dfb7b0; }
 .scene-footer[data-listening='muted'] .window-listening strong { color: #d6c395; }
 @media(max-width:600px) { .window-listening strong { font-size: 11px; } .window-listening > span { font-size: 9px; } }
+
+.pocket-transport #pocket-mix-toggle,.pocket-transport #pocket-next { font-size: 11px; letter-spacing: .01em; }

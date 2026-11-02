@@ -2936,13 +2936,19 @@ function eveningIsPlaying() {
 }
 function paintEveningToggle() {
   const playing = eveningIsPlaying();
-  eveningToggle.hidden = document.body.dataset.mood === "music" && station === "radio";
+  const radio = document.body.dataset.mood === "music" && station === "radio";
+  eveningToggle.hidden = false;
   const background = { ocean: "ocean", fire: "fireplace", space: "space" }[ambientChoice] || "rain";
-  eveningToggle.textContent = playing ? "Ⅱ pause the evening" : `▶ lo-fi + ${background}`;
+  eveningToggle.textContent = radio ? "radio controls ↗" : playing ? "Ⅱ pause the evening" : `▶ lo-fi + ${background}`;
   eveningToggle.setAttribute("aria-pressed", String(playing));
-  eveningToggle.setAttribute("aria-label", playing ? "Pause the tape and background together" : `Play a lo-fi tape and ${background} together`);
+  eveningToggle.setAttribute("aria-label", radio ? "Open the YouTube radio controls" : playing ? "Pause the tape and background together" : `Play a lo-fi tape and ${background} together`);
 }
 eveningToggle.addEventListener("click", () => {
+  if (document.body.dataset.mood === "music" && station === "radio") {
+    openRadio();
+    openPocketSource();
+    return;
+  }
   if (eveningIsPlaying()) {
     setTape(false);
     listening = false;

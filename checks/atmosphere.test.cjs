@@ -77,6 +77,27 @@ async function openRoom(t, width = 1280, motion = 'reduce', expanded = true) {
   return page;
 }
 
+test('the window radio action opens folded YouTube controls without replacing the iframe or starting tapes', async t => {
+  const page=await openRoom(t,1280,'reduce',false);
+  await page.locator('#sound-options > summary').click();
+  await page.locator('button[data-station="radio"]').click();
+  await page.evaluate(()=>{window.windowRadio=document.querySelector('#radio-frame iframe');});
+  await page.locator('#sound-options > summary').click();
+  assert.equal(await page.locator('#evening-toggle').textContent(),'radio controls ↗');
+  assert.equal(await page.locator('.scene-footer').getAttribute('data-listening'),'radio');
+  assert.match(await page.locator('#window-sound-detail').textContent(),/YouTube player/);
+  assert.doesNotMatch(await page.locator('#window-sound-title').textContent(),/playing|listening/i);
+  await page.locator('#quiet-room').click();
+  await page.locator('#evening-toggle').click();
+  assert.equal(await page.locator('#sound-options').evaluate(el=>el.open),true);
+  assert.equal(await page.evaluate(()=>document.querySelector('#radio-frame iframe')===windowRadio&&document.activeElement===windowRadio),true);
+  assert.equal(await page.evaluate(()=>!document.body.classList.contains('is-quiet')&&!tapeRunning&&window.media.every(a=>a.paused)),true);
+  await page.locator('#evening-toggle').click();
+  assert.equal(await page.evaluate(()=>document.querySelector('#radio-frame iframe')===windowRadio),true);
+  await page.locator('button[data-station="tape"]').click();
+  assert.match(await page.locator('#evening-toggle').textContent(),/lo-fi/);
+});
+
 test('window listening feedback follows actual recordings, pauses and the chosen ambient sound', async t => {
   const page=await openRoom(t,1280,'reduce',false);
   assert.equal(await page.locator('#window-listening').isVisible(),false);
@@ -2199,7 +2220,7 @@ test('one window gesture starts and pauses both layers while preserving volume a
   assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length), 2);
 });
 
-test('the combined switch follows individual controls and stays out of the official radio', async t => {
+test('the combined switch follows individual controls and routes radio to its own player', async t => {
   const page = await openRoom(t);
   await page.locator('#evening-toggle').click();
   await page.locator('#listen').click();
@@ -2209,7 +2230,7 @@ test('the combined switch follows individual controls and stays out of the offic
   await page.locator('#player-play').click();
   assert.equal(await page.locator('#evening-toggle').getAttribute('aria-pressed'), 'false');
   await page.locator('[data-station="radio"]').click();
-  assert.equal(await page.locator('#evening-toggle').isVisible(), false);
+  assert.equal(await page.locator('#evening-toggle').isVisible(), true);
   await page.locator('[data-station="tape"]').click();
   assert.equal(await page.locator('#evening-toggle').isVisible(), true);
 });
