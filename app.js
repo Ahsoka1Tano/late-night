@@ -2939,9 +2939,9 @@ function paintEveningToggle() {
   const radio = document.body.dataset.mood === "music" && station === "radio";
   eveningToggle.hidden = false;
   const background = { ocean: "ocean", fire: "fireplace", space: "space" }[ambientChoice] || "rain";
-  eveningToggle.textContent = radio ? "radio controls ↗" : playing ? "Ⅱ pause the evening" : `▶ lo-fi + ${background}`;
+  eveningToggle.textContent = radio ? "radio controls ↗" : (tapeError || ambienceError) ? "↻ retry sounds" : playing ? "Ⅱ pause sounds" : `▶ lo-fi + ${background}`;
   eveningToggle.setAttribute("aria-pressed", String(playing));
-  eveningToggle.setAttribute("aria-label", radio ? "Open the YouTube radio controls" : playing ? "Pause the tape and background together" : `Play a lo-fi tape and ${background} together`);
+  eveningToggle.setAttribute("aria-label", radio ? "Open the YouTube radio controls" : (tapeError || ambienceError) ? "Retry the tape and background together" : playing ? "Pause the tape and background together" : `Play a lo-fi tape and ${background} together`);
 }
 eveningToggle.addEventListener("click", () => {
   if (document.body.dataset.mood === "music" && station === "radio") {
@@ -3756,6 +3756,10 @@ function paintPocketPlayer() {
   document.getElementById("pocket-room-level").textContent = `${Math.round(roomVolume * 100)}%`;
   document.getElementById("pocket-room-volume").disabled = !sound;
   document.getElementById("pocket-sound-name").textContent = sound?.name || "No room recording selected.";
+  document.getElementById("pocket-room-label").textContent = sound === RAIN_BY_STRENGTH[rainLevel] ? "Rain" : ambientChoice === "ocean" ? "Ocean" : ambientChoice === "fire" ? "Fireplace" : ambientChoice === "space" ? "Space ambience" : "Room sound";
+  for (const [id,level] of [["pocket-tape-volume",tapeVolume],["pocket-room-volume",roomVolume]]) {
+    document.getElementById(id).setAttribute("aria-valuetext", level === 0 ? "0 percent, muted" : `${Math.round(level * 100)} percent`);
+  }
   const roomToggle = document.getElementById("pocket-room-toggle");
   roomToggle.disabled = !sound;
   roomToggle.textContent = ambienceLoading ? "cancel loading" : listening ? "pause sound" : ambienceError ? "retry sound" : "listen";
@@ -3782,15 +3786,15 @@ function paintWindowListening() {
   } else if ((mode === "tape" && tapeError) || (sound && ambienceError)) {
     state = "error";
     title = mode === "tape" && tapeError ? "The tape couldn't load." : "Room recording unavailable.";
-    detail = "Try play again, or choose another recording in Sound & music.";
+    detail = "Press play to retry.";
   } else if ((tapeOn && tapeState === "loading") || (roomOn && ambienceLoading)) {
-    state = "loading"; title = "Finding your recording…";
-    detail = "You can pause while it loads.";
+    state = "loading"; title = "Loading sound…";
+    detail = "Press pause to cancel.";
   } else if (tapeOn || roomOn) {
     const musicAudible = tapeOn && tapeVolume > 0, roomAudible = roomOn && roomVolume > 0;
     if (!musicAudible && !roomAudible) {
       state = "muted"; title = "Sound is muted.";
-      detail = "Raise a volume in the player's mix controls.";
+      detail = "Raise a volume in mix.";
     } else {
       state = "playing";
       title = musicAudible ? roomAudible ? `Lo-fi + ${roomName}` : "Lo-fi playing" : roomName;

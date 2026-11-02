@@ -3075,3 +3075,38 @@ body.has-sound-timer .scene-signature { display: none; }
 @media(max-width:600px) { .window-listening strong { font-size: 11px; } .window-listening > span { font-size: 9px; } }
 
 .pocket-transport #pocket-mix-toggle,.pocket-transport #pocket-next { font-size: 11px; letter-spacing: .01em; }
+
+/* Compact mood pills and a listening footer that leaves room for touch. */
+.room .mood { flex-direction: row; }
+.scene-footer .scene-signature { max-width: none; align-items: flex-start; }
+.scene-footer .scene-dot { margin-top: 8px; }
+.window-listening { max-width: 440px; }
+.window-listening strong { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.scene-footer:is([data-listening='error'],[data-listening='muted'],[data-listening='loading']) .window-listening > span { white-space: normal; }
+.pocket-mix { row-gap: 14px; }
+.pocket-mix header { margin-bottom: 2px; }
+.pocket-mix .pocket-recording { margin: 0; }
+.pocket-mix > .pocket-channel { min-width: 0; margin-top: 0; padding: 16px; border: 1px solid #c3b3d128; border-radius: 14px; background: #0c122250; }
+.pocket-mix .pocket-channel + .pocket-radio-note + .pocket-channel { margin-top: 0; }
+.pocket-channel label { align-items: baseline; color: #e4d9ed; }
+.pocket-channel label > span { min-width: 0; }
+.pocket-channel output { flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.pocket-channel input[type='range'] { accent-color: #d2b2df; }
+@media(max-width:600px) {
+ .window-view { height: clamp(360px,calc(100svh - 390px),500px); }
+ .room .moods { margin-top: 18px; margin-bottom: 14px; }
+ .room .mood { padding: 8px 9px; gap: 6px; }
+ .scene-footer { gap: 10px; }
+ .scene-footer .scene-signature { max-width: none; }
+ .scene-footer .evening-toggle { max-width: 49%; min-height: 44px; padding: 10px 13px; font-size: 11px; text-align: center; }
+ .window-listening strong { font-size: 11px; line-height: 1.4; }
+ .window-listening > span { font-size: 9px; line-height: 1.5; }
+ .pocket-mix > .pocket-channel { padding: 12px; }
+}
+
+@media(max-width:600px) {
+ .window-time { top: 12%; }
+ .window-time p:first-child { display: none; }
+ .window-time time { font-size: clamp(54px,14vw,76px); }
+ .window-time p:last-child { font-size: 10px; }
+}

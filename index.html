@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=aec779984437" />
+  <link rel="stylesheet" href="style.css?v=e7e22cf5e486" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -641,11 +641,11 @@
       <div class="pocket-transport"><button id="pocket-play" type="button" aria-label="Play tape">▶</button><button id="pocket-next" type="button" aria-label="Next tape, including queued recordings">next</button><button id="pocket-mix-toggle" type="button" aria-label="Open listening mix" aria-expanded="false" aria-controls="pocket-mix">mix</button></div>
     </div>
     <section class="pocket-mix" id="pocket-mix" aria-labelledby="pocket-mix-title" hidden>
-      <header><div><small>YOUR OWN BALANCE</small><h2 id="pocket-mix-title">A little closer. A little softer.</h2></div><button id="pocket-mix-close" type="button" aria-label="Close listening mix">×</button></header>
+      <header><div><small>YOUR OWN BALANCE</small><h2 id="pocket-mix-title">Volume &amp; playback</h2></div><button id="pocket-mix-close" type="button" aria-label="Close listening mix">×</button></header>
       <p class="pocket-recording" id="pocket-recording"></p>
-      <div class="pocket-channel" id="pocket-tape-channel"><div class="pocket-position"><div><span id="pocket-elapsed">00:00</span><span id="pocket-duration">--:--</span></div><input id="pocket-seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek in the pocket recording" disabled /></div><label for="pocket-tape-volume">Tape <output id="pocket-tape-level" for="pocket-tape-volume">55%</output></label><input id="pocket-tape-volume" type="range" min="0" max="100" step="1" value="55" /><p>Just the music. Rain keeps its own level.</p></div>
+      <div class="pocket-channel" id="pocket-tape-channel"><div class="pocket-position"><div><span id="pocket-elapsed">00:00</span><span id="pocket-duration">--:--</span></div><input id="pocket-seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek in the pocket recording" disabled /></div><label for="pocket-tape-volume">Lo-fi <output id="pocket-tape-level" for="pocket-tape-volume">55%</output></label><input id="pocket-tape-volume" type="range" min="0" max="100" step="1" value="55" /><p>Just the music. Rain keeps its own level.</p></div>
       <p class="pocket-radio-note" id="pocket-radio-note" hidden>YouTube keeps its own play and volume controls. <button id="pocket-radio-open" type="button">open radio ↗</button></p>
-      <div class="pocket-channel"><label for="pocket-room-volume">Room sound <output id="pocket-room-level" for="pocket-room-volume">100%</output></label><input id="pocket-room-volume" type="range" min="0" max="100" step="1" value="100" /><div class="pocket-sound-row"><span id="pocket-sound-name"></span><button id="pocket-room-toggle" type="button">listen</button><button id="pocket-rain" type="button">add real rain ＋</button></div></div>
+      <div class="pocket-channel"><label for="pocket-room-volume"><span id="pocket-room-label">Room sound</span> <output id="pocket-room-level" for="pocket-room-volume">100%</output></label><input id="pocket-room-volume" type="range" min="0" max="100" step="1" value="100" /><div class="pocket-sound-row"><span id="pocket-sound-name"></span><button id="pocket-room-toggle" type="button">listen</button><button id="pocket-rain" type="button">add real rain ＋</button></div></div>
       <div class="pocket-footer-actions"><button id="pocket-stop" type="button">all quiet ◇</button><button id="pocket-fold" type="button">minimize player ↓</button></div><footer><p id="pocket-note" role="status">Music and the room, at your own levels.</p></footer>
     </section>
   </section>
@@ -659,6 +659,6 @@
       <p id="postcard-note" role="status">Made here. Kept on your device.</p>
     </div></div>
   </dialog>
-  <script src="app.js?v=d75f9ed56a72"></script>
+  <script src="app.js?v=b08dcf3c85c2"></script>
 </body>
 </html>

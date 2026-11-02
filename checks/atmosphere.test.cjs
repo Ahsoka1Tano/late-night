@@ -77,6 +77,54 @@ async function openRoom(t, width = 1280, motion = 'reduce', expanded = true) {
   return page;
 }
 
+test('listening feedback, retry and mix stay readable and reachable in small and large windows', async t => {
+  for(const [width,height] of [[320,740],[390,844],[768,900],[1440,900],[844,390]]) {
+    const page=await openRoom(t,width,'reduce',false);
+    await page.setViewportSize({width,height});
+    await page.evaluate(()=>scrollTo(0,0));
+    if(process.env.ATMOSPHERE_PREVIEW_DIR&&width===1440) await page.screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'listening-arrival.png')});
+    await page.locator('#evening-toggle').click();
+    await page.clock.runFor(1800);
+    if(height<700) await page.locator('#evening-toggle').evaluate(el=>el.scrollIntoView({block:'center'}));
+    assert.equal(await page.locator('#evening-toggle').evaluate(el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}),true,`pause ${width}x${height}`);
+    const glass=await page.locator('#window-outside').boundingBox(),footer=await page.locator('.scene-footer').boundingBox();
+    assert.ok(footer.y>=glass.y+glass.height-2,JSON.stringify({width,height,glass,footer}));
+    if(width<=600) {
+      const clock=await page.locator('#window-clock').boundingBox(),lamp=await page.locator('#desk-lamp').boundingBox();
+      assert.ok(clock.y+clock.height<=lamp.y,JSON.stringify({width,height,clock,lamp}));
+    }
+    if(process.env.ATMOSPHERE_PREVIEW_DIR) await page.screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`listening-window-${width}.png`)});
+    await page.evaluate(()=>tapeAudio.onerror());
+    assert.match(await page.locator('#evening-toggle').textContent(),/retry sounds/);
+    assert.equal(await page.locator('#evening-toggle').evaluate(el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}),true,`retry ${width}x${height}`);
+    await page.locator('#evening-toggle').click();
+    await page.waitForFunction(()=>tapeState==='playing');
+    await page.locator('#pocket-mix-toggle').click();
+    assert.equal(await page.locator('#pocket-room-label').textContent(),'Rain');
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+    for(const selector of ['#pocket-tape-volume','#pocket-room-volume','#pocket-mix-close']) {
+      const bounds=await page.locator(selector).boundingBox();
+      assert.ok(bounds.x>=0&&bounds.x+bounds.width<=width&&bounds.y>=0&&bounds.y+bounds.height<=height,JSON.stringify({width,height,selector,bounds}));
+    }
+    if(process.env.ATMOSPHERE_PREVIEW_DIR) await page.screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`listening-mix-${width}.png`)});
+  }
+});
+
+test('mix sliders explain mute to keyboard users and name the selected room recording', async t => {
+  const page=await openRoom(t);
+  await page.locator('#evening-toggle').click();
+  await page.locator('#pocket-mix-toggle').click();
+  await page.locator('#pocket-tape-volume').fill('0');
+  assert.equal(await page.locator('#pocket-tape-volume').getAttribute('aria-valuetext'),'0 percent, muted');
+  await page.locator('#pocket-tape-volume').focus();
+  await page.keyboard.press('ArrowRight');
+  assert.equal(await page.locator('#pocket-tape-volume').getAttribute('aria-valuetext'),'1 percent');
+  await page.locator('#pocket-mix-close').click();
+  await page.locator('button[data-ambient="ocean"]').click();
+  await page.locator('#pocket-mix-toggle').click();
+  assert.equal(await page.locator('#pocket-room-label').textContent(),'Ocean');
+});
+
 test('the window radio action opens folded YouTube controls without replacing the iframe or starting tapes', async t => {
   const page=await openRoom(t,1280,'reduce',false);
   await page.locator('#sound-options > summary').click();
@@ -145,7 +193,7 @@ test('window listening feedback reports loading and failures and allows cancelli
   await page.locator('#evening-toggle').click();
   await page.waitForFunction(()=>tapeState==='error');
   assert.equal(await page.locator('.scene-footer').getAttribute('data-listening'),'error');
-  assert.match(await page.locator('#window-sound-detail').textContent(),/Try play again/);
+  assert.match(await page.locator('#window-sound-detail').textContent(),/Press play to retry/);
   await page.evaluate(()=>{window.failAudio=false;});
   await page.locator('#evening-toggle').click();
   await page.waitForFunction(()=>document.querySelector('.scene-footer').dataset.listening==='playing');
