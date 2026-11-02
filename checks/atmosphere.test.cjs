@@ -77,6 +77,60 @@ async function openRoom(t, width = 1280, motion = 'reduce', expanded = true) {
   return page;
 }
 
+test('window listening feedback follows actual recordings, pauses and the chosen ambient sound', async t => {
+  const page=await openRoom(t,1280,'reduce',false);
+  assert.equal(await page.locator('#window-listening').isVisible(),false);
+  await page.locator('#evening-toggle').click();
+  await page.waitForFunction(()=>document.querySelector('.scene-footer').dataset.listening==='playing');
+  assert.match(await page.locator('#window-sound-title').textContent(),/Lo-fi \+ steady rain/);
+  assert.equal(await page.locator('#scene-caption').isVisible(),false);
+  assert.equal(await page.locator('#window-sound-detail').textContent(),await page.evaluate(()=>TAPES[tapeIndex].title));
+  await page.locator('#evening-toggle').click();
+  assert.equal(await page.locator('.scene-footer').getAttribute('data-listening'),'paused');
+  await page.locator('#sound-options > summary').click();
+  await page.locator('button[data-ambient="ocean"]').click();
+  await page.locator('#evening-toggle').click();
+  await page.waitForFunction(()=>document.querySelector('.scene-footer').dataset.listening==='playing');
+  assert.equal(await page.locator('#window-sound-title').textContent(),'Lo-fi + ocean');
+});
+
+test('window listening feedback distinguishes zero volumes without restarting either recording', async t => {
+  const page=await openRoom(t);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(1800);
+  await page.evaluate(()=>{window.feedbackTape=tapeAudio;window.feedbackRain=ambienceTrack;});
+  await page.locator('#pocket-mix-toggle').click();
+  await page.locator('#pocket-tape-volume').fill('0');
+  assert.match(await page.locator('#window-sound-detail').textContent(),/Music volume is 0/);
+  await page.locator('#pocket-room-volume').fill('0');
+  assert.equal(await page.locator('.scene-footer').getAttribute('data-listening'),'muted');
+  assert.match(await page.locator('#window-sound-detail').textContent(),/Raise a volume/);
+  await page.locator('#pocket-tape-volume').fill('25');
+  assert.equal(await page.locator('#window-sound-title').textContent(),'Lo-fi playing');
+  assert.match(await page.locator('#window-sound-detail').textContent(),/Room sound muted/);
+  await page.locator('#pocket-room-volume').fill('40');
+  assert.match(await page.locator('#window-sound-title').textContent(),/Lo-fi \+ steady rain/);
+  assert.equal(await page.evaluate(()=>tapeAudio===feedbackTape&&ambienceTrack===feedbackRain&&tapeRunning&&listening),true);
+});
+
+test('window listening feedback reports loading and failures and allows cancelling a pending start', async t => {
+  const page=await openRoom(t);
+  await page.evaluate(()=>{window.deferAudio=true;});
+  await page.locator('#evening-toggle').click();
+  assert.equal(await page.locator('.scene-footer').getAttribute('data-listening'),'loading');
+  await page.locator('#evening-toggle').click();
+  assert.equal(await page.locator('.scene-footer').getAttribute('data-listening'),'paused');
+  await page.evaluate(()=>{window.media.forEach(track=>track.rejectPlay?.(new Error('cancelled')));window.deferAudio=false;window.failAudio=true;});
+  await page.locator('#evening-toggle').click();
+  await page.waitForFunction(()=>tapeState==='error');
+  assert.equal(await page.locator('.scene-footer').getAttribute('data-listening'),'error');
+  assert.match(await page.locator('#window-sound-detail').textContent(),/Try play again/);
+  await page.evaluate(()=>{window.failAudio=false;});
+  await page.locator('#evening-toggle').click();
+  await page.waitForFunction(()=>document.querySelector('.scene-footer').dataset.listening==='playing');
+  assert.equal(await page.locator('#window-sound-title').textContent(),'Lo-fi + steady rain');
+});
+
 test('listening starts with one play button and reveals a resumable pocket player only on intent', async t => {
   const page = await openRoom(t,1280,'reduce',false);
   assert.equal(await page.locator('#pocket-player').isVisible(),false);

@@ -3758,6 +3758,50 @@ function paintPocketPlayer() {
   rain.hidden = document.body.dataset.mood !== "music";
   rain.textContent = musicRainEnabled && ambientChoice === "auto" ? "remove rain −" : "add real rain ＋";
   paintPocketPosition();
+  paintWindowListening();
+}
+
+// One quiet line at the window explains the actual recording state.
+// YouTube owns its player: an open iframe is never treated as audible music.
+function paintWindowListening() {
+  const mode = pocketMode(), sound = ambienceFor(document.body.dataset.mood);
+  const tapeOn = mode === "tape" && tapeRunning, roomOn = Boolean(sound) && listening;
+  const roomName = sound === RAIN_BY_STRENGTH[rainLevel] ? `${rainLevel} rain`
+    : sound === AMBIENCE.calm ? "ocean" : sound === AMBIENCE.focus ? "fireplace"
+    : sound === AMBIENCE.space || sound === AMBIENCE.aurora ? "space ambience" : sound?.name || "room sound";
+  let state = "idle", title = "", detail = "";
+  if (mode === "radio") {
+    state = "radio"; title = `Lofi Girl · ${currentRadio().name}`;
+    detail = radioFrame.firstChild ? "Play and volume live in the YouTube player." : "Open the radio controls to listen.";
+  } else if ((mode === "tape" && tapeError) || (sound && ambienceError)) {
+    state = "error";
+    title = mode === "tape" && tapeError ? "The tape couldn't load." : "Room recording unavailable.";
+    detail = "Try play again, or choose another recording in Sound & music.";
+  } else if ((tapeOn && tapeState === "loading") || (roomOn && ambienceLoading)) {
+    state = "loading"; title = "Finding your recording…";
+    detail = "You can pause while it loads.";
+  } else if (tapeOn || roomOn) {
+    const musicAudible = tapeOn && tapeVolume > 0, roomAudible = roomOn && roomVolume > 0;
+    if (!musicAudible && !roomAudible) {
+      state = "muted"; title = "Sound is muted.";
+      detail = "Raise a volume in the player's mix controls.";
+    } else {
+      state = "playing";
+      title = musicAudible ? roomAudible ? `Lo-fi + ${roomName}` : "Lo-fi playing" : roomName;
+      detail = musicAudible ? `${roomOn && roomVolume === 0 ? "Room sound muted · " : ""}${TAPES[tapeIndex].title}`
+        : tapeOn ? "Music volume is 0. Raise it in mix to hear the tape." : mode === "tape" ? "Music paused. The room keeps you company." : sound.name;
+    }
+  } else if (tapeAudio || ambienceTrack) {
+    state = "paused"; title = "A quiet pause."; detail = "Press play whenever you're ready.";
+  }
+  const feedback = document.getElementById("window-listening");
+  feedback.hidden = state === "idle";
+  document.getElementById("scene-caption").hidden = state !== "idle";
+  feedback.closest(".scene-footer").dataset.listening = state;
+  for (const [id,value] of [["window-sound-title",title],["window-sound-detail",detail]]) {
+    const label = document.getElementById(id);
+    if (label.textContent !== value) label.textContent = value;
+  }
 }
 function paintPocketPosition() {
   const original = document.getElementById("tape-seek"), seek = document.getElementById("pocket-seek");

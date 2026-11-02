@@ -3061,3 +3061,15 @@ body.has-sound-timer .scene-signature { display: none; }
 .evening-toggle { background: #76598e55; border-color: #ccb2e38a; font-size: 14px; padding: 13px 22px; }
 @media(min-width:900px) { .evening-explore { grid-template-columns: repeat(2,minmax(0,1fr)); align-items: start; } .explore-drawer[open] { grid-column: 1 / -1; } }
 @media(max-width:600px) { .quiet-toolbar > p { display: none; } .quiet-toolbar-actions { justify-content: space-between; } .window-extras { max-width: calc(100% - 125px); } .window-extras-actions { flex-direction: column; align-items: stretch; } .window-extras-actions button { width: 100%; font-size: 10px; padding-inline: 10px; } .scene-footer .evening-toggle { padding: 11px 15px; font-size: 12px; } }
+
+/* Recording feedback uses the existing signature, rather than another panel. */
+.scene-footer .scene-signature { flex: 1; }
+.window-listening { display: block; min-width: 0; letter-spacing: normal; text-transform: none; }
+.window-listening strong { display: block; color: #e0d6e7; font-size: 13px; font-weight: 400; line-height: 1.5; }
+.window-listening > span { display: block; margin-top: 3px; color: #aaa0b6; font-size: 10px; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scene-footer[data-listening='playing'] .scene-dot { background: #b4cbb8; box-shadow: 0 0 12px #a0d7b555; }
+.scene-footer[data-listening='loading'] .scene-dot { background: #d8c297; }
+.scene-footer[data-listening='error'] .scene-dot { background: #d5a69f; }
+.scene-footer[data-listening='error'] .window-listening strong { color: #dfb7b0; }
+.scene-footer[data-listening='muted'] .window-listening strong { color: #d6c395; }
+@media(max-width:600px) { .window-listening strong { font-size: 11px; } .window-listening > span { font-size: 9px; } }
