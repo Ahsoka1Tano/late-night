@@ -77,6 +77,29 @@ async function openRoom(t, width = 1280, motion = 'reduce', expanded = true) {
   return page;
 }
 
+test('listening starts with one play button and reveals a resumable pocket player only on intent', async t => {
+  const page = await openRoom(t,1280,'reduce',false);
+  assert.equal(await page.locator('#pocket-player').isVisible(),false);
+  for (const mood of ['calm','rain','space','sleep','focus','music']) {
+    await page.locator(`.mood[data-mood="${mood}"]`).click();
+    assert.equal(await page.locator('#pocket-player').isVisible(),false,mood);
+  }
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(1800);
+  assert.equal(await page.locator('#pocket-player').isVisible(),true);
+  await page.locator('#evening-toggle').click();
+  assert.equal(await page.locator('#pocket-player').isVisible(),true);
+  await page.locator('#pocket-play').click();
+  assert.equal(await page.evaluate(()=>tapeRunning),true);
+  await page.locator('#pocket-play').click();
+  await page.reload();
+  assert.equal(await page.locator('#pocket-player').isVisible(),false);
+  await page.locator('#sound-options > summary').click();
+  await page.locator('#pocket-player').waitFor({state:'visible'});
+  assert.equal(await page.locator('#pocket-player').isVisible(),true);
+  assert.equal(await page.evaluate(()=>window.media.some(a=>!a.paused)),false);
+});
+
 test('arrival puts the playable window ahead of optional features with no automatic sound', async t => {
   const page = await openRoom(t,1280,'reduce',false);
   assert.equal(await page.locator('.room-drawer[open],.explore-drawer[open],.window-extras[open]').count(),0);

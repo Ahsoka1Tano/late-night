@@ -3703,7 +3703,7 @@ restoreFocusSession();
 
 /* A little listening desk, always within reach of the window. */
 const pocketPlayer = document.getElementById("pocket-player");
-let pocketCompact = false, pocketLayoutBroken = false;
+let pocketCompact = false, pocketLayoutBroken = false, pocketWasRequested = false;
 try {
   const saved = localStorage.getItem("lateNight.pocketCompact");
   if (saved !== null && saved !== "0" && saved !== "1") throw new Error("Unreadable player layout");
@@ -3717,7 +3717,11 @@ function pocketMode() {
 function paintPocketPlayer() {
   const mode = pocketMode();
   const sound = ambienceFor(document.body.dataset.mood);
-  pocketPlayer.hidden = document.body.dataset.mood !== "music" && !sound && !tapeRunning && !listening;
+  // Keep the arrival to one play button. Exploring sound controls also counts
+  // as intent, but merely changing the scenery or mood does not.
+  pocketWasRequested ||= tapeRunning || listening || Boolean(tapeError || ambienceError)
+    || Boolean(radioFrame.firstChild) || document.getElementById("sound-options").open;
+  pocketPlayer.hidden = !pocketWasRequested || (document.body.dataset.mood !== "music" && !sound && !tapeRunning && !listening);
   document.body.classList.toggle("has-pocket-player", !pocketPlayer.hidden);
   pocketPlayer.dataset.mode = mode;
   pocketPlayer.classList.toggle("is-playing", mode === "tape" && tapeState === "playing");
@@ -3849,6 +3853,7 @@ document.addEventListener("pointerdown", event => {
   if (!pocketPlayer.contains(event.target)) setPocketMix(false);
 });
 pocketPlayerReady = true;
+document.getElementById("sound-options").addEventListener("toggle", () => paintPocketPlayer());
 setPocketCompact(pocketCompact, { save: false });
 paintPocketPlayer();
 
