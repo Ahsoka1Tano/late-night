@@ -18,6 +18,10 @@ understand how to listen without reading a guide.
 - [x] three folded desk sections; ready-made evenings and journeys below the room
 - [x] optional window extras and sound navigation that reveals its destination
 - [x] keyboard, phone and playback-continuity checks for the collapsed entry
+- [x] one play action on arrival; show the Pocket player after listening intent
+- [x] explain playing, loading, failed recordings and muted levels at the window
+- [x] direct access to the existing YouTube controls and readable next / mix buttons
+- [x] separate, named volume blocks and a phone layout with reachable pause and retry
 
 ## The next eight weeks
 

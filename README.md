@@ -9,7 +9,7 @@ No accounts, no backend, no notifications — just a dark little corner of the i
 
 ## Just settle in
 
-1. Press **lo-fi + rain** at the bottom of the window. One click starts both.
+1. Press **lo-fi + rain** at the bottom of the window. One click starts both; **pause sounds** pauses both.
 2. Change **City / Mountains / Coast / Café / Garden** above the glass if you like.
 3. Choose **quiet room** to leave the window and music in view. Escape brings you back.
 
@@ -27,7 +27,16 @@ recording title opens the appropriate sound controls, even when folded.
 Folding a section leaves music, timers, drafts and room objects in place. Sections
 start closed on the next visit; your actual room and sound preferences remain.
 
-![A window first, with optional controls folded out of the way](assets/simple-arrival.png)
+The first visit has one play button. The bottom player appears after you start
+listening or open **Sound & music**; browsing views and moods alone leaves it
+out of the way. After a pause it stays available for the rest of this visit.
+
+The window's existing signature becomes a listening line: the current tape and
+background, loading, a quiet pause, or an unavailable recording. **Retry sounds**
+retries a failed start. Zero volume gets its own message, so silence is explained
+without changing your chosen levels.
+
+![One play action at the window, with the listening controls tucked away](assets/simple-arrival.png)
 
 ## Choose an evening
 
@@ -105,13 +114,13 @@ new look works for this visit.
 
 ## A player within reach
 
-The **Pocket player** stays at the bottom of the screen, including in **Quiet
-room**. It follows the current tape, official radio or room recording, so you
+After you start listening or open **Sound & music**, the **Pocket player** stays
+at the bottom of the screen, including in **Quiet room**. It follows the current tape, official radio or room recording, so you
 can keep listening without scrolling back to the desk.
 
 - **Play / pause** controls the tape, or the room recording in other moods.
   Pausing a tape leaves rain playing. **Next** follows your tape queue first.
-- **≋** opens a small mixer with separate tape and room volume, an independent
+- **mix** opens a small mixer with separate tape and room volume, an independent
   room-sound switch, and the existing real-rain switch in Music mood.
 - **All quiet** stops tapes, room recordings and the radio. Your focus session,
   window journey and sound deadline keep their own state.
@@ -121,7 +130,8 @@ its position appears here too; seeking while paused keeps it paused. The
 ordinary desk controls and the Pocket player share the same audio and levels.
 Loading, unavailable recordings and muted levels have their own labels.
 
-YouTube keeps its own transport and volume controls. **Radio ↗** takes you to
+YouTube keeps its own transport and volume controls. **Radio controls ↗** at the
+window, or **radio ↗** in the Pocket player, takes you to
 the existing embedded player, leaving Quiet room if necessary. The Pocket
 player reports whether that player is open; it does not guess whether YouTube
 is currently audible. Opening the controls preserves an existing iframe.
@@ -133,7 +143,12 @@ Escape closes the mixer first; another Escape can then leave Quiet room.
 Clicking outside also closes the mixer. Reels rest in hidden tabs and with
 reduced motion. Narrow screens and short landscape windows can scroll the mixer.
 
-![The Pocket player and separate music and rain controls in Quiet room](assets/pocket-player.png)
+The mixer labels the music **Lo-fi** and names rain or a deliberately chosen
+background such as **Ocean**. Each channel has its own volume block; keyboard
+sliders announce a zero level as muted. **Next** and **mix** are written out in
+the player. No recording is restarted when you adjust either level.
+
+![The listening mixer with separate Lo-fi and Rain volume blocks](assets/listening-mix.png)
 
 ## Let the window wander
 
