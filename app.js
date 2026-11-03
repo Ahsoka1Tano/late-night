@@ -150,7 +150,9 @@ moodButtons.forEach((btn) => {
 /* --- rain --- */
 const rainCanvas = document.getElementById("rain");
 const rainCtx = rainCanvas.getContext("2d");
-const calmEnough = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const rainMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const calmEnough = !rainMotion.matches;
+let rainStill = rainMotion.matches;
 
 // how hard it comes down: spacing between streaks, how fast, how many run down the glass
 const RAIN_LEVELS = {
@@ -165,14 +167,18 @@ let drops = [];
 let glassDrops = [];
 let rainFrame = null;
 let rainWidth = 1, rainHeight = 1, rainLastAt = null;
+const rainBeadLayer = document.createElement("canvas");
+let glassBeads = [];
 
 function sizeRain() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   rainWidth = Math.max(1, rainCanvas.clientWidth);
   rainHeight = Math.max(1, rainCanvas.clientHeight);
-  rainCanvas.width = Math.round(rainWidth * dpr);
-  rainCanvas.height = Math.round(rainHeight * dpr);
+  const width = Math.round(rainWidth * dpr), height = Math.round(rainHeight * dpr);
+  const changed = rainCanvas.width !== width || rainCanvas.height !== height;
+  if (changed) { rainCanvas.width = width; rainCanvas.height = height; }
   rainCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return changed;
 }
 
 function seedDrops() {
@@ -183,6 +189,33 @@ function seedDrops() {
 
   const clinging = Math.round(rainWidth / level.glass);
   glassDrops = Array.from({ length: clinging }, () => spawnGlassDrop(true));
+  const wetness = { drizzle: .6, steady: 1, downpour: 1.5 }[rainLevel];
+  const beads = Math.min(220, Math.round(rainWidth * rainHeight / 2800 * wetness));
+  glassBeads = Array.from({ length: beads }, () => ({
+    x: Math.random() * rainWidth, y: Math.random() * rainHeight,
+    r: .65 + Math.pow(Math.random(), 2) * 1.8, speed: 0,
+  }));
+  // Tiny clinging beads do not move: cache their optical detail once per size.
+  rainBeadLayer.width = rainCanvas.width;
+  rainBeadLayer.height = rainCanvas.height;
+  const ctx = rainBeadLayer.getContext("2d");
+  ctx.setTransform(rainCtx.getTransform());
+  glassBeads.forEach(bead => paintWaterDrop(ctx, bead));
+}
+
+function paintWaterDrop(ctx, drop) {
+  const { x, y, r } = drop, stretch = 1 + Math.min(.65, drop.speed * .1);
+  const lens = ctx.createRadialGradient(x - r * .35, y - r * .5, r * .08, x, y, r * 1.2);
+  lens.addColorStop(0, "rgba(229,241,255,.62)");
+  lens.addColorStop(.32, "rgba(167,201,228,.14)");
+  lens.addColorStop(.68, "rgba(15,30,48,.18)");
+  lens.addColorStop(1, "rgba(183,218,244,.28)");
+  ctx.fillStyle = lens;
+  ctx.beginPath(); ctx.ellipse(x, y, r, r * stretch, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = "rgba(196,224,244,.28)"; ctx.lineWidth = .45;
+  ctx.beginPath(); ctx.ellipse(x, y, r * .83, r * stretch * .88, 0, .1, Math.PI * .85); ctx.stroke();
+  ctx.fillStyle = "rgba(240,248,255,.65)";
+  ctx.beginPath(); ctx.ellipse(x - r * .3, y - r * stretch * .43, r * .18, r * .1, -.5, 0, Math.PI * 2); ctx.fill();
 }
 
 function spawnDrop(scattered = false) {
@@ -207,6 +240,7 @@ function spawnGlassDrop(scattered = false) {
     r: 1.8 + Math.random() * 3.4,
     speed: 0,
     hold: Math.round(Math.random() * 280),
+    sway: Math.random() * Math.PI * 2,
     trail: [],
   };
 }
@@ -215,25 +249,23 @@ function drawGlassDrop(d, delta) {
   // the trail it left on the glass, slowly drying
   for (let i = d.trail.length - 1; i >= 0; i--) {
     const t = d.trail[i];
-    t.alpha -= 0.009 * delta;
+    t.alpha -= 0.0012 * delta;
     if (t.alpha <= 0) {
       d.trail.splice(i, 1);
       continue;
     }
-    rainCtx.fillStyle = `rgba(200, 224, 255, ${t.alpha})`;
-    rainCtx.beginPath();
-    rainCtx.arc(t.x, t.y, t.r, 0, Math.PI * 2);
-    rainCtx.fill();
   }
-
-  const glow = rainCtx.createRadialGradient(d.x - d.r * 0.3, d.y - d.r * 0.3, 0, d.x, d.y, d.r);
-  glow.addColorStop(0, "rgba(226, 240, 255, 0.5)");
-  glow.addColorStop(0.55, "rgba(170, 205, 240, 0.22)");
-  glow.addColorStop(1, "rgba(140, 180, 220, 0.04)");
-  rainCtx.fillStyle = glow;
-  rainCtx.beginPath();
-  rainCtx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-  rainCtx.fill();
+  if (d.trail.length > 1) {
+    const first = d.trail[0], last = d.trail[d.trail.length - 1];
+    const sheen = rainCtx.createLinearGradient(first.x, first.y, last.x, last.y + .01);
+    sheen.addColorStop(0, "rgba(162,201,226,0)");
+    sheen.addColorStop(1, `rgba(190,220,244,${last.alpha})`);
+    rainCtx.strokeStyle = sheen; rainCtx.lineWidth = Math.max(.6, d.r * .38);
+    rainCtx.beginPath(); rainCtx.moveTo(first.x, first.y);
+    for (const point of d.trail) rainCtx.lineTo(point.x, point.y);
+    rainCtx.stroke();
+  }
+  paintWaterDrop(rainCtx, d);
 
   if (d.hold > 0) {
     d.hold -= delta;
@@ -244,6 +276,7 @@ function drawGlassDrop(d, delta) {
   const before = d.y;
   d.y += d.speed * delta + acceleration * delta * delta / 2;
   d.speed += acceleration * delta;
+  d.x += Math.sin(d.y * .025 + d.sway) * .12 * delta;
 
   // leave a thin, uneven line of water behind
   for (let y = before; y < d.y; y += 3) {
@@ -254,6 +287,7 @@ function drawGlassDrop(d, delta) {
       alpha: 0.13,
     });
   }
+  if (d.trail.length > 96) d.trail.splice(0, d.trail.length - 96);
 
   // the drop spends itself on the way down
   if (d.r > 1.2) d.r -= 0.004 * delta;
@@ -270,8 +304,9 @@ function drawGlassDrop(d, delta) {
 function paintRainFrame(delta = 1) {
   rainCtx.clearRect(0, 0, rainWidth, rainHeight);
   rainCtx.lineCap = "round";
+  if (rainBeadLayer.width > 0 && rainBeadLayer.height > 0) rainCtx.drawImage(rainBeadLayer, 0, 0, rainWidth, rainHeight);
 
-  for (let i = 0; i < drops.length; i++) {
+  for (let i = 0; !rainStill && i < drops.length; i++) {
     const d = drops[i];
     rainCtx.strokeStyle = `rgba(190, 220, 255, ${d.alpha})`;
     rainCtx.lineWidth = d.width;
@@ -290,6 +325,11 @@ function paintRainFrame(delta = 1) {
 }
 
 function drawRain(at) {
+  if (document.hidden || rainStill || !isRainScene()) {
+    rainFrame = null; rainLastAt = null;
+    if (!document.hidden && isRainScene()) paintRainFrame(0);
+    return;
+  }
   const delta = rainLastAt === null ? 1 : Math.min(2, Math.max(0, (at - rainLastAt) / (1000 / 60)));
   rainLastAt = at;
   paintRainFrame(delta);
@@ -297,29 +337,36 @@ function drawRain(at) {
 }
 
 function startRain() {
-  if (!calmEnough || document.hidden || rainFrame !== null) return;
-  sizeRain();
-  if (!drops.length || !glassDrops.length) seedDrops();
+  if (document.hidden || rainFrame !== null) return;
+  const resized = sizeRain();
+  if (resized || !drops.length || !glassDrops.length) seedDrops();
   rainLastAt = null;
   rainCanvas.classList.add("is-on");
-  rainFrame = requestAnimationFrame(drawRain);
+  paintRainFrame(0);
+  if (!rainStill) rainFrame = requestAnimationFrame(drawRain);
 }
 
 function stopRain() {
   rainLastAt = null;
   rainCanvas.classList.remove("is-on");
-  if (rainFrame === null) return;
-  cancelAnimationFrame(rainFrame);
+  if (rainFrame !== null) cancelAnimationFrame(rainFrame);
   rainFrame = null;
   // let the fade finish before wiping the canvas
   setTimeout(() => {
-    if (rainFrame === null) rainCtx.clearRect(0, 0, rainWidth, rainHeight);
+    if (rainFrame === null && !rainCanvas.classList.contains("is-on")) rainCtx.clearRect(0, 0, rainWidth, rainHeight);
   }, 1600);
 }
 
 new ResizeObserver(() => {
-  if (rainFrame !== null) { sizeRain(); seedDrops(); }
+  if (isRainScene() && !document.hidden && sizeRain()) { seedDrops(); paintRainFrame(0); }
 }).observe(rainCanvas);
+
+rainMotion.addEventListener("change", event => {
+  rainStill = event.matches;
+  if (rainFrame !== null) cancelAnimationFrame(rainFrame);
+  rainFrame = null; rainLastAt = null;
+  if (isRainScene()) startRain();
+});
 
 const rainSteps = document.querySelectorAll(".rain-step");
 
@@ -332,7 +379,7 @@ function setRainLevel(level, { save = true } = {}) {
     btn.classList.toggle("is-active", btn.dataset.rain === level);
   });
 
-  if (drops.length) seedDrops();
+  if (drops.length) { seedDrops(); if (isRainScene()) paintRainFrame(0); }
   swapAmbience();
   if (save) localStorage.setItem("lateNight.rain", level);
 }

@@ -39,7 +39,7 @@ after(async () => {
 });
 
 
-async function openRoom(t, width = 1280, motion = 'reduce', expanded = true) {
+async function openRoom(t, width = 1280, motion = 'reduce', expanded = true, virtualClock = true) {
   const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: motion });
   t.after(() => context.close());
   const page = await context.newPage();
@@ -71,11 +71,64 @@ async function openRoom(t, width = 1280, motion = 'reduce', expanded = true) {
       pause() { this.paused = true; }
     };
   });
-  await page.clock.install();
+  if (virtualClock) await page.clock.install();
   await page.goto(origin);
   await page.locator('.mood[data-mood="music"]').click();
   return page;
 }
+
+test('wet glass stays still with reduced motion, follows rain strength and survives a quick weather return', async t => {
+  const page=await openRoom(t,1280,'reduce',false);
+  await page.locator('.mood[data-mood="rain"]').click();
+  const counts=[];
+  for(const level of ['drizzle','steady','downpour']) {
+    await page.evaluate(level=>setRainLevel(level),level);
+    counts.push(await page.evaluate(()=>glassBeads.length+glassDrops.length));
+    assert.equal(await page.evaluate(()=>rainFrame===null&&rainCanvas.classList.contains('is-on')),true);
+  }
+  assert.ok(counts[0]<counts[1]&&counts[1]<counts[2],counts.join(','));
+  const dropsBefore=await page.evaluate(()=>JSON.stringify(glassDrops));
+  await page.clock.fastForward(60000);
+  assert.equal(await page.evaluate(()=>JSON.stringify(glassDrops)),dropsBefore);
+  await page.locator('.mood[data-mood="calm"]').click();
+  await page.locator('.mood[data-mood="rain"]').click();
+  await page.clock.runFor(2000);
+  assert.equal(await page.evaluate(()=>rainCtx.getImageData(0,0,rainCanvas.width,rainCanvas.height).data.some((value,index)=>index%4===3&&value>0)),true);
+  assert.equal(await page.evaluate(()=>window.media.some(track=>!track.paused)),false);
+});
+
+test('changing motion preference rests wet glass immediately while the same tape and rain keep playing', async t => {
+  // MediaQueryList changes are delivered by real browser rendering, so this
+  // integration check deliberately keeps the native frame clock.
+  const page=await openRoom(t,1280,'no-preference',false,false);
+  await page.locator('#evening-toggle').click();
+  await page.waitForFunction(()=>tapeState==='playing'&&!ambienceLoading);
+  await page.evaluate(()=>{window.motionTape=tapeAudio;window.motionRain=ambienceTrack;window.wetEvents=[];rainMotion.addEventListener('change',event=>wetEvents.push(event.matches));});
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.waitForFunction(()=>rainStill&&rainFrame===null&&wetEvents.includes(true),null,{polling:50,timeout:5000});
+  await page.setViewportSize({width:390,height:844});
+  await page.waitForFunction(()=>Math.abs(rainCanvas.width-rainCanvas.clientWidth)<=1);
+  assert.equal(await page.evaluate(()=>rainCtx.getImageData(0,0,rainCanvas.width,rainCanvas.height).data.some((value,index)=>index%4===3&&value>0)),true);
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.waitForFunction(()=>!rainStill&&rainFrame!==null&&wetEvents.includes(false),null,{polling:50,timeout:5000});
+  assert.equal(await page.evaluate(()=>tapeAudio===motionTape&&ambienceTrack===motionRain&&tapeRunning&&listening),true);
+});
+
+test('wet glass fits every view on phones and desktop and never adds controls', async t => {
+  for(const width of [390,1440]) {
+    const page=await openRoom(t,width,'reduce',false);
+    await page.locator('#evening-toggle').click();
+    for(const view of ['city','mountains','coast','cafe','garden']) {
+      await page.locator(`button[data-view="${view}"]`).click();
+      await page.clock.runFor(100);
+      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+      assert.equal(await page.evaluate(()=>rainCtx.getImageData(0,0,rainCanvas.width,rainCanvas.height).data.some((value,index)=>index%4===3&&value>0)),true);
+      if(process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`wet-glass-${view}-${width}.png`)});
+    }
+    assert.equal(await page.locator('.room-drawer').count(),3);
+    assert.equal(await page.locator('.room-drawer[open]').count(),0);
+  }
+});
 
 test('rain uses the glass size and follows resizing and Quiet room without changing audio', async t => {
   const page=await openRoom(t,1280,'no-preference',false);
