@@ -77,6 +77,48 @@ async function openRoom(t, width = 1280, motion = 'reduce', expanded = true) {
   return page;
 }
 
+test('rain uses the glass size and follows resizing and Quiet room without changing audio', async t => {
+  const page=await openRoom(t,1280,'no-preference',false);
+  await page.locator('#evening-toggle').click();
+  await page.clock.runFor(1800);
+  await page.evaluate(()=>{window.wetTape=tapeAudio;window.wetRain=ambienceTrack;});
+  for(const [width,height,quiet] of [[1280,900,false],[390,844,false],[390,844,true],[1440,900,true]]) {
+    await page.setViewportSize({width,height});
+    if(await page.locator('#quiet-room').getAttribute('aria-pressed')!==String(quiet))await page.locator('#quiet-room').click();
+    await page.waitForFunction(()=>Math.abs(rainCanvas.width-rainCanvas.clientWidth*Math.min(devicePixelRatio,2))<=1&&Math.abs(rainCanvas.height-rainCanvas.clientHeight*Math.min(devicePixelRatio,2))<=1);
+    assert.equal(await page.evaluate(()=>rainFrame!==null&&drops.every(d=>d.x<=rainWidth&&d.y<rainHeight+50)),true);
+    assert.equal(await page.evaluate(()=>tapeAudio===wetTape&&ambienceTrack===wetRain&&tapeRunning&&listening),true);
+  }
+});
+
+test('rain travels the same distance at 60 and 120 frames per second', async t => {
+  const page=await openRoom(t,1280,'no-preference',false);
+  const positions=await page.evaluate(()=>{
+    stopRain();sizeRain();glassDrops=[];
+    const run=(frames,delta)=>{
+      drops=[{x:200,y:10,speed:2,length:12,width:1,alpha:.3}];
+      for(let i=0;i<frames;i++)paintRainFrame(delta);
+      return {x:drops[0].x,y:drops[0].y};
+    };
+    return [run(60,1),run(120,.5)];
+  });
+  assert.ok(Math.abs(positions[0].x-positions[1].x)<.001);
+  assert.ok(Math.abs(positions[0].y-positions[1].y)<.001);
+});
+
+test('rain rests in a hidden tab and resets its clock before returning', async t => {
+  const page=await openRoom(t,1280,'no-preference',false);
+  await page.locator('.mood[data-mood="rain"]').click();
+  await page.clock.runFor(500);
+  assert.equal(await page.evaluate(()=>rainFrame!==null&&rainLastAt!==null),true);
+  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));startRain();});
+  assert.equal(await page.evaluate(()=>rainFrame===null&&rainLastAt===null),true);
+  await page.clock.fastForward(60000);
+  assert.equal(await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>false});document.dispatchEvent(new Event('visibilitychange'));return rainFrame!==null&&rainLastAt===null;}),true);
+  await page.clock.runFor(50);
+  assert.equal(await page.evaluate(()=>Number.isFinite(rainLastAt)),true);
+});
+
 test('listening feedback, retry and mix stay readable and reachable in small and large windows', async t => {
   for(const [width,height] of [[320,740],[390,844],[768,900],[1440,900],[844,390]]) {
     const page=await openRoom(t,width,'reduce',false);

@@ -164,21 +164,24 @@ let rainLevel = RAIN_LEVELS[savedRain] ? savedRain : "steady";
 let drops = [];
 let glassDrops = [];
 let rainFrame = null;
+let rainWidth = 1, rainHeight = 1, rainLastAt = null;
 
 function sizeRain() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  rainCanvas.width = window.innerWidth * dpr;
-  rainCanvas.height = window.innerHeight * dpr;
+  rainWidth = Math.max(1, rainCanvas.clientWidth);
+  rainHeight = Math.max(1, rainCanvas.clientHeight);
+  rainCanvas.width = Math.round(rainWidth * dpr);
+  rainCanvas.height = Math.round(rainHeight * dpr);
   rainCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
 function seedDrops() {
   const level = RAIN_LEVELS[rainLevel];
 
-  const count = Math.round(window.innerWidth / level.spacing);
+  const count = Math.round(rainWidth / level.spacing);
   drops = Array.from({ length: count }, () => spawnDrop(true));
 
-  const clinging = Math.round(window.innerWidth / level.glass);
+  const clinging = Math.round(rainWidth / level.glass);
   glassDrops = Array.from({ length: clinging }, () => spawnGlassDrop(true));
 }
 
@@ -187,8 +190,8 @@ function spawnDrop(scattered = false) {
   const depth = Math.random();
   const level = RAIN_LEVELS[rainLevel];
   return {
-    x: Math.random() * window.innerWidth,
-    y: scattered ? Math.random() * window.innerHeight : -40,
+    x: Math.random() * rainWidth,
+    y: scattered ? Math.random() * rainHeight : -40,
     length: (8 + depth * 22) * (0.75 + level.speed * 0.3),
     speed: (3 + depth * 9) * level.speed,
     width: 0.5 + depth * 0.9,
@@ -199,8 +202,8 @@ function spawnDrop(scattered = false) {
 /* a fat drop that clings to the window, rests, then slides down leaving a trail */
 function spawnGlassDrop(scattered = false) {
   return {
-    x: Math.random() * window.innerWidth,
-    y: scattered ? Math.random() * window.innerHeight : -20,
+    x: Math.random() * rainWidth,
+    y: scattered ? Math.random() * rainHeight : -20,
     r: 1.8 + Math.random() * 3.4,
     speed: 0,
     hold: Math.round(Math.random() * 280),
@@ -208,11 +211,11 @@ function spawnGlassDrop(scattered = false) {
   };
 }
 
-function drawGlassDrop(d) {
+function drawGlassDrop(d, delta) {
   // the trail it left on the glass, slowly drying
   for (let i = d.trail.length - 1; i >= 0; i--) {
     const t = d.trail[i];
-    t.alpha -= 0.009;
+    t.alpha -= 0.009 * delta;
     if (t.alpha <= 0) {
       d.trail.splice(i, 1);
       continue;
@@ -233,13 +236,14 @@ function drawGlassDrop(d) {
   rainCtx.fill();
 
   if (d.hold > 0) {
-    d.hold--;
+    d.hold -= delta;
     return;
   }
 
-  d.speed += 0.05 + d.r * 0.012;
+  const acceleration = 0.05 + d.r * 0.012;
   const before = d.y;
-  d.y += d.speed;
+  d.y += d.speed * delta + acceleration * delta * delta / 2;
+  d.speed += acceleration * delta;
 
   // leave a thin, uneven line of water behind
   for (let y = before; y < d.y; y += 3) {
@@ -252,19 +256,19 @@ function drawGlassDrop(d) {
   }
 
   // the drop spends itself on the way down
-  if (d.r > 1.2) d.r -= 0.004;
+  if (d.r > 1.2) d.r -= 0.004 * delta;
 
   // heavier drops run further; small ones stall again
-  if (d.speed > 0.6 && Math.random() < 0.012) {
+  if (d.speed > 0.6 && Math.random() < 1 - Math.pow(1 - 0.012, delta)) {
     d.speed = 0;
     d.hold = 30 + Math.random() * 160;
   }
 
-  if (d.y - d.r > window.innerHeight) Object.assign(d, spawnGlassDrop());
+  if (d.y - d.r > rainHeight) Object.assign(d, spawnGlassDrop());
 }
 
-function drawRain() {
-  rainCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+function paintRainFrame(delta = 1) {
+  rainCtx.clearRect(0, 0, rainWidth, rainHeight);
   rainCtx.lineCap = "round";
 
   for (let i = 0; i < drops.length; i++) {
@@ -276,35 +280,46 @@ function drawRain() {
     rainCtx.lineTo(d.x - d.length * 0.12, d.y + d.length);
     rainCtx.stroke();
 
-    d.y += d.speed;
-    d.x -= d.speed * 0.12;
+    d.y += d.speed * delta;
+    d.x -= d.speed * 0.12 * delta;
 
-    if (d.y > window.innerHeight) drops[i] = spawnDrop();
+    if (d.y > rainHeight) drops[i] = spawnDrop();
   }
 
-  for (const d of glassDrops) drawGlassDrop(d);
+  for (const d of glassDrops) drawGlassDrop(d, delta);
+}
 
+function drawRain(at) {
+  const delta = rainLastAt === null ? 1 : Math.min(2, Math.max(0, (at - rainLastAt) / (1000 / 60)));
+  rainLastAt = at;
+  paintRainFrame(delta);
   rainFrame = requestAnimationFrame(drawRain);
 }
 
 function startRain() {
-  if (!calmEnough || rainFrame !== null) return;
+  if (!calmEnough || document.hidden || rainFrame !== null) return;
   sizeRain();
   if (!drops.length || !glassDrops.length) seedDrops();
+  rainLastAt = null;
   rainCanvas.classList.add("is-on");
   rainFrame = requestAnimationFrame(drawRain);
 }
 
 function stopRain() {
+  rainLastAt = null;
   rainCanvas.classList.remove("is-on");
   if (rainFrame === null) return;
   cancelAnimationFrame(rainFrame);
   rainFrame = null;
   // let the fade finish before wiping the canvas
   setTimeout(() => {
-    if (rainFrame === null) rainCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    if (rainFrame === null) rainCtx.clearRect(0, 0, rainWidth, rainHeight);
   }, 1600);
 }
+
+new ResizeObserver(() => {
+  if (rainFrame !== null) { sizeRain(); seedDrops(); }
+}).observe(rainCanvas);
 
 const rainSteps = document.querySelectorAll(".rain-step");
 
@@ -347,6 +362,7 @@ document.addEventListener("visibilitychange", () => {
     if (rainFrame !== null) {
       cancelAnimationFrame(rainFrame);
       rainFrame = null;
+      rainLastAt = null;
     }
     if (starsFrame !== null) {
       cancelAnimationFrame(starsFrame);
