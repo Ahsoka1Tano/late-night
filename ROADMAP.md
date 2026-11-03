@@ -50,6 +50,9 @@ only purpose is filling a day.
 - [x] space starts and pauses the focus timer
 
 ## Rain mood
+- [x] glass-sized, sharp raindrops and consistent motion on high-refresh displays
+- [x] cached clinging beads, water highlights and bounded continuous drying trails
+- [x] still wet glass for reduced motion, live preference changes and safe resize / tab resume
 - [x] animated rain layer: drops falling over the page
 - [x] drops sliding down the "glass", with trails
 - [x] window fog that slowly gathers at the edges

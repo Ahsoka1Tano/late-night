@@ -38,6 +38,22 @@ without changing your chosen levels.
 
 ![One play action at the window, with the listening controls tucked away](assets/simple-arrival.png)
 
+## Rain on the glass
+
+Press **lo-fi + rain**, or choose **Rain** mood for the weather alone. The existing
+**drizzle / steady / downpour** choices in **Sound & music** control its density.
+
+Tiny beads cling to the pane, larger drops catch pale highlights and slide down
+soft, uneven water trails. The texture fits the actual window in all five views,
+on a phone and in Quiet room; high-refresh displays keep the same falling pace.
+
+With your system's **reduced motion** setting, the window keeps a still wet-glass
+texture. Changing that setting while the room is open stops or resumes the
+movement. Hidden tabs rest, and returning never rushes through missed rain.
+These visual changes keep using the existing real rain recordings and music.
+
+![Raindrops resting on the city window with reduced motion](assets/wet-glass.png)
+
 ## Choose an evening
 
 Open **Choose a ready-made evening** below the window. The illustrated cards set up a whole evening with one click:

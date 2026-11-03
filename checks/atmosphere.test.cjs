@@ -990,6 +990,9 @@ test('night journeys preserve the same tape, rain and focus session across views
   await page.locator('.mood[data-mood="music"]').click();
   await page.locator('#evening-toggle').click();
   await page.clock.runFor(1800);
+  // Compare the same instant: clicking two controls must not turn a normal
+  // one-second tick into a false report that the journey reset the timer.
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.evaluate(() => { window.journeyTape = tapeAudio; window.journeyRain = ambienceTrack; });
   const before = await page.locator('#focus-time').textContent();
   await page.locator('[data-journey="faraway"]').click();
