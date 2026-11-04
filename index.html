@@ -110,6 +110,9 @@
           <linearGradient id="cafe-stone" x2="0" y2="1"><stop stop-color="#a29483"/><stop offset=".3" stop-color="#6d6262"/><stop offset="1" stop-color="#38333f"/></linearGradient>
           <pattern id="cafe-bricks" width="70" height="34" patternUnits="userSpaceOnUse"><path d="M0 1h70M0 18h70M35 1v17M0 18v16M70 18v16" fill="none" stroke="#bd9d8c" stroke-opacity=".09" stroke-width="1"/><path d="M1 3h31M39 20h26" stroke="#171b2a" stroke-opacity=".22"/></pattern>
           <radialGradient id="cafe-pendant-glow"><stop stop-color="#f5d39a" stop-opacity=".52"/><stop offset="1" stop-color="#e4aa6600"/></radialGradient>
+          <linearGradient id="cafe-paving" x2="0" y2="1"><stop stop-color="#30303a"/><stop offset=".35" stop-color="#222a35"/><stop offset="1" stop-color="#111c2b"/></linearGradient>
+          <linearGradient id="cafe-puddle-glow" x2="0" y2="1"><stop stop-color="#e4bd87" stop-opacity=".7"/><stop offset=".55" stop-color="#b88c6b" stop-opacity=".35"/><stop offset="1" stop-color="#be9d7b" stop-opacity="0"/></linearGradient>
+          <radialGradient id="cafe-lamp-halo"><stop stop-color="#f4d8a1" stop-opacity=".24"/><stop offset="1" stop-color="#efc989" stop-opacity="0"/></radialGradient>
           <linearGradient id="cafe-counter" x2="0" y2="1"><stop stop-color="#8d684c"/><stop offset=".15" stop-color="#644636"/><stop offset="1" stop-color="#352c2e"/></linearGradient>
           <clipPath id="cafe-window-clip"><path d="M484 295h273v176H484zm305 0h110v209H789zm140 0h225v176H929Z"/></clipPath>
         </defs>
@@ -161,15 +164,19 @@
         <path fill="#151923" opacity=".5" d="M435 315h765v9H435z"/><path stroke="#a78b8b" stroke-opacity=".35" d="M452 269h728"/>
         <g fill="#51404b"><path d="M435 303h85v11q-42 13-85 0zm174 0h85v11q-42 13-85 0zm170 0h85v11q-42 13-85 0zm170 0h85v11q-42 13-85 0zm166 0h85v11q-42 13-85 0z"/></g>
         <path fill="#2b2632" d="M435 303h765v12H435z"/>
-        <path fill="#151c2a" d="M0 520h1200v80H0z"/><path stroke="#53515c" stroke-width="3" d="M0 527h1200"/>
+        <path fill="url(#cafe-paving)" d="M0 520h1200v80H0z"/><path stroke="#777079" stroke-width="3" d="M0 527h1200"/><path stroke="#181f2c" stroke-width="5" d="M0 532h1200"/>
+        <g class="cafe-paving-joints" fill="none" stroke="#a4a1ad" stroke-opacity=".1" stroke-width="1"><path d="M0 550h1200M0 578h1200M45 533 0 578m180-45-55 67m178-67-26 67m166-67 2 67m132-67 30 67m108-67 61 67m79-67 91 67m52-67 112 67m28-67 125 67"/></g>
+        <path fill="#d9d2b9" opacity=".06" d="m273 533 116 0 72 49H229Z"/>
         <g stroke="#6e6871" stroke-width="4" fill="none"><circle cx="405" cy="491" r="24"/><circle cx="481" cy="491" r="24"/><path d="m405 491 28-42 48 42h-76l31-30m-3-12-7-12h-14m69 54-18-53h-12m-24 2h16"/></g>
         <path fill="#171b27" stroke="#5d5662" stroke-width="2" d="m1038 451 55 0 15 66h-82Z"/><path stroke="#a99b8c" stroke-width="2" d="m1048 470 32 0m-30 9h24m-27 10h35"/>
         <path fill="#8c6b58" d="M571 489h91v8h-91z"/><path stroke="#362c33" stroke-width="6" d="M616 497v26m-33-15-7 19m75-19 7 19"/>
         <g class="cafe-pavement" fill="#d5a875">
-          <path d="m506 534 215 0 25 7H493zm19 15h178l17 4H509zm-6 14h190l-15 3H530zm291-30h77l16 9h-97zm0 19h83l-9 5h-72zm129-18h194l24 8H922zm-5 18h214l-28 5H950zm36 15h122l19 3H953Z"/>
+          <path fill="url(#cafe-puddle-glow)" d="m506 532 215 0 58 68H457zm301 0h84l31 68H790zm126 0h218l49 68H897Z"/>
+          <g opacity=".85"><path d="m506 536 75-1-7 4h-79zm92-1h123l15 5H602zm-80 13 71-2-6 4-77 2zm94-1 91 1 17 4h-113zm-93 16 48-2 13 4-50 1zm74-2h116l-15 3H599zm-47 16 58 0-7 2h-65zm69-1 64 1 15 3h-78zM810 535h31l-4 5h-20zm41 0h36l16 7h-49zm-41 17h83l-9 5h-72zm14 18h66l9 3h-81zM939 536h86l-4 5h-99zm105-1h89l24 7h-118zm-110 17h100l-13 5h-71zm110 0h104l-28 5h-82zm-74 15h49l-5 3h-61zm65 1h57l19 3h-87Z"/></g>
+          <g fill="#f4d1a0" opacity=".48"><path d="m541 532 9 0 11 32h-6zm148 0h8l-2 23h-4zm309 0h8l21 34h-5z"/></g>
         </g>
         <g class="cafe-ripples" fill="none" stroke="#a1b4c6" stroke-width="1"><ellipse cx="280" cy="558" rx="25" ry="3"/><ellipse cx="770" cy="568" rx="33" ry="4"/><ellipse cx="1010" cy="543" rx="20" ry="3"/></g>
-        <g class="cafe-street-lamp"><path stroke="#333340" stroke-width="6" fill="none" d="M275 525V285q0-28 30-28h17"/><path fill="#a89677" d="M313 252h35v9h-35Z"/><ellipse fill="#ebd2a2" cx="331" cy="262" rx="14" ry="3"/><path fill="#f0cf9420" d="m317 265-48 253h132l-57-253Z"/></g>
+        <g class="cafe-street-lamp"><ellipse cx="331" cy="271" rx="66" ry="75" fill="url(#cafe-lamp-halo)"/><path stroke="#333340" stroke-width="6" fill="none" d="M275 525V285q0-28 30-28h17"/><path fill="#a89677" d="M313 252h35v9h-35Z"/><ellipse fill="#ebd2a2" cx="331" cy="262" rx="14" ry="3"/><path fill="#f0cf9420" d="m317 265-48 253h132l-57-253Z"/></g>
         <path fill="#1b2230" d="M0 575h1200v25H0z"/>
       </svg>
       <section class="window-breathing" id="window-breathing" aria-label="A quiet rhythm at the window" hidden>
