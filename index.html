@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=e7e22cf5e486" />
+  <link rel="stylesheet" href="style.css?v=59fbd137c872" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -114,6 +114,7 @@
           <linearGradient id="cafe-puddle-glow" x2="0" y2="1"><stop stop-color="#e4bd87" stop-opacity=".7"/><stop offset=".55" stop-color="#b88c6b" stop-opacity=".35"/><stop offset="1" stop-color="#be9d7b" stop-opacity="0"/></linearGradient>
           <radialGradient id="cafe-lamp-halo"><stop stop-color="#f4d8a1" stop-opacity=".24"/><stop offset="1" stop-color="#efc989" stop-opacity="0"/></radialGradient>
           <linearGradient id="cafe-counter" x2="0" y2="1"><stop stop-color="#8d684c"/><stop offset=".15" stop-color="#644636"/><stop offset="1" stop-color="#352c2e"/></linearGradient>
+          <pattern id="cafe-afterhours-lines" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M0 1h12" stroke="#9295a8" stroke-opacity=".3" stroke-width="2"/></pattern>
           <clipPath id="cafe-window-clip"><path d="M484 295h273v176H484zm305 0h110v209H789zm140 0h225v176H929Z"/></clipPath>
         </defs>
         <path fill="#151e30" d="M0 175h220V70h150v100h90v370H0Z"/>
@@ -144,6 +145,7 @@
           <path fill="#303333" d="M627 334h78v47h-78Z"/>
           <text x="666" y="347" text-anchor="middle" fill="#d5c4a2" font-family="Georgia,serif" font-size="8" letter-spacing="1">SLOW BREWS</text>
           <path stroke="#bfb18f" stroke-opacity=".6" d="M638 357h52m-49 7h44m-42 7h38"/>
+          <g class="cafe-kettle-steam" fill="none" stroke="#f7e3c2" stroke-width="1.7" stroke-linecap="round"><path d="M537 369q-7-8 0-14t0-12"/><path d="M550 368q7-6 0-12t0-12"/></g>
           <g class="cafe-coffee-counter"><path fill="url(#cafe-counter)" d="M485 406h272v70H485Z"/><path fill="#b89974" d="M485 401h272v7H485Z"/><path stroke="#a47c58" stroke-opacity=".4" d="M508 413v57m28-57v57m28-57v57m28-57v57m28-57v57m28-57v57m28-57v57m28-57v57m28-57v57"/>
             <path fill="#6e7676" d="M519 370h57l6 27h-69Z"/><path fill="#34363b" d="M521 376h48v13h-48Z"/><path fill="#b8b5a0" d="M521 370h51v4h-51Z"/><circle cx="558" cy="382" r="3" fill="#d1b98a"/><path stroke="#252b31" stroke-width="3" d="M531 386v7m19-7v7"/><path fill="#e0c6a0" d="M526 391h10v8h-10zm19 0h10v8h-10z"/>
             <path fill="#3a3034" d="M589 389h17v12h-17Z"/><path stroke="#d6b78e" stroke-width="2" d="M593 385h9m-9-4h9m-9-4h9"/>
@@ -156,6 +158,7 @@
           </g>
           <path fill="#58423d" d="M791 473h106v31H791Z"/><path stroke="#8e7258" stroke-width="3" d="M796 483h95m-91 10h87"/>
         </g>
+        <g class="cafe-afterhours" clip-path="url(#cafe-window-clip)" fill="url(#cafe-afterhours-lines)"><path d="M484 295h273v176H484zm305 0h110v209H789zm140 0h225v176H929Z"/></g>
         <g class="cafe-glazing" clip-path="url(#cafe-window-clip)" fill="#bdc8d1"><path opacity=".09" d="m488 306 75 0 106 164h-30zm446 0h33l113 164h-20Z"/><path opacity=".08" d="M492 305h3v161h-3zm448 0h3v161h-3z"/></g>
         <g stroke="#292a36" stroke-width="8" fill="none"><path d="M482 295v182h279V295m-138 0v182m167-182v213h113V295m-56 0v213m82-213v182h229V295m-111 0v182"/></g>
         <path fill="#a0927c" d="M482 477h279v8H482zm447 0h229v8H929z"/>

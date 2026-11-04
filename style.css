@@ -3110,3 +3110,17 @@ body.has-sound-timer .scene-signature { display: none; }
  .window-time time { font-size: clamp(54px,14vw,76px); }
  .window-time p:last-child { font-size: 10px; }
 }
+
+/* The same cafe gets closer on a phone and settles after closing time. */
+.cafe-afterhours { opacity: 0; transition: opacity 2s; }
+.window-view[data-cafe-open='false'] .cafe-afterhours { opacity: .7; }
+.cafe-glazing,.cafe-pendant-halos { transition: opacity 2s; }
+.window-view[data-cafe-open='false'] .cafe-glazing { opacity: .5; }
+.window-view[data-cafe-open='false'] .cafe-pendant-halos { opacity: .1; }
+.cafe-kettle-steam { opacity: 0; transform-origin: 545px 369px; animation: cafe-coffee-steam 8s ease-in-out infinite; animation-play-state: paused; }
+body[data-view='cafe']:not(.city-is-hidden) .window-view:not([data-cafe-open='false']) .cafe-kettle-steam { animation-play-state: running; }
+@keyframes cafe-coffee-steam { 0%,100% { opacity: 0; transform: translateY(3px); } 40% { opacity: .35; } 80% { opacity: 0; transform: translateY(-8px) scaleX(1.15); } }
+.cafe-sign { background: linear-gradient(135deg,#302330eb,#262435eb); border-color: #d6b68a70; color: #efd0a3; box-shadow: inset 0 0 0 3px #d7b0850a,0 0 14px #e0b27518; }
+.window-view[data-cafe-open='false'] .cafe-sign { color: #a5a4b5; box-shadow: none; }
+@media(max-width:600px) { .cafe-view { left: -34%; right: auto; width: 138%; } .cafe-sign { right: max(5%,calc(var(--curtain-width,7.5%) + 2%)); } }
+@media(prefers-reduced-motion:reduce) { .cafe-kettle-steam { animation: none !important; } }
