@@ -192,6 +192,9 @@ only purpose is filling a day.
 - [x] slow ocean swells, moonlit water and a remembered lighthouse beam
 - [x] Harbour after hours: the coastal scene with a real ocean recording
 - [x] a fourth view: the last café open, with warm windows, awning and a quiet street
+- [x] Night Owl: layered brickwork, deep frames, cup shelves, espresso counter and window seats
+- [x] wet paving, pendant light pools, quiet coffee steam and an after-hours shop finish
+- [x] closer phone framing, existing light controls and vector postcard compatibility
 - [x] rain-aware pavement reflections, puddle rings and accessible shop light controls
 - [x] The last café: real light rain, lo-fi, coffee and saved closing-time preferences
 - polish, animation, micro-interactions

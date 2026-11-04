@@ -3291,6 +3291,7 @@ test('cafe sign dims the shop, remembers closing time and leaves sound playing',
   await page.locator('#cafe-sign').click();
   assert.equal(await page.locator('#window-view').getAttribute('data-cafe-open'), 'false');
   assert.equal(await page.locator('#cafe-sign').textContent(), 'GOOD NIGHT');
+  if(process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,'cafe-afterhours.png')});
   assert.deepEqual(await page.evaluate(() => window.media.filter(a => !a.paused).map(a => a.src)), sounds);
   await page.reload();
   assert.equal(await page.locator('#cafe-sign').getAttribute('aria-pressed'), 'false');

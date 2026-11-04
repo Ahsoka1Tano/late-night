@@ -435,13 +435,19 @@ the room again. At the end, nothing else starts: just a little space to sit.
 
 ## The last café on the street
 
-Choose **Café** in the view switch for a warm storefront, striped awning, a bicycle,
-a little menu board and a pool of street light. Rain adds window reflections on
-the pavement and slow rings in the puddles. Motion pauses in hidden tabs and stays
-still with reduced motion enabled.
+Choose **Café** in the view switch for **Night Owl**, the little shop across the
+street. Its brick facade, striped canopy and deep window frames surround a coffee
+counter, espresso machine, cup shelves, record player, plants and a window seat.
+Warm pendant lamps light the interior; a bicycle waits under the street lamp.
 
-Touch **OPEN LATE** in the shop window to dim the café for the night; **GOOD NIGHT**
-brings its lights back. The same switch is in **Outside sky** when Café is selected.
+Rain breaks the shop's light into soft reflections across the paving. Small
+puddle rings and a faint wisp above the coffee counter move slowly, resting when
+the tab is hidden or another view is selected. Reduced motion keeps them still.
+The storefront is framed closer on a phone so its details stay visible.
+
+Touch **OPEN LATE** in the shop window to dim the café for the night: warm light
+recedes, blind lines appear and the pavement settles. **GOOD NIGHT** brings its
+lights back. The same switch is in **Outside sky** when Café is selected.
 This changes the shop, leaving your desk light and playback alone. Its state is
 remembered and can be included in **Your evening**; older saved rooms still work.
 
@@ -449,7 +455,7 @@ remembered and can be included in **Your evening**; older saved rooms still work
 your selected lo-fi tape and a cup of coffee. You can also change just the view
 without touching your music, focus session or notes.
 
-![Lo-fi and rain across from the last café](assets/last-cafe.png)
+![Night Owl across the wet street, with a warm counter and window seats](assets/night-owl-cafe.png)
 
 ## A little company
 
@@ -533,7 +539,7 @@ your drink too; previously saved setups still work.
 
 ## One little room
 
-Use **The view → City / Mountains / Coast / Café** above the window to choose the landscape.
+Use **The view → City / Mountains / Coast / Café / Garden** above the window to choose the landscape.
 The room remembers it separately from your mood. Changing the view preserves
 playing music, real rain, the radio, your timer and journal.
 The mountain window has layered snowy ridges, a pine shore, low mist and moonlight
@@ -543,8 +549,8 @@ respects reduced motion and pauses its movement in a hidden tab.
 ![The mountain window](assets/mountain-window.png)
 
 The window is the home screen. Pick a mood above it: the city, lamp, clock and
-weather share the page with your music controls. On a wide screen the player sits
-beside the window; on a phone it sits below. There is no separate view to enter.
+weather share the page with your music controls. **Sound & music** below the
+window opens the full player; the Pocket player appears after a listening action.
 Click the lamp to change its warm light. Your last mood and lamp choice are remembered.
 In **Desk light**, choose **amber**, **moon** or **dim**, then adjust brightness.
 The lamp's glow, shade and faint reflection follow your settings. Choosing a tone
