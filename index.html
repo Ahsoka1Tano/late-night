@@ -109,6 +109,8 @@
           <linearGradient id="cafe-awning" x2="0" y2="1"><stop stop-color="#746269"/><stop offset="1" stop-color="#44323e"/></linearGradient>
           <linearGradient id="cafe-stone" x2="0" y2="1"><stop stop-color="#a29483"/><stop offset=".3" stop-color="#6d6262"/><stop offset="1" stop-color="#38333f"/></linearGradient>
           <pattern id="cafe-bricks" width="70" height="34" patternUnits="userSpaceOnUse"><path d="M0 1h70M0 18h70M35 1v17M0 18v16M70 18v16" fill="none" stroke="#bd9d8c" stroke-opacity=".09" stroke-width="1"/><path d="M1 3h31M39 20h26" stroke="#171b2a" stroke-opacity=".22"/></pattern>
+          <radialGradient id="cafe-pendant-glow"><stop stop-color="#f5d39a" stop-opacity=".52"/><stop offset="1" stop-color="#e4aa6600"/></radialGradient>
+          <linearGradient id="cafe-counter" x2="0" y2="1"><stop stop-color="#8d684c"/><stop offset=".15" stop-color="#644636"/><stop offset="1" stop-color="#352c2e"/></linearGradient>
           <clipPath id="cafe-window-clip"><path d="M484 295h273v176H484zm305 0h110v209H789zm140 0h225v176H929Z"/></clipPath>
         </defs>
         <path fill="#151e30" d="M0 175h220V70h150v100h90v370H0Z"/>
@@ -127,14 +129,31 @@
         <path fill="#241f2b" d="M460 274h720v228H460Z"/>
         <g class="cafe-shop-frame"><path fill="url(#cafe-stone)" d="M470 288h695v9H470zM473 297h10v191h-10zm286 0h18v209h-18zm146 0h18v209h-18zm251 0h12v191h-12z"/><path fill="#151b28" d="M483 297h5v177h-5zm448 0h5v177h-5z"/><path fill="#5d4a46" d="M778 491h128v23H778z"/></g>
         <g class="cafe-fascia"><path fill="#24212c" stroke="#796169" stroke-width="1.5" d="M698 202h245v46H698z"/><path stroke="#ad9586" stroke-opacity=".35" d="M706 207h229M706 243h229"/><text x="820" y="230" text-anchor="middle" fill="#c9b6a0" font-family="Georgia,serif" font-size="16" letter-spacing="5">NIGHT OWL</text></g>
-        <g class="cafe-interior">
+        <g class="cafe-interior" clip-path="url(#cafe-window-clip)">
           <path fill="url(#cafe-warmth)" d="M484 295h273v176H484zm305 0h110v209H789zm140 0h225v176H929Z"/>
-          <g fill="#efd3a0"><path d="M544 295h4v28h-4zm147 0h4v28h-4zm308 0h4v28h-4z"/><path d="m532 322 28 0 10 18h-48zm147 0h28l10 18h-48zm310 0h28l10 18h-48Z"/></g>
-          <path fill="#352f33" d="M485 429h272v10H485zm445 0h224v10H930z"/>
-          <g fill="#3c3034"><path d="M505 402h18v25h-18zm35 5h24v20h-24zm413-7h23v27h-23zm37 5h18v22h-18zM606 357h68v7h-68zm26 7h7v62h-7zm413-5h65v7h-65zm28 7h7v60h-7Z"/></g>
-          <path fill="#8e9b79" d="m721 406-13-27 18 10 5-34 11 29 15-9-11 30z"/>
-          <path fill="#694a3d" d="m716 405 30 0-4 23h-22Z"/>
+          <path fill="#403038" opacity=".5" d="M484 295h670v24H484Z"/>
+          <g class="cafe-pendant-halos" fill="url(#cafe-pendant-glow)"><ellipse cx="546" cy="350" rx="87" ry="73"/><ellipse cx="693" cy="350" rx="74" ry="72"/><ellipse cx="1003" cy="350" rx="91" ry="81"/></g>
+          <g stroke="#5b443c" stroke-width="2"><path d="M546 295v30m147-30v30m310-30v30"/></g>
+          <g fill="#54413a" stroke="#cfab7d" stroke-width="1"><path d="m532 323 28 0 10 17h-48zm147 0h28l10 17h-48zm310 0h28l10 17h-48Z"/></g>
+          <g fill="#f1d9a9"><path d="M524 339h44v3h-44zm147 0h44v3h-44zm310 0h44v3h-44Z"/></g>
+          <g class="cafe-shelves"><path fill="#6a4a39" d="M496 353h105v5H496zm0 26h108v5H496Z"/><g fill="#d8bb8d"><path d="M504 340h8v11h-8zm15 2h8v9h-8zm17-3h9v12h-9zm17 1h8v11h-8z"/></g><g fill="#b59471"><path d="M508 365h13v12h-13zm20 1h13v11h-13zm21-3h12v14h-12z"/></g><path fill="#3e5247" d="M575 348q-17-8-12-18 14 0 14 13 4-17 16-16 2 16-14 23Z"/><path fill="#a77d5d" d="M570 347h16l-3 8h-10Z"/></g>
+          <path fill="#594238" stroke="#bf9c74" stroke-width="1.5" d="M622 329h88v58h-88Z"/>
+          <path fill="#303333" d="M627 334h78v47h-78Z"/>
+          <text x="666" y="347" text-anchor="middle" fill="#d5c4a2" font-family="Georgia,serif" font-size="8" letter-spacing="1">SLOW BREWS</text>
+          <path stroke="#bfb18f" stroke-opacity=".6" d="M638 357h52m-49 7h44m-42 7h38"/>
+          <g class="cafe-coffee-counter"><path fill="url(#cafe-counter)" d="M485 406h272v70H485Z"/><path fill="#b89974" d="M485 401h272v7H485Z"/><path stroke="#a47c58" stroke-opacity=".4" d="M508 413v57m28-57v57m28-57v57m28-57v57m28-57v57m28-57v57m28-57v57m28-57v57m28-57v57"/>
+            <path fill="#6e7676" d="M519 370h57l6 27h-69Z"/><path fill="#34363b" d="M521 376h48v13h-48Z"/><path fill="#b8b5a0" d="M521 370h51v4h-51Z"/><circle cx="558" cy="382" r="3" fill="#d1b98a"/><path stroke="#252b31" stroke-width="3" d="M531 386v7m19-7v7"/><path fill="#e0c6a0" d="M526 391h10v8h-10zm19 0h10v8h-10z"/>
+            <path fill="#3a3034" d="M589 389h17v12h-17Z"/><path stroke="#d6b78e" stroke-width="2" d="M593 385h9m-9-4h9m-9-4h9"/>
+            <path fill="#826747" d="M641 392h54v9h-54Z"/><ellipse cx="670" cy="394" rx="18" ry="3" fill="#222832"/><ellipse cx="670" cy="394" rx="5" ry="1.2" fill="#be937c"/>
+          </g>
+          <g class="cafe-window-seat"><path fill="#3b4d47" d="M943 411q0-13 13-13h183v51H943Z"/><path fill="#2a3b37" d="M943 439h198v12H943Z"/><path stroke="#71806a" stroke-opacity=".25" d="M956 405h171m-144 0v30m45-30v30m44-30v30"/><path fill="#5c4140" d="M960 453h18v25h-18zm148 0h18v25h-18z"/>
+            <path fill="#bc986a" d="M980 385h111v7H980Z"/><path fill="#53413a" d="M1031 392h9v68h-9Z"/><ellipse cx="1035" cy="461" rx="24" ry="4" fill="#423a35"/>
+            <path fill="#e1c5a3" d="M1001 374h13v11h-13zm56 2h12v9h-12Z"/><path d="M1014 376q8 0 5 6h-5m55-5q7-1 5 5h-5" fill="none" stroke="#d9bc97" stroke-width="2"/>
+            <path fill="#a17d5a" d="m1112 415 20 0-4 22h-12Z"/><path fill="#52664b" d="m1121 416-14-22 13 5-3-26 11 20 12-11-8 34Z"/>
+          </g>
+          <path fill="#58423d" d="M791 473h106v31H791Z"/><path stroke="#8e7258" stroke-width="3" d="M796 483h95m-91 10h87"/>
         </g>
+        <g class="cafe-glazing" clip-path="url(#cafe-window-clip)" fill="#bdc8d1"><path opacity=".09" d="m488 306 75 0 106 164h-30zm446 0h33l113 164h-20Z"/><path opacity=".08" d="M492 305h3v161h-3zm448 0h3v161h-3z"/></g>
         <g stroke="#292a36" stroke-width="8" fill="none"><path d="M482 295v182h279V295m-138 0v182m167-182v213h113V295m-56 0v213m82-213v182h229V295m-111 0v182"/></g>
         <path fill="#a0927c" d="M482 477h279v8H482zm447 0h229v8H929z"/>
         <path fill="#231f2c" d="m452 268 728 0 20 35H435Z"/>
