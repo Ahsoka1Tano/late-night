@@ -103,15 +103,30 @@
       </svg>
       <button class="garden-switch" id="garden-switch" data-garden-only type="button" aria-label="Greenhouse light" aria-pressed="true" hidden>GLASSHOUSE · LIT</button>
       <svg class="cafe-view" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
-        <defs><linearGradient id="cafe-wall" x2="1" y2="1"><stop stop-color="#34333f"/><stop offset="1" stop-color="#191f31"/></linearGradient><linearGradient id="cafe-warmth" x2="0" y2="1"><stop stop-color="#d8a66c"/><stop offset=".5" stop-color="#947058"/><stop offset="1" stop-color="#654f4c"/></linearGradient></defs>
+        <defs>
+          <linearGradient id="cafe-wall" x2="1" y2="1"><stop stop-color="#51454c"/><stop offset=".55" stop-color="#35303e"/><stop offset="1" stop-color="#252537"/></linearGradient>
+          <linearGradient id="cafe-warmth" x2="0" y2="1"><stop stop-color="#deb77e"/><stop offset=".45" stop-color="#a77b59"/><stop offset="1" stop-color="#6c4c45"/></linearGradient>
+          <linearGradient id="cafe-awning" x2="0" y2="1"><stop stop-color="#746269"/><stop offset="1" stop-color="#44323e"/></linearGradient>
+          <linearGradient id="cafe-stone" x2="0" y2="1"><stop stop-color="#a29483"/><stop offset=".3" stop-color="#6d6262"/><stop offset="1" stop-color="#38333f"/></linearGradient>
+          <pattern id="cafe-bricks" width="70" height="34" patternUnits="userSpaceOnUse"><path d="M0 1h70M0 18h70M35 1v17M0 18v16M70 18v16" fill="none" stroke="#bd9d8c" stroke-opacity=".09" stroke-width="1"/><path d="M1 3h31M39 20h26" stroke="#171b2a" stroke-opacity=".22"/></pattern>
+          <clipPath id="cafe-window-clip"><path d="M484 295h273v176H484zm305 0h110v209H789zm140 0h225v176H929Z"/></clipPath>
+        </defs>
         <path fill="#151e30" d="M0 175h220V70h150v100h90v370H0Z"/>
         <g fill="#718391" opacity=".35"><path d="M35 235h20v37H35zm60 0h20v37H95zm60 0h20v37h-20zm103-100h18v31h-18zm55 0h18v31h-18zM35 330h20v37H35zm120 0h20v37h-20zm103-100h18v31h-18zm55 0h18v31h-18z"/></g>
         <path fill="#a18a6b" opacity=".45" d="M95 330h20v37H95zm218 0h18v31h-18z"/>
-        <path fill="url(#cafe-wall)" d="M435 129h765v399H435Z"/>
+        <g class="cafe-facade">
+          <path fill="url(#cafe-wall)" d="M435 129h765v399H435Z"/>
+          <path fill="url(#cafe-bricks)" d="M435 143h765v370H435Z"/>
+          <path fill="#72606a" d="M435 143h9v369h-9Z"/><path fill="#161c2b" d="M447 143h6v369h-6Z"/>
+          <path fill="url(#cafe-stone)" d="M425 121h775v13H425zm5 22h770v7H430zM457 247h727v11H457Z"/>
+          <path stroke="#a69083" stroke-opacity=".2" d="M448 156h741M451 253h734"/>
+        </g>
         <path fill="#131a29" d="M420 120h780v22H420z"/>
         <g fill="#182133" stroke="#474754" stroke-width="4"><path d="M485 167h78v78h-78zm140 0h78v78h-78zm340 0h78v78h-78zm140 0h78v78h-78z"/></g>
         <path fill="#a38e76" opacity=".4" d="M635 178h58v55h-58Z"/>
-        <path fill="#443b43" d="M460 274h720v228H460Z"/>
+        <path fill="#241f2b" d="M460 274h720v228H460Z"/>
+        <g class="cafe-shop-frame"><path fill="url(#cafe-stone)" d="M470 288h695v9H470zM473 297h10v191h-10zm286 0h18v209h-18zm146 0h18v209h-18zm251 0h12v191h-12z"/><path fill="#151b28" d="M483 297h5v177h-5zm448 0h5v177h-5z"/><path fill="#5d4a46" d="M778 491h128v23H778z"/></g>
+        <g class="cafe-fascia"><path fill="#24212c" stroke="#796169" stroke-width="1.5" d="M698 202h245v46H698z"/><path stroke="#ad9586" stroke-opacity=".35" d="M706 207h229M706 243h229"/><text x="820" y="230" text-anchor="middle" fill="#c9b6a0" font-family="Georgia,serif" font-size="16" letter-spacing="5">NIGHT OWL</text></g>
         <g class="cafe-interior">
           <path fill="url(#cafe-warmth)" d="M484 295h273v176H484zm305 0h110v209H789zm140 0h225v176H929Z"/>
           <g fill="#efd3a0"><path d="M544 295h4v28h-4zm147 0h4v28h-4zm308 0h4v28h-4z"/><path d="m532 322 28 0 10 18h-48zm147 0h28l10 18h-48zm310 0h28l10 18h-48Z"/></g>
@@ -123,7 +138,9 @@
         <g stroke="#292a36" stroke-width="8" fill="none"><path d="M482 295v182h279V295m-138 0v182m167-182v213h113V295m-56 0v213m82-213v182h229V295m-111 0v182"/></g>
         <path fill="#a0927c" d="M482 477h279v8H482zm447 0h229v8H929z"/>
         <path fill="#231f2c" d="m452 268 728 0 20 35H435Z"/>
-        <path fill="#82666a" d="m452 268 81 0-8 35h-90zm162 0h81l-1 35h-84zm162 0h81l7 35h-85zm162 0h81l15 35h-85zm162 0h80l20 35h-85Z"/>
+        <path fill="url(#cafe-awning)" d="m452 268 81 0-8 35h-90zm162 0h81l-1 35h-84zm162 0h81l7 35h-85zm162 0h81l15 35h-85zm162 0h80l20 35h-85Z"/>
+        <path fill="#151923" opacity=".5" d="M435 315h765v9H435z"/><path stroke="#a78b8b" stroke-opacity=".35" d="M452 269h728"/>
+        <g fill="#51404b"><path d="M435 303h85v11q-42 13-85 0zm174 0h85v11q-42 13-85 0zm170 0h85v11q-42 13-85 0zm170 0h85v11q-42 13-85 0zm166 0h85v11q-42 13-85 0z"/></g>
         <path fill="#2b2632" d="M435 303h765v12H435z"/>
         <path fill="#151c2a" d="M0 520h1200v80H0z"/><path stroke="#53515c" stroke-width="3" d="M0 527h1200"/>
         <g stroke="#6e6871" stroke-width="4" fill="none"><circle cx="405" cy="491" r="24"/><circle cx="481" cy="491" r="24"/><path d="m405 491 28-42 48 42h-76l31-30m-3-12-7-12h-14m69 54-18-53h-12m-24 2h16"/></g>
