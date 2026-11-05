@@ -2547,23 +2547,44 @@ test('both window views fit narrow phones and desktop without covering the clock
 });
 
 
-test('mountain stars follow the weather and reduced motion without starting audio', async t => {
+test('mountain stars, mist and reflections follow weather and motion preferences without starting audio', async t => {
  const page = await openRoom(t,1280,'no-preference');
  await page.locator('.view-switch [data-view="mountains"]').click();
+ const glints = page.locator('.mountain-glints');
+ const mist = page.locator('.mountain-mist');
+ const playState = layer => layer.evaluate(el => getComputedStyle(el).animationPlayState);
  assert.equal(await page.evaluate(() => starsFrame !== null), true);
  assert.equal(await page.evaluate(() => cityLightsTimer), null);
  assert.equal(await page.evaluate(() => window.media.filter(a => !a.paused).length), 0);
+ assert.equal(await playState(glints), 'running');
+ assert.equal(await playState(mist), 'running');
  await page.locator('#music-rain').click();
  assert.equal(await page.evaluate(() => starsFrame), null);
+ assert.equal(await playState(glints), 'paused');
+ assert.equal(await playState(mist), 'running');
  await page.locator('#music-rain').click();
  assert.equal(await page.evaluate(() => starsFrame !== null), true);
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.waitForFunction(() => starsFrame === null);
+ assert.equal(await glints.evaluate(el => getComputedStyle(el).animationName), 'none');
+ assert.equal(await mist.evaluate(el => getComputedStyle(el).animationName), 'none');
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.waitForFunction(() => starsFrame !== null);
+ await page.evaluate(() => {
+   Object.defineProperty(document,'hidden',{configurable:true,value:true});
+   document.dispatchEvent(new Event('visibilitychange'));
+ });
+ assert.equal(await playState(glints), 'paused');
+ assert.equal(await playState(mist), 'paused');
+ await page.evaluate(() => {
+   delete document.hidden;
+   document.dispatchEvent(new Event('visibilitychange'));
+ });
+ assert.equal(await playState(glints), 'running');
  await page.locator('.view-switch [data-view="city"]').click();
  assert.equal(await page.evaluate(() => starsFrame), null);
  assert.equal(await page.locator('body').getAttribute('data-view'),'city');
+ assert.equal(await playState(mist), 'paused');
 });
 
 

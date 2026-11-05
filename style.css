@@ -2563,16 +2563,37 @@ body[data-view='mountains'] .night-flight { display: none; }
 }
 /* Moonlight on the lake, with a low veil of mist along the shore. */
 .mountain-moonlight { opacity: .8; transition: opacity 2s; }
+.mountain-glints { opacity: .44; animation: mountain-glints 19s ease-in-out infinite alternate; }
 .mountain-shore { position: absolute; bottom: 0; left: 0; width: 100%; height: 24%; z-index: 2; opacity: 0; pointer-events: none; transition: opacity 1.8s; }
-.mountain-mist { position: absolute; bottom: 12%; left: -15%; width: 130%; height: 22%; z-index: 2; opacity: 0; pointer-events: none; background: radial-gradient(ellipse 65% 22% at 45% 52%, #a5afc635, transparent 75%), radial-gradient(ellipse 35% 12% at 78% 65%, #b5c1d026, transparent 80%); filter: blur(6px); transition: opacity 2s; animation: valley-mist 36s ease-in-out infinite alternate; }
+.mountain-mist {
+  position: absolute;
+  inset: auto -8% 8%;
+  height: 25%;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 50% 24% at 53% 60%, #b4bdce55, transparent 90%),
+              radial-gradient(ellipse 30% 17% at 33% 43%, #98afc555, transparent 85%),
+              radial-gradient(ellipse 29% 21% at 80% 55%, #b5c1d043, transparent 90%);
+  filter: blur(5px);
+  transition: opacity 2s;
+  animation: valley-mist 36s ease-in-out infinite alternate;
+}
 body[data-view='mountains'] .mountain-shore { opacity: 1; }
-body[data-view='mountains'] .mountain-mist { opacity: .75; }
+body[data-view='mountains'] .mountain-mist { opacity: .68; }
 body[data-view='mountains'] .stars-layer { mask-image: linear-gradient(#000 0 35%, transparent 62%); }
 body.has-rain .mountain-moonlight { opacity: .22; }
 body[data-view='mountains'].has-rain .mountain-mist { opacity: 1; }
-body:not([data-view='mountains']) .mountain-mist,.city-is-hidden .mountain-mist { animation-play-state: paused; }
+body:not([data-view='mountains']) :is(.mountain-glints,.mountain-mist),
+.city-is-hidden :is(.mountain-glints,.mountain-mist),
+body.has-rain .mountain-glints { animation-play-state: paused; }
+@keyframes mountain-glints { from { opacity: .34; } to { opacity: .55; } }
 @keyframes valley-mist { from { transform: translateX(-3%); } to { transform: translateX(3%); } }
-@media (prefers-reduced-motion: reduce) { .mountain-mist { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .mountain-glints,.mountain-mist { animation: none; } }
+@media (max-width: 600px) {
+  .mountain-view,.mountain-lake,.mountain-shore { left: -5%; right: auto; width: 113%; }
+  body[data-view='mountains'] .window-moon { right: 12%; }
+}
 /* The small pool of light that makes the desk feel like home. */
 @property --lamp-glow { syntax: '<color>'; inherits: true; initial-value: #eeaf6936; }
 @property --lamp-edge { syntax: '<color>'; inherits: true; initial-value: #ffdfac; }
