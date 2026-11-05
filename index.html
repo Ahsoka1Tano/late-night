@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=59fbd137c872" />
+  <link rel="stylesheet" href="style.css?v=b1d870cf1204" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -203,7 +203,18 @@
             <linearGradient id="ridge-snow" x2="0" y2="1"><stop stop-color="#d0d5e1"/><stop offset=".55" stop-color="#9baec9"/><stop offset="1" stop-color="#6e809f" stop-opacity=".38"/></linearGradient>
             <linearGradient id="ridge-shadow" x2=".8" y2="1"><stop stop-color="#465571"/><stop offset="1" stop-color="#283953"/></linearGradient>
             <linearGradient id="ridge-foot" x2="0" y2="1"><stop stop-color="#30475a"/><stop offset=".72" stop-color="#17283c"/></linearGradient>
-            <g id="night-pine"><path d="M0 0l-12 24h7l-14 21h12l-17 25H-3v12h6V70h21L7 45h12L5 24h7Z" fill="#0d1b2d"/></g>
+            <g id="night-pine" fill="#0c1a2a">
+              <path d="M-2 58H2V84H-2Z"/>
+              <path d="M0 0C2 12 7 22 13 29L6 27c3 9 10 18 15 23l-11-3c4 10 11 20 17 25l-11-2 4 6L2 72l-21 6 4-6-12 2c9-9 14-18 17-26l-11 4c7-7 12-15 15-25l-7 3C-7 22-3 12 0 0Z"/>
+            </g>
+            <g id="mountain-copse">
+              <use href="#night-pine" transform="translate(0 18) scale(.7)"/>
+              <use href="#night-pine" transform="translate(27 2) scale(.9)"/>
+              <use href="#night-pine" transform="translate(53 28) scale(.58)"/>
+              <use href="#night-pine" transform="translate(74 10) scale(.83)"/>
+              <use href="#night-pine" transform="translate(103 24) scale(.65)"/>
+              <use href="#night-pine" transform="translate(121 31) scale(.53)"/>
+            </g>
           </defs>
           <path d="M0 254 85 205 125 213 199 143 244 169 283 130 309 150 350 95 379 118 404 166 445 185 477 161 549 227 631 178 662 145 703 163 745 110 783 95 835 22 855 40 879 76 895 81 933 155 970 166 1010 129 1054 179 1090 188 1125 153 1167 196 1200 204V500H0Z" fill="url(#ridge-far)"/>
           <path d="m199 143 12 43 33 25 62 42-79-17-54 23 39-56zm151-48 21 72 38 26 62 61-75-23-62-33-27 14 41-64zm485-73 11 65 39 63 59 67-64-23-64-64-31-17 21-31zm175 107 18 67 36 23 41 52-81-38-57 14 40-57z" fill="url(#ridge-shadow)" opacity=".82"/>
@@ -214,13 +225,58 @@
           <path d="m408 166 37 31 17 29-31-17 9 22-28-37-7 20-17 17 5-21-28 17zm456 40 30 23 20 27-22-13-2 13-22-24-8 19-24 13zm258 34 28 12 15 13-22-6-19 7-23-1z" fill="url(#ridge-snow)" opacity=".55"/>
           <path d="M0 353Q65 350 124 367T242 372L300 361Q368 348 429 369L514 395Q556 410 622 398L683 385Q737 365 791 370L855 382Q908 393 967 366T1087 362L1200 333V500H0Z" fill="url(#ridge-foot)"/>
           <path d="M0 377q97 5 170 20t155-11m51-5q78 14 131 34t127 4m58-12q74-16 126-4t119-4m62-19q103 4 201-27" fill="none" stroke="#839fb0" stroke-width="3" opacity=".19"/>
+          <g opacity=".55">
+            <use href="#mountain-copse" transform="translate(6 372) scale(.82)"/>
+            <use href="#mountain-copse" transform="translate(95 387) scale(.72)"/>
+            <use href="#mountain-copse" transform="translate(175 398) scale(.62)"/>
+            <use href="#mountain-copse" transform="translate(246 392) scale(.7)"/>
+            <use href="#mountain-copse" transform="translate(332 410) scale(.56)"/>
+            <use href="#mountain-copse" transform="translate(405 423) scale(.45)"/>
+            <use href="#mountain-copse" transform="translate(904 415) scale(.49)"/>
+            <use href="#mountain-copse" transform="translate(967 397) scale(.74)"/>
+            <use href="#mountain-copse" transform="translate(1047 387) scale(.86)"/>
+            <use href="#mountain-copse" transform="translate(1140 373) scale(.92)"/>
+          </g>
         </svg>
       </div>
       <div class="mountain-lake" aria-hidden="true"></div>
       <div class="mountain-shore" aria-hidden="true">
-        <svg viewBox="0 0 1200 130" preserveAspectRatio="none">
-          <path d="M0 74Q115 43 255 94L408 118H823L967 99Q1100 54 1200 74V130H0Z" fill="#142238"/>
-          <g><use href="#night-pine" transform="translate(24 36) scale(.7)"/><use href="#night-pine" transform="translate(66 18) scale(.8)"/><use href="#night-pine" transform="translate(108 32) scale(.65)"/><use href="#night-pine" transform="translate(145 8) scale(.9)"/><use href="#night-pine" transform="translate(195 32) scale(.8)"/><use href="#night-pine" transform="translate(1040 31) scale(.8)"/><use href="#night-pine" transform="translate(1089 12) scale(.9)"/><use href="#night-pine" transform="translate(1130 33) scale(.7)"/><use href="#night-pine" transform="translate(1176 21) scale(.8)"/></g>
+        <svg viewBox="0 0 1200 180" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="mountain-bank" x2="0" y2="1"><stop stop-color="#233848"/><stop offset="1" stop-color="#101d30"/></linearGradient>
+            <radialGradient id="cabin-glow"><stop stop-color="#ffc28e" stop-opacity=".48"/><stop offset="1" stop-color="#ffc28e" stop-opacity="0"/></radialGradient>
+          </defs>
+          <path d="M0 90q76-19 159 4l71 23 59 4 43 15-92 9-49 18-31 17H0Zm1200-2q-67 4-118 26l-59 8-58 23 36 12 23 23h176Z" fill="url(#mountain-bank)"/>
+          <g fill="none" stroke="#627c89" stroke-linecap="round" opacity=".42">
+            <path d="M65 111q51-2 91 12l58 10 41-2m-105 27 55-17 53-2 52-5m677 12 47-18 48-7 34-13m-111 51 48-16 52-8" stroke-width="2"/>
+            <path d="m106 129 24 1 21 8 36 3m846 20 32-10 23 1" stroke-width="1"/>
+          </g>
+          <g opacity=".7">
+            <use href="#mountain-copse" transform="translate(3 29) scale(.86)"/>
+            <use href="#mountain-copse" transform="translate(99 48) scale(.71)"/>
+            <use href="#mountain-copse" transform="translate(187 67) scale(.59)"/>
+            <use href="#mountain-copse" transform="translate(1042 57) scale(.74)"/>
+            <use href="#mountain-copse" transform="translate(1133 21) scale(1.1)"/>
+          </g>
+          <g transform="translate(229 122)">
+            <ellipse cx="13" cy="-11" rx="32" ry="17" fill="url(#cabin-glow)"/>
+            <path d="M-15 0v-17L0-30l14 12h18V0Z" fill="#3c3840"/>
+            <path d="M-20-16 0-32h22l16 16H15L0-28l-15 12Z" fill="#637185"/>
+            <path d="M18-10h8v6h-8ZM-7-12h7v7h-7Z" fill="#f3be87"/>
+            <path d="M22-10v6m-26-8v7" stroke="#925b45"/>
+          </g>
+          <g>
+            <use href="#night-pine" transform="translate(17 8) scale(1.58)"/>
+            <use href="#night-pine" transform="translate(51 60) scale(1.04)"/>
+            <use href="#night-pine" transform="translate(88 34) scale(1.18)"/>
+            <use href="#night-pine" transform="translate(127 77) scale(.83)"/>
+            <use href="#night-pine" transform="translate(167 62) scale(1.04)"/>
+            <use href="#night-pine" transform="translate(196 85) scale(.64)"/>
+            <use href="#night-pine" transform="translate(1050 84) scale(.82)"/>
+            <use href="#night-pine" transform="translate(1098 52) scale(1.23)"/>
+            <use href="#night-pine" transform="translate(1145 78) scale(.98)"/>
+            <use href="#night-pine" transform="translate(1187 21) scale(1.55)"/>
+          </g>
         </svg>
       </div>
       <div class="mountain-mist" aria-hidden="true"></div>
@@ -712,6 +768,6 @@
       <p id="postcard-note" role="status">Made here. Kept on your device.</p>
     </div></div>
   </dialog>
-  <script src="app.js?v=15c864314269"></script>
+  <script src="app.js?v=8380b82343fd"></script>
 </body>
 </html>

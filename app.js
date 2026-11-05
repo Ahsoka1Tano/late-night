@@ -4025,7 +4025,7 @@ function capturePostcard() {
   } else if (windowScene === "mountains") {
     art.append(postcardVector(document.querySelector(".mountain-view svg"),{x:0,y:258,width:1200,height:342}));
     art.append(postcardElement("rect",{x:0,y:516,width:1200,height:84,fill:"#1b3046"}));
-    art.append(postcardVector(document.querySelector(".mountain-shore svg"),{x:0,y:510,width:1200,height:90}));
+    art.append(postcardVector(document.querySelector(".mountain-shore svg"),{x:0,y:456,width:1200,height:144}));
   } else if (windowScene === "coast") {
     art.append(postcardElement("rect",{x:0,y:450,width:1200,height:150,fill:"#203c50"}));
     art.append(postcardVector(document.querySelector(".sea-swells"),{x:0,y:450,width:1200,height:150}));
