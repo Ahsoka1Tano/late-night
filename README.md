@@ -542,11 +542,12 @@ your drink too; previously saved setups still work.
 Use **The view → City / Mountains / Coast / Café / Garden** above the window to choose the landscape.
 The room remembers it separately from your mood. Changing the view preserves
 playing music, real rain, the radio, your timer and journal.
-The mountain window has layered snowy ridges, a pine shore, low mist and moonlight
-on the lake. Stars appear in clear weather and fade when rain arrives. The scene
-respects reduced motion and pauses its movement in a hidden tab.
+In **Mountains**, snow catches the light on the ridges and a cabin glows at the edge
+of the pine forest. Look for broken moonlight on the lake in clear weather. When
+rain arrives, the reflections dim and mist settles along the far shore. Reduced
+motion keeps the scene still, and movement pauses while the tab is hidden.
 
-![The mountain window](assets/mountain-window.png)
+![Snowy peaks, a lit cabin and moonlight on the lake through the mountain window](assets/mountain-window.png)
 
 The window is the home screen. Pick a mood above it: the city, lamp, clock and
 weather share the page with your music controls. **Sound & music** below the

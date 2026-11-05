@@ -188,6 +188,7 @@ only purpose is filling a day.
 - [x] another view from the window: moonlit mountains and a quiet lake
 - [x] the landscape is remembered independently of mood and audio playback
 - [x] mountain atmosphere: pine shore, valley mist, lake reflections and weather-aware stars
+- [x] mountain illustration: snowy faces, a lit cabin, lake reflections on postcards and wider peaks on phones
 - [x] a third view: a coastal headland, lighthouse and distant harbour
 - [x] slow ocean swells, moonlit water and a remembered lighthouse beam
 - [x] Harbour after hours: the coastal scene with a real ocean recording
