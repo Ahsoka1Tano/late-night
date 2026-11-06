@@ -300,19 +300,33 @@
         <path d="M-80 24q130-9 260 0t260 0t260 0t260 0t260 0M-150 57q150-12 300 0t300 0t300 0t300 0t300 0M-40 99q110-9 220 0t220 0t220 0t220 0t220 0t220 0M-180 153q170-15 340 0t340 0t340 0t340 0" />
       </svg></div>
       <div class="coast-view" aria-hidden="true"><svg viewBox="0 0 1200 500" preserveAspectRatio="none">
-        <defs><linearGradient id="coastal-rock" x2="0" y2="1"><stop stop-color="#314253"/><stop offset="1" stop-color="#101e31"/></linearGradient></defs>
+        <defs>
+          <linearGradient id="coastal-rock" x2=".45" y2="1"><stop stop-color="#4c6170"/><stop offset=".57" stop-color="#273a50"/><stop offset="1" stop-color="#142538"/></linearGradient>
+          <linearGradient id="coastal-grass" x2="0" y2="1"><stop stop-color="#516d6b"/><stop offset="1" stop-color="#2d484e"/></linearGradient>
+          <linearGradient id="coastal-tower"><stop stop-color="#687784"/><stop offset=".54" stop-color="#c0c4bd"/><stop offset="1" stop-color="#788f9d"/></linearGradient>
+          <linearGradient id="coastal-roof"><stop stop-color="#35303c"/><stop offset=".6" stop-color="#75535c"/><stop offset="1" stop-color="#3d3545"/></linearGradient>
+          <radialGradient id="coastal-lamp-halo"><stop stop-color="#ffce89" stop-opacity=".54"/><stop offset="1" stop-color="#ffce89" stop-opacity="0"/></radialGradient>
+        </defs>
         <path d="M455 280 535 244 602 267 674 237 741 271 843 241 977 277 1100 258 1200 282V309H455Z" fill="#344756" opacity=".6"/>
-        <path d="M0 304 94 278 179 311 290 300 370 286 405 269H490L525 315 550 390 490 500H0Z" fill="url(#coastal-rock)"/>
-        <path d="m0 350 78-22 90 26 59-13 62 37M52 394l63-20 56 32M234 406l40 18-18 66" fill="none" stroke="#56606b" stroke-opacity=".2" stroke-width="4"/>
+        <path d="M0 310 72 296l49 12 66-5 62 18 49-18 59-4 39-21 42-12 49 5 24 14 24 32-7 17 20 14-5 24 26 30-22 17 32 33-19 22 35 26H0Z" fill="url(#coastal-rock)"/>
+        <path d="M0 310 72 296l49 12 66-5 62 18 49-18 59-4 39-21 42-12 49 5 24 14-33 8-35-6-35 12-36 5-49 20-66 10-57-11-79 3-50-13L0 329Z" fill="url(#coastal-grass)"/>
+        <path d="m41 330 80 4 36 29 71 14-30 39-69-11-82 39-47-5v-57l63-31zm318-20 38-11 39 23-18 38 30 30-54 57 17 53h-81l-29-71 26-29-36-39zm151-25 25 32-7 17 20 14-5 24 26 30-22 17 32 33-19 22 35 26h-89l-37-52 29-37-20-35 9-28-19-25z" fill="#15283a" opacity=".58"/>
+        <path d="m0 357 66-13 61 9 60 29 81-14 41 12 46-20 56-3 50 18 76-24M0 408l73-15 44 6 71 35 63-5 62 19 58-29 50 11 49-15 81 2M45 475l77-26 52 16 53-6 69 25 73-11m54 3 52-24 87 12" fill="none" stroke="#9ca9ac" stroke-opacity=".25" stroke-width="3"/>
+        <path d="M16 316q27-14 58-8m76 12 32-3 44 12m46-3 33-13 28-2m36-12 37-16 28-9 31 3" fill="none" stroke="#a6a995" stroke-opacity=".42" stroke-width="2" stroke-linecap="round"/>
+        <path d="M330 309q59-21 110-22l15-17" fill="none" stroke="#b6ae9c" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>
         <g transform="translate(280 -40)">
-        <path d="M136 309 149 221H177L190 309Z" fill="#8c9298"/>
-        <path d="m149 221-13 88h17l11-88Z" fill="#505d70"/>
-        <path d="M145 241h37v13h-39Zm-5 31h46v14h-48Z" fill="#36445b"/>
-        <path d="M144 222h39v-31h-39Z" fill="#172536"/>
-        <path class="lighthouse-lantern" d="M149 195h10v22h-10Zm15 0h13v22h-13Z" fill="#e9c48f"/>
-        <path d="M137 191 163 173 189 191Z" fill="#344359"/>
-        <path d="M141 222h45m-44 6h42" stroke="#a1a4a4" stroke-width="3"/>
-        <rect x="159" y="286" width="10" height="23" rx="4" fill="#18243a"/>
+          <ellipse cx="166" cy="206" rx="70" ry="52" fill="url(#coastal-lamp-halo)" class="lighthouse-lantern" opacity=".55"/>
+          <path d="M130 311h65v9h-65Z" fill="#203448"/>
+          <path d="M136 311 148 221h31l13 90Z" fill="url(#coastal-tower)"/>
+          <path d="m149 231 29 1 3 16-35 8zm-7 48 43-10 2 16-47 10z" fill="#465e76" opacity=".85"/>
+          <path d="M147 222h34v-34h-34Z" fill="#1e2e43"/>
+          <path class="lighthouse-lantern" d="M151 194h6v22h-6Zm9 0h9v22h-9Zm12 0h5v22h-5Z" fill="#f8d89f"/>
+          <path d="M138 191 163 171l27 20Z" fill="url(#coastal-roof)"/>
+          <path d="M163 171v-8m-26 28h54m-52 30h50m-47 8h44" fill="none" stroke="#8899a5" stroke-width="2"/>
+          <path d="M139 219v-9m12 9v-9m13 9v-9m13 9v-9m12 9v-9m-50 0h50" fill="none" stroke="#a7b0b0" stroke-width="1.3"/>
+          <rect x="162" y="249" width="5" height="12" rx="2.5" fill="#42546a"/>
+          <path d="M157 311v-14a7 7 0 0 1 14 0v14Z" fill="#203347"/>
+          <path d="M153 312h22m-24 4h26" stroke="#788b99" stroke-width="2"/>
         </g>
         <path d="M932 329 1000 310 1039 321 1110 290 1200 309V500H960Z" fill="#15253a"/>
         <path d="M1024 316v-22h30v22m32-10v-27h34v27m24-6v-35h30v35" fill="#22344b"/>
