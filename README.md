@@ -499,16 +499,18 @@ start music on the timer's behalf. All of this stays local to the browser.
 
 ## A night by the sea
 
-**Coast** opens a rocky headland, distant harbour lights, slow swells and moonlight
-on the bay. The lighthouse sweeps a soft beam over the water. Open **Outside sky**
-to switch its beam off or on; the choice is remembered and can be kept in **Your evening**.
-Water and light stop moving in a hidden tab, and reduced motion leaves a still view.
+Choose **Coast** for a lighthouse above layered cliffs, a lit village across the
+bay and a sailboat at anchor. Slow swells carry broken moonlight past the rocks.
+Rain softens the reflections. Open **Outside sky** to switch the lighthouse beam
+off or on. The room remembers the choice, and **Your evening** can save it too.
+Waves and the beam rest in hidden tabs and with reduced motion. A window postcard
+includes the harbour, water and lighthouse in the captured light.
 
 Choose **Harbour after hours** to start the existing real ocean recording alongside
 the coastal scene. Changing only the view leaves your music and rain playing.
 Clear coastal skies also support stars and the shooting-star control.
 
-![The coastal window](assets/coastal-window.png)
+![A lighthouse above layered cliffs and a lit harbour across the bay](assets/coastal-window.png)
 
 ## A sky of your own
 

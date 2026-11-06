@@ -191,6 +191,7 @@ only purpose is filling a day.
 - [x] mountain illustration: snowy faces, a lit cabin, lake reflections on postcards and wider peaks on phones
 - [x] a third view: a coastal headland, lighthouse and distant harbour
 - [x] slow ocean swells, moonlit water and a remembered lighthouse beam
+- [x] coastal illustration with layered cliffs, a harbour village, a sailboat and a postcard-ready beam
 - [x] Harbour after hours: the coastal scene with a real ocean recording
 - [x] a fourth view: the last café open, with warm windows, awning and a quiet street
 - [x] Night Owl: layered brickwork, deep frames, cup shelves, espresso counter and window seats

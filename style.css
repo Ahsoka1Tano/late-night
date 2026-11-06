@@ -2878,7 +2878,7 @@ body[data-view='coast'] .stars-layer { mask-image: linear-gradient(#000 0 40%,tr
 .sea-moonlight { opacity: .88; transition: opacity 2s; }
 body.has-rain .sea-moonlight { opacity: .23; }
 @keyframes sea-swell { from { transform: translateX(-26px); } to { transform: translateX(26px); } }
-.lighthouse-beam { transform-origin: 444px 166px; transition: opacity 1.5s; animation: harbour-beam 29s ease-in-out infinite alternate; }
+.lighthouse-beam { transform-origin: 444px 98px; transition: opacity 1.5s; animation: harbour-beam 29s ease-in-out infinite alternate; }
 [data-beacon='off'] :is(.lighthouse-beam,.lighthouse-halo) { opacity: 0; }
 [data-beacon='off'] .lighthouse-lantern { opacity: .2; }
 @keyframes harbour-beam { from { transform: rotate(-5deg) scaleX(.74); } to { transform: rotate(6deg); } }
@@ -2887,6 +2887,10 @@ body:not([data-view='coast']) :is(.sea-swells,.lighthouse-beam),
 [data-beacon='off'] .lighthouse-beam { animation-play-state: paused; }
 .beacon-button { min-height: 44px; width: 100%; margin-top: 12px; border: 1px solid #d2b99244; border-radius: 999px; color: #cfbd9e; background: #d2b9920a; font: inherit; font-size: 11px; cursor: pointer; }
 @media(prefers-reduced-motion:reduce) { .sea-swells,.lighthouse-beam { animation: none; } }
+@media (max-width: 600px) {
+  .coast-view,.sea-water { left: -5%; right: auto; width: 110%; }
+  body[data-view='coast'] .window-moon { right: 14%; }
+}
 /* Another complete evening, with a calm sea instead of a tape. */
 .art-harbour { background: radial-gradient(circle at 76% 22%,#d5d7d1 0 5px,transparent 6px),linear-gradient(#122137,#39546a); }
 .art-harbour::before,[data-personal-view='coast'] .art-personal::before { background: #1a2d42; clip-path: polygon(0 48%,12% 33%,29% 43%,35% 66%,65% 66%,79% 52%,100% 46%,100% 100%,0 100%); }
