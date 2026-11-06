@@ -2866,29 +2866,27 @@ body:not([data-view='garden']) .garden-fireflies circle,body:not([data-view='gar
  .view-switch button { min-width: 0; min-height: 44px; padding: 8px 2px; font-size: 9px; }
 }
 .coast-view { position: absolute; inset: auto 0 0; height: 53%; z-index: 2; opacity: 0; pointer-events: none; transition: opacity 1.8s; }
-.coast-view svg { display: block; width: 100%; height: 100%; }
-.sea-water { position: absolute; inset: auto 0 0; height: 25%; z-index: 1; opacity: 0; background: linear-gradient(#344e63,#12283c); pointer-events: none; transition: opacity 1.8s; }
+.coast-view svg,.sea-water svg { display: block; width: 100%; height: 100%; }
+.sea-water { position: absolute; inset: auto 0 0; height: 25%; z-index: 1; opacity: 0; pointer-events: none; transition: opacity 1.8s; }
 body[data-view='coast'] .coast-view,body[data-view='coast'] .sea-water { opacity: 1; }
 body[data-view='coast'] .skyline,body[data-view='coast'] .night-train,body[data-view='coast'] .railway-bridge { opacity: 0; }
 body[data-view='coast'] .night-flight { display: none; }
 body[data-view='coast'] .stars-layer { mask-image: linear-gradient(#000 0 40%,transparent 72%); }
 @media(max-width:760px) { .view-switch > span { display: none; } .view-switch { justify-content: flex-end; } .view-switch button { padding-inline: 11px; } }
-/* Broad, slow swells instead of a busy water texture. */
-.sea-swells { position: absolute; inset: 0 -15%; width: 130%; height: 100%; fill: none; stroke: #a5b8c544; stroke-width: 1; opacity: .55; animation: sea-swell 23s ease-in-out infinite alternate; }
-.sea-water::before { content: ''; position: absolute; inset: 0 7% 0 58%; background: repeating-linear-gradient(0deg,transparent 0 5px,#d6d5da55 5px 6px,transparent 6px 9px); mask-image: radial-gradient(ellipse 44% 95% at 50% 0,#0008,transparent 85%); opacity: .6; animation: sea-glimmer 19s ease-in-out infinite alternate; }
-.sea-water::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 45% 8% at 10% 76%,#c4d3de12,transparent 85%),radial-gradient(ellipse 25% 7% at 90% 92%,#c4d3de18,transparent 85%); }
-@keyframes sea-swell { from { transform: translateX(-3%); } to { transform: translateX(3%); } }
-@keyframes sea-glimmer { from { transform: translateX(-3%) scaleX(.9); } to { transform: translateX(2%) scaleX(1.1); } }
-body:not([data-view='coast']) .sea-swells,body:not([data-view='coast']) .sea-water::before,.city-is-hidden .sea-swells,.city-is-hidden .sea-water::before { animation-play-state: paused; }
-body[data-view='coast'].has-rain .sea-water::before { opacity: .15; }
-@media(prefers-reduced-motion:reduce) { .sea-swells,.sea-water::before { animation: none !important; } }
-.lighthouse-beam { position: absolute; left: 36.9%; bottom: 30%; width: 60%; height: 11%; z-index: 2; opacity: 0; transform-origin: 0 50%; pointer-events: none; background: linear-gradient(90deg,#f2d19b37,#e5d3b200); clip-path: polygon(0 49%,100% 0,100% 100%,0 51%); filter: blur(2px); transition: opacity 2s; animation: harbour-beam 29s ease-in-out infinite alternate; }
-body[data-view='coast'] [data-beacon='on'] .lighthouse-beam { opacity: .75; }
+/* The lens and beam share SVG coordinates in every crop. */
+.sea-swells { animation: sea-swell 23s ease-in-out infinite alternate; }
+.sea-moonlight { opacity: .88; transition: opacity 2s; }
+body.has-rain .sea-moonlight { opacity: .23; }
+@keyframes sea-swell { from { transform: translateX(-26px); } to { transform: translateX(26px); } }
+.lighthouse-beam { transform-origin: 444px 166px; transition: opacity 1.5s; animation: harbour-beam 29s ease-in-out infinite alternate; }
+[data-beacon='off'] :is(.lighthouse-beam,.lighthouse-halo) { opacity: 0; }
 [data-beacon='off'] .lighthouse-lantern { opacity: .2; }
-@keyframes harbour-beam { 0% { transform: rotate(-5deg) scaleX(.62); } 50% { transform: rotate(1deg) scaleX(1); } 100% { transform: rotate(6deg) scaleX(.72); } }
-body:not([data-view='coast']) .lighthouse-beam,.city-is-hidden .lighthouse-beam { animation-play-state: paused; }
+@keyframes harbour-beam { from { transform: rotate(-5deg) scaleX(.74); } to { transform: rotate(6deg); } }
+body:not([data-view='coast']) :is(.sea-swells,.lighthouse-beam),
+.city-is-hidden :is(.sea-swells,.lighthouse-beam),
+[data-beacon='off'] .lighthouse-beam { animation-play-state: paused; }
 .beacon-button { min-height: 44px; width: 100%; margin-top: 12px; border: 1px solid #d2b99244; border-radius: 999px; color: #cfbd9e; background: #d2b9920a; font: inherit; font-size: 11px; cursor: pointer; }
-@media(prefers-reduced-motion:reduce) { .lighthouse-beam { animation: none !important; } }
+@media(prefers-reduced-motion:reduce) { .sea-swells,.lighthouse-beam { animation: none; } }
 /* Another complete evening, with a calm sea instead of a tape. */
 .art-harbour { background: radial-gradient(circle at 76% 22%,#d5d7d1 0 5px,transparent 6px),linear-gradient(#122137,#39546a); }
 .art-harbour::before,[data-personal-view='coast'] .art-personal::before { background: #1a2d42; clip-path: polygon(0 48%,12% 33%,29% 43%,35% 66%,65% 66%,79% 52%,100% 46%,100% 100%,0 100%); }

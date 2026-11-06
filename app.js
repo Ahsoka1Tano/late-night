@@ -4027,8 +4027,7 @@ function capturePostcard() {
     art.append(postcardVector(document.querySelector(".mountain-lake svg"),{x:0,y:498,width:1200,height:102}));
     art.append(postcardVector(document.querySelector(".mountain-shore svg"),{x:0,y:456,width:1200,height:144}));
   } else if (windowScene === "coast") {
-    art.append(postcardElement("rect",{x:0,y:450,width:1200,height:150,fill:"#203c50"}));
-    art.append(postcardVector(document.querySelector(".sea-swells"),{x:0,y:450,width:1200,height:150}));
+    art.append(postcardVector(document.querySelector(".sea-water svg"),{x:0,y:450,width:1200,height:150}));
     art.append(postcardVector(document.querySelector(".coast-view svg"),{x:0,y:282,width:1200,height:318}));
   } else art.append(postcardVector(document.querySelector(windowScene === "garden" ? ".garden-view" : ".cafe-view"),{x:0,y:0,width:1200,height:600}));
   if (isRainScene()) {

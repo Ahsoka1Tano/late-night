@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=ac37986fa86b" />
+  <link rel="stylesheet" href="style.css?v=4b502394add7" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -296,8 +296,22 @@
           </g>
         </svg>
       </div>
-      <div class="sea-water" aria-hidden="true"><svg class="sea-swells" viewBox="0 0 1200 180" preserveAspectRatio="none">
-        <path d="M-80 24q130-9 260 0t260 0t260 0t260 0t260 0M-150 57q150-12 300 0t300 0t300 0t300 0t300 0M-40 99q110-9 220 0t220 0t220 0t220 0t220 0t220 0M-180 153q170-15 340 0t340 0t340 0t340 0" />
+      <div class="sea-water" aria-hidden="true"><svg viewBox="0 0 1200 180" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="sea-depth" x2="0" y2="1"><stop stop-color="#456477"/><stop offset=".42" stop-color="#29475e"/><stop offset="1" stop-color="#15293f"/></linearGradient>
+          <radialGradient id="sea-moon"><stop stop-color="#b2c7d2" stop-opacity=".38"/><stop offset="1" stop-color="#b2c7d2" stop-opacity="0"/></radialGradient>
+        </defs>
+        <rect width="1200" height="180" fill="url(#sea-depth)"/>
+        <path d="M0 0h1200v10q-129 2-266 7t-247 4T383 16 0 23Z" fill="#abc3cc" opacity=".14"/>
+        <g class="sea-moonlight">
+          <ellipse cx="945" cy="91" rx="170" ry="100" fill="url(#sea-moon)"/>
+          <path d="M918 14h49m-41 10h36m-63 11h33m16 0h29m-87 13h93m-68 16h67m-84 15h53m11 0h37m-111 18h88m-70 16h36m23 0h44m-129 22h108m-100 19h46m8 0h45m-89 16h62" fill="none" stroke="#ccd7df" stroke-width="2" stroke-linecap="round" opacity=".44"/>
+        </g>
+        <g class="sea-swells" fill="none" stroke-linecap="round">
+          <path d="M-60 31q151-10 285-4t285 1 254 1 287-3l199 4M-80 66q152-14 292-6t254 2 297 0 275 1l212 1M-62 115q161-15 299-6t296 2 268 3 275-1l174 1M-70 160q140-14 280-7t314-1 283 4 292 0l143 3" stroke="#b2c9d2" stroke-width="2" opacity=".25"/>
+          <path d="M419 39q58 4 112-2t110-3m-120 39q69 4 149-3t107-1m-300 52q78 6 139-1t142-1m-183 47q83-2 142-5t155 1m152-62q64-6 119 0" stroke="#a7c9ce" stroke-width="1.5" opacity=".4"/>
+        </g>
+        <path d="M518 34q33 1 41 12t-10 18m-13 8q40 3 53 19t-16 16m-15 14q32 7 38 17t-12 20m-4 9 30 8m188-73q51 3 92-6t115-1 91-7" fill="none" stroke="#a9cbd0" stroke-width="2.5" stroke-linecap="round" opacity=".39"/>
       </svg></div>
       <div class="coast-view" aria-hidden="true"><svg viewBox="0 0 1200 500" preserveAspectRatio="none">
         <defs>
@@ -308,9 +322,14 @@
           <linearGradient id="harbour-shore" x2="0" y2="1"><stop stop-color="#3b5263"/><stop offset="1" stop-color="#172a41"/></linearGradient>
           <linearGradient id="harbour-light" x2="0" y2="1"><stop stop-color="#e6b680" stop-opacity=".65"/><stop offset="1" stop-color="#e6b680" stop-opacity="0"/></linearGradient>
           <radialGradient id="coastal-lamp-halo"><stop stop-color="#ffce89" stop-opacity=".54"/><stop offset="1" stop-color="#ffce89" stop-opacity="0"/></radialGradient>
+          <linearGradient id="coastal-beam" gradientUnits="userSpaceOnUse" x1="444" x2="1110"><stop stop-color="#ffdfa9" stop-opacity=".52"/><stop offset=".28" stop-color="#ffe2b9" stop-opacity=".27"/><stop offset="1" stop-color="#e5d3b2" stop-opacity="0"/></linearGradient>
         </defs>
         <path d="M440 284 520 254l39 5 53-17 63 15 49-8 55 16 79-26 57 19 82-18 53 14 42-8 108 25v25H440Z" fill="#52627c" opacity=".47"/>
         <path d="M533 284q39-18 93-14l51 9 71-7 44 8 65-14 68 16 112-15 69 3 94-7v42l-98 5-77-12-95 5-106-12-82 8-66-5-46 7-97-4Z" fill="#3b5168" opacity=".85"/>
+        <g class="lighthouse-beam" fill="url(#coastal-beam)">
+          <path d="M444 164 1110 94v146L444 168Z" opacity=".48"/>
+          <path d="M444 164 1100 136v58L444 168Z" opacity=".63"/>
+        </g>
         <path d="M0 310 72 296l49 12 66-5 62 18 49-18 59-4 39-21 42-12 49 5 24 14 24 32-7 17 20 14-5 24 26 30-22 17 32 33-19 22 35 26H0Z" fill="url(#coastal-rock)"/>
         <path d="M0 310 72 296l49 12 66-5 62 18 49-18 59-4 39-21 42-12 49 5 24 14-33 8-35-6-35 12-36 5-49 20-66 10-57-11-79 3-50-13L0 329Z" fill="url(#coastal-grass)"/>
         <path d="m41 330 80 4 36 29 71 14-30 39-69-11-82 39-47-5v-57l63-31zm318-20 38-11 39 23-18 38 30 30-54 57 17 53h-81l-29-71 26-29-36-39zm151-25 25 32-7 17 20 14-5 24 26 30-22 17 32 33-19 22 35 26h-89l-37-52 29-37-20-35 9-28-19-25z" fill="#15283a" opacity=".58"/>
@@ -318,7 +337,7 @@
         <path d="M16 316q27-14 58-8m76 12 32-3 44 12m46-3 33-13 28-2m36-12 37-16 28-9 31 3" fill="none" stroke="#a6a995" stroke-opacity=".42" stroke-width="2" stroke-linecap="round"/>
         <path d="M330 309q59-21 110-22l15-17" fill="none" stroke="#b6ae9c" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>
         <g transform="translate(280 -40)">
-          <ellipse cx="166" cy="206" rx="70" ry="52" fill="url(#coastal-lamp-halo)" class="lighthouse-lantern" opacity=".55"/>
+          <ellipse cx="166" cy="206" rx="70" ry="52" fill="url(#coastal-lamp-halo)" class="lighthouse-halo" opacity=".55"/>
           <path d="M130 311h65v9h-65Z" fill="#203448"/>
           <path d="M136 311 148 221h31l13 90Z" fill="url(#coastal-tower)"/>
           <path d="m149 231 29 1 3 16-35 8zm-7 48 43-10 2 16-47 10z" fill="#465e76" opacity=".85"/>
@@ -345,7 +364,6 @@
         <path d="M676 418v-38m0 2 24 32h-24" fill="none" stroke="#607788" stroke-width="2"/>
         <circle cx="676" cy="406" r="2" fill="#e3c29a"/>
       </svg></div>
-      <div class="lighthouse-beam" aria-hidden="true"></div>
       <div class="lamp-reflection" aria-hidden="true"></div>
       <div class="night-flight" aria-hidden="true">
         <svg viewBox="0 0 32 16"><path d="M2 7 12 6 8 1 11 1 19 6 29 7 31 8 29 9 19 10 11 15 8 15 12 10 2 9Z" /></svg>
@@ -811,6 +829,6 @@
       <p id="postcard-note" role="status">Made here. Kept on your device.</p>
     </div></div>
   </dialog>
-  <script src="app.js?v=4ad406de37a3"></script>
+  <script src="app.js?v=6cec9f88d0b5"></script>
 </body>
 </html>

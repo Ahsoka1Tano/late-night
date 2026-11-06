@@ -2942,15 +2942,30 @@ test('the harbour scene plays the existing ocean recording and remembers a disab
  assert.equal(await page.locator('#window-view').getAttribute('data-beacon'),'on');
 });
 
-test('clear coastal skies support shooting stars and water respects reduced motion', async t=>{
+test('coastal waves and lighthouse follow visibility and motion preferences', async t=>{
  const page=await openRoom(t,1280,'no-preference');
  await page.locator('.view-switch [data-view="coast"]').click();
+ const motion = page.locator('.sea-swells, .lighthouse-beam');
+ const playStates = () => motion.evaluateAll(layers => layers.map(layer => getComputedStyle(layer).animationPlayState));
+ assert.deepEqual(await playStates(),['running','running']);
  await page.locator('#outside-sky summary').click();
  assert.equal(await page.locator('#meteor-button').isEnabled(),true);
  await page.locator('#meteor-button').click();assert.equal(await page.evaluate(()=>comet!==null),true);
+ await page.locator('#beacon-button').click();
+ assert.deepEqual(await playStates(),['running','paused']);
+ await page.locator('#beacon-button').click();
+ await page.evaluate(() => {
+  Object.defineProperty(document,'hidden',{configurable:true,value:true});
+  document.dispatchEvent(new Event('visibilitychange'));
+ });
+ assert.deepEqual(await playStates(),['paused','paused']);
+ await page.evaluate(() => {
+  delete document.hidden;
+  document.dispatchEvent(new Event('visibilitychange'));
+ });
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.waitForFunction(()=>starsFrame===null);
- assert.equal(await page.locator('.sea-swells').evaluate(el=>getComputedStyle(el).animationName),'none');
+ assert.deepEqual(await motion.evaluateAll(layers => layers.map(layer => getComputedStyle(layer).animationName)),['none','none']);
 });
 
 test('coastal views and all five evening cards fit phones and desktop', async t=>{
