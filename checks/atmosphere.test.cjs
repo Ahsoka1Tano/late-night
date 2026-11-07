@@ -1531,6 +1531,26 @@ test('garden controls and all seven evening cards fit phones, tablets and the qu
   }
 });
 
+test('garden postcards freeze greenhouse light and its pond reflection until recaptured', async t => {
+  const page = await openRoom(t);
+  await page.locator('.view-switch button[data-view="garden"]').click();
+  await page.locator('#garden-switch').click();
+  const settleLight = () => page.locator('.garden-waterlight').evaluate(el => el.getAnimations().forEach(animation => animation.finish()));
+  await settleLight();
+  assert.equal(await page.locator('.garden-waterlight').evaluate(el => getComputedStyle(el).opacity),'0');
+  await page.locator('#postcard-open').click();
+  const capturedLight = page.locator('#postcard-preview ellipse[fill="url(#garden-water-gold)"]');
+  assert.equal(await capturedLight.evaluate(el => el.parentElement.style.opacity),'0');
+  await page.evaluate(() => setGarden({...garden,light:true}));
+  await settleLight();
+  assert.equal(await capturedLight.evaluate(el => el.parentElement.style.opacity),'0');
+  await page.locator('#postcard-refresh').click();
+  assert.equal(await capturedLight.evaluate(el => el.parentElement.style.opacity),'0.8');
+  await page.locator('#postcard-close').click();
+  assert.equal(await page.locator('#garden-switch').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.evaluate(() => window.media.some(track => !track.paused)),false);
+});
+
 test('garden fireflies and pond follow weather, view visibility and reduced motion', async t => {
   const page = await openRoom(t,1280,'no-preference');
   await page.locator('.view-switch button[data-view="garden"]').click();

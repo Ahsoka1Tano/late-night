@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=df2c345bd452" />
+  <link rel="stylesheet" href="style.css?v=a3b2a168902a" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -76,7 +76,7 @@
           <linearGradient id="garden-plinth" x2="0" y2="1"><stop stop-color="#68796b"/><stop offset=".3" stop-color="#384c48"/><stop offset="1" stop-color="#203638"/></linearGradient>
           <clipPath id="glasshouse-panes"><path d="M710 297 864 184l154 113v131H710Zm326 0 77-15v130l-77 16Z"/></clipPath>
           <linearGradient id="garden-pool" x2="0" y2="1"><stop stop-color="#425f5c"/><stop offset=".5" stop-color="#263f43"/><stop offset="1" stop-color="#142c35"/></linearGradient>
-          <linearGradient id="garden-water-gold" x2="0" y2="1"><stop stop-color="#d7bd82" stop-opacity=".43"/><stop offset="1" stop-color="#d7bd82" stop-opacity="0"/></linearGradient>
+          <radialGradient id="garden-water-gold"><stop stop-color="#d7bd82" stop-opacity=".25"/><stop offset="1" stop-color="#d7bd82" stop-opacity="0"/></radialGradient>
           <clipPath id="garden-water-clip"><path d="M112 493q-9-25 56-34l56-2 59-17q36-7 76 6l69 8 46-2q68 9 95 32 25 25-16 37l-71 12-52 20q-45 12-90 0l-78 2-46-14-50-3q-64-10-54-45Z"/></clipPath>
           <radialGradient id="garden-warmth"><stop stop-color="#e6c58c" stop-opacity=".23"/><stop offset="1" stop-color="#d9bc8200"/></radialGradient>
           <g id="garden-tree">
@@ -166,7 +166,7 @@
         <path d="M97 495q-10-35 66-46l62-2 58-18q39-8 78 7l67 8 49-3q81 11 106 38 31 35-22 54l-74 12-51 21q-49 13-97 1l-79 1-47-14-53-3q-72-12-63-56Z" fill="#0d242a"/>
         <path d="M112 493q-9-25 56-34l56-2 59-17q36-7 76 6l69 8 46-2q68 9 95 32 25 25-16 37l-71 12-52 20q-45 12-90 0l-78 2-46-14-50-3q-64-10-54-45Z" fill="url(#garden-pool)" stroke="#4d6c60" stroke-width="2"/>
         <g class="garden-waterlight" clip-path="url(#garden-water-clip)">
-          <path d="m456 455 62 3 51 97-57 2Z" fill="url(#garden-water-gold)"/>
+          <ellipse cx="492" cy="498" rx="67" ry="54" fill="url(#garden-water-gold)"/>
           <path d="M458 468h37m-26 10h44m-30 11h39m-47 11h26m12 0h23m-36 12h44m-23 12h29" fill="none" stroke="#dbc28f" stroke-width="2" stroke-linecap="round" opacity=".45"/>
         </g>
         <g fill="#465b50" stroke="#607461" stroke-width="1.5">

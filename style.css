@@ -2834,10 +2834,16 @@ body[data-view='garden'] .garden-view { opacity: 1; }
 body[data-view='garden'] .skyline,body[data-view='garden'] .night-train,body[data-view='garden'] .railway-bridge { opacity: 0; }
 body[data-view='garden'] .night-flight { display: none; }
 body[data-view='garden'] .stars-layer { mask-image: linear-gradient(#000 0 30%,transparent 65%); }
-.garden-lit-glass,.garden-hanging-light,.garden-greenhouse > ellipse,.garden-path-lights { transition: opacity 1.8s ease; }
+.garden-lit-glass,.garden-hanging-light,.garden-greenhouse > ellipse,.garden-path-lights,
+.garden-glazing,.garden-plants,.garden-waterlight { transition: opacity 1.8s ease; }
+.garden-waterlight { opacity: .8; }
+body.has-rain .garden-waterlight { opacity: .5; }
 [data-garden-light='false'] .garden-lit-glass { opacity: .12; }
 [data-garden-light='false'] .garden-hanging-light,[data-garden-light='false'] .garden-greenhouse > ellipse { opacity: .08; }
 [data-garden-light='false'] .garden-path-lights { opacity: .25; }
+[data-garden-light='false'] .garden-waterlight { opacity: 0; }
+[data-garden-light='false'] .garden-glazing { opacity: .45; }
+[data-garden-light='false'] .garden-plants { opacity: .6; }
 .garden-fireflies { filter: drop-shadow(0 0 4px #e0e693aa); opacity: .8; transition: opacity 1.5s; }
 .garden-fireflies circle { animation: garden-drift 13s ease-in-out infinite alternate; }
 .garden-fireflies circle:nth-child(3n) { animation-duration: 17s; animation-delay: -7s; }
@@ -2859,6 +2865,9 @@ body:not([data-view='garden']) .garden-fireflies circle,body:not([data-view='gar
 .garden-switch:focus-visible,.garden-controls button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .has-breath-ritual .garden-switch { visibility: hidden; }
 @media(prefers-reduced-motion:reduce) { .garden-fireflies circle,.garden-pond-rings { animation: none !important; } }
+@media (max-width: 600px) {
+ .garden-view { left: -27%; width: 138%; }
+}
 @media(max-width:760px) {
  .garden-switch { width: 73px; font-size: 7px; }
  .view-switch { left: 5%; right: 5%; }
