@@ -75,7 +75,9 @@
           <linearGradient id="garden-iron"><stop stop-color="#49655f"/><stop offset=".5" stop-color="#91a08a"/><stop offset="1" stop-color="#405b55"/></linearGradient>
           <linearGradient id="garden-plinth" x2="0" y2="1"><stop stop-color="#68796b"/><stop offset=".3" stop-color="#384c48"/><stop offset="1" stop-color="#203638"/></linearGradient>
           <clipPath id="glasshouse-panes"><path d="M710 297 864 184l154 113v131H710Zm326 0 77-15v130l-77 16Z"/></clipPath>
-          <radialGradient id="garden-pool"><stop stop-color="#7e9f97" stop-opacity=".45"/><stop offset="1" stop-color="#19383f"/></radialGradient>
+          <linearGradient id="garden-pool" x2="0" y2="1"><stop stop-color="#425f5c"/><stop offset=".5" stop-color="#263f43"/><stop offset="1" stop-color="#142c35"/></linearGradient>
+          <linearGradient id="garden-water-gold" x2="0" y2="1"><stop stop-color="#d7bd82" stop-opacity=".43"/><stop offset="1" stop-color="#d7bd82" stop-opacity="0"/></linearGradient>
+          <clipPath id="garden-water-clip"><path d="M112 493q-9-25 56-34l56-2 59-17q36-7 76 6l69 8 46-2q68 9 95 32 25 25-16 37l-71 12-52 20q-45 12-90 0l-78 2-46-14-50-3q-64-10-54-45Z"/></clipPath>
           <radialGradient id="garden-warmth"><stop stop-color="#e6c58c" stop-opacity=".23"/><stop offset="1" stop-color="#d9bc8200"/></radialGradient>
           <g id="garden-tree">
             <path d="M-44-28q-27-12-35-31-29-5-20-36-30-20-8-45-19-34 14-48-8-39 29-42 11-41 48-27 30-18 52 7 44-7 48 33 36 9 20 43 28 21 9 43 11 30-26 39-11 29-49 24Z" fill="url(#garden-canopy)"/>
@@ -104,7 +106,10 @@
         <path d="M0 350q166-39 295-3t274-7 310 13 321-20v267H0Z" fill="#183135"/>
         <g opacity=".86"><use href="#garden-tree" transform="translate(93 423) scale(.88)"/><use href="#garden-tree" transform="translate(269 403) scale(.67)"/><use href="#garden-tree" transform="translate(1164 426) scale(.94)"/></g>
         <path d="M0 405q210-61 417-4t450-8 333 5v202H0Z" fill="url(#garden-ground)"/>
-        <path d="M993 410q-127 34-176 73t-87 117H516q55-74 164-123t313-67Z" fill="#48544d" opacity=".65"/>
+        <path d="M850 448q-16 30-57 48t-102 104H568q48-70 138-105t144-47Z" fill="#4b554c" opacity=".65"/>
+        <g fill="#818174" opacity=".48" stroke="#233c39" stroke-width="3">
+          <path d="m821 462 36-9-10 10-34 9Zm-29 15 40-7-13 14-45 9Zm-41 22 46-10-16 20-53 10Zm-42 24 59-6-21 27-67 5Zm-40 29 66-1-25 37-83 8Zm-65 47 91-7-4 8H604Z"/>
+        </g>
         <g class="garden-greenhouse">
           <ellipse cx="903" cy="364" rx="278" ry="175" fill="url(#garden-warmth)"/>
           <path d="m700 292 164-122 98-15 162 119v164l-96 16H700Z" fill="#1b3439" stroke="#607e73" stroke-width="3"/>
@@ -158,15 +163,30 @@
           <path d="M808 450h113v7H808Zm-7 7h127v7H801Z" fill="#607165"/>
           <path d="M688 438h340l106-17" fill="none" stroke="#a1a68a" stroke-opacity=".5" stroke-width="2"/>
         </g>
-        <ellipse cx="350" cy="505" rx="269" ry="59" fill="#0d252c"/>
-        <ellipse cx="350" cy="500" rx="250" ry="47" fill="url(#garden-pool)" stroke="#446558" stroke-width="3"/>
+        <path d="M97 495q-10-35 66-46l62-2 58-18q39-8 78 7l67 8 49-3q81 11 106 38 31 35-22 54l-74 12-51 21q-49 13-97 1l-79 1-47-14-53-3q-72-12-63-56Z" fill="#0d242a"/>
+        <path d="M112 493q-9-25 56-34l56-2 59-17q36-7 76 6l69 8 46-2q68 9 95 32 25 25-16 37l-71 12-52 20q-45 12-90 0l-78 2-46-14-50-3q-64-10-54-45Z" fill="url(#garden-pool)" stroke="#4d6c60" stroke-width="2"/>
+        <g class="garden-waterlight" clip-path="url(#garden-water-clip)">
+          <path d="m456 455 62 3 51 97-57 2Z" fill="url(#garden-water-gold)"/>
+          <path d="M458 468h37m-26 10h44m-30 11h39m-47 11h26m12 0h23m-36 12h44m-23 12h29" fill="none" stroke="#dbc28f" stroke-width="2" stroke-linecap="round" opacity=".45"/>
+        </g>
+        <g fill="#465b50" stroke="#607461" stroke-width="1.5">
+          <path d="m112 466 30-9 16 2 9 10-20 7-32-1Zm80-19 31-7 24 4-5 8-32 3-21-2Zm78-17 27-4 21 7-4 7-35 1-14-6Zm90 5 30 2 10 8-16 4-28-7Zm128 12 29 7 6 7-24 1-23-7Zm63 26 25 13 4 13-16-2-19-17ZM120 525l25 1 17 10-12 6-28-7Zm69 21 32-1 18 10-8 7-35-5Zm137 15 33-3 23 7-16 8-35-3Zm115-5 30-13 20 2 1 7-29 13Z"/>
+        </g>
         <g class="garden-pond-rings" fill="none" stroke="#9ab3a1" stroke-width="1" opacity=".4"><ellipse cx="290" cy="495" rx="54" ry="5"/><ellipse cx="467" cy="518" rx="30" ry="3"/><ellipse cx="391" cy="480" rx="21" ry="2"/></g>
-        <g fill="#456b59"><ellipse cx="235" cy="501" rx="22" ry="6"/><ellipse cx="448" cy="490" rx="16" ry="5"/></g><path d="m240 496 7 7m199-17 8 6" stroke="#193d3b" stroke-width="2"/>
+        <path d="M257 498q-7-10-30-5t-7 14 37-1l-16-5Zm189-14q-22-5-30 4t21 10 22-8l-19 1Z" fill="#587b5c"/>
+        <path d="m228 498 13 3m190-9 9-1" stroke="#87a47a" stroke-width="1.3" opacity=".6"/>
+        <g fill="#c5b6ba"><path d="M236 492q-12-7-9-13 8-2 12 8 1-15 8-15 6 5-2 15 12-8 17-2-1 7-17 10Z"/><ellipse cx="242" cy="492" rx="7" ry="2" fill="#d7bd88"/></g>
         <g stroke="#5b6c61" stroke-width="4" fill="none"><path d="M129 510v-69m-13 36 13 13 13-24m-30 47v-52m435 37v-79m-13 33 13 16 16-31m-1 64v-57"/></g>
         <g fill="#9b9976"><path d="M124 441v-20h10v20zm418-22v-24h10v24z"/></g>
-        <g class="garden-path-lights" fill="#dcc48d"><path d="M759 510h9v23h-9zm155-50h7v19h-7zm-240 99h10v28h-10z"/><ellipse cx="763" cy="533" rx="32" ry="5" opacity=".13"/><ellipse cx="918" cy="479" rx="25" ry="4" opacity=".13"/><ellipse cx="679" cy="587" rx="40" ry="6" opacity=".13"/></g>
+        <g class="garden-path-lights">
+          <g fill="#e6c792"><ellipse cx="803" cy="492" rx="36" ry="8" opacity=".11"/><ellipse cx="737" cy="549" rx="48" ry="11" opacity=".1"/><ellipse cx="649" cy="599" rx="59" ry="13" opacity=".1"/></g>
+          <path d="M800 473h6v20h-6Zm-67 52h8v24h-8Zm-89 43h10v31h-10Z" fill="#42554b"/>
+          <path d="M799 471h8v6h-8Zm-67 52h10v7h-10Zm-89 43h12v8h-12Z" fill="#dfc489"/>
+          <path d="M797 470h12m-79 52h14m-103 43h16" stroke="#78826b" stroke-width="2"/>
+        </g>
         <g fill="#0d252b"><path d="M0 554q90-36 177 3t164 8 190 18l50 17H0Zm868 46q58-71 135-42t197-25v67Z"/></g>
         <g opacity=".8"><use href="#garden-fern" transform="translate(63 584) scale(1.2)"/><use href="#garden-fern" transform="translate(186 591) scale(.8)"/><use href="#garden-fern" transform="translate(1041 589)"/><use href="#garden-fern" transform="translate(1141 579) scale(1.3)"/></g>
+        <g opacity=".8"><use href="#garden-frond" transform="translate(25 598) scale(1.3)"/><use href="#garden-frond" transform="translate(110 600) scale(.6)"/><use href="#garden-frond" transform="translate(1093 603) scale(.9)"/><use href="#garden-frond" transform="translate(1193 602) scale(1.6)"/></g>
         <g class="garden-fireflies" fill="#e3e9aa"><circle cx="193" cy="404" r="2"/><circle cx="346" cy="444" r="2.5"/><circle cx="484" cy="391" r="2"/><circle cx="560" cy="464" r="1.8"/><circle cx="735" cy="492" r="2"/><circle cx="1035" cy="477" r="2.5"/><circle cx="1120" cy="400" r="1.8"/><circle cx="433" cy="538" r="2"/><circle cx="82" cy="467" r="2"/></g>
       </svg>
       <button class="garden-switch" id="garden-switch" data-garden-only type="button" aria-label="Greenhouse light" aria-pressed="true" hidden>GLASSHOUSE · LIT</button>
