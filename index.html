@@ -85,6 +85,10 @@
             <path d="m-80-99 18-8 17 1m58-67 24-5 13 7m-84-50 12-6 17 2m29 112 21-8 15 4" fill="none" stroke="#6c886d" stroke-width="3" stroke-linecap="round" opacity=".25"/>
           </g>
           <g id="garden-fern" fill="none" stroke="#56776a" stroke-width="3"><path d="M0 0q3-34-13-58M0-6q25-22 35-22M-2-17q-22-21-30-19M-4-29q18-19 29-19M-7-40l-17-11"/></g>
+          <g id="garden-frond">
+            <path d="M0 0q-34-12-40-37 23-7 36 22-6-37 14-56 22 13 0 51 25-24 44-12-9 24-47 32Z" fill="#33583f"/>
+            <path d="M-1 0q-4-26 10-61M-1-4l-30-26m32 26 35-21" fill="none" stroke="#8caa70" stroke-width="1.4" opacity=".43"/>
+          </g>
         </defs>
         <path d="M0 310q118-38 223-8t217 1 205-20 236 19 319-16V600H0Z" fill="url(#garden-distance)"/>
         <g opacity=".36">
@@ -106,7 +110,30 @@
           <path d="m700 292 164-122 98-15 162 119v164l-96 16H700Z" fill="#1b3439" stroke="#607e73" stroke-width="3"/>
           <path d="m864 170 98-15 162 119-96 18Z" fill="#526d66" opacity=".58"/>
           <path class="garden-lit-glass" d="m710 297 154-113 154 113v131H710Zm326 0 77-15v130l-77 16Z" fill="url(#garden-glass)"/>
-          <g class="garden-plants" fill="#284e42"><path d="m703 425-21-68 28 28 7-63 16 60 27-21-21 64zm80 0-27-54 28 12 14-70 12 66 28-24-17 70zm184 0-17-74 26 30 21-65-1 73 34-24-24 60zm70 0-18-46 20 13 9-47 12 80Z"/></g>
+          <g class="garden-plants" clip-path="url(#glasshouse-panes)">
+            <path d="M710 412h408v22H710Z" fill="#364c3c"/>
+            <path d="M721 381h91v6h-91Zm204 2h90v6h-90Z" fill="#897251"/>
+            <path d="M728 387h5v39h-5Zm72 0h5v39h-5Zm133 2h5v37h-5Zm69 0h5v37h-5Z" fill="#5c5940"/>
+            <path d="M728 367h19l-3 14h-13Zm32-4h18l-3 18h-12Zm27 5h17l-3 13h-11Zm149-2h20l-3 17h-14Zm32 1h18l-3 16h-12Zm27 4h17l-2 12h-13Z" fill="#a57d55"/>
+            <path d="M725 365h24v4h-24Zm33-3h22v4h-22Zm27 5h21v4h-21Zm149-2h24v4h-24Zm32 1h22v4h-22Z" fill="#c19b69"/>
+            <use href="#garden-frond" transform="translate(738 366) scale(.36)"/>
+            <use href="#garden-frond" transform="translate(769 363) scale(.48)"/>
+            <use href="#garden-frond" transform="translate(796 368) scale(.33)"/>
+            <use href="#garden-frond" transform="translate(946 366) scale(.52)"/>
+            <use href="#garden-frond" transform="translate(977 367) scale(.38)"/>
+            <path d="M725 419h29l-5 20h-19Zm217-8h32l-5 27h-23Zm48 4h28l-4 22h-19Zm52 5h37l-5 21h-27Z" fill="#9a7855"/>
+            <use href="#garden-frond" transform="translate(740 417) scale(.76)"/>
+            <use href="#garden-frond" transform="translate(957 409) scale(.95)"/>
+            <use href="#garden-frond" transform="translate(1003 413) scale(.65)"/>
+            <use href="#garden-frond" transform="translate(1062 416) scale(1.18)"/>
+            <path d="M726 318h82v4h-82Z" fill="#8f805b"/>
+            <path d="M735 300h14v18h-14Zm23 5h12v13h-12Zm22-8h16v21h-16Z" fill="#a8b18b" opacity=".65"/>
+            <path d="M740 301v-17m24 20-5-13m28 6 7-17" stroke="#546c43" stroke-width="2"/>
+            <path d="M736 290q-11-12-3-16 12 2 11 16m14 3q-11-8-5-12 11 0 12 11m24-4q-4-16 5-16 9 7-1 17" fill="#648154"/>
+            <path d="M1086 316h26v4h-26Zm7 4v26m15-26v26" stroke="#786f4b" stroke-width="2"/>
+            <path d="M1090 334h12v11h-12Zm12 2 10-5v3l-9 8Z" fill="#8d9b77"/>
+            <path d="M1091 335q-11-3-7 5h6" fill="none" stroke="#9ca780" stroke-width="2"/>
+          </g>
           <g class="garden-glazing" clip-path="url(#glasshouse-panes)" fill="#cedcd1">
             <path d="m724 255 16-11 122 184h-23Zm58-43 11-8 145 224h-18Zm251 100 12-3 69 98v10l-9 3Z" opacity=".14"/>
             <path d="M716 302h2v121h-2Zm72 0h2v121h-2Zm181 0h2v121h-2Z" opacity=".23"/>
@@ -120,7 +147,13 @@
           <path d="M831 421v-75q33-37 66 0v75Z" fill="#b1b080" opacity=".35"/>
           <path d="M864 326v106m-31-65h62m-64 46h66" stroke="#5f7761" stroke-width="3"/>
           <circle cx="887" cy="386" r="3" fill="#e0c398"/>
-          <g class="garden-hanging-light"><path d="M930 249v48" stroke="#829183" stroke-width="2"/><path d="m917 296 26 0 7 13h-40Z" fill="#d2bd8a"/><ellipse cx="930" cy="310" rx="16" ry="3" fill="#f9dba0"/></g>
+          <g class="garden-hanging-light">
+            <ellipse cx="780" cy="348" rx="52" ry="65" fill="url(#garden-warmth)"/>
+            <ellipse cx="968" cy="349" rx="48" ry="64" fill="url(#garden-warmth)"/>
+            <path d="M780 234v63m188-49v55" stroke="#697459" stroke-width="2"/>
+            <path d="m768 297 24 0 8 12h-40Zm188 6h24l8 12h-40Z" fill="#837247"/>
+            <path d="M762 309h36m152 6h36" stroke="#fae0aa" stroke-width="3"/>
+          </g>
           <path d="M688 438h340l106-17v13l-106 19H688Z" fill="url(#garden-plinth)"/>
           <path d="M808 450h113v7H808Zm-7 7h127v7H801Z" fill="#607165"/>
           <path d="M688 438h340l106-17" fill="none" stroke="#a1a68a" stroke-opacity=".5" stroke-width="2"/>
