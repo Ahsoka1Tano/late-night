@@ -68,15 +68,34 @@
       <div class="journey-ticket" id="journey-ticket" aria-hidden="true" hidden><small id="journey-ticket-route">AFTER HOURS</small><strong id="journey-ticket-view">City</strong><span id="journey-ticket-stop">01 / 03</span><div class="journey-wait"><i id="journey-progress"></i></div></div>
       <svg class="garden-view" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
         <defs>
-          <linearGradient id="garden-ground" x2="0" y2="1"><stop stop-color="#233d3b"/><stop offset="1" stop-color="#0b1c25"/></linearGradient>
+          <linearGradient id="garden-ground" x2="0" y2="1"><stop stop-color="#2c4540"/><stop offset=".5" stop-color="#1a3334"/><stop offset="1" stop-color="#0b1c25"/></linearGradient>
+          <linearGradient id="garden-canopy" x2=".7" y2="1"><stop stop-color="#36564a"/><stop offset=".6" stop-color="#233f39"/><stop offset="1" stop-color="#142c30"/></linearGradient>
+          <linearGradient id="garden-distance" x2="0" y2="1"><stop stop-color="#3c5557"/><stop offset="1" stop-color="#233a3e"/></linearGradient>
           <linearGradient id="garden-glass" x2="0" y2="1"><stop stop-color="#c8af74" stop-opacity=".6"/><stop offset="1" stop-color="#456258" stop-opacity=".8"/></linearGradient>
           <radialGradient id="garden-pool"><stop stop-color="#7e9f97" stop-opacity=".45"/><stop offset="1" stop-color="#19383f"/></radialGradient>
           <radialGradient id="garden-warmth"><stop stop-color="#e6c58c" stop-opacity=".23"/><stop offset="1" stop-color="#d9bc8200"/></radialGradient>
-          <g id="garden-tree"><path d="M0 0v-210m0 110-35-46m35 4 30-42" stroke="#243c3c" stroke-width="8"/><path d="M-5-232q-65-8-53 51-49 18-22 59-5 44 61 35 48 24 75-12 45-16 18-62 2-55-51-48Z" fill="#1d3838"/><path d="M-9-209q-35-3-33 31-29 10-17 36 37-30 67-17 36-11 27-39-10-20-44-11Z" fill="#2c4843" opacity=".55"/></g>
+          <g id="garden-tree">
+            <path d="M-44-28q-27-12-35-31-29-5-20-36-30-20-8-45-19-34 14-48-8-39 29-42 11-41 48-27 30-18 52 7 44-7 48 33 36 9 20 43 28 21 9 43 11 30-26 39-11 29-49 24Z" fill="url(#garden-canopy)"/>
+            <path d="M-85-127q-18-28 7-42-5-30 26-33 11-34 44-23-28 11-29 37-30-1-29 29Zm52-103q17-23 43-14 17-11 32 7-44-2-47 24Z" fill="#54705a" opacity=".32"/>
+            <path d="M-5 0 0-146l-31-39 6-4 28 33 17-54 5 2-18 76L6-93l36-35 4 5-40 44 6 79Z" fill="#35443b"/>
+            <path d="m-3-19 6-103m-2-9 10-35" fill="none" stroke="#81907a" stroke-width="2" opacity=".23"/>
+            <path d="m-80-99 18-8 17 1m58-67 24-5 13 7m-84-50 12-6 17 2m29 112 21-8 15 4" fill="none" stroke="#6c886d" stroke-width="3" stroke-linecap="round" opacity=".25"/>
+          </g>
           <g id="garden-fern" fill="none" stroke="#56776a" stroke-width="3"><path d="M0 0q3-34-13-58M0-6q25-22 35-22M-2-17q-22-21-30-19M-4-29q18-19 29-19M-7-40l-17-11"/></g>
         </defs>
-        <path d="M0 321q140-51 290-11t310-12 290 10 310-22V600H0Z" fill="#132b30"/>
-        <g opacity=".65"><use href="#garden-tree" transform="translate(105 395) scale(.85)"/><use href="#garden-tree" transform="translate(255 378) scale(.65)"/><use href="#garden-tree" transform="translate(1120 396) scale(.95)"/></g>
+        <path d="M0 310q118-38 223-8t217 1 205-20 236 19 319-16V600H0Z" fill="url(#garden-distance)"/>
+        <g opacity=".36">
+          <use href="#garden-tree" transform="translate(25 346) scale(.47)"/>
+          <use href="#garden-tree" transform="translate(116 341) scale(.56)"/>
+          <use href="#garden-tree" transform="translate(223 350) scale(.4)"/>
+          <use href="#garden-tree" transform="translate(315 340) scale(.6)"/>
+          <use href="#garden-tree" transform="translate(437 343) scale(.46)"/>
+          <use href="#garden-tree" transform="translate(556 333) scale(.53)"/>
+          <use href="#garden-tree" transform="translate(1090 342) scale(.55)"/>
+          <use href="#garden-tree" transform="translate(1194 347) scale(.6)"/>
+        </g>
+        <path d="M0 350q166-39 295-3t274-7 310 13 321-20v267H0Z" fill="#183135"/>
+        <g opacity=".86"><use href="#garden-tree" transform="translate(93 423) scale(.88)"/><use href="#garden-tree" transform="translate(269 403) scale(.67)"/><use href="#garden-tree" transform="translate(1164 426) scale(.94)"/></g>
         <path d="M0 405q210-61 417-4t450-8 333 5v202H0Z" fill="url(#garden-ground)"/>
         <path d="M993 410q-127 34-176 73t-87 117H516q55-74 164-123t313-67Z" fill="#48544d" opacity=".65"/>
         <g class="garden-greenhouse">
