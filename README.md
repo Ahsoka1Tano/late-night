@@ -221,8 +221,10 @@ untouched; reopening retries the read. There is no cloud backup.
 
 ## The midnight garden
 
-Choose **Garden** above the window for a fifth view: a glass greenhouse, layered
-trees, a lily pond and small path lights. Changing the view keeps your current
+Choose **Garden** above the window for a glasshouse among layered trees.
+Its iron frames surround plant benches, terracotta pots and warm pendant lights.
+A stone path leads to the arched door, past a lily pond with uneven banks.
+Changing the view keeps your current
 music, rain, focus session and journal. **Midnight garden** in **Choose a ready-made evening** sets up a
 whole evening with a lo-fi tape, real recorded drizzle, tea and a low amber lamp.
 
@@ -230,6 +232,8 @@ Touch **GLASSHOUSE · LIT** in the window to let the greenhouse rest. The same
 button works in **Quiet room**, including with Enter or Space. In **Outside
 sky**, garden controls switch the greenhouse light and fireflies independently.
 The desk lamp and sounds keep their own settings.
+The greenhouse glow settles on the pond, fading with rain and disappearing when
+the glasshouse rests. A postcard captures the current light until you refresh it.
 
 Fireflies wander slowly above the pond, appearing fainter in rain. Pond rings
 move more quickly in wet weather. These animations pause when the tab is hidden
@@ -240,7 +244,7 @@ saved evenings and your named collection. Older saved evenings leave the current
 garden choices in place. If storage is unavailable, the controls still work for
 the current visit and explain that the choice could not be remembered.
 
-![A greenhouse, lily pond and fireflies beyond the late-night window](assets/midnight-garden.png)
+![A botanical glasshouse, stone-edged lily pond and winding path at night](assets/midnight-garden.png)
 
 ## Draw on the glass
 
