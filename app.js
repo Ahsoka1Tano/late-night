@@ -2734,6 +2734,13 @@ const neighbourWindows = [];
 const cityMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 let cityLightsTimer = null;
 
+const cityRoofs = [
+  '<path d="M19 27 24 14h29l7 13M26 16V7h25v9Z" fill="#293344"/><path d="M22 7 39 1l15 6Z" fill="#526070"/><path d="M29 9h19m-23 8h29" stroke="#87919a" stroke-opacity=".32"/><path d="M26 27V17m25 10V17" stroke="#1b2537" stroke-width="2"/>',
+  '<path d="M12 27V12h48v15Zm51 0V19h21v8Z" fill="#273244"/><path d="M10 11h52v3H10Zm52 7h24v3H62Z" fill="#5d6674"/><path d="M22 15h13v7H22Zm20 0h11v7H42Z" fill="#8b99a5" opacity=".28"/>',
+  '<path d="M17 27V18h16v9Zm43 0V14h22v13Z" fill="#263244"/><path d="M15 18h20m23-4h26m-15 2v9m5-9v9" stroke="#657382" stroke-width="2"/><path d="M44 27V2m-8 7h16m-12-5h8m-4 10 11 13" fill="none" stroke="#46586a" stroke-width="1.6"/>',
+  '<path d="M17 27V17h19v10Zm26 0V11h24v16Zm32 0V21h11v6Z" fill="#2d3a4b"/><path d="M14 16h24m2-6h30m-22 4v10m6-10v10m6-10v10" stroke="#71808b" stroke-width="2"/><path d="M73 21h15" stroke="#71808b" stroke-width="2"/>',
+];
+
 // Fixed silhouettes and unevenly lit apartments keep the city familiar.
 [["skyline-far", [35, 52, 43, 73, 46, 59, 92, 66, 42, 77, 53, 64, 38, 82, 50, 67]],
  ["skyline-near", [45, 66, 34, 80, 54, 46, 70, 38, 60, 86, 48, 62]]].forEach(([id, heights]) => {
@@ -2743,6 +2750,12 @@ let cityLightsTimer = null;
     building.style.setProperty("--height", `${height}%`);
     building.style.setProperty("--width", String(2 + index % 3));
     building.style.setProperty("--lights", index % 3 === 0 ? "#e4ac716b" : "#99c6e637");
+    const roof = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    roof.setAttribute("viewBox", "0 0 100 28");
+    roof.setAttribute("preserveAspectRatio", "none");
+    roof.classList.add("city-rooftop");
+    roof.innerHTML = cityRoofs[index % cityRoofs.length];
+    building.append(roof);
     const columns = 2 + index % 3;
     const floors = Math.max(3, Math.round(height / 12));
     const apartments = document.createElement("span");
@@ -4018,6 +4031,8 @@ function capturePostcard() {
       const layer = postcardElement("g",{opacity:getComputedStyle(skyline).opacity});
       for (const building of skyline.children) {
         layer.append(postcardElement("rect",{...rect(building),fill:getComputedStyle(building).backgroundColor}));
+        const roof = building.querySelector(".city-rooftop");
+        layer.append(postcardVector(roof,rect(roof)));
         for (const light of building.querySelectorAll(".is-lit")) layer.append(postcardElement("rect",{...rect(light),fill:getComputedStyle(light).backgroundColor,opacity:getComputedStyle(light).opacity}));
       }
       art.append(layer);

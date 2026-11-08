@@ -1845,6 +1845,18 @@ body[data-mood="space"] .window-outside, body[data-mood="aurora"] .window-outsid
   box-shadow: 6px 0 0 #080f2580;
 }
 .skyline-far > span { background: #32374c; }
+.city-rooftop { position: absolute; bottom: 100%; left: 0; width: 100%; height: 23px; overflow: visible; }
+.skyline-far .city-rooftop { height: 15px; opacity: .65; }
+.skyline-near > span {
+  background-image: linear-gradient(90deg,#75869912,transparent 12% 72%,#080f2540 73% 85%,transparent 86%);
+  box-shadow: inset 2px 0 #8f9fb112,6px 0 #080f2580;
+}
+.skyline-near > span:nth-child(3n + 1) { background-color: #1c2637; }
+.skyline-near > span:nth-child(4n) { background-color: #20293c; }
+@media (max-width: 600px) {
+  .city-rooftop { height: 16px; }
+  .skyline-far .city-rooftop { height: 10px; }
+}
 .skyline > span::before {
   content: "";
   position: absolute;

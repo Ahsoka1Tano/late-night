@@ -183,6 +183,7 @@ only purpose is filling a day.
 - [x] start and pause a lo-fi tape with real rain directly at the window
 - [x] the same sky changes warmth, light and city visibility with the chosen mood
 - [x] individual apartment lights slowly change; Sleep puts the neighbours to bed
+- [x] varied city rooftops, water tanks, ventilation stacks and matching postcard silhouettes
 - [x] city life pauses in hidden tabs, Space and reduced motion
 - [x] occasional flight across the window and softly glowing rooftop beacons
 - [x] a detailed four-car night express on an elevated railway, with warm windows and a headlight

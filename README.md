@@ -31,6 +31,9 @@ The first visit has one play button. The bottom player appears after you start
 listening or open **Sound & music**; browsing views and moods alone leaves it
 out of the way. After a pause it stays available for the rest of this visit.
 
+In **City**, rooftop water tanks, small penthouses and ventilation stacks break up
+the skyline above the softly lit apartments. Window postcards keep those details too.
+
 The window's existing signature becomes a listening line: the current tape and
 background, loading, a quiet pause, or an unavailable recording. **Retry sounds**
 retries a failed start. Zero volume gets its own message, so silence is explained
