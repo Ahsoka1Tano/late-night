@@ -4037,6 +4037,10 @@ function capturePostcard() {
       }
       art.append(layer);
     }
+    const bridge = document.querySelector(".railway-bridge svg");
+    const bridgeArt = postcardVector(bridge, rect(bridge));
+    bridgeArt.style.opacity = getComputedStyle(bridge.parentElement).opacity;
+    art.append(bridgeArt);
   } else if (windowScene === "mountains") {
     art.append(postcardVector(document.querySelector(".mountain-view svg"),{x:0,y:258,width:1200,height:342}));
     art.append(postcardVector(document.querySelector(".mountain-lake svg"),{x:0,y:498,width:1200,height:102}));
