@@ -2414,6 +2414,45 @@ async function litApartments(page) {
   return page.locator('#skyline-near .apartment-window').evaluateAll(lights => lights.map(light => light.classList.contains('is-lit')));
 }
 
+test('the night express clears the glass between passes and stays on the rail on phones and desktop', async t => {
+  for (const width of [320,1440]) {
+    const page = await openRoom(t,width,'no-preference',false,false);
+    const positions = await page.locator('.night-train').evaluate(async train => {
+      const pass = train.getAnimations().find(animation => animation.animationName === 'last-train');
+      pass.pause();
+      await pass.ready;
+      const { delay, duration } = pass.effect.getTiming();
+      const glass = train.parentElement.getBoundingClientRect();
+      const beam = train.querySelector('.train-beam');
+      const image = train.querySelector('img');
+      pass.currentTime = delay + duration * .03;
+      const clearsEntrance = beam.getBoundingClientRect().right <= glass.left;
+      pass.currentTime = delay + duration * .42;
+      const clearsExit = image.getBoundingClientRect().left >= glass.right;
+      pass.currentTime = delay + duration * .23;
+      const carriage = image.getBoundingClientRect();
+      const headlight = beam.getBoundingClientRect();
+      const rail = train.parentElement.querySelector('.bridge-rail');
+      const railY = rail.getPointAtLength(0).matrixTransform(rail.getScreenCTM()).y;
+      return {
+        clearsEntrance, clearsExit,
+        cabInView: carriage.right > glass.left && carriage.right < glass.right,
+        wheelGap: Math.abs(railY - (carriage.y + carriage.height * 77 / 80)),
+        beamGap: Math.abs(headlight.y + headlight.height / 2 - (carriage.y + carriage.height * 55.5 / 80)),
+      };
+    });
+    assert.equal(positions.clearsEntrance,true);
+    assert.equal(positions.clearsExit,true);
+    assert.equal(positions.cabInView,true);
+    assert.ok(positions.wheelGap <= 2);
+    assert.ok(positions.beamGap <= 1);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
+    if (process.env.ATMOSPHERE_PREVIEW_DIR) {
+      await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`city-train-${width}.png`)});
+    }
+  }
+});
+
 test('the city changes one apartment at a time and Sleep only turns lights off', async t => {
   const page = await openRoom(t, 1280, 'no-preference');
   const before = await litApartments(page);

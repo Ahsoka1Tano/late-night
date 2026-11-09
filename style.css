@@ -1902,14 +1902,19 @@ body[data-mood="space"] .window-outside, body[data-mood="aurora"] .window-outsid
 }
 .night-train {
   --train-width: clamp(250px, 62%, 440px);
+  --train-clearance: 72px;
   position: absolute;
   bottom: calc(var(--rail-line) + 2px);
-  left: calc(-1 * var(--train-width) - 30px);
-  width: var(--train-width);
-  height: auto;
+  left: 0;
+  width: 100%;
   z-index: 2;
   pointer-events: none;
   animation: last-train 64s linear -8s infinite;
+}
+.train-consist {
+  position: relative;
+  width: var(--train-width);
+  margin-left: calc(-1 * (var(--train-width) + var(--train-clearance)));
 }
 .night-train img { display: block; width: 100%; height: auto; }
 .railway-bridge {
@@ -1932,8 +1937,8 @@ body[data-mood="space"] .window-outside, body[data-mood="aurora"] .window-outsid
 body.has-rain .bridge-rail { stroke-opacity: .72; }
 .train-beam {
   position: absolute;
-  top: 59%;
-  left: 96%;
+  top: calc(70% - 9px);
+  left: 95.5%;
   width: 65px;
   height: 18px;
   background: linear-gradient(90deg, #f7deac26, #f7deac00);
@@ -1946,8 +1951,11 @@ body[data-mood="aurora"] .railway-bridge { opacity: .08; }
 body[data-mood="aurora"] .night-train { opacity: 0; }
 body[data-mood="sleep"] .railway-bridge { opacity: .3; }
 @keyframes last-train {
-  0%, 6% { left: calc(-1 * var(--train-width) - 30px); }
-  38%, 100% { left: calc(100% + 30px); }
+  0%, 6% { transform: translateX(0); }
+  38%, 100% { transform: translateX(calc(100% + var(--train-width) + var(--train-clearance) + 30px)); }
+}
+@media (max-width: 600px) {
+  .night-train { --train-width: clamp(190px, 78%, 300px); }
 }
 .window-crossbar { position: absolute; inset: 0; z-index: 4; pointer-events: none; box-shadow: inset 0 0 65px #070c2566; }
 .window-crossbar::before { content: ""; position: absolute; height: 100%; width: 10px; left: 62%; background: #121824; border-right: 1px solid #8491a329; box-shadow: 4px 0 10px #0004; }
