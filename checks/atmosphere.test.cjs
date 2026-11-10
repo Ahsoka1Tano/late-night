@@ -497,6 +497,33 @@ test('window postcards download real PNG images for every view and keep long cap
   }
 });
 
+test('window postcards keep their captured rain strength until the view is captured again', async t => {
+  const page = await openRoom(t);
+  await page.locator('.mood[data-mood="rain"]').click();
+  await page.locator('.rain-step[data-rain="drizzle"]').click();
+  await page.locator('#postcard-open').click();
+  const rain = page.locator('#postcard-preview [data-rain]');
+  const strength = () => rain.evaluate(layer => ({
+    level: layer.dataset.rain,
+    streaks: layer.querySelectorAll('path').length,
+    drops: layer.querySelectorAll('ellipse').length,
+  }));
+  const drizzle = await strength();
+  assert.equal(drizzle.level, 'drizzle');
+  assert.ok(drizzle.streaks > 0 && drizzle.drops > 0);
+  await page.evaluate(() => setRainLevel('downpour'));
+  await page.locator('[data-postcard-paper="moon"]').click();
+  assert.deepEqual(await strength(), drizzle);
+  await page.locator('#postcard-refresh').click();
+  const downpour = await strength();
+  assert.equal(downpour.level, 'downpour');
+  assert.ok(downpour.streaks > drizzle.streaks && downpour.drops > drizzle.drops);
+  await page.locator('#postcard-close').click();
+  await page.locator('.mood[data-mood="music"]').click();
+  await page.locator('#postcard-open').click();
+  assert.equal(await rain.count(), 0);
+});
+
 test('window postcards retain their draft after export failure and never copy or save journal notes', async t => {
   const page = await openRoom(t);
   await page.locator('#journal-note').fill('A private journal sentence.');

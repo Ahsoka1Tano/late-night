@@ -4013,6 +4013,45 @@ function postcardVector(source, attrs = {}) {
   copies.forEach(node => node.removeAttribute("class"));
   return clone;
 }
+function makePostcardRain() {
+  const level = RAIN_LEVELS[rainLevel];
+  const rain = postcardElement("g", {"data-rain":rainLevel});
+  const defs = postcardElement("defs");
+  const lens = postcardElement("radialGradient", {id:"postcard-drop-lens",cx:".33",cy:".28",r:".74"});
+  lens.append(
+    postcardElement("stop", {"stop-color":"#e5f1ff","stop-opacity":.65}),
+    postcardElement("stop", {offset:.38,"stop-color":"#a7c9e4","stop-opacity":.16}),
+    postcardElement("stop", {offset:.7,"stop-color":"#0f1e30","stop-opacity":.24}),
+    postcardElement("stop", {offset:1,"stop-color":"#b7daf4","stop-opacity":.48}),
+  );
+  defs.append(lens);
+  rain.append(defs);
+
+  const streaks = postcardElement("g", {stroke:"#bedcff","stroke-linecap":"round",fill:"none"});
+  const streakCount = Math.round(780 / level.spacing);
+  for (let index = 0; index < streakCount; index++) {
+    const x = (index * 173 + 21) % 1200;
+    const y = (index * 83 + index ** 2 * 11 + 29) % 600;
+    const length = (9 + index * 11 % 23) * level.speed;
+    streaks.append(postcardElement("path", {
+      d:`M${x} ${y}l${-length * .12} ${length}`,
+      "stroke-width":.65 + index % 4 * .16,
+      opacity:level.alpha * (.1 + index % 5 * .035),
+    }));
+  }
+  rain.append(streaks);
+
+  const beads = postcardElement("g", {fill:"url(#postcard-drop-lens)",stroke:"#c4e0f4","stroke-opacity":.26,"stroke-width":.55});
+  const beadCount = Math.round(2100 / level.glass);
+  for (let index = 0; index < beadCount; index++) {
+    const x = (index * 293 + 51) % 1200;
+    const y = (index * 137 + index ** 2 * 7 + 47) % 600;
+    const radius = .8 + (index * 11 % 19) / 9 + (index % 9 === 0 ? 1.5 : 0);
+    beads.append(postcardElement("ellipse", {cx:x,cy:y,rx:radius,ry:radius * 1.18}));
+  }
+  rain.append(beads);
+  return rain;
+}
 function capturePostcard() {
   const sky = getComputedStyle(windowView);
   const art = postcardElement("svg", {viewBox:"0 0 1200 600",width:1200,height:600,"data-view":windowScene});
@@ -4049,11 +4088,7 @@ function capturePostcard() {
     art.append(postcardVector(document.querySelector(".sea-water svg"),{x:0,y:450,width:1200,height:150}));
     art.append(postcardVector(document.querySelector(".coast-view svg"),{x:0,y:282,width:1200,height:318}));
   } else art.append(postcardVector(document.querySelector(windowScene === "garden" ? ".garden-view" : ".cafe-view"),{x:0,y:0,width:1200,height:600}));
-  if (isRainScene()) {
-    const rain = postcardElement("g",{stroke:"#bacbd9","stroke-width":1.2,opacity:.3});
-    for (let i=0;i<65;i++) { const x=(i*173+21)%1200,y=(i*83)%600; rain.append(postcardElement("path",{d:`M${x} ${y}l-5 22`})); }
-    art.append(rain);
-  }
+  if (isRainScene()) art.append(makePostcardRain());
   postcardScene = {art,view:windowScene,finish:roomFinish,mood:document.body.dataset.mood,time:windowClock.textContent,date:new Date()};
   paintPostcard();
 }
