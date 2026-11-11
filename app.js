@@ -4059,7 +4059,9 @@ function capturePostcard() {
   gradient.append(postcardElement("stop",{offset:0,"stop-color":sky.getPropertyValue("--sky-top").trim()}),postcardElement("stop",{offset:1,"stop-color":sky.getPropertyValue("--sky-bottom").trim()}));
   defs.append(gradient); art.append(defs,postcardElement("rect",{width:1200,height:600,fill:"url(#postcard-sky)"}));
   if (hasStarSky()) for (let i=0;i<48;i++) art.append(postcardElement("circle",{cx:(i*137+41)%1200,cy:(i*53+17)%350,r:i%4===0?1.8:1,fill:"#d3dce8",opacity:.3+(i%3)*.15}));
-  art.append(postcardVector(document.querySelector(".moon-disc"),{x:920,y:75,width:80,height:80}));
+  const moon = postcardElement("g", {opacity:getComputedStyle(document.querySelector(".window-moon")).opacity});
+  moon.append(postcardVector(document.querySelector(".moon-disc"),{x:920,y:75,width:80,height:80}));
+  art.append(moon);
   if (windowScene === "city") {
     const bounds = document.getElementById("window-outside").getBoundingClientRect();
     const rect = element => {

@@ -525,7 +525,9 @@ Clear coastal skies also support stars and the shooting-star control.
 Open **Outside sky** in the room controls. Follow the mood, or choose **midnight**,
 **violet** or **afterglow**. Pick a **full**, **half** or **crescent** moon. These
 choices are remembered separately from your room lighting and can be kept in
-**Your evening**. Previously saved evenings still work.
+**Your evening**. Previously saved evenings still work. Pale crater rims and
+soft darker patches follow each phase, including on postcards. Rain dims the
+captured moonlight along with the room's sky.
 
 In clear **Mountains** or **Space**, **see a shooting star** brings you back to the
 window for a short meteor trail. Automatic visitors are spaced a minute or more

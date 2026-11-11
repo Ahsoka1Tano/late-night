@@ -501,7 +501,11 @@ test('window postcards keep their captured rain strength until the view is captu
   const page = await openRoom(t);
   await page.locator('.mood[data-mood="rain"]').click();
   await page.locator('.rain-step[data-rain="drizzle"]').click();
+  const settleMoon = () => page.locator('.window-moon').evaluate(el => el.getAnimations().forEach(animation => animation.finish()));
+  await settleMoon();
   await page.locator('#postcard-open').click();
+  const moonOpacity = () => page.locator('#postcard-preview svg[viewBox="0 0 24 24"]').evaluate(el => el.parentElement.getAttribute('opacity'));
+  assert.equal(await moonOpacity(), '0.28');
   const rain = page.locator('#postcard-preview [data-rain]');
   const strength = () => rain.evaluate(layer => ({
     level: layer.dataset.rain,
@@ -520,8 +524,10 @@ test('window postcards keep their captured rain strength until the view is captu
   assert.ok(downpour.streaks > drizzle.streaks && downpour.drops > drizzle.drops);
   await page.locator('#postcard-close').click();
   await page.locator('.mood[data-mood="music"]').click();
+  await settleMoon();
   await page.locator('#postcard-open').click();
   assert.equal(await rain.count(), 0);
+  assert.equal(await moonOpacity(), '0.85');
 });
 
 test('window postcards retain their draft after export failure and never copy or save journal notes', async t => {
