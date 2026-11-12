@@ -2639,6 +2639,33 @@ test('both window views fit narrow phones and desktop without covering the clock
 });
 
 
+test('still stars fit the glass, resize with Quiet room and survive a quick weather return', async t => {
+ for (const width of [320,1440]) {
+  const page = await openRoom(t,width,'reduce',false);
+  await page.locator('.mood[data-mood="space"]').click();
+  const fitted = () => page.waitForFunction(() => {
+   const sky = document.getElementById('stars');
+   const dpr = Math.min(devicePixelRatio || 1,2);
+   return Math.abs(sky.width - sky.clientWidth * dpr) <= 1 && Math.abs(sky.height - sky.clientHeight * dpr) <= 1;
+  });
+  await fitted();
+  assert.equal(await page.evaluate(() => starsFrame),null);
+  const before = await page.evaluate(() => JSON.stringify(stars));
+  await page.clock.runFor(5000);
+  assert.equal(await page.evaluate(() => JSON.stringify(stars)),before);
+  await page.locator('#quiet-room').click();
+  await fitted();
+  await page.locator('.view-switch [data-view="mountains"]').click();
+  await page.evaluate(() => setMood('rain'));
+  await page.evaluate(() => setMood('space'));
+  await page.clock.runFor(2500);
+  assert.equal(await page.locator('#stars').evaluate(el => el.classList.contains('is-on')),true);
+  assert.equal(await page.evaluate(() => starsCtx.getImageData(0,0,starsCanvas.width,starsCanvas.height).data.some((value,index) => index % 4 === 3 && value > 0)),true);
+  assert.equal(await page.evaluate(() => window.media.some(track => !track.paused)),false);
+  if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`still-stars-${width}.png`)});
+ }
+});
+
 test('mountain stars, mist and reflections follow weather and motion preferences without starting audio', async t => {
  const page = await openRoom(t,1280,'no-preference');
  await page.locator('.view-switch [data-view="mountains"]').click();

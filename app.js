@@ -44,7 +44,7 @@ function hasStarSky(mood = document.body.dataset.mood) {
   return mood === "space" || mood === "aurora" || (["mountains", "coast", "garden"].includes(windowScene) && !isRainScene(mood));
 }
 function syncWindowSky() {
-  if (!document.hidden && !cityMotion.matches && hasStarSky()) startStars();
+  if (!document.hidden && hasStarSky()) startStars();
   else stopStars();
 }
 
@@ -393,10 +393,6 @@ window.addEventListener("resize", () => {
     sizeRain();
     seedDrops();
   }
-  if (starsFrame !== null) {
-    sizeStars();
-    seedStars();
-  }
 });
 
 
@@ -415,6 +411,7 @@ document.addEventListener("visibilitychange", () => {
       cancelAnimationFrame(starsFrame);
       starsFrame = null;
     }
+    starsLastAt = null;
     return;
   }
 
@@ -1309,27 +1306,33 @@ paintTraces();
 /* --- stars --- */
 const starsCanvas = document.getElementById("stars");
 const starsCtx = starsCanvas.getContext("2d");
+let starsStill = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 let stars = [];
 let starsFrame = null;
 let starsClock = 0;
+let starsWidth = 1, starsHeight = 1, starsLastAt = null;
 
 function sizeStars() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  starsCanvas.width = window.innerWidth * dpr;
-  starsCanvas.height = window.innerHeight * dpr;
+  starsWidth = Math.max(1, starsCanvas.clientWidth);
+  starsHeight = Math.max(1, starsCanvas.clientHeight);
+  const width = Math.round(starsWidth * dpr), height = Math.round(starsHeight * dpr);
+  const changed = starsCanvas.width !== width || starsCanvas.height !== height;
+  if (changed) { starsCanvas.width = width; starsCanvas.height = height; }
   starsCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return changed;
 }
 
 function seedStars() {
-  const count = Math.round(window.innerWidth / 5);
+  const count = Math.max(32, Math.min(320, Math.round(starsWidth * starsHeight / 2300)));
   stars = Array.from({ length: count }, () => {
     // depth: 0 = far and still, 1 = near and drifting
     const depth = Math.random();
     return {
       depth,
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
+      x: Math.random() * starsWidth,
+      y: Math.random() * starsHeight,
       r: 0.4 + depth * 1.1,
       drift: 0.015 + depth * 0.075,
       base: 0.25 + depth * 0.5,
@@ -1349,12 +1352,12 @@ function maybeComet() {
   launchComet();
 }
 function launchComet() {
-  if (comet || starsFrame === null || document.hidden || cityMotion.matches || !hasStarSky()) return false;
-  const x = Math.random() * window.innerWidth * .25;
-  const y = window.innerHeight * (.07 + Math.random() * .1);
+  if (comet || starsFrame === null || document.hidden || starsStill || !hasStarSky()) return false;
+  const x = Math.random() * starsWidth * .25;
+  const y = starsHeight * (.07 + Math.random() * .1);
   comet = {
     x, y, startX: x, startY: y, startedAt: Date.now(),
-    vx: window.innerWidth * .005, vy: window.innerHeight * .0013, life: 1,
+    vx: starsWidth * .005, vy: starsHeight * .0013, life: 1,
   };
   nextCometAt = Date.now() + 65000 + Math.random() * 45000;
   return true;
@@ -1366,7 +1369,7 @@ function drawComet() {
   comet.x = comet.startX + comet.vx * frames;
   comet.y = comet.startY + comet.vy * frames;
   comet.life = Math.max(0, 1 - frames / 125);
-  if (!comet.life || comet.x > window.innerWidth + 60) { comet = null; return; }
+  if (!comet.life || comet.x > starsWidth + 60) { comet = null; return; }
 
   const tailX = comet.x - comet.vx * 14;
   const tailY = comet.y - comet.vy * 14;
@@ -1384,17 +1387,18 @@ function drawComet() {
 
 }
 
-function drawStars() {
-  starsClock += 16;
-  starsCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+function paintStarFrame(delta) {
+  starsClock += delta * (1000 / 60);
+  starsCtx.clearRect(0, 0, starsWidth, starsHeight);
+  const still = starsStill;
 
   for (const s of stars) {
     const flicker = 0.68 + 0.32 * Math.sin(starsClock * s.blink + s.phase);
     const alpha = s.base * flicker;
 
     // the near stars swing further than the far ones
-    const shiftX = driftX * (0.25 + s.depth * 1.5);
-    const shiftY = driftY * (0.25 + s.depth * 1.5);
+    const shiftX = still ? 0 : driftX * (0.25 + s.depth * 1.5);
+    const shiftY = still ? 0 : driftY * (0.25 + s.depth * 1.5);
 
     starsCtx.fillStyle = s.warm
       ? `rgba(255, 224, 190, ${alpha})`
@@ -1403,37 +1407,55 @@ function drawStars() {
     starsCtx.arc(s.x + shiftX, s.y + shiftY, s.r, 0, Math.PI * 2);
     starsCtx.fill();
 
-    s.x -= s.drift;
+    s.x -= s.drift * delta;
     if (s.x < -2) {
-      s.x = window.innerWidth + 2;
-      s.y = Math.random() * window.innerHeight;
+      s.x = starsWidth + 2;
+      s.y = Math.random() * starsHeight;
     }
   }
 
+}
+
+function drawStars(at) {
+  const delta = starsLastAt === null ? 0 : Math.min(2, Math.max(0, (at - starsLastAt) / (1000 / 60)));
+  starsLastAt = at;
+  paintStarFrame(delta);
   maybeComet();
   drawComet();
-
   starsFrame = requestAnimationFrame(drawStars);
 }
 
 function startStars() {
-  if (cityMotion.matches || starsFrame !== null) return;
-  sizeStars();
-  if (!stars.length) seedStars();
+  if (sizeStars() || !stars.length) seedStars();
   starsCanvas.classList.add("is-on");
-  starsFrame = requestAnimationFrame(drawStars);
+  if (starsStill) {
+    if (starsFrame !== null) cancelAnimationFrame(starsFrame);
+    starsFrame = null; starsLastAt = null; comet = null;
+    paintStarFrame(0);
+  } else if (starsFrame === null) {
+    starsLastAt = null;
+    paintStarFrame(0);
+    starsFrame = requestAnimationFrame(drawStars);
+  }
 }
 
 function stopStars() {
   starsCanvas.classList.remove("is-on");
-  if (starsFrame === null) return;
-  cancelAnimationFrame(starsFrame);
-  starsFrame = null;
+  if (starsFrame !== null) cancelAnimationFrame(starsFrame);
+  starsFrame = null; starsLastAt = null;
   comet = null;
   setTimeout(() => {
-    if (starsFrame === null) starsCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    if (!starsCanvas.classList.contains("is-on")) starsCtx.clearRect(0, 0, starsWidth, starsHeight);
   }, 2000);
 }
+
+new ResizeObserver(() => {
+  if (!hasStarSky() || document.hidden) return;
+  if (sizeStars()) {
+    seedStars();
+    paintStarFrame(0);
+  }
+}).observe(starsCanvas);
 
 
 /* --- the room dozing off in the sleep mood --- */
@@ -2796,7 +2818,11 @@ function syncCityLife() {
   }, 6500 + Math.random() * 3500);
 }
 document.addEventListener("visibilitychange", syncCityLife);
-cityMotion.addEventListener("change", () => { syncCityLife(); syncWindowSky(); });
+cityMotion.addEventListener("change", event => {
+  starsStill = event.matches;
+  syncCityLife();
+  syncWindowSky();
+});
 
 function setWindowScene(scene, { save = true, journey = false } = {}) {
   if (!journey && journeyState !== "idle") stopJourney({ message: "Journey ended. Your chosen window stays." });

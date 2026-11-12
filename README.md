@@ -534,6 +534,10 @@ window for a short meteor trail. Automatic visitors are spaced a minute or more
 apart, with timing independent of the display's frame rate. Rain and reduced
 motion keep that control quiet; music continues throughout.
 
+Stars fill the actual window, including on phones and in Quiet room. Reduced
+motion leaves them visible and still. With motion enabled, their slow drift
+keeps the same pace across display refresh rates.
+
 ![Violet sky with a crescent moon](assets/night-sky.png)
 
 ## A drink by the window
