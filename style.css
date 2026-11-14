@@ -1812,6 +1812,18 @@ body.is-listening .room-volume {
   box-shadow: 0 0 0 1px #63748a40, 0 0 0 14px #0c1018, 0 0 90px #676dab12, inset 0 0 100px #0a0c2599;
   background: radial-gradient(ellipse at 63% 100%, #d6958552, transparent 58%), linear-gradient(180deg, #101729, #32304d 65%, #666078);
 }
+.space-nebula {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 2.5s ease;
+}
+body[data-mood='space'] .space-nebula { opacity: .9; }
+body[data-mood='aurora'] .space-nebula { opacity: .4; }
+@media (prefers-reduced-motion: reduce) { .space-nebula { transition: none; } }
 body[data-mood="rain"] .window-outside { filter: saturate(.65); }
 body[data-mood="space"] .window-outside, body[data-mood="aurora"] .window-outside {
   background: radial-gradient(ellipse at 30% 40%, #5b286353, transparent 60%), linear-gradient(#0a0c1f, #262541);

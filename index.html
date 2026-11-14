@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=5e748c565bf9" />
+  <link rel="stylesheet" href="style.css?v=da34f7ef9a7a" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -63,6 +63,28 @@
           </div>
         </div>
     <div class="window-outside" id="window-outside">
+      <svg class="space-nebula" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <radialGradient id="nebula-glow">
+            <stop stop-color="#9a9fc9" stop-opacity=".34"/>
+            <stop offset=".45" stop-color="#77679b" stop-opacity=".2"/>
+            <stop offset="1" stop-color="#564e82" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="nebula-band" x1="370" y1="600" x2="1010" y2="0" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#7066a4" stop-opacity="0"/>
+            <stop offset=".3" stop-color="#665e9c" stop-opacity=".23"/>
+            <stop offset=".65" stop-color="#a285b2" stop-opacity=".35"/>
+            <stop offset="1" stop-color="#7893bb" stop-opacity="0"/>
+          </linearGradient>
+          <filter id="nebula-soften" x="-.4" y="-.4" width="1.8" height="1.8"><feGaussianBlur stdDeviation="19"/></filter>
+        </defs>
+        <ellipse cx="786" cy="276" rx="378" ry="176" transform="rotate(-40 786 276)" fill="url(#nebula-glow)"/>
+        <g filter="url(#nebula-soften)" fill="none" stroke-linecap="round">
+          <path d="M338 643q119-178 264-266T848 176 1038-36" stroke="url(#nebula-band)" stroke-width="101"/>
+          <path d="M436 601q88-151 220-232T890 134" stroke="#a1a6d1" stroke-width="18" stroke-opacity=".13"/>
+          <path d="M503 566q93-157 208-201t176-189" stroke="#17182f" stroke-width="24" stroke-opacity=".56"/>
+        </g>
+      </svg>
       <canvas class="stars-layer" id="stars" aria-hidden="true"></canvas>
       <canvas class="rain-layer" id="rain" aria-hidden="true"></canvas>
       <div class="journey-ticket" id="journey-ticket" aria-hidden="true" hidden><small id="journey-ticket-route">AFTER HOURS</small><strong id="journey-ticket-view">City</strong><span id="journey-ticket-stop">01 / 03</span><div class="journey-wait"><i id="journey-progress"></i></div></div>
@@ -941,6 +963,6 @@
       <p id="postcard-note" role="status">Made here. Kept on your device.</p>
     </div></div>
   </dialog>
-  <script src="app.js?v=3beaf86a7093"></script>
+  <script src="app.js?v=2d5c63cf41b0"></script>
 </body>
 </html>
