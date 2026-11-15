@@ -14,6 +14,8 @@ const files = new Map([
   ['/tapes.json', ['tapes.json', 'application/json']],
   ['/moon.svg', ['moon.svg', 'image/svg+xml']],
   ['/assets/night-express.svg', ['assets/night-express.svg', 'image/svg+xml']],
+  ['/assets/fonts/manrope-variable.ttf', ['assets/fonts/manrope-variable.ttf', 'font/ttf']],
+  ['/assets/fonts/instrument-serif-italic.ttf', ['assets/fonts/instrument-serif-italic.ttf', 'font/ttf']],
 ]);
 let server, browser, origin;
 
@@ -814,7 +816,7 @@ test('pocket player reports recording failures and opens real radio controls wit
   await page.waitForFunction(() => tapeState === 'playing');
   await page.locator('button.station[data-station="radio"]').click();
   await page.evaluate(() => { window.pocketRadio = document.querySelector('#radio-frame iframe'); });
-  assert.match(await page.locator('#pocket-status').textContent(),/YOUTUBE · PLAYER OPEN/);
+  assert.match(await page.locator('#pocket-status').textContent(),/YOUTUBE \/ PLAYER OPEN/);
   assert.equal(await page.locator('#pocket-next').isVisible(),false);
   await page.locator('#quiet-room').click();
   await page.locator('#pocket-play').click();
@@ -1460,6 +1462,10 @@ test('glass sketches fit phones and every view without replacing music, radio or
     if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.locator('#glass-room').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`glass-controls-${width}.png`)});
     await page.locator('#quiet-room').click();
     await page.clock.runFor(100);
+    await page.waitForFunction(() => {
+      const bounds = glassCanvas.getBoundingClientRect(), ratio = Math.min(devicePixelRatio || 1,2);
+      return glassFrame === null && glassCanvas.width === Math.round(bounds.width * ratio) && glassCanvas.height === Math.round(bounds.height * ratio);
+    });
     const ratio = await page.locator('#glass-sketch').evaluate(el => {
       const {data,width,height} = el.getContext('2d').getImageData(0,0,el.width,el.height);
       let left = width, right = 0, top = height, bottom = 0;
@@ -1514,6 +1520,7 @@ test('midnight garden is a remembered fifth view that leaves the room and its so
   assert.equal(await page.locator('body').getAttribute('data-view'),'garden');
   assert.equal(await page.locator('#window-view').getAttribute('aria-label'),'Your midnight garden window');
   await page.locator('.garden-view').evaluate(el => el.getAnimations().forEach(animation => animation.finish()));
+  await page.locator('.skyline').first().evaluate(el => el.getAnimations().forEach(animation => animation.finish()));
   assert.equal(await page.locator('.garden-view').evaluate(el => getComputedStyle(el).opacity),'1');
   assert.equal(await page.locator('.skyline').first().evaluate(el => getComputedStyle(el).opacity),'0');
   assert.equal(await page.locator('#journal-note').inputValue(),'Leaves after midnight.');
@@ -1907,6 +1914,7 @@ test('eight collected rooms can be removed and restored without overwriting room
   const page = await openRoom(t);
   await page.evaluate(() => localStorage.setItem('lateNight.evenings',JSON.stringify({version:1,items:Array.from({length:8},(_,i) => ({id:`room-${i}`,name:`Room ${i}`,scene:captureEvening()}))})));
   await openEveningLibrary(page);
+  await page.locator('.saved-evening').nth(7).waitFor({state:'visible'});
   assert.equal(await page.locator('.saved-evening').count(),8);
   assert.equal(await page.locator('#library-save').isDisabled(),true);
   await page.locator('[data-library-action="remove"]').first().click();
@@ -2717,7 +2725,7 @@ test('desk light tone survives reload and preserves the switched-off lamp', asyn
  assert.equal(await page.locator('.light-tones [data-light="moon"]').getAttribute('aria-pressed'),'true');
  await page.locator('.light-tones [data-light="dim"]').click();
  assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'),'true');
- assert.equal(await page.locator('#light-state').textContent(),'dim · on');
+ assert.equal(await page.locator('#light-state').textContent(),'dim / on');
 });
 
 test('changing desk lighting preserves the view, tape and real rain', async t => {
@@ -3859,7 +3867,7 @@ test('the cassette shelf searches, saves without playing and pages through real 
   assert.equal(await page.locator('.cassette-card').nth(12).evaluate(el => el === document.activeElement),true);
   await page.reload();
   await page.locator('#browse-tapes').click();
-  assert.equal(await page.locator('#collection-filter').textContent(),'saved · 1');
+  assert.equal(await page.locator('#collection-filter').textContent(),'saved / 1');
 });
 
 test('recording position supports paused seeking and ignores metadata from an old tape', async t => {

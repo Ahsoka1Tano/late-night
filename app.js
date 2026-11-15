@@ -30,6 +30,16 @@ const MOODS = {
 
 const moodLine = document.getElementById("mood-line");
 const moodButtons = document.querySelectorAll(".mood");
+const moodRail = document.querySelector(".moods");
+const moodGlider = document.querySelector(".mood-glider");
+function placeMoodGlider() {
+  const selected = moodRail.querySelector('[aria-pressed="true"]');
+  if (!selected) return;
+  moodGlider.style.width = selected.offsetWidth + "px";
+  moodGlider.style.height = selected.offsetHeight + "px";
+  moodGlider.style.transform = `translate3d(${selected.offsetLeft}px,${selected.offsetTop}px,0)`;
+}
+new ResizeObserver(placeMoodGlider).observe(moodRail);
 let moodLineTimer = null;
 let musicRainEnabled = localStorage.getItem("lateNight.musicRain") === "1";
 const WINDOW_VIEWS = ["city", "mountains", "coast", "cafe", "garden"];
@@ -103,14 +113,9 @@ function setMood(mood, { save = true } = {}) {
     btn.classList.toggle("is-active", picked);
     btn.setAttribute("aria-pressed", String(picked));
 
-    // a short flare, so a keyboard pick is as visible as a click
-    if (picked && save) {
-      btn.classList.remove("just-picked");
-      void btn.offsetWidth;
-      btn.classList.add("just-picked");
-    }
   });
 
+  placeMoodGlider();
   clearTimeout(moodLineTimer);
   moodLine.classList.add("is-fading");
   moodLineTimer = setTimeout(() => {
@@ -691,7 +696,7 @@ function finishFocus() {
   saveFocusSession();
   if (focusPhase === "focus") {
     try { keepSession(focusMinutes); } catch {
-      focusNote.textContent += " · Stats could not be saved on this device.";
+      focusNote.textContent += " / Stats could not be saved on this device.";
       focusNote.classList.add("is-warning");
     }
   }
@@ -750,7 +755,7 @@ const quietRoomButton = document.getElementById("quiet-room");
 function setQuietRoom(on) {
   document.body.classList.toggle("is-quiet", on);
   quietRoomButton.setAttribute("aria-pressed", String(on));
-  quietRoomButton.textContent = on ? "← back to the room" : "◌ quiet room";
+  quietRoomButton.textContent = on ? "← back to the room" : "quiet room ↗";
   quietRoomButton.focus({ preventScroll: true });
   document.getElementById("window-view").scrollIntoView({ block: "center", behavior: "instant" });
   window.dispatchEvent(new Event("resize"));
@@ -964,7 +969,7 @@ function saveJournal() {
     if (journalHistory.open && historyView === "album") renderNightAlbum();
     return true;
   } catch {
-    showJournalStatus("couldn't save · keep this tab open", true);
+    showJournalStatus("couldn't save / keep this tab open", true);
     return false;
   }
 }
@@ -988,7 +993,7 @@ function restoreJournal(date = journalDate) {
     journalKept.textContent = "";
     journalKept.classList.remove("is-shown", "is-error");
   } catch {
-    showJournalStatus("saved notes unavailable · keep this tab open", true);
+    showJournalStatus("saved notes unavailable / keep this tab open", true);
     return false;
   }
   paintJournal();
@@ -1090,7 +1095,7 @@ function renderJournalHistory() {
     }
     journalHistoryList.append(item);
   });
-  journalHistoryNote.textContent = `${shown.length} of ${nights.length} saved ${nights.length === 1 ? "evening" : "evenings"} · on this device`;
+  journalHistoryNote.textContent = `${shown.length} of ${nights.length} saved ${nights.length === 1 ? "evening" : "evenings"} / on this device`;
   journalOlder.hidden = shown.length === nights.length;
 }
 
@@ -1166,7 +1171,7 @@ function renderNightAlbum() {
     const button = document.createElement("button");
     button.type = "button"; button.textContent = String(day); button.dataset.albumDate = key;
     button.disabled = !entry;
-    button.setAttribute("aria-label",`${new Intl.DateTimeFormat(undefined,{month:"long",day:"numeric",year:"numeric"}).format(date)}${entry ? ` · ${entry.mood || "saved note"}` : " · no note"}`);
+    button.setAttribute("aria-label",`${new Intl.DateTimeFormat(undefined,{month:"long",day:"numeric",year:"numeric"}).format(date)}${entry ? ` / ${entry.mood || "saved note"}` : " / no note"}`);
     button.setAttribute("aria-pressed",String(key === albumSelected));
     if (key === today()) button.setAttribute("aria-current","date");
     if (entry) button.dataset.emotion = entry.mood || "note";
@@ -1296,7 +1301,7 @@ function paintTraces() {
     parts.push(`${stats.minutes} minutes focused`);
   }
 
-  traces.textContent = parts.join(" · ");
+  traces.textContent = parts.join(" / ");
 }
 
 countTonight();
@@ -1693,7 +1698,7 @@ function paintTapeCollection() {
   if (resultLabel.textContent !== result) resultLabel.textContent = result;
   document.getElementById("collection-more").hidden = matching.length <= rackVisible;
   const savedCount = TAPES.filter(tape => keptTapes.has(tape.src)).length;
-  document.getElementById("collection-filter").textContent = `saved · ${savedCount}`;
+  document.getElementById("collection-filter").textContent = `saved / ${savedCount}`;
   document.getElementById("collection-filter").disabled = savedCount === 0;
   document.getElementById("collection-filter").setAttribute("aria-pressed",String(savedTapesOnly));
   matching.slice(0,rackVisible).forEach(({tape,index}) => {
@@ -1721,7 +1726,7 @@ function paintTapeCollection() {
     const title = document.createElement("strong");
     title.textContent = tape.title;
     const note = document.createElement("small");
-    note.textContent = selected ? tapeState === "playing" ? "playing · " + tape.licence : "selected · " + tape.licence : tape.licence;
+    note.textContent = selected ? tapeState === "playing" ? "playing / " + tape.licence : "selected / " + tape.licence : tape.licence;
     card.append(art,title,note);
     card.addEventListener("click",() => { if (index !== tapeIndex) chooseTape(tape.src); });
     const save = document.createElement("button");
@@ -1806,7 +1811,7 @@ function paintTapeShelf() {
   tapeKeep.textContent = kept ? "♥ kept" : "♡ keep";
   tapeKeep.setAttribute("aria-pressed", String(kept));
   tapeKeep.setAttribute("aria-label", kept ? "Remove this tape from saved tapes" : "Save this tape");
-  tapeFilter.textContent = `saved tapes · ${count}`;
+  tapeFilter.textContent = `saved tapes / ${count}`;
   tapeFilter.disabled = count === 0;
   tapeFilter.setAttribute("aria-pressed", String(savedTapesOnly));
   paintTapeQueue();
@@ -1836,7 +1841,7 @@ function toggleKeptTape(src) {
     localStorage.setItem("lateNight.keptTapes", JSON.stringify([...keptTapes]));
     tapeKeptNote.textContent = keptTapes.has(src) ? "kept on this device" : "removed from saved tapes";
   } catch {
-    tapeKeptNote.textContent = "changes kept for this visit · device storage unavailable";
+    tapeKeptNote.textContent = "changes kept for this visit / device storage unavailable";
   }
   document.getElementById("collection-save-note").textContent = tapeKeptNote.textContent;
   paintTapeShelf();
@@ -1851,7 +1856,7 @@ paintTapeShelf();
 
 function paintTape() {
   const tape = TAPES[tapeIndex];
-  playerTitle.textContent = document.body.dataset.station === "radio" ? `lofi girl · ${currentRadio().name}` : `${tape.title} · ${tape.licence}`;
+  playerTitle.textContent = document.body.dataset.station === "radio" ? `lofi girl / ${currentRadio().name}` : `${tape.title} / ${tape.licence}`;
   player.dataset.playback = tapeState;
   player.classList.toggle("is-playing",tapeState === "playing");
   playerPlay.textContent = tapeState === "loading" ? "loading" : tapeRunning ? "pause" : tapeError ? "retry" : "play";
@@ -2010,7 +2015,7 @@ function setRadio(key) {
   localStorage.setItem("lateNight.radio", key);
   paintRadioDial();
 
-  playerTitle.textContent = `lofi girl · ${currentRadio().name}`;
+  playerTitle.textContent = `lofi girl / ${currentRadio().name}`;
   closeRadio();
   openRadio();
 }
@@ -2047,7 +2052,7 @@ function setStation(next) {
 
   if (next === "radio") {
     if (tapeRunning) setTape(false);
-    playerTitle.textContent = `lofi girl · ${currentRadio().name}`;
+    playerTitle.textContent = `lofi girl / ${currentRadio().name}`;
     paintRadioDial();
     openRadio();
   } else {
@@ -2191,7 +2196,7 @@ function paintAmbience() {
   listenButton.classList.toggle("is-on", listening);
   listenButton.setAttribute("aria-pressed", String(listening));
   listenButton.textContent = ambienceLoading ? "loading" : listening ? "listening" : ambienceError ? "retry" : "listen";
-  ambienceName.textContent = ambienceLoading ? "tuning in…" : ambienceError || (sound ? `${sound.name}${listening ? "" : " · ready when you are"}` : "");
+  ambienceName.textContent = ambienceLoading ? "tuning in…" : ambienceError || (sound ? `${sound.name}${listening ? "" : " / ready when you are"}` : "");
   const sourceLink = document.getElementById("ambient-source");
   sourceLink.hidden = !sound;
   if (sound) {
@@ -2231,7 +2236,7 @@ function handleAmbienceFailure(error, request) {
   listening = false;
   localStorage.setItem("lateNight.listen", "0");
   ambienceError = error?.name === "NotAllowedError"
-    ? "tap listen to start" : "recording unavailable · tap retry";
+    ? "tap listen to start" : "recording unavailable / tap retry";
   paintAmbience();
 }
 
@@ -2352,6 +2357,15 @@ setRainLevel(rainLevel, { save: false });
 
 /* --- the room's window and desk lamp --- */
 const windowView = document.getElementById("window-view");
+const windowLight = document.querySelector(".window-light");
+windowView.addEventListener("pointermove", event => {
+  if (event.pointerType !== "mouse" || cityMotion.matches) return;
+  const bounds = windowView.getBoundingClientRect();
+  windowLight.style.setProperty("--light-x", `${(event.clientX - bounds.left) / bounds.width * 100}%`);
+  windowLight.style.setProperty("--light-y", `${(event.clientY - bounds.top) / bounds.height * 100}%`);
+  windowView.classList.add("has-pointer-light");
+}, { passive: true });
+windowView.addEventListener("pointerleave", () => windowView.classList.remove("has-pointer-light"));
 
 /* Three materials for the same window; sound and the view keep their own place. */
 const ROOM_FINISHES = { cedar: "Cedar", steel: "Midnight steel", orbit: "Orbital" };
@@ -2373,7 +2387,7 @@ function setRoomFinish(value, { save = true } = {}) {
   roomFinish = value;
   windowView.dataset.finish = value;
   document.querySelectorAll("button[data-room-finish]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.roomFinish === value)));
-  document.getElementById("finish-note").textContent = `${ROOM_FINISHES[value]} · same music, same night.`;
+  document.getElementById("finish-note").textContent = `${ROOM_FINISHES[value]} / same music, same night.`;
   if (save && !roomFinishUnreadable) {
     try {
       localStorage.setItem("lateNight.roomFinish", value);
@@ -2643,7 +2657,7 @@ function setCurtains(value, { fabric = curtainFabric, save = true } = {}) {
   document.getElementById("curtain-pull").setAttribute("aria-label", `${curtainAmount === 100 ? "Open" : "Draw"} the curtains${curtainAmount > 0 && curtainAmount < 100 ? " further" : ""}. Currently ${curtainAmount} percent drawn`);
   document.getElementById("curtain-note").textContent = curtainAmount === 0
     ? "The whole window is yours. Touch the pull to draw the curtains."
-    : `${curtainFabric} · ${curtainAmount}% drawn. Touch the pull to change the folds.`;
+    : `${curtainFabric} / ${curtainAmount}% drawn. Touch the pull to change the folds.`;
   if (save) {
     try { localStorage.setItem("lateNight.curtains", JSON.stringify({ amount: curtainAmount, fabric: curtainFabric })); }
     catch { document.getElementById("curtain-note").textContent = "Adjusted for this visit. Couldn't save on this device."; }
@@ -2894,13 +2908,13 @@ function paintJourney(message) {
   document.getElementById("journey-ticket").hidden = !active;
   document.getElementById("journey-ticket-route").textContent = route.name;
   document.getElementById("journey-ticket-view").textContent = VIEW_NAMES[windowScene];
-  document.getElementById("journey-ticket-stop").textContent = `${String(journeyIndex + 1).padStart(2, "0")} / ${String(route.stops.length).padStart(2, "0")}${journeyState === "paused" ? " · resting" : ""}`;
+  document.getElementById("journey-ticket-stop").textContent = `${String(journeyIndex + 1).padStart(2, "0")} / ${String(route.stops.length).padStart(2, "0")}${journeyState === "paused" ? " / resting" : ""}`;
   document.querySelectorAll("[data-journey]").forEach(button => button.setAttribute("aria-pressed", String(active && button.dataset.journey === journeyRoute)));
   document.querySelectorAll("[data-journey-seconds]").forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.journeySeconds) === journeySeconds)));
   ["journey-toggle", "journey-next", "journey-stop"].forEach(id => { document.getElementById(id).disabled = !active; });
   document.getElementById("journey-toggle").textContent = journeyState === "paused" ? "resume journey" : "pause journey";
   document.getElementById("journey-pocket").hidden = !active;
-  document.getElementById("journey-pocket-label").textContent = `${route.name} · ${VIEW_NAMES[windowScene]}`;
+  document.getElementById("journey-pocket-label").textContent = `${route.name} / ${VIEW_NAMES[windowScene]}`;
   document.getElementById("journey-pocket-toggle").textContent = journeyState === "paused" ? "resume" : "pause";
   const stops = document.getElementById("journey-stops");
   const focusedStop = stops.contains(document.activeElement) ? document.activeElement.dataset.journeyStop : null;
@@ -2910,7 +2924,7 @@ function paintJourney(message) {
     const item = document.createElement("li"), button = document.createElement("button");
     button.type = "button";
     button.dataset.journeyStop = String(index);
-    button.textContent = `${String(index + 1).padStart(2, "0")} · ${VIEW_NAMES[view]}`;
+    button.textContent = `${String(index + 1).padStart(2, "0")} / ${VIEW_NAMES[view]}`;
     if (index === journeyIndex) button.setAttribute("aria-current", "step");
     button.addEventListener("click", () => visitJourneyStop(index));
     item.append(button); stops.append(item);
@@ -2932,7 +2946,7 @@ function visitJourneyStop(index) {
   setWindowScene(route.stops[journeyIndex], { journey: true });
   journeyRemaining = journeySeconds * 1000;
   scheduleJourney();
-  paintJourney(`${route.name} · ${journeyIndex + 1} / ${route.stops.length} · ${VIEW_NAMES[windowScene]}${journeyState === "paused" ? " · paused" : ""}`);
+  paintJourney(`${route.name} / ${journeyIndex + 1} / ${route.stops.length} / ${VIEW_NAMES[windowScene]}${journeyState === "paused" ? " / paused" : ""}`);
 }
 function startJourney(key) {
   if (!Object.hasOwn(JOURNEYS, key)) return;
@@ -2947,7 +2961,7 @@ function toggleJourney() {
     if (!document.hidden) journeyRemaining = Math.max(0, journeyDeadline - Date.now());
     journeyState = "paused"; clearTimeout(journeyTimer); journeyTimer = null;
   } else { journeyState = "running"; scheduleJourney(); }
-  paintJourney(`${JOURNEYS[journeyRoute].name} · ${VIEW_NAMES[windowScene]} · ${journeyState === "paused" ? "paused, stay as long as you like." : "wandering again."}`);
+  paintJourney(`${JOURNEYS[journeyRoute].name} / ${VIEW_NAMES[windowScene]} / ${journeyState === "paused" ? "paused, stay as long as you like." : "wandering again."}`);
 }
 function stopJourney({ message = `Staying in ${VIEW_NAMES[windowScene]}. The rest of the room carries on.`, focus = false } = {}) {
   journeyState = "idle"; clearTimeout(journeyTimer); journeyTimer = null;
@@ -2986,7 +3000,7 @@ paintJourney();
 function setDeskLamp(on) {
   windowView.classList.toggle("lamp-off", !on);
   deskLamp.setAttribute("aria-pressed", String(on));
-  lightState.textContent = `${lightTone} · ${on ? "on" : "off"}`;
+  lightState.textContent = `${lightTone} / ${on ? "on" : "off"}`;
 }
 setDeskLamp(localStorage.getItem("lateNight.deskLamp") !== "0");
 deskLamp.addEventListener("click", () => {
@@ -3121,7 +3135,7 @@ function paintCupHeat() {
   const elapsed = Math.max(0, Date.now() - cupPouredAt);
   const heat = elapsed < 120000 ? "fresh" : elapsed < 300000 ? "warm" : "cool";
   cupButton.dataset.heat = heat;
-  cupCaption.textContent = `${drink} · ${heat === "fresh" ? "hot" : heat}`;
+  cupCaption.textContent = `${drink} / ${heat === "fresh" ? "hot" : heat}`;
   cupButton.setAttribute("aria-label", `${drink === "tea" ? "Tea" : "Coffee"}, ${heat === "fresh" ? "hot" : heat}. Open drink controls`);
   cupNote.textContent = heat === "fresh" ? "Freshly poured. Stay a little."
     : heat === "warm" ? "Still warm. Take your time." : "Getting cool. A little more warmth?";
@@ -3175,7 +3189,7 @@ function setLighthouse(on, { save = true } = {}) {
   lighthouseOn = Boolean(on);
   windowView.dataset.beacon = lighthouseOn ? "on" : "off";
   beaconButton.setAttribute("aria-pressed", String(lighthouseOn));
-  beaconButton.textContent = `lighthouse beam · ${lighthouseOn ? "on" : "off"}`;
+  beaconButton.textContent = `lighthouse beam / ${lighthouseOn ? "on" : "off"}`;
   if (save) rememberLight("lateNight.beacon", lighthouseOn ? "1" : "0");
 }
 beaconButton.addEventListener("click", () => setLighthouse(!lighthouseOn));
@@ -3244,9 +3258,9 @@ function setCatCompanion(coat, present, { save = true } = {}) {
   windowView.dataset.catPresent = String(present);
   if (!present) { catPetUntil = 0; settleCat(); }
   document.querySelectorAll("button[data-cat-coat]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.catCoat === coat)));
-  document.getElementById("cat-label").textContent = present ? `${coat} · here` : "a little solitude";
+  document.getElementById("cat-label").textContent = present ? `${coat} / here` : "a little solitude";
   document.getElementById("cat-toggle").setAttribute("aria-pressed", String(present));
-  document.getElementById("cat-toggle").textContent = `cat at the window · ${present ? "on" : "off"}`;
+  document.getElementById("cat-toggle").textContent = `cat at the window / ${present ? "on" : "off"}`;
   document.getElementById("cat-settings-note").textContent = present ? "Touch the cat for a slow blink." : "The warm spot will be here later.";
   if (save) {
     try { localStorage.setItem("lateNight.cat", JSON.stringify({ coat, present })); }
@@ -3266,7 +3280,7 @@ function setCafeLight(on, { save = true } = {}) {
   document.getElementById("cafe-sign").textContent = cafeOpen ? "OPEN LATE" : "GOOD NIGHT";
   document.getElementById("cafe-sign").setAttribute("aria-pressed", String(cafeOpen));
   document.getElementById("cafe-light-button").setAttribute("aria-pressed", String(cafeOpen));
-  document.getElementById("cafe-light-button").textContent = `café lights · ${cafeOpen ? "on" : "off"}`;
+  document.getElementById("cafe-light-button").textContent = `café lights / ${cafeOpen ? "on" : "off"}`;
   if (save) { try { localStorage.setItem("lateNight.cafeLight", cafeOpen ? "1" : "0"); } catch {} }
 }
 document.getElementById("cafe-sign").addEventListener("click", () => setCafeLight(!cafeOpen));
@@ -3289,11 +3303,11 @@ function setGarden(value, { save = true } = {}) {
   windowView.dataset.gardenLight = String(garden.light);
   windowView.dataset.gardenFlies = String(garden.flies);
   document.getElementById("garden-light").setAttribute("aria-pressed", String(garden.light));
-  document.getElementById("garden-light").textContent = `greenhouse light · ${garden.light ? "on" : "off"}`;
+  document.getElementById("garden-light").textContent = `greenhouse light / ${garden.light ? "on" : "off"}`;
   document.getElementById("garden-switch").setAttribute("aria-pressed", String(garden.light));
-  document.getElementById("garden-switch").textContent = garden.light ? "GLASSHOUSE · LIT" : "GLASSHOUSE · RESTING";
+  document.getElementById("garden-switch").textContent = garden.light ? "GLASSHOUSE / LIT" : "GLASSHOUSE / RESTING";
   document.getElementById("garden-flies").setAttribute("aria-pressed", String(garden.flies));
-  document.getElementById("garden-flies").textContent = `fireflies · ${garden.flies ? "here" : "away"}`;
+  document.getElementById("garden-flies").textContent = `fireflies / ${garden.flies ? "here" : "away"}`;
   const status = document.getElementById("garden-status");
   status.textContent = garden.light ? "A little light among the leaves." : "Moonlight is enough for now.";
   if (save) {
@@ -3352,11 +3366,11 @@ function paintPersonalScene() {
   document.querySelector(".scene-cards").classList.toggle("has-personal", Boolean(personalScene));
   if (!personalScene) return;
   const savedSound = { rain: "rain", ocean: "ocean", fire: "fireplace", space: "space" }[personalScene.ambientChoice];
-  document.getElementById("personal-recipe").textContent = `${personalScene.view} · ${personalScene.mood} · ${personalScene.light} light${savedSound ? ` · ${savedSound} sound` : ""}${personalScene.drink ? ` · ${personalScene.drink}` : ""}${personalScene.cat ? personalScene.cat.present ? ` · ${personalScene.cat.coat} cat` : " · solitude" : ""}`;
+  document.getElementById("personal-recipe").textContent = `${personalScene.view} / ${personalScene.mood} / ${personalScene.light} light${savedSound ? ` / ${savedSound} sound` : ""}${personalScene.drink ? ` / ${personalScene.drink}` : ""}${personalScene.cat ? personalScene.cat.present ? ` / ${personalScene.cat.coat} cat` : " / solitude" : ""}`;
   personalCard.dataset.personalView = personalScene.view;
   personalCard.dataset.personalSky = personalScene.sky || "mood";
   personalCard.dataset.personalFinish = personalScene.finish || "steel";
-  if (personalScene.finish) document.getElementById("personal-recipe").textContent += ` · ${ROOM_FINISHES[personalScene.finish]}`;
+  if (personalScene.finish) document.getElementById("personal-recipe").textContent += ` / ${ROOM_FINISHES[personalScene.finish]}`;
 }
 function captureEvening() {
   return { name: "Your evening", mood: document.body.dataset.mood, view: windowScene,
@@ -3422,7 +3436,7 @@ function applyEveningScene(scene) {
   storeEveningSetting("lateNight.listen", listening ? "1" : "0");
   swapAmbience();
   if (scene.mood === "music" && station === "tape" && scene.playTape !== false) setTape(true);
-  sceneStatus.textContent = `${scene.name} · make yourself at home.`;
+  sceneStatus.textContent = `${scene.name} / make yourself at home.`;
   paintSceneCards();
 }
 function paintSceneCards() {
@@ -3530,11 +3544,11 @@ function renderEveningLibrary() {
     const title = document.createElement("strong");
     title.textContent = item.name;
     const recipe = document.createElement("span");
-    recipe.textContent = `${item.scene.view} · ${item.scene.mood} · ${item.scene.light} light`;
-    if (item.scene.finish) recipe.textContent += ` · ${ROOM_FINISHES[item.scene.finish]}`;
+    recipe.textContent = `${item.scene.view} / ${item.scene.mood} / ${item.scene.light} light`;
+    if (item.scene.finish) recipe.textContent += ` / ${ROOM_FINISHES[item.scene.finish]}`;
     const sound = document.createElement("small");
     const background = { ocean: "ocean", fire: "fireplace", space: "space", rain: "rain" }[item.scene.ambientChoice];
-    sound.textContent = `${background ? `${background} background · ` : ""}${item.scene.curtains?.fabric || "soft"} curtains`;
+    sound.textContent = `${background ? `${background} background / ` : ""}${item.scene.curtains?.fabric || "soft"} curtains`;
     const invitation = document.createElement("em");
     invitation.textContent = "come back here ↗";
     open.append(art, title, recipe, sound, invitation);
@@ -3543,7 +3557,7 @@ function renderEveningLibrary() {
         const latest = readEveningLibrary().find(entry => entry.id === item.id);
         if (!latest) { renderEveningLibrary(); libraryStatus.textContent = "This evening was removed in another tab."; return; }
         applyEveningScene({ ...latest.scene, name: latest.name });
-        libraryStatus.textContent = `${latest.name} · make yourself at home.`;
+        libraryStatus.textContent = `${latest.name} / make yourself at home.`;
       } catch { libraryStatus.textContent = "Couldn't open this evening. Reopen the collection to retry."; }
     });
     card.append(open);
@@ -3716,7 +3730,7 @@ function paintSoundTimer() {
   windowTimer.hidden = !hasTimer;
   windowTimer.style.setProperty("--sound-left",String(left / (soundTimerMinutes * 60000)));
   document.getElementById("window-sound-time").textContent = soundTimerFinished ? "finished" : document.getElementById("sound-timer-time").textContent;
-  document.getElementById("window-sound-action").textContent = soundTimerFinished ? "dismiss · ×" : "until quiet · ×";
+  document.getElementById("window-sound-action").textContent = soundTimerFinished ? "dismiss / ×" : "until quiet / ×";
   windowTimer.setAttribute("aria-label",soundTimerFinished ? "Dismiss completed sound timer" : `Cancel sound timer, ${Math.ceil(left / 60000)} minutes until quiet`);
   document.getElementById("sound-timer-lamp").disabled = soundTimerEndsAt !== null;
   document.getElementById("sound-timer-lamp").checked = soundTimerLamp;
@@ -3833,17 +3847,17 @@ function paintPocketPlayer() {
   document.body.classList.toggle("has-pocket-player", !pocketPlayer.hidden);
   pocketPlayer.dataset.mode = mode;
   pocketPlayer.classList.toggle("is-playing", mode === "tape" && tapeState === "playing");
-  const title = mode === "radio" ? `Lofi Girl · ${currentRadio().name}` : mode === "tape" ? TAPES[tapeIndex].title : sound?.name || "A quiet room";
+  const title = mode === "radio" ? `Lofi Girl / ${currentRadio().name}` : mode === "tape" ? TAPES[tapeIndex].title : sound?.name || "A quiet room";
   document.getElementById("pocket-title").textContent = title;
   document.getElementById("pocket-compact-title").textContent = title;
   document.getElementById("pocket-unfold").setAttribute("aria-label", `Expand pocket player: ${title}`);
   document.getElementById("pocket-recording").textContent = title;
   document.getElementById("pocket-source").setAttribute("aria-label", `Open full sound controls: ${title}`);
-  const status = mode === "radio" ? radioFrame.firstChild ? "YOUTUBE · PLAYER OPEN" : "YOUTUBE · PLAYER CLOSED"
-    : mode === "tape" ? tapeState === "loading" ? "TAPE · FINDING THE RECORDING" : tapeError ? "TAPE · UNAVAILABLE" : tapeRunning ? tapeVolume === 0 ? "TAPE · MUTED" : "TAPE · PLAYING" : "TAPE · PAUSED"
-    : ambienceLoading ? "ROOM SOUND · LOADING" : ambienceError ? "ROOM SOUND · UNAVAILABLE" : listening ? roomVolume === 0 ? "ROOM SOUND · MUTED" : "ROOM SOUND · LISTENING" : "ROOM SOUND · PAUSED";
+  const status = mode === "radio" ? radioFrame.firstChild ? "YOUTUBE / PLAYER OPEN" : "YOUTUBE / PLAYER CLOSED"
+    : mode === "tape" ? tapeState === "loading" ? "TAPE / FINDING THE RECORDING" : tapeError ? "TAPE / UNAVAILABLE" : tapeRunning ? tapeVolume === 0 ? "TAPE / MUTED" : "TAPE / PLAYING" : "TAPE / PAUSED"
+    : ambienceLoading ? "ROOM SOUND / LOADING" : ambienceError ? "ROOM SOUND / UNAVAILABLE" : listening ? roomVolume === 0 ? "ROOM SOUND / MUTED" : "ROOM SOUND / LISTENING" : "ROOM SOUND / PAUSED";
   document.getElementById("pocket-status").textContent = status;
-  document.getElementById("pocket-room-state").textContent = !sound ? "room sound off" : ambienceLoading ? "room sound loading…" : ambienceError ? "room sound unavailable" : listening ? `room sound · ${Math.round(roomVolume * 100)}%` : "room sound paused";
+  document.getElementById("pocket-room-state").textContent = !sound ? "room sound off" : ambienceLoading ? "room sound loading…" : ambienceError ? "room sound unavailable" : listening ? `room sound / ${Math.round(roomVolume * 100)}%` : "room sound paused";
   const play = document.getElementById("pocket-play");
   const running = mode === "tape" ? tapeRunning : listening;
   const failed = mode === "tape" ? Boolean(tapeError) : Boolean(ambienceError);
@@ -3883,7 +3897,7 @@ function paintWindowListening() {
     : sound === AMBIENCE.space || sound === AMBIENCE.aurora ? "space ambience" : sound?.name || "room sound";
   let state = "idle", title = "", detail = "";
   if (mode === "radio") {
-    state = "radio"; title = `Lofi Girl · ${currentRadio().name}`;
+    state = "radio"; title = `Lofi Girl / ${currentRadio().name}`;
     detail = radioFrame.firstChild ? "Play and volume live in the YouTube player." : "Open the radio controls to listen.";
   } else if ((mode === "tape" && tapeError) || (sound && ambienceError)) {
     state = "error";
@@ -3900,7 +3914,7 @@ function paintWindowListening() {
     } else {
       state = "playing";
       title = musicAudible ? roomAudible ? `Lo-fi + ${roomName}` : "Lo-fi playing" : roomName;
-      detail = musicAudible ? `${roomOn && roomVolume === 0 ? "Room sound muted · " : ""}${TAPES[tapeIndex].title}`
+      detail = musicAudible ? `${roomOn && roomVolume === 0 ? "Room sound muted / " : ""}${TAPES[tapeIndex].title}`
         : tapeOn ? "Music volume is 0. Raise it in mix to hear the tape." : mode === "tape" ? "Music paused. The room keeps you company." : sound.name;
     }
   } else if (tapeAudio || ambienceTrack) {
@@ -4129,8 +4143,8 @@ function capturePostcard() {
 function paintPostcard() {
   if (!postcardScene) return;
   const light = postcardPaper === "moon", paper = light ? "#e8e1d4" : "#111724", ink = light ? "#303344" : "#ded5e7", muted = light ? "#6c6672" : "#a99eb7";
-  const card = postcardElement("svg",{xmlns:postcardNS,viewBox:"0 0 1280 920",width:1280,height:920,role:"img","aria-label":`${VIEW_NAMES[postcardScene.view]} · Late Night postcard`});
-  card.append(postcardElement("rect",{width:1280,height:920,fill:paper}),postcardElement("text",{x:58,y:58,fill:ink,"font-size":20,"letter-spacing":7,"font-family":"Arial, sans-serif"},"LATE NIGHT."));
+  const card = postcardElement("svg",{xmlns:postcardNS,viewBox:"0 0 1280 920",width:1280,height:920,role:"img","aria-label":`${VIEW_NAMES[postcardScene.view]} / Late Night postcard`});
+  card.append(postcardElement("rect",{width:1280,height:920,fill:paper}),postcardElement("text",{x:58,y:58,fill:ink,"font-size":20,"letter-spacing":7,"font-family":"Arial, sans-serif"},"LATE NIGHT"));
   card.append(postcardElement("text",{x:1222,y:57,fill:muted,"font-size":13,"text-anchor":"end","letter-spacing":2,"font-family":"Arial, sans-serif"},"A LITTLE PIECE OF TONIGHT"));
   const radius = postcardScene.finish === "orbit" ? 66 : 10;
   const clip = postcardElement("clipPath",{id:"postcard-window"}); clip.append(postcardElement("rect",{x:56,y:100,width:1168,height:584,rx:radius}));
@@ -4148,7 +4162,7 @@ function paintPostcard() {
   lines.slice(0,3).forEach((line,index) => card.append(postcardElement("text",{x:58,y:748+index*34,fill:ink,"font-size":26,"font-family":"Arial, sans-serif"},line.trim())));
   const date = postcardScene.date.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
   card.append(postcardElement("text",{x:58,y:872,fill:muted,"font-size":15,"letter-spacing":2,"font-family":"Arial, sans-serif"},`${VIEW_NAMES[postcardScene.view].toUpperCase()} / ${ROOM_FINISHES[postcardScene.finish].toUpperCase()}`));
-  card.append(postcardElement("text",{x:1222,y:872,fill:muted,"font-size":15,"text-anchor":"end","font-family":"Arial, sans-serif"},`${date}${document.getElementById("postcard-clock").checked ? ` · ${postcardScene.time}` : ""}`));
+  card.append(postcardElement("text",{x:1222,y:872,fill:muted,"font-size":15,"text-anchor":"end","font-family":"Arial, sans-serif"},`${date}${document.getElementById("postcard-clock").checked ? ` / ${postcardScene.time}` : ""}`));
   document.getElementById("postcard-preview").replaceChildren(card);
 }
 document.getElementById("postcard-open").addEventListener("click", () => { capturePostcard(); postcardDialog.showModal(); });

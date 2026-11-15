@@ -2,6 +2,11 @@
 
 A tiny digital room for quiet evenings.
 
+An italic Instrument Serif wordmark, Manrope controls and soft glass lighting
+set the room's tone. Mood selection glides into place, the window settles in
+with a gentle entrance, and the glass catches a little light from the pointer.
+Motion follows the device's reduced-motion preference.
+
 **[Open it →](https://ahsoka1tano.github.io/late-night/)**
 
 Open it late, pick a mood, sit for a bit, close it.
@@ -724,6 +729,10 @@ The space ambience is [Floating in Space](https://opengameart.org/content/floati
 ## Stack
 
 HTML, CSS, vanilla JS. On purpose.
+
+Instrument Serif and Manrope are served locally. Their
+[Instrument Serif licence](assets/fonts/Instrument-Serif-OFL.txt) and
+[Manrope licence](assets/fonts/Manrope-OFL.txt) are included with the font files.
 
 Nothing leaves the browser: the mood, the journal and the settings live in `localStorage`,
 there is no account, no server and nothing to sign up for.

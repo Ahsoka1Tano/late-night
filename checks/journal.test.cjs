@@ -16,6 +16,8 @@ const files = new Map([
   ['/tapes.json', ['tapes.json', 'application/json']],
   ['/moon.svg', ['moon.svg', 'image/svg+xml']],
   ['/assets/night-express.svg', ['assets/night-express.svg', 'image/svg+xml']],
+  ['/assets/fonts/manrope-variable.ttf', ['assets/fonts/manrope-variable.ttf', 'font/ttf']],
+  ['/assets/fonts/instrument-serif-italic.ttf', ['assets/fonts/instrument-serif-italic.ttf', 'font/ttf']],
 ]);
 let server, browser, origin;
 
