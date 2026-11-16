@@ -9,7 +9,7 @@
   <link rel="icon" href="moon.svg" type="image/svg+xml" />
   <link rel="preload" href="assets/fonts/instrument-serif-italic.ttf" as="font" type="font/ttf" crossorigin />
   <link rel="preload" href="assets/fonts/manrope-variable.ttf" as="font" type="font/ttf" crossorigin />
-  <link rel="stylesheet" href="style.css?v=1e34c43d9aa4" />
+  <link rel="stylesheet" href="style.css?v=9fb3b19f8972" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -26,7 +26,7 @@
     </header>
 
     <section class="moods" aria-label="Choose a mood">
-      <span class="mood-glider" aria-hidden="true"></span>
+      <span class="selection-glider mood-glider" aria-hidden="true"></span>
       <button class="mood" data-mood="calm" type="button" aria-pressed="false"><span class="mood-name">Calm</span></button>
       <button class="mood" data-mood="music" type="button" aria-pressed="false"><span class="mood-name">Music</span></button>
       <button class="mood" data-mood="focus" type="button" aria-pressed="false"><span class="mood-name">Focus</span></button>
@@ -55,6 +55,7 @@
         <div class="room-casing" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
         <div class="view-switch" aria-label="View from the window">
           <span>THE VIEW</span><div>
+            <span class="selection-glider view-glider" aria-hidden="true"></span>
             <button type="button" data-view="city" aria-pressed="true">City</button>
             <button type="button" data-view="mountains" aria-pressed="false">Mountains</button>
             <button type="button" data-view="coast" aria-pressed="false">Coast</button>
@@ -963,6 +964,6 @@
       <p id="postcard-note" role="status">Made here. Kept on your device.</p>
     </div></div>
   </dialog>
-  <script src="app.js?v=f4884c3163ea"></script>
+  <script src="app.js?v=d621cb741a1a"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 A tiny digital room for quiet evenings.
 
 An italic Instrument Serif wordmark, Manrope controls and soft glass lighting
-set the room's tone. Mood selection glides into place, the window settles in
+set the room's tone. Mood and view selections glide into place, the window settles in
 with a gentle entrance, and the glass catches a little light from the pointer.
 Motion follows the device's reduced-motion preference.
 

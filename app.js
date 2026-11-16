@@ -31,15 +31,20 @@ const MOODS = {
 const moodLine = document.getElementById("mood-line");
 const moodButtons = document.querySelectorAll(".mood");
 const moodRail = document.querySelector(".moods");
-const moodGlider = document.querySelector(".mood-glider");
-function placeMoodGlider() {
-  const selected = moodRail.querySelector('[aria-pressed="true"]');
+const viewRail = document.querySelector(".view-switch > div");
+function placeSelection(rail) {
+  const selected = rail.querySelector('[aria-pressed="true"]');
   if (!selected) return;
-  moodGlider.style.width = selected.offsetWidth + "px";
-  moodGlider.style.height = selected.offsetHeight + "px";
-  moodGlider.style.transform = `translate3d(${selected.offsetLeft}px,${selected.offsetTop}px,0)`;
+  const glider = rail.querySelector(".selection-glider");
+  glider.style.width = selected.offsetWidth + "px";
+  glider.style.height = selected.offsetHeight + "px";
+  glider.style.transform = `translate3d(${selected.offsetLeft}px,${selected.offsetTop}px,0)`;
 }
-new ResizeObserver(placeMoodGlider).observe(moodRail);
+const selectionObserver = new ResizeObserver(entries => {
+  entries.forEach(entry => placeSelection(entry.target));
+});
+selectionObserver.observe(moodRail);
+selectionObserver.observe(viewRail);
 let moodLineTimer = null;
 let musicRainEnabled = localStorage.getItem("lateNight.musicRain") === "1";
 const WINDOW_VIEWS = ["city", "mountains", "coast", "cafe", "garden"];
@@ -115,7 +120,7 @@ function setMood(mood, { save = true } = {}) {
 
   });
 
-  placeMoodGlider();
+  placeSelection(moodRail);
   clearTimeout(moodLineTimer);
   moodLine.classList.add("is-fading");
   moodLineTimer = setTimeout(() => {
@@ -2847,6 +2852,7 @@ function setWindowScene(scene, { save = true, journey = false } = {}) {
   document.querySelectorAll(".view-switch button").forEach(button => {
     button.setAttribute("aria-pressed", String(button.dataset.view === windowScene));
   });
+  placeSelection(viewRail);
   windowView.setAttribute("aria-label", { garden: "Your midnight garden window", cafe: "Your late-night café window", coast: "Your coastal window", mountains: "Your mountain window", city: "Your night city window" }[windowScene]);
   document.getElementById("window-whisper").textContent = { garden: "some things grow quietly.", cafe: "there is still a light on.", coast: "let the tide take its time.", mountains: "let the world wait.", city: "let the city carry on." }[windowScene];
   paintSceneCaption();
