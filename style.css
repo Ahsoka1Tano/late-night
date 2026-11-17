@@ -3101,6 +3101,38 @@ body.has-sound-timer .scene-signature { display: none; }
 .window-listening > span { display: block; margin-top: 3px; color: #aaa0b6; font-size: 10px; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .scene-footer[data-listening='error'] .window-listening strong { color: #dfb7b0; }
 .scene-footer[data-listening='muted'] .window-listening strong { color: #d6c395; }
+.window-listening .listening-wave {
+  display: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  overflow: visible;
+  gap: 3px;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+}
+.listening-wave i {
+  display: block;
+  flex: 0 0 2px;
+  height: 14px;
+  border-radius: 2px;
+  background: linear-gradient(#eadbf1,#a68bb8);
+  transform-origin: center;
+  animation: listening-wave 2.4s ease-in-out infinite;
+  animation-play-state: paused;
+}
+.listening-wave i:nth-child(1) { height: 8px; animation-delay: -.6s; }
+.listening-wave i:nth-child(2) { animation-delay: -1.5s; }
+.listening-wave i:nth-child(3) { height: 11px; animation-delay: -1s; }
+.listening-wave i:nth-child(4) { height: 6px; animation-delay: -2s; }
+.scene-footer[data-listening='playing'] .window-listening { display: grid; grid-template-columns: 18px minmax(0,1fr); column-gap: 10px; }
+.scene-footer[data-listening='playing'] .listening-wave { display: flex; grid-column: 1; grid-row: 1 / span 2; }
+.scene-footer[data-listening='playing'] .window-listening strong { grid-column: 2; grid-row: 1; }
+.scene-footer[data-listening='playing'] #window-sound-detail { grid-column: 2; grid-row: 2; }
+body:not(.city-is-hidden) .scene-footer[data-listening='playing'] .listening-wave i { animation-play-state: running; }
+@keyframes listening-wave { 0%,100% { transform: scaleY(.4); } 50% { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) { .listening-wave i { animation: none !important; } }
 @media(max-width:600px) { .window-listening strong { font-size: 11px; } .window-listening > span { font-size: 9px; } }
 
 .pocket-transport #pocket-mix-toggle,.pocket-transport #pocket-next { font-size: 11px; letter-spacing: .01em; }

@@ -44,6 +44,9 @@ background, loading, a quiet pause, or an unavailable recording. **Retry sounds*
 retries a failed start. Zero volume gets its own message, so silence is explained
 without changing your chosen levels.
 
+A small four-bar wave accompanies the recording title while sound is playing.
+It rests in hidden tabs and stays still with reduced motion.
+
 ![One play action at the window, with the listening controls tucked away](assets/simple-arrival.png)
 
 ## Rain on the glass

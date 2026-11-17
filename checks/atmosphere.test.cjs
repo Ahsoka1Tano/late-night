@@ -249,10 +249,12 @@ test('window listening feedback follows actual recordings, pauses and the chosen
   await page.locator('#evening-toggle').click();
   await page.waitForFunction(()=>document.querySelector('.scene-footer').dataset.listening==='playing');
   assert.match(await page.locator('#window-sound-title').textContent(),/Lo-fi \+ steady rain/);
+  assert.equal(await page.locator('.listening-wave').isVisible(),true);
   assert.equal(await page.locator('#scene-caption').isVisible(),false);
   assert.equal(await page.locator('#window-sound-detail').textContent(),await page.evaluate(()=>TAPES[tapeIndex].title));
   await page.locator('#evening-toggle').click();
   assert.equal(await page.locator('.scene-footer').getAttribute('data-listening'),'paused');
+  assert.equal(await page.locator('.listening-wave').isVisible(),false);
   await page.locator('#sound-options > summary').click();
   await page.locator('button[data-ambient="ocean"]').click();
   await page.locator('#evening-toggle').click();
@@ -270,6 +272,7 @@ test('window listening feedback distinguishes zero volumes without restarting ei
   assert.match(await page.locator('#window-sound-detail').textContent(),/Music volume is 0/);
   await page.locator('#pocket-room-volume').fill('0');
   assert.equal(await page.locator('.scene-footer').getAttribute('data-listening'),'muted');
+  assert.equal(await page.locator('.listening-wave').isVisible(),false);
   assert.match(await page.locator('#window-sound-detail').textContent(),/Raise a volume/);
   await page.locator('#pocket-tape-volume').fill('25');
   assert.equal(await page.locator('#window-sound-title').textContent(),'Lo-fi playing');
@@ -284,12 +287,14 @@ test('window listening feedback reports loading and failures and allows cancelli
   await page.evaluate(()=>{window.deferAudio=true;});
   await page.locator('#evening-toggle').click();
   assert.equal(await page.locator('.scene-footer').getAttribute('data-listening'),'loading');
+  assert.equal(await page.locator('.listening-wave').isVisible(),false);
   await page.locator('#evening-toggle').click();
   assert.equal(await page.locator('.scene-footer').getAttribute('data-listening'),'paused');
   await page.evaluate(()=>{window.media.forEach(track=>track.rejectPlay?.(new Error('cancelled')));window.deferAudio=false;window.failAudio=true;});
   await page.locator('#evening-toggle').click();
   await page.waitForFunction(()=>tapeState==='error');
   assert.equal(await page.locator('.scene-footer').getAttribute('data-listening'),'error');
+  assert.equal(await page.locator('.listening-wave').isVisible(),false);
   assert.match(await page.locator('#window-sound-detail').textContent(),/Press play to retry/);
   await page.evaluate(()=>{window.failAudio=false;});
   await page.locator('#evening-toggle').click();

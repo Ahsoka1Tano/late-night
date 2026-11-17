@@ -9,7 +9,7 @@
   <link rel="icon" href="moon.svg" type="image/svg+xml" />
   <link rel="preload" href="assets/fonts/instrument-serif-italic.ttf" as="font" type="font/ttf" crossorigin />
   <link rel="preload" href="assets/fonts/manrope-variable.ttf" as="font" type="font/ttf" crossorigin />
-  <link rel="stylesheet" href="style.css?v=9fb3b19f8972" />
+  <link rel="stylesheet" href="style.css?v=cd09b1ca5eda" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -582,7 +582,14 @@
 
         <div class="scene-footer">
           <button class="window-sound-timer" id="window-sound-timer" type="button" aria-label="Cancel sound timer" hidden><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" pathLength="1"/><path d="M21 9a8 8 0 1 0 2 12A9 9 0 0 1 21 9Z"/></svg><span><strong id="window-sound-time">30:00</strong><small id="window-sound-action">until quiet / ×</small></span></button>
-          <p class="scene-signature"><span id="scene-caption">THE CITY IS KEEPING YOU COMPANY</span><span class="window-listening" id="window-listening" role="status" hidden><strong id="window-sound-title"></strong><span id="window-sound-detail"></span></span></p>
+          <p class="scene-signature">
+            <span id="scene-caption">THE CITY IS KEEPING YOU COMPANY</span>
+            <span class="window-listening" id="window-listening" role="status" hidden>
+              <span class="listening-wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <strong id="window-sound-title"></strong>
+              <span id="window-sound-detail"></span>
+            </span>
+          </p>
           <button class="evening-toggle" id="evening-toggle" type="button" aria-pressed="false" aria-label="Play a lo-fi tape and real rain together"><span aria-hidden="true">▶</span> lo-fi + rain</button>
         </div>
       </section>
