@@ -15,51 +15,6 @@ function tick() {
 tick();
 setInterval(tick, 10000);
 
-/* One opening shot. All controls underneath keep their normal focus and hit targets. */
-async function openRecordSleeve() {
-  const still = matchMedia("(prefers-reduced-motion: reduce)");
-  const sleeve = document.querySelector(".record-sleeve");
-  const scene = document.querySelector(".evening-layout");
-  if (still.matches || !scene.animate) return;
-
-  const lifetime = new AbortController();
-  const shot = document.createElement("div");
-  const dismiss = () => {
-    lifetime.abort();
-    shot.remove();
-  };
-  const options = { once: true, signal: lifetime.signal, capture: true };
-  for (const event of ["pointerdown", "keydown", "resize", "pagehide", "scroll"]) {
-    window.addEventListener(event, dismiss, options);
-  }
-  still.addEventListener("change", dismiss, options);
-  try {
-    await sleeve.querySelector("img").decode();
-    if (lifetime.signal.aborted || document.hidden || scrollY > 0) return;
-    const cover = sleeve.getBoundingClientRect();
-    const spread = scene.getBoundingClientRect();
-    const width = spread.width + "px";
-    const height = Math.min(spread.height, innerHeight * .74) + "px";
-    shot.className = "opening-shot";
-    shot.setAttribute("aria-hidden", "true");
-    const title = document.createElement("span");
-    title.className = "title";
-    title.textContent = sleeve.querySelector("h1").textContent;
-    shot.append(title);
-    scene.append(shot);
-    await shot.animate([
-      { width, height, opacity: 1, filter: "brightness(.72)" },
-      { width, height, opacity: 1, filter: "brightness(1)", offset: .43, easing: "cubic-bezier(.2,.7,.2,1)" },
-      { width: cover.width + "px", height: cover.height + "px", opacity: 0, filter: "brightness(1)" }
-    ], {duration: 2400, fill: "both"}).finished;
-  } catch {
-    // Image decoding or an interrupted animation can fall back to the regular cover.
-  } finally {
-    dismiss();
-  }
-}
-openRecordSleeve();
-
 /* --- moods --- */
 const MOODS = {
   calm:  "Nothing needs solving tonight.",
@@ -803,6 +758,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden) pain
 const quietRoomButton = document.getElementById("quiet-room");
 function setQuietRoom(on) {
   document.body.classList.toggle("is-quiet", on);
+  document.getElementById(on ? "window-view" : "listen-controls").append(document.querySelector(".scene-footer"));
   quietRoomButton.setAttribute("aria-pressed", String(on));
   quietRoomButton.textContent = on ? "← back to the room" : "quiet room ↗";
   quietRoomButton.focus({ preventScroll: true });

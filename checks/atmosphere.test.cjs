@@ -9,7 +9,9 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const ROOT = path.resolve(__dirname, '..');
 const files = new Map([
   ['/', ['index.html', 'text/html']],
-  ['/assets/rain-room.webp', ['assets/rain-room.webp', 'image/webp']],
+  ...['listening-loft','desk-cassette','desk-glass','desk-notebook'].map(name => [
+    '/assets/' + name + '.webp', ['assets/' + name + '.webp','image/webp']
+  ]),
   ['/app.js', ['app.js', 'text/javascript']],
   ['/style.css', ['style.css', 'text/css']],
   ['/tapes.json', ['tapes.json', 'application/json']],
@@ -185,8 +187,8 @@ test('listening feedback, retry and mix stay readable and reachable in small and
     await page.clock.runFor(1800);
     if(height<700) await page.locator('#evening-toggle').evaluate(el=>el.scrollIntoView({block:'center'}));
     assert.equal(await page.locator('#evening-toggle').evaluate(el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}),true,`pause ${width}x${height}`);
-    const glass=await page.locator('#window-outside').boundingBox(),footer=await page.locator('.scene-footer').boundingBox();
-    assert.ok(footer.y>=glass.y+glass.height-2,JSON.stringify({width,height,glass,footer}));
+    const hero=await page.locator('#listen').boundingBox(),footer=await page.locator('.scene-footer').boundingBox();
+    assert.ok(footer.y>=hero.y && footer.y+footer.height<=hero.y+hero.height,JSON.stringify({width,height,hero,footer}));
     if(width<=600) {
       const clock=await page.locator('#window-clock').boundingBox(),lamp=await page.locator('#desk-lamp').boundingBox();
       assert.ok(clock.y+clock.height<=lamp.y,JSON.stringify({width,height,clock,lamp}));
@@ -326,7 +328,7 @@ test('listening starts with one play button and reveals a resumable pocket playe
   assert.equal(await page.evaluate(()=>window.media.some(a=>!a.paused)),false);
 });
 
-test('arrival puts the playable window ahead of optional features with no automatic sound', async t => {
+test('arrival puts the listening room ahead of optional features with no automatic sound', async t => {
   const page = await openRoom(t,1280,'reduce',false);
   assert.equal(await page.locator('.room-drawer[open],.explore-drawer[open],.window-extras[open]').count(),0);
   assert.equal(await page.locator('#evening-toggle').isVisible(),true);
@@ -335,7 +337,7 @@ test('arrival puts the playable window ahead of optional features with no automa
   assert.equal(await page.locator('[data-journey="afterhours"]').isVisible(),false);
   assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
   assert.equal(await page.evaluate(() => {
-    const windowTop=document.getElementById('window-view').getBoundingClientRect().top;
+    const windowTop=document.getElementById('listen').getBoundingClientRect().top;
     return windowTop < document.getElementById('evening-options').getBoundingClientRect().top && windowTop < 300;
   }),true);
   await page.locator('#evening-toggle').click();
@@ -408,14 +410,9 @@ test('uncluttered arrival and opened settings fit phones, tablets and desktop wi
     await page.evaluate(() => window.scrollTo(0,0));
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth<=innerWidth),true,`arrival ${width}`);
     const windowBox=await page.locator('#window-view').boundingBox();
-    const sleeve = await page.locator('.record-sleeve').boundingBox();
-    if (width >= 980) {
-      assert.ok(sleeve.x + sleeve.width <= windowBox.x);
-      assert.ok(windowBox.width > sleeve.width * 1.5);
-    } else {
-      assert.ok(sleeve.y + sleeve.height <= windowBox.y);
-      assert.ok(windowBox.width > width * .8);
-    }
+    const hero = await page.locator('#listen').boundingBox();
+    assert.ok(hero.y + hero.height <= windowBox.y);
+    assert.ok(windowBox.width > width * .8);
     await page.locator('#evening-toggle').scrollIntoViewIfNeeded();
     assert.equal(await page.locator('#evening-toggle').evaluate(el=>{
       const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));
