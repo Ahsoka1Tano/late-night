@@ -9,6 +9,7 @@ let html = fs.readFileSync(index, 'utf8');
 for (const [attribute, file] of [
   ['href', 'style.css'],
   ['src', 'app.js'],
+  ['src', 'receiver.js'],
   ['src', 'assets/night-express.svg'],
 ]) {
   const version = crypto.createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex').slice(0, 12);

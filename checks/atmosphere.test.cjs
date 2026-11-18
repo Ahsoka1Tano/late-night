@@ -13,6 +13,7 @@ const files = new Map([
     '/assets/' + name + '.webp', ['assets/' + name + '.webp','image/webp']
   ]),
   ['/app.js', ['app.js', 'text/javascript']],
+  ['/receiver.js', ['receiver.js','text/javascript']],
   ['/style.css', ['style.css', 'text/css']],
   ['/tapes.json', ['tapes.json', 'application/json']],
   ['/moon.svg', ['moon.svg', 'image/svg+xml']],
@@ -56,7 +57,7 @@ async function openRoom(t, width = 1280, motion = 'reduce', expanded = true, vir
   // Arrival/navigation checks pass false and exercise the real collapsed entry.
   if (expanded) await page.addInitScript(() => {
     document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.room-drawer,.explore-drawer,.window-extras').forEach(panel => { panel.open = true; });
+      document.querySelectorAll('.instrument-tray,.room-drawer,.explore-drawer,.window-extras').forEach(panel => { panel.open = true; });
     }, { once: true });
   });
   // Deterministic media double: remote availability is checked separately.
@@ -227,6 +228,7 @@ test('mix sliders explain mute to keyboard users and name the selected room reco
 
 test('the window radio action opens folded YouTube controls without replacing the iframe or starting tapes', async t => {
   const page=await openRoom(t,1280,'reduce',false);
+  await page.locator('#desktop-tray > summary').click();
   await page.locator('#sound-options > summary').click();
   await page.locator('button[data-station="radio"]').click();
   await page.evaluate(()=>{window.windowRadio=document.querySelector('#radio-frame iframe');});
@@ -258,6 +260,7 @@ test('window listening feedback follows actual recordings, pauses and the chosen
   await page.locator('#evening-toggle').click();
   assert.equal(await page.locator('.scene-footer').getAttribute('data-listening'),'paused');
   assert.equal(await page.locator('.listening-wave').isVisible(),false);
+  await page.locator('#desktop-tray > summary').click();
   await page.locator('#sound-options > summary').click();
   await page.locator('button[data-ambient="ocean"]').click();
   await page.locator('#evening-toggle').click();
@@ -322,6 +325,7 @@ test('listening starts with one play button and reveals a resumable pocket playe
   await page.locator('#pocket-play').click();
   await page.reload();
   assert.equal(await page.locator('#pocket-player').isVisible(),false);
+  await page.locator('#desktop-tray > summary').click();
   await page.locator('#sound-options > summary').click();
   await page.locator('#pocket-player').waitFor({state:'visible'});
   assert.equal(await page.locator('#pocket-player').isVisible(),true);
@@ -336,10 +340,8 @@ test('arrival puts the listening room ahead of optional features with no automat
   assert.equal(await page.locator('[data-evening="records"]').isVisible(),false);
   assert.equal(await page.locator('[data-journey="afterhours"]').isVisible(),false);
   assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
-  assert.equal(await page.evaluate(() => {
-    const windowTop=document.getElementById('listening-room').getBoundingClientRect().top;
-    return windowTop < document.getElementById('evening-options').getBoundingClientRect().top && windowTop < 300;
-  }),true);
+  assert.equal(await page.locator('#desktop-tray').evaluate(el=>el.open),false);
+  assert.equal(await page.locator('#journal-tray').evaluate(el=>el.open),false);
   await page.locator('#evening-toggle').click();
   await page.clock.runFor(1800);
   assert.equal(await page.evaluate(() => tapeRunning && listening),true);
@@ -350,6 +352,7 @@ test('optional desk sections fold without replacing audio, clearing notes or res
   await page.locator('#evening-toggle').click();
   await page.clock.runFor(1800);
   await page.evaluate(() => { window.arrivalTape=tapeAudio; window.arrivalRain=ambienceTrack; });
+  await page.locator('#desktop-tray > summary').click();
   for (const id of ['sound-options','room-options','ritual-options','evening-options','journey-options']) {
     await page.locator(`#${id} > summary`).click();
     assert.equal(await page.locator(`#${id}`).evaluate(el=>el.open),true);
@@ -357,6 +360,7 @@ test('optional desk sections fold without replacing audio, clearing notes or res
     assert.equal(await page.locator(`#${id}`).evaluate(el=>el.open),false);
   }
   assert.equal(await page.evaluate(() => tapeAudio===arrivalTape && ambienceTrack===arrivalRain && tapeRunning && listening),true);
+  await page.locator('#journal-tray > summary').click();
   await page.locator('#journal-note').fill('A room with a little less noise.');
   await page.locator('.mood[data-mood="focus"]').click();
   await page.locator('#focus-toggle').click();
@@ -386,6 +390,7 @@ test('pocket navigation reveals the folded sound controls and keeps the same rec
 
 test('native section summaries and extras work with keyboard and return from a postcard', async t => {
   const page = await openRoom(t,1280,'reduce',false);
+  await page.locator('#desktop-tray > summary').click();
   await page.locator('#sound-options > summary').focus();
   await page.keyboard.press('Space');
   assert.equal(await page.locator('#sound-options').evaluate(el=>el.open),true);
@@ -411,8 +416,8 @@ test('uncluttered arrival and opened settings fit phones, tablets and desktop wi
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth<=innerWidth),true,`arrival ${width}`);
     const windowBox=await page.locator('#window-view').boundingBox();
     const hero = await page.locator('#listening-room').boundingBox();
-    assert.ok(hero.y + hero.height <= windowBox.y);
-    assert.ok(windowBox.width > width * .8);
+    if(width <= 760) assert.ok(windowBox.y + windowBox.height <= hero.y);
+    else assert.ok(windowBox.x + windowBox.width <= hero.x + 1);
     await page.locator('#evening-toggle').scrollIntoViewIfNeeded();
     assert.equal(await page.locator('#evening-toggle').evaluate(el=>{
       const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));
@@ -421,6 +426,7 @@ test('uncluttered arrival and opened settings fit phones, tablets and desktop wi
       await page.evaluate(() => window.scrollTo(0,0));
       await page.screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`simpler-room-${width}.png`)});
     }
+    await page.locator('#desktop-tray > summary').click();
     for(const id of ['sound-options','room-options','ritual-options']) {
       await page.locator(`#${id} > summary`).click();
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth<=innerWidth),true,`${id} ${width}`);
@@ -430,6 +436,7 @@ test('uncluttered arrival and opened settings fit phones, tablets and desktop wi
 
 test('returning from a shelf, journey or rhythm reveals a folded keyboard destination', async t => {
   const page = await openRoom(t,1280,'reduce',false);
+  await page.locator('#desktop-tray > summary').click();
   await page.locator('#sound-options > summary').click();
   await page.locator('#browse-tapes').click();
   await page.locator('#sound-options > summary').click();

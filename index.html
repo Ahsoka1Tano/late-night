@@ -7,10 +7,9 @@
   <meta name="description" content="A tiny digital room for quiet evenings." />
   <meta name="theme-color" content="#05060b" />
   <link rel="icon" href="moon.svg" type="image/svg+xml" />
-  <link rel="preload" href="assets/listening-loft.webp" as="image" fetchpriority="high" />
   <link rel="preload" href="assets/fonts/instrument-serif-italic.ttf" as="font" type="font/ttf" crossorigin />
   <link rel="preload" href="assets/fonts/manrope-variable.ttf" as="font" type="font/ttf" crossorigin />
-  <link rel="stylesheet" href="style.css?v=aa5f2e82296c" />
+  <link rel="stylesheet" href="style.css?v=04d089dbb5d5" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -20,262 +19,9 @@
   <div class="window-fog" aria-hidden="true"></div>
 
   <main class="room">
-    <header class="site-bar">
-      <a class="wordmark" href="#listening-room" aria-label="Late Night home"><i aria-hidden="true"></i>Late Night</a>
-      <nav aria-label="Room navigation"><a href="#listening-room">Listen</a><a href="#window-seat">Window</a><a href="#night-journal">Journal</a></nav>
-    </header>
-    <section class="listening-room" id="listening-room" aria-labelledby="listening-title">
-      <img class="loft-photo" src="assets/listening-loft.webp" width="1984" height="794" fetchpriority="high" alt="" />
-      <div class="loft-copy">
-        <p class="loft-format">Lo-fi &amp; field recordings</p>
-        <h1 id="listening-title">Late Night</h1>
-        <div id="listen-controls">
-        <div class="scene-footer">
-          <button class="window-sound-timer" id="window-sound-timer" type="button" aria-label="Cancel sound timer" hidden><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" pathLength="1"/><path d="M21 9a8 8 0 1 0 2 12A9 9 0 0 1 21 9Z"/></svg><span><strong id="window-sound-time">30:00</strong><small id="window-sound-action">until quiet / ×</small></span></button>
-          <p class="scene-signature">
-            <span id="scene-caption">THE CITY IS KEEPING YOU COMPANY</span>
-            <span class="window-listening" id="window-listening" role="status" hidden>
-              <span class="listening-wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-              <strong id="window-sound-title"></strong>
-              <span id="window-sound-detail"></span>
-            </span>
-          </p>
-          <button class="evening-toggle" id="evening-toggle" type="button" aria-pressed="false" aria-label="Play a lo-fi tape and real rain together"><span aria-hidden="true">▶</span> lo-fi + rain</button>
-        </div></div>
-        <a class="loft-focus-link" href="#window-focus">Focus timer ↓</a>
-      </div>
-      <div class="mood-deck"><span>Atmosphere</span>    <section class="moods" aria-label="Choose a mood">
-      <span class="selection-glider mood-glider" aria-hidden="true"></span>
-      <button class="mood" data-mood="calm" type="button" aria-pressed="false"><span class="mood-name">Calm</span></button>
-      <button class="mood" data-mood="music" type="button" aria-pressed="false"><span class="mood-name">Music</span></button>
-      <button class="mood" data-mood="focus" type="button" aria-pressed="false"><span class="mood-name">Focus</span></button>
-      <button class="mood" data-mood="rain" type="button" aria-pressed="false"><span class="mood-name">Rain</span></button>
-      <button class="mood" data-mood="space" type="button" aria-pressed="false"><span class="mood-name">Space</span></button>
-      <button class="mood" data-mood="sleep" type="button" aria-pressed="false"><span class="mood-name">Sleep</span></button>
-      <button class="mood mood-secret" data-mood="aurora" type="button" aria-pressed="false"><span class="mood-name">Aurora</span></button>
-    </section></div>
-    </section>
-      <aside class="room-desk" aria-label="In your room">
-        <header class="desk-heading"><p class="desk-kicker">MAKE YOURSELF AT HOME</p>
-          <h2 id="desk-title">Slow evenings.</h2><p class="mood-line" id="mood-line"></p></header>
-    <section class="focus" id="focus" aria-label="Focus timer">
-      <label class="focus-intention" for="focus-intention">ONE SMALL THING FOR TONIGHT<input id="focus-intention" type="text" maxlength="100" placeholder="Read a few pages, sketch, write…" autocomplete="off" /></label>
-      <p class="focus-intention-note" id="focus-intention-note" role="status"></p>
-      <div class="focus-presets" id="focus-presets" aria-label="Session length">
-        <button class="focus-preset" data-minutes="15" type="button">15</button>
-        <button class="focus-preset" data-minutes="25" type="button">25</button>
-        <button class="focus-preset" data-minutes="45" type="button">45</button>
-        <button class="focus-preset" data-minutes="60" type="button">60</button>
-      </div>
-
-      <p class="focus-time" id="focus-time">25:00</p>
-      <div class="focus-progress" id="focus-progress" role="progressbar" aria-label="Focus session progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-        <span aria-hidden="true"></span>
-      </div>
-      <div class="focus-controls">
-        <button class="focus-btn" id="focus-toggle" type="button">start</button>
-        <button class="focus-btn" id="focus-reset" type="button">reset</button>
-      </div>
-
-      <p class="focus-note" id="focus-note" role="status"></p>
-      <button class="focus-btn" data-focus-break type="button" hidden>take five minutes</button>
-    </section>
-
-
-
-        <details class="room-drawer" id="sound-options"><summary><span>Sound library<small>Tapes, live radio &amp; field recordings</small></span></summary><div class="room-drawer-body">
-    <div class="player" id="player" aria-label="Lo-fi player">
-      <button class="player-play" id="player-play" type="button">play</button>
-      <button class="player-next" id="player-next" type="button">next</button>
-
-      <label class="player-volume">
-        <span class="visually-hidden">Tape volume</span>
-        <input type="range" id="player-volume" min="0" max="100" step="1" value="55" />
-      </label>
-
-      <div class="stations" id="stations">
-        <button class="station" data-station="tape" type="button">lo-fi tapes</button>
-        <button class="station" data-station="radio" type="button">Lofi Girl radio</button>
-      </div>
-
-      <div class="tape-reels" aria-hidden="true"><span></span><span></span></div>
-
-      <div class="player-meta">
-        <p class="player-title" id="player-title">night tape</p>
-        <p class="tape-status" id="tape-status" role="status"></p>
-        <div class="player-wave" id="player-wave">
-          <span></span><span></span><span></span><span></span><span></span>
-          <span></span><span></span><span></span><span></span><span></span>
-        </div>
-      </div>
-      <div class="tape-shelf" id="tape-shelf">
-        <label for="tape-choice">PICK A TAPE FOR TONIGHT</label>
-        <select id="tape-choice" aria-label="Choose a tape"></select>
-        <div class="tape-tools">
-          <button id="tape-keep" type="button" aria-pressed="false">♡ keep</button>
-          <button id="tape-filter" type="button" aria-pressed="false" disabled>saved tapes / 0</button>
-        </div>
-        <p class="tape-kept-note" id="tape-kept-note" role="status"></p>
-        <div class="tape-position"><div><span id="tape-elapsed">00:00</span><span id="tape-duration">--:--</span></div><input id="tape-seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek in this recording" disabled /><a id="tape-source" target="_blank" rel="noopener noreferrer">recording and credits ↗</a></div>
-        <button class="browse-tapes" id="browse-tapes" type="button" aria-expanded="false" aria-controls="tape-collection">▤ browse the cassette shelf</button>
-        <section class="tape-queue" id="tape-queue" aria-labelledby="queue-title">
-          <header><div><p class="desk-kicker">A FEW RECORDS FOR LATER</p><h3 id="queue-title">Up next.</h3></div><span id="queue-count">0 / 8</span></header>
-          <p class="queue-copy">Up to eight tapes, kept on this device.<br />The current recording stays where it is.</p>
-          <div class="queue-actions"><button id="queue-add" type="button">＋ this tape</button><button id="queue-next" type="button" disabled>cue next ↗</button><button id="queue-clear" type="button" disabled>clear queue</button><button id="queue-undo" type="button" hidden>undo removal</button></div>
-          <ol id="queue-list" aria-label="Upcoming recordings"></ol>
-          <p class="queue-note" id="queue-note" role="status">Choose tapes from the cassette shelf, or add the current one. Adding stays quiet.</p>
-        </section>
-      </div>
-    </div>
-
-    <div class="radio-dial" id="radio-dial" aria-label="Radio channels"></div>
-    <div class="radio-frame" id="radio-frame" aria-label="Lofi Girl radio"></div>
-
-
-        <section class="weather-mix" id="weather-mix" aria-label="Music and weather">
-          <div><h3>Rain at the window</h3><p>A real recording. Your own volume.</p></div>
-          <button id="music-rain" type="button" aria-pressed="false">add real rain ＋</button>
-        </section>
-        <section class="sound-shelf" id="sound-shelf" aria-labelledby="sound-shelf-title">
-          <p class="desk-kicker">A SOUND TO STAY WITH</p><h3 id="sound-shelf-title">Somewhere else.</h3>
-          <p class="sound-shelf-copy">Keep your view. Choose what surrounds you.</p>
-          <div class="sound-choices" aria-label="Background recording">
-            <button type="button" data-ambient="rain" aria-pressed="false"><span class="sound-art" aria-hidden="true">
-              <svg viewBox="0 0 160 86"><path fill="#1d3041" d="M0 54h18V38h23v16h16V27h22v27h20V42h23v12h38v32H0z"/><path stroke="#a3bccc" opacity=".5" d="M27 46v5m39-16v5m45 12v5m-44 5v5m-43-4v5"/><g class="sound-rain" stroke="#83b2c5" stroke-linecap="round" opacity=".6"><path d="m22 12-3 12m31-8-3 12m31-20-3 12m32 1-3 12m34-18-3 12M34 47l-3 12m62-9-3 12m39 1-3 12"/></g><path stroke="#3c5063" stroke-width="4" d="M80 0v86M0 67h160"/><path stroke="#8ba8b8" opacity=".22" d="M81 0v85"/></svg>
-            </span><strong>Rain</strong><small>on the glass</small></button>
-            <button type="button" data-ambient="ocean" aria-pressed="false"><span class="sound-art" aria-hidden="true">
-              <svg viewBox="0 0 160 86"><circle cx="113" cy="23" r="12" fill="#c0d7da" opacity=".8"/><path fill="#244554" d="M0 48q40-8 80 0t80 0v38H0z"/><g class="sound-waves" fill="none" stroke="#6cabb5" opacity=".5"><path d="M-20 57q25-8 50 0t50 0t50 0t50 0M-20 71q25-8 50 0t50 0t50 0t50 0"/><path d="M98 49h26m-31 6h35m-26 8h20" stroke="#a8d2d2"/></g><path fill="#132630" d="M0 77q29-9 60 9H0z"/></svg>
-            </span><strong>Ocean</strong><small>after the tide</small></button>
-            <button type="button" data-ambient="fire" aria-pressed="false"><span class="sound-art" aria-hidden="true">
-              <svg viewBox="0 0 160 86"><path fill="#302530" d="M25 86V30Q25 5 50 5h60q25 0 25 25v56z"/><path fill="#181922" d="M39 80V34q0-15 15-15h52q15 0 15 15v46z"/><g class="sound-flame"><path fill="#be6b4e" d="M58 71q-19-20 5-42-2 15 11 15 9-6 13-22 8 19 17 28 14 26-17 25z"/><path fill="#e4b779" d="M68 71q-9-13 9-28-1 12 9 12l4-9q18 22-6 27z"/></g><path stroke="#67504a" stroke-width="7" stroke-linecap="round" d="m54 74 48 5m-43-1 44-9"/><path stroke="#9d7560" opacity=".4" d="m61 74 25 3m-12-3 25-4"/></svg>
-            </span><strong>Fireplace</strong><small>the last embers</small></button>
-            <button type="button" data-ambient="space" aria-pressed="false"><span class="sound-art" aria-hidden="true">
-              <svg viewBox="0 0 160 86"><g fill="#b6adcd"><circle cx="23" cy="19" r="1"/><circle cx="130" cy="15" r="1.3"/><circle cx="119" cy="69" r="1"/><circle cx="38" cy="66" r="1.3"/><circle cx="69" cy="11" r=".7"/><circle cx="145" cy="47" r=".7"/></g><g class="sound-planet"><circle cx="80" cy="44" r="23" fill="#61577c"/><path fill="#82729a" d="M61 31q17-6 39 8l3 10q-18-11-45-10z"/><path fill="#b6a2c5" opacity=".35" d="M58 46q20-2 43 12l-5 5q-17-11-35-8z"/><ellipse cx="80" cy="44" rx="46" ry="10" transform="rotate(-20 80 44)" fill="none" stroke="#b8a6c6" stroke-width="2" opacity=".7"/><path fill="#61577c" d="M57 44a23 23 0 0 1 46 0q-21-8-46 0"/></g></svg>
-            </span><strong>Space</strong><small>out of orbit</small></button>
-          </div>
-          <button class="sound-follow" type="button" data-ambient="auto" aria-pressed="true">follow the mood</button>
-          <p class="sound-choice-note" id="sound-choice-note">Follow the mood, or choose a recording and listen.</p>
-          <a class="sound-source" id="ambient-source" target="_blank" rel="noopener noreferrer" hidden>recording &amp; credits ↗</a>
-        </section>
-    <div class="ambience" id="ambience">
-      <button class="listen" id="listen" type="button" aria-pressed="false">listen</button>
-      <label class="room-volume">
-        <span class="visually-hidden">Room volume</span>
-        <input type="range" id="room-volume" min="0" max="100" step="1" value="100" />
-      </label>
-      <span class="ambience-name" id="ambience-name" role="status"></span>
-    </div>
-
-
-    <div class="rain-dial" id="rain-dial" aria-label="Rain intensity">
-      <button class="rain-step" data-rain="drizzle" type="button">drizzle</button>
-      <button class="rain-step" data-rain="steady" type="button">steady</button>
-      <button class="rain-step" data-rain="downpour" type="button">downpour</button>
-    </div>
-
-
-        <section class="sound-timer" id="sound-timer" aria-label="Evening sound timer">
-          <p class="desk-kicker">LET THE EVENING END SOFTLY</p><h3>A little longer.</h3>
-          <p class="sound-timer-copy">Tapes and ambience fade in the last minute.<br />Radio stops at the end.</p>
-          <div class="sound-timer-lengths" aria-label="Time until quiet"><button type="button" data-sound-minutes="15" aria-pressed="false">15 min</button><button type="button" data-sound-minutes="30" aria-pressed="true">30 min</button><button type="button" data-sound-minutes="60" aria-pressed="false">60 min</button></div>
-          <p class="sound-timer-time" id="sound-timer-time">30:00</p>
-          <label class="sound-timer-lamp"><input id="sound-timer-lamp" type="checkbox" />turn off the desk lamp at the end</label>
-          <div class="sound-timer-actions"><button id="sound-timer-start" type="button">set timer</button><button id="sound-timer-cancel" type="button" hidden>cancel timer</button></div>
-          <p id="sound-timer-note" role="status">Setting a timer does not start playback.</p>
-        </section>
-
-        </div></details>
-
-        <details class="room-drawer" id="room-options"><summary><span>Room settings<small>Lighting, sky &amp; curtains</small></span></summary><div class="room-drawer-body">
-        <section class="room-curtains" id="room-curtains" aria-labelledby="curtains-title">
-          <p class="desk-kicker">A LITTLE WORLD OF YOUR OWN</p><h3 id="curtains-title">Draw the night in.</h3>
-          <p>Soft folds. A little less outside.</p>
-          <div class="curtain-presets" aria-label="Curtain position"><button type="button" data-curtain="0" aria-pressed="false">open</button><button type="button" data-curtain="25" aria-pressed="true">framed</button><button type="button" data-curtain="100" aria-pressed="false">sheltered</button></div>
-          <label class="curtain-amount" for="curtain-amount"><span>how much of the night stays outside</span><output id="curtain-level" for="curtain-amount">25%</output></label>
-          <input id="curtain-amount" type="range" min="0" max="100" step="1" value="25" />
-          <div class="curtain-fabrics" aria-label="Curtain fabric"><button type="button" data-fabric="linen" aria-pressed="true"><i aria-hidden="true"></i>linen</button><button type="button" data-fabric="plum" aria-pressed="false"><i aria-hidden="true"></i>plum</button><button type="button" data-fabric="ink" aria-pressed="false"><i aria-hidden="true"></i>ink</button></div>
-          <p id="curtain-note" role="status">Touch the pull beside the window to draw the curtains.</p>
-        </section>
-        <section class="room-light" aria-label="Desk lighting">
-          <div class="light-heading"><h3>Desk light</h3><span id="light-state">amber / on</span></div>
-          <div class="light-tones" aria-label="Light colour">
-            <button type="button" data-light="amber" aria-pressed="true"><i aria-hidden="true"></i>amber</button>
-            <button type="button" data-light="moon" aria-pressed="false"><i aria-hidden="true"></i>moon</button>
-            <button type="button" data-light="dim" aria-pressed="false"><i aria-hidden="true"></i>dim</button>
-          </div>
-          <p>Touch the lamp to switch it off or on.</p>
-          <label class="light-brightness" for="light-brightness"><span>brightness</span><output id="light-level" for="light-brightness">70%</output></label>
-          <input id="light-brightness" class="light-slider" type="range" min="10" max="100" step="1" value="70" />
-        </section>
-        <details class="window-company" id="window-company">
-          <summary>Window company <span id="cat-label">ginger / here</span></summary>
-          <p>A warm spot. No demands.</p>
-          <div class="cat-coats" aria-label="Cat coat">
-            <button data-cat-coat="ginger" type="button" aria-pressed="true"><i aria-hidden="true"></i>ginger</button>
-            <button data-cat-coat="ink" type="button" aria-pressed="false"><i aria-hidden="true"></i>ink</button>
-            <button data-cat-coat="moon" type="button" aria-pressed="false"><i aria-hidden="true"></i>moon</button>
-          </div>
-          <button id="cat-toggle" type="button" aria-pressed="true">cat at the window / on</button>
-          <p id="cat-settings-note" role="status">Touch the cat for a slow blink.</p>
-        </details>
-        <details class="outside-sky" id="outside-sky">
-          <summary>Outside sky <span id="sky-label">follow mood</span></summary>
-          <div class="sky-choices" aria-label="Sky palette">
-            <button data-sky="mood" type="button" aria-pressed="true">mood</button>
-            <button data-sky="midnight" type="button" aria-pressed="false">midnight</button>
-            <button data-sky="violet" type="button" aria-pressed="false">violet</button>
-            <button data-sky="afterglow" type="button" aria-pressed="false">afterglow</button>
-          </div>
-          <p class="sky-kicker">THE MOON</p>
-          <div class="moon-choices" aria-label="Moon shape">
-            <button type="button" data-moon="full" aria-pressed="true">full</button>
-            <button type="button" data-moon="half" aria-pressed="false">half</button>
-            <button type="button" data-moon="crescent" aria-pressed="false">crescent</button>
-          </div>
-          <button class="meteor-button" id="meteor-button" type="button">see a shooting star ↗</button>
-          <p class="meteor-note" id="meteor-note" role="status">For clear mountain skies or Space.</p>
-          <button class="beacon-button" id="beacon-button" type="button" aria-pressed="true" hidden>lighthouse beam / on</button>
-          <button class="cafe-light-button" id="cafe-light-button" data-cafe-only type="button" aria-pressed="true" hidden>café lights / on</button>
-          <div class="garden-controls" data-garden-only hidden>
-            <p class="sky-kicker">THE MIDNIGHT GARDEN</p>
-            <button id="garden-light" type="button" aria-pressed="true">greenhouse light / on</button>
-            <button id="garden-flies" type="button" aria-pressed="true">fireflies / here</button>
-            <p id="garden-status" role="status">A little light among the leaves.</p>
-          </div>
-        </details>
-
-        </div></details>
-
-        <details class="room-drawer" id="ritual-options"><summary><span>Evening rituals<small>Breathing, lanterns &amp; misted glass</small></span></summary><div class="room-drawer-body">
-    <section class="breathing-ritual" id="breathing-ritual" aria-label="A quiet minute" hidden>
-      <p class="desk-kicker">A QUIET MINUTE</p><h3>Arrive a little slower.</h3>
-      <div class="breath-orb" aria-hidden="true"><i></i></div>
-      <p class="breath-phase" data-breath-phase>your own pace is fine</p>
-      <p class="breath-time" data-breath-time>01:00</p>
-      <div class="breath-settings" aria-label="Quiet rhythm settings"><div aria-label="Duration"><button data-breath-minutes="1" type="button" aria-pressed="true">1 min</button><button data-breath-minutes="3" type="button" aria-pressed="false">3 min</button><button data-breath-minutes="5" type="button" aria-pressed="false">5 min</button></div><div aria-label="Pace"><button data-breath-pace="gentle" type="button" aria-pressed="true">gentle / 4 / 6</button><button data-breath-pace="even" type="button" aria-pressed="false">even / 4 / 4</button></div></div>
-      <div class="breath-actions"><button data-breath-toggle type="button">begin</button><button id="breath-reset" data-breath-reset type="button">reset</button></div>
-      <p id="breath-note" role="status">A quiet rhythm. Nothing to achieve.</p>
-    </section>
-        <section class="glass-room" id="glass-room" aria-labelledby="glass-title">
-          <p class="desk-kicker">A MOMENT ON THE WINDOW</p><h3 id="glass-title">Draw on the glass.</h3>
-          <p>A little mist. A fingertip. Nothing to keep.</p>
-          <div class="glass-brushes" aria-label="Width of the trace"><button type="button" data-glass-brush="fine" aria-pressed="false">fingertip</button><button type="button" data-glass-brush="wide" aria-pressed="true">a little wider</button></div>
-          <div class="glass-shapes"><button id="glass-heart" type="button">trace a heart ♡</button><button id="glass-moon" type="button">a small moon ☾</button></div>
-          <div class="glass-actions"><button id="glass-draw" type="button" aria-pressed="false">start drawing</button><button id="glass-mist" type="button" disabled>mist over again</button><button id="glass-clear" type="button" disabled>let it clear</button></div>
-          <p class="glass-note" id="glass-note">Draw with a mouse or finger. Marks stay only for this visit.</p>
-        </section>
-        <section class="lantern-room" id="lantern-room" aria-labelledby="lantern-title">
-          <p class="desk-kicker">SOMETHING SMALL, INTO THE NIGHT</p><h3 id="lantern-title">Let it drift.</h3>
-          <p>A paper lantern. A passing thought, if you like.</p>
-          <div class="lantern-tones" aria-label="Lantern colour"><button type="button" data-lantern-tone="amber" aria-pressed="true"><i aria-hidden="true"></i>amber</button><button type="button" data-lantern-tone="rose" aria-pressed="false"><i aria-hidden="true"></i>rose</button><button type="button" data-lantern-tone="moon" aria-pressed="false"><i aria-hidden="true"></i>moon</button></div>
-          <form id="lantern-form"><label for="lantern-thought">A note for this flight / optional<input id="lantern-thought" type="text" maxlength="60" placeholder="Something to leave in the night…" autocomplete="off" /></label><div class="lantern-actions"><button id="lantern-release" type="submit">release a lantern ↗</button><button id="lantern-clear" type="button" hidden>clear the sky</button></div></form>
-          <p class="lantern-note" id="lantern-note">Notes disappear with the lantern after 30 seconds. They aren't saved or sent.</p>
-        </section>
-
-        </div></details>
-      </aside>
-    <div class="evening-layout" id="window-seat">
-      <div class="window-section-heading"><h2>Window seat</h2><a href="#listening-room">Back to listening ↑</a></div>
+    <header class="receiver-brand"><h1>Late Night</h1><span>Lo-fi &amp; ambient receiver</span></header>
+    <div class="evening-layout receiver" id="window-seat">
+      <div class="receiver-screen">
       <section class="window-view" id="window-view" aria-label="Your night window" tabindex="-1">
         <div class="window-light" aria-hidden="true"></div>
         <section class="room-finish-panel" id="room-finish-panel" role="dialog" aria-labelledby="room-finish-title" hidden>
@@ -300,7 +46,7 @@
           </div>
         </div>
     <div class="window-outside" id="window-outside">
-      <img class="city-distance" src="assets/city-after-dark.webp" width="1984" height="794" loading="lazy" alt="" />
+      <canvas id="sky-ribbons" aria-hidden="true"></canvas>
       <svg class="space-nebula" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
         <defs>
           <radialGradient id="nebula-glow">
@@ -821,8 +567,258 @@
       </section>
 
     <div class="quiet-toolbar"><div class="journey-pocket" id="journey-pocket" hidden><span id="journey-pocket-label"></span><button id="journey-pocket-toggle" type="button">pause</button><button id="journey-pocket-next" type="button" aria-label="Next journey view">↗</button><button id="journey-pocket-stop" type="button" aria-label="Stay at this view and end journey">stay</button></div><div class="quiet-toolbar-actions"><details class="window-extras" id="window-extras"><summary>little extras</summary><div class="window-extras-actions"><button id="postcard-open" type="button" aria-haspopup="dialog">✉ postcard</button><button id="room-finish" type="button" aria-expanded="false" aria-controls="room-finish-panel">◇ room finish</button><button id="breath-arrive" type="button">◯ take a breath</button></div></details><button id="quiet-room" type="button" aria-pressed="false">quiet room ↗</button></div></div>
+      </div>
+      <section class="transport-deck" id="listening-room" aria-label="Listening controls">
+        <h2>Turntable</h2>
+        <div id="listen-controls">
+        <div class="scene-footer">
+          <button class="window-sound-timer" id="window-sound-timer" type="button" aria-label="Cancel sound timer" hidden><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" pathLength="1"/><path d="M21 9a8 8 0 1 0 2 12A9 9 0 0 1 21 9Z"/></svg><span><strong id="window-sound-time">30:00</strong><small id="window-sound-action">until quiet / ×</small></span></button>
+          <p class="scene-signature">
+            <span id="scene-caption">THE CITY IS KEEPING YOU COMPANY</span>
+            <span class="window-listening" id="window-listening" role="status" hidden>
+              <span class="listening-wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <strong id="window-sound-title"></strong>
+              <span id="window-sound-detail"></span>
+            </span>
+          </p>
+          <button class="evening-toggle" id="evening-toggle" type="button" aria-pressed="false" aria-label="Play a lo-fi tape and real rain together"><span aria-hidden="true">▶</span> lo-fi + rain</button>
+        </div></div>
+
+      </section>
+      <div class="station-scale"><span>Mood tuner</span>
+    <section class="moods" aria-label="Choose a mood">
+      <span class="selection-glider mood-glider" aria-hidden="true"></span>
+      <button class="mood" data-mood="calm" type="button" aria-pressed="false"><span class="mood-name">Calm</span></button>
+      <button class="mood" data-mood="music" type="button" aria-pressed="false"><span class="mood-name">Music</span></button>
+      <button class="mood" data-mood="focus" type="button" aria-pressed="false"><span class="mood-name">Focus</span></button>
+      <button class="mood" data-mood="rain" type="button" aria-pressed="false"><span class="mood-name">Rain</span></button>
+      <button class="mood" data-mood="space" type="button" aria-pressed="false"><span class="mood-name">Space</span></button>
+      <button class="mood" data-mood="sleep" type="button" aria-pressed="false"><span class="mood-name">Sleep</span></button>
+      <button class="mood mood-secret" data-mood="aurora" type="button" aria-pressed="false"><span class="mood-name">Aurora</span></button>
+    </section>
+      </div>
+    </div>
+    <div class="workbench">
+      <details id="desktop-tray" class="instrument-tray"><summary>Sound &amp; room</summary><div class="tray-body">
+      <aside class="room-desk" aria-label="In your room">
+        <header class="desk-heading"><p class="desk-kicker">MAKE YOURSELF AT HOME</p>
+          <h2 id="desk-title">Slow evenings.</h2><p class="mood-line" id="mood-line"></p></header>
+    <section class="focus" id="focus" aria-label="Focus timer">
+      <label class="focus-intention" for="focus-intention">ONE SMALL THING FOR TONIGHT<input id="focus-intention" type="text" maxlength="100" placeholder="Read a few pages, sketch, write…" autocomplete="off" /></label>
+      <p class="focus-intention-note" id="focus-intention-note" role="status"></p>
+      <div class="focus-presets" id="focus-presets" aria-label="Session length">
+        <button class="focus-preset" data-minutes="15" type="button">15</button>
+        <button class="focus-preset" data-minutes="25" type="button">25</button>
+        <button class="focus-preset" data-minutes="45" type="button">45</button>
+        <button class="focus-preset" data-minutes="60" type="button">60</button>
+      </div>
+
+      <p class="focus-time" id="focus-time">25:00</p>
+      <div class="focus-progress" id="focus-progress" role="progressbar" aria-label="Focus session progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <span aria-hidden="true"></span>
+      </div>
+      <div class="focus-controls">
+        <button class="focus-btn" id="focus-toggle" type="button">start</button>
+        <button class="focus-btn" id="focus-reset" type="button">reset</button>
+      </div>
+
+      <p class="focus-note" id="focus-note" role="status"></p>
+      <button class="focus-btn" data-focus-break type="button" hidden>take five minutes</button>
+    </section>
+
+
+
+        <details class="room-drawer" id="sound-options"><summary><span>Sound library<small>Tapes, live radio &amp; field recordings</small></span></summary><div class="room-drawer-body">
+    <div class="player" id="player" aria-label="Lo-fi player">
+      <button class="player-play" id="player-play" type="button">play</button>
+      <button class="player-next" id="player-next" type="button">next</button>
+
+      <label class="player-volume">
+        <span class="visually-hidden">Tape volume</span>
+        <input type="range" id="player-volume" min="0" max="100" step="1" value="55" />
+      </label>
+
+      <div class="stations" id="stations">
+        <button class="station" data-station="tape" type="button">lo-fi tapes</button>
+        <button class="station" data-station="radio" type="button">Lofi Girl radio</button>
+      </div>
+
+      <div class="tape-reels" aria-hidden="true"><span></span><span></span></div>
+
+      <div class="player-meta">
+        <p class="player-title" id="player-title">night tape</p>
+        <p class="tape-status" id="tape-status" role="status"></p>
+        <div class="player-wave" id="player-wave">
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div class="tape-shelf" id="tape-shelf">
+        <label for="tape-choice">PICK A TAPE FOR TONIGHT</label>
+        <select id="tape-choice" aria-label="Choose a tape"></select>
+        <div class="tape-tools">
+          <button id="tape-keep" type="button" aria-pressed="false">♡ keep</button>
+          <button id="tape-filter" type="button" aria-pressed="false" disabled>saved tapes / 0</button>
+        </div>
+        <p class="tape-kept-note" id="tape-kept-note" role="status"></p>
+        <div class="tape-position"><div><span id="tape-elapsed">00:00</span><span id="tape-duration">--:--</span></div><input id="tape-seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek in this recording" disabled /><a id="tape-source" target="_blank" rel="noopener noreferrer">recording and credits ↗</a></div>
+        <button class="browse-tapes" id="browse-tapes" type="button" aria-expanded="false" aria-controls="tape-collection">▤ browse the cassette shelf</button>
+        <section class="tape-queue" id="tape-queue" aria-labelledby="queue-title">
+          <header><div><p class="desk-kicker">A FEW RECORDS FOR LATER</p><h3 id="queue-title">Up next.</h3></div><span id="queue-count">0 / 8</span></header>
+          <p class="queue-copy">Up to eight tapes, kept on this device.<br />The current recording stays where it is.</p>
+          <div class="queue-actions"><button id="queue-add" type="button">＋ this tape</button><button id="queue-next" type="button" disabled>cue next ↗</button><button id="queue-clear" type="button" disabled>clear queue</button><button id="queue-undo" type="button" hidden>undo removal</button></div>
+          <ol id="queue-list" aria-label="Upcoming recordings"></ol>
+          <p class="queue-note" id="queue-note" role="status">Choose tapes from the cassette shelf, or add the current one. Adding stays quiet.</p>
+        </section>
+      </div>
     </div>
 
+    <div class="radio-dial" id="radio-dial" aria-label="Radio channels"></div>
+    <div class="radio-frame" id="radio-frame" aria-label="Lofi Girl radio"></div>
+
+
+        <section class="weather-mix" id="weather-mix" aria-label="Music and weather">
+          <div><h3>Rain at the window</h3><p>A real recording. Your own volume.</p></div>
+          <button id="music-rain" type="button" aria-pressed="false">add real rain ＋</button>
+        </section>
+        <section class="sound-shelf" id="sound-shelf" aria-labelledby="sound-shelf-title">
+          <p class="desk-kicker">A SOUND TO STAY WITH</p><h3 id="sound-shelf-title">Somewhere else.</h3>
+          <p class="sound-shelf-copy">Keep your view. Choose what surrounds you.</p>
+          <div class="sound-choices" aria-label="Background recording">
+            <button type="button" data-ambient="rain" aria-pressed="false"><span class="sound-art" aria-hidden="true">
+              <svg viewBox="0 0 160 86"><path fill="#1d3041" d="M0 54h18V38h23v16h16V27h22v27h20V42h23v12h38v32H0z"/><path stroke="#a3bccc" opacity=".5" d="M27 46v5m39-16v5m45 12v5m-44 5v5m-43-4v5"/><g class="sound-rain" stroke="#83b2c5" stroke-linecap="round" opacity=".6"><path d="m22 12-3 12m31-8-3 12m31-20-3 12m32 1-3 12m34-18-3 12M34 47l-3 12m62-9-3 12m39 1-3 12"/></g><path stroke="#3c5063" stroke-width="4" d="M80 0v86M0 67h160"/><path stroke="#8ba8b8" opacity=".22" d="M81 0v85"/></svg>
+            </span><strong>Rain</strong><small>on the glass</small></button>
+            <button type="button" data-ambient="ocean" aria-pressed="false"><span class="sound-art" aria-hidden="true">
+              <svg viewBox="0 0 160 86"><circle cx="113" cy="23" r="12" fill="#c0d7da" opacity=".8"/><path fill="#244554" d="M0 48q40-8 80 0t80 0v38H0z"/><g class="sound-waves" fill="none" stroke="#6cabb5" opacity=".5"><path d="M-20 57q25-8 50 0t50 0t50 0t50 0M-20 71q25-8 50 0t50 0t50 0t50 0"/><path d="M98 49h26m-31 6h35m-26 8h20" stroke="#a8d2d2"/></g><path fill="#132630" d="M0 77q29-9 60 9H0z"/></svg>
+            </span><strong>Ocean</strong><small>after the tide</small></button>
+            <button type="button" data-ambient="fire" aria-pressed="false"><span class="sound-art" aria-hidden="true">
+              <svg viewBox="0 0 160 86"><path fill="#302530" d="M25 86V30Q25 5 50 5h60q25 0 25 25v56z"/><path fill="#181922" d="M39 80V34q0-15 15-15h52q15 0 15 15v46z"/><g class="sound-flame"><path fill="#be6b4e" d="M58 71q-19-20 5-42-2 15 11 15 9-6 13-22 8 19 17 28 14 26-17 25z"/><path fill="#e4b779" d="M68 71q-9-13 9-28-1 12 9 12l4-9q18 22-6 27z"/></g><path stroke="#67504a" stroke-width="7" stroke-linecap="round" d="m54 74 48 5m-43-1 44-9"/><path stroke="#9d7560" opacity=".4" d="m61 74 25 3m-12-3 25-4"/></svg>
+            </span><strong>Fireplace</strong><small>the last embers</small></button>
+            <button type="button" data-ambient="space" aria-pressed="false"><span class="sound-art" aria-hidden="true">
+              <svg viewBox="0 0 160 86"><g fill="#b6adcd"><circle cx="23" cy="19" r="1"/><circle cx="130" cy="15" r="1.3"/><circle cx="119" cy="69" r="1"/><circle cx="38" cy="66" r="1.3"/><circle cx="69" cy="11" r=".7"/><circle cx="145" cy="47" r=".7"/></g><g class="sound-planet"><circle cx="80" cy="44" r="23" fill="#61577c"/><path fill="#82729a" d="M61 31q17-6 39 8l3 10q-18-11-45-10z"/><path fill="#b6a2c5" opacity=".35" d="M58 46q20-2 43 12l-5 5q-17-11-35-8z"/><ellipse cx="80" cy="44" rx="46" ry="10" transform="rotate(-20 80 44)" fill="none" stroke="#b8a6c6" stroke-width="2" opacity=".7"/><path fill="#61577c" d="M57 44a23 23 0 0 1 46 0q-21-8-46 0"/></g></svg>
+            </span><strong>Space</strong><small>out of orbit</small></button>
+          </div>
+          <button class="sound-follow" type="button" data-ambient="auto" aria-pressed="true">follow the mood</button>
+          <p class="sound-choice-note" id="sound-choice-note">Follow the mood, or choose a recording and listen.</p>
+          <a class="sound-source" id="ambient-source" target="_blank" rel="noopener noreferrer" hidden>recording &amp; credits ↗</a>
+        </section>
+    <div class="ambience" id="ambience">
+      <button class="listen" id="listen" type="button" aria-pressed="false">listen</button>
+      <label class="room-volume">
+        <span class="visually-hidden">Room volume</span>
+        <input type="range" id="room-volume" min="0" max="100" step="1" value="100" />
+      </label>
+      <span class="ambience-name" id="ambience-name" role="status"></span>
+    </div>
+
+
+    <div class="rain-dial" id="rain-dial" aria-label="Rain intensity">
+      <button class="rain-step" data-rain="drizzle" type="button">drizzle</button>
+      <button class="rain-step" data-rain="steady" type="button">steady</button>
+      <button class="rain-step" data-rain="downpour" type="button">downpour</button>
+    </div>
+
+
+        <section class="sound-timer" id="sound-timer" aria-label="Evening sound timer">
+          <p class="desk-kicker">LET THE EVENING END SOFTLY</p><h3>A little longer.</h3>
+          <p class="sound-timer-copy">Tapes and ambience fade in the last minute.<br />Radio stops at the end.</p>
+          <div class="sound-timer-lengths" aria-label="Time until quiet"><button type="button" data-sound-minutes="15" aria-pressed="false">15 min</button><button type="button" data-sound-minutes="30" aria-pressed="true">30 min</button><button type="button" data-sound-minutes="60" aria-pressed="false">60 min</button></div>
+          <p class="sound-timer-time" id="sound-timer-time">30:00</p>
+          <label class="sound-timer-lamp"><input id="sound-timer-lamp" type="checkbox" />turn off the desk lamp at the end</label>
+          <div class="sound-timer-actions"><button id="sound-timer-start" type="button">set timer</button><button id="sound-timer-cancel" type="button" hidden>cancel timer</button></div>
+          <p id="sound-timer-note" role="status">Setting a timer does not start playback.</p>
+        </section>
+
+        </div></details>
+
+        <details class="room-drawer" id="room-options"><summary><span>Room settings<small>Lighting, sky &amp; curtains</small></span></summary><div class="room-drawer-body">
+        <section class="room-curtains" id="room-curtains" aria-labelledby="curtains-title">
+          <p class="desk-kicker">A LITTLE WORLD OF YOUR OWN</p><h3 id="curtains-title">Draw the night in.</h3>
+          <p>Soft folds. A little less outside.</p>
+          <div class="curtain-presets" aria-label="Curtain position"><button type="button" data-curtain="0" aria-pressed="false">open</button><button type="button" data-curtain="25" aria-pressed="true">framed</button><button type="button" data-curtain="100" aria-pressed="false">sheltered</button></div>
+          <label class="curtain-amount" for="curtain-amount"><span>how much of the night stays outside</span><output id="curtain-level" for="curtain-amount">25%</output></label>
+          <input id="curtain-amount" type="range" min="0" max="100" step="1" value="25" />
+          <div class="curtain-fabrics" aria-label="Curtain fabric"><button type="button" data-fabric="linen" aria-pressed="true"><i aria-hidden="true"></i>linen</button><button type="button" data-fabric="plum" aria-pressed="false"><i aria-hidden="true"></i>plum</button><button type="button" data-fabric="ink" aria-pressed="false"><i aria-hidden="true"></i>ink</button></div>
+          <p id="curtain-note" role="status">Touch the pull beside the window to draw the curtains.</p>
+        </section>
+        <section class="room-light" aria-label="Desk lighting">
+          <div class="light-heading"><h3>Desk light</h3><span id="light-state">amber / on</span></div>
+          <div class="light-tones" aria-label="Light colour">
+            <button type="button" data-light="amber" aria-pressed="true"><i aria-hidden="true"></i>amber</button>
+            <button type="button" data-light="moon" aria-pressed="false"><i aria-hidden="true"></i>moon</button>
+            <button type="button" data-light="dim" aria-pressed="false"><i aria-hidden="true"></i>dim</button>
+          </div>
+          <p>Touch the lamp to switch it off or on.</p>
+          <label class="light-brightness" for="light-brightness"><span>brightness</span><output id="light-level" for="light-brightness">70%</output></label>
+          <input id="light-brightness" class="light-slider" type="range" min="10" max="100" step="1" value="70" />
+        </section>
+        <details class="window-company" id="window-company">
+          <summary>Window company <span id="cat-label">ginger / here</span></summary>
+          <p>A warm spot. No demands.</p>
+          <div class="cat-coats" aria-label="Cat coat">
+            <button data-cat-coat="ginger" type="button" aria-pressed="true"><i aria-hidden="true"></i>ginger</button>
+            <button data-cat-coat="ink" type="button" aria-pressed="false"><i aria-hidden="true"></i>ink</button>
+            <button data-cat-coat="moon" type="button" aria-pressed="false"><i aria-hidden="true"></i>moon</button>
+          </div>
+          <button id="cat-toggle" type="button" aria-pressed="true">cat at the window / on</button>
+          <p id="cat-settings-note" role="status">Touch the cat for a slow blink.</p>
+        </details>
+        <details class="outside-sky" id="outside-sky">
+          <summary>Outside sky <span id="sky-label">follow mood</span></summary>
+          <div class="sky-choices" aria-label="Sky palette">
+            <button data-sky="mood" type="button" aria-pressed="true">mood</button>
+            <button data-sky="midnight" type="button" aria-pressed="false">midnight</button>
+            <button data-sky="violet" type="button" aria-pressed="false">violet</button>
+            <button data-sky="afterglow" type="button" aria-pressed="false">afterglow</button>
+          </div>
+          <p class="sky-kicker">THE MOON</p>
+          <div class="moon-choices" aria-label="Moon shape">
+            <button type="button" data-moon="full" aria-pressed="true">full</button>
+            <button type="button" data-moon="half" aria-pressed="false">half</button>
+            <button type="button" data-moon="crescent" aria-pressed="false">crescent</button>
+          </div>
+          <button class="meteor-button" id="meteor-button" type="button">see a shooting star ↗</button>
+          <p class="meteor-note" id="meteor-note" role="status">For clear mountain skies or Space.</p>
+          <button class="beacon-button" id="beacon-button" type="button" aria-pressed="true" hidden>lighthouse beam / on</button>
+          <button class="cafe-light-button" id="cafe-light-button" data-cafe-only type="button" aria-pressed="true" hidden>café lights / on</button>
+          <div class="garden-controls" data-garden-only hidden>
+            <p class="sky-kicker">THE MIDNIGHT GARDEN</p>
+            <button id="garden-light" type="button" aria-pressed="true">greenhouse light / on</button>
+            <button id="garden-flies" type="button" aria-pressed="true">fireflies / here</button>
+            <p id="garden-status" role="status">A little light among the leaves.</p>
+          </div>
+        </details>
+
+        </div></details>
+
+        <details class="room-drawer" id="ritual-options"><summary><span>Evening rituals<small>Breathing, lanterns &amp; misted glass</small></span></summary><div class="room-drawer-body">
+    <section class="breathing-ritual" id="breathing-ritual" aria-label="A quiet minute" hidden>
+      <p class="desk-kicker">A QUIET MINUTE</p><h3>Arrive a little slower.</h3>
+      <div class="breath-orb" aria-hidden="true"><i></i></div>
+      <p class="breath-phase" data-breath-phase>your own pace is fine</p>
+      <p class="breath-time" data-breath-time>01:00</p>
+      <div class="breath-settings" aria-label="Quiet rhythm settings"><div aria-label="Duration"><button data-breath-minutes="1" type="button" aria-pressed="true">1 min</button><button data-breath-minutes="3" type="button" aria-pressed="false">3 min</button><button data-breath-minutes="5" type="button" aria-pressed="false">5 min</button></div><div aria-label="Pace"><button data-breath-pace="gentle" type="button" aria-pressed="true">gentle / 4 / 6</button><button data-breath-pace="even" type="button" aria-pressed="false">even / 4 / 4</button></div></div>
+      <div class="breath-actions"><button data-breath-toggle type="button">begin</button><button id="breath-reset" data-breath-reset type="button">reset</button></div>
+      <p id="breath-note" role="status">A quiet rhythm. Nothing to achieve.</p>
+    </section>
+        <section class="glass-room" id="glass-room" aria-labelledby="glass-title">
+          <p class="desk-kicker">A MOMENT ON THE WINDOW</p><h3 id="glass-title">Draw on the glass.</h3>
+          <p>A little mist. A fingertip. Nothing to keep.</p>
+          <div class="glass-brushes" aria-label="Width of the trace"><button type="button" data-glass-brush="fine" aria-pressed="false">fingertip</button><button type="button" data-glass-brush="wide" aria-pressed="true">a little wider</button></div>
+          <div class="glass-shapes"><button id="glass-heart" type="button">trace a heart ♡</button><button id="glass-moon" type="button">a small moon ☾</button></div>
+          <div class="glass-actions"><button id="glass-draw" type="button" aria-pressed="false">start drawing</button><button id="glass-mist" type="button" disabled>mist over again</button><button id="glass-clear" type="button" disabled>let it clear</button></div>
+          <p class="glass-note" id="glass-note">Draw with a mouse or finger. Marks stay only for this visit.</p>
+        </section>
+        <section class="lantern-room" id="lantern-room" aria-labelledby="lantern-title">
+          <p class="desk-kicker">SOMETHING SMALL, INTO THE NIGHT</p><h3 id="lantern-title">Let it drift.</h3>
+          <p>A paper lantern. A passing thought, if you like.</p>
+          <div class="lantern-tones" aria-label="Lantern colour"><button type="button" data-lantern-tone="amber" aria-pressed="true"><i aria-hidden="true"></i>amber</button><button type="button" data-lantern-tone="rose" aria-pressed="false"><i aria-hidden="true"></i>rose</button><button type="button" data-lantern-tone="moon" aria-pressed="false"><i aria-hidden="true"></i>moon</button></div>
+          <form id="lantern-form"><label for="lantern-thought">A note for this flight / optional<input id="lantern-thought" type="text" maxlength="60" placeholder="Something to leave in the night…" autocomplete="off" /></label><div class="lantern-actions"><button id="lantern-release" type="submit">release a lantern ↗</button><button id="lantern-clear" type="button" hidden>clear the sky</button></div></form>
+          <p class="lantern-note" id="lantern-note">Notes disappear with the lantern after 30 seconds. They aren't saved or sent.</p>
+        </section>
+
+        </div></details>
+      </aside>
     <div class="evening-explore" aria-label="More ways to spend the evening">
       <details class="explore-drawer" id="evening-options"><summary><span>Saved evenings<small>Room presets &amp; personal favourites</small></span></summary>
     <section class="evening-scenes" aria-label="Ready-made evenings">
@@ -902,8 +898,11 @@
       <div class="cassette-grid" id="cassette-grid"></div>
       <button class="collection-more" id="collection-more" type="button" hidden>more recordings</button>
     </section>
+
+      </div></details>
+      <details id="journal-tray" class="instrument-tray"><summary>Night journal</summary><div class="tray-body">
     <div class="evening-notes" id="night-journal">
-      <div class="night-thought"><h2 class="journal-heading">Night journal</h2>
+      <div class="night-thought">
         <p class="tonight" id="tonight"></p><p class="traces" id="traces"></p></div>
     <section class="journal" aria-label="Tonight's note">
       <p class="journal-ask">How was today?</p>
@@ -951,6 +950,9 @@
 
 
     </div>
+
+      </div></details>
+    </div>
   </main>
 
   <p class="hint" id="hint"><span>1</span>&ndash;<span>6</span> moods &middot; <span>[</span> <span>]</span> rain &middot; <span>space</span> focus &middot; <span>&uarr;</span><span>&darr;</span> volume</p>
@@ -980,6 +982,7 @@
       <p id="postcard-note" role="status">Made here. Kept on your device.</p>
     </div></div>
   </dialog>
+  <script src="receiver.js?v=842335f3a6e1"></script>
   <script src="app.js?v=58434c3a1491"></script>
 </body>
 </html>

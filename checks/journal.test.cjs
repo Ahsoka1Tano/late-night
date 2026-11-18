@@ -12,6 +12,7 @@ const ROOT = path.resolve(__dirname, '..');
 const files = new Map([
   ['/', ['index.html', 'text/html']],
   ['/app.js', ['app.js', 'text/javascript']],
+  ['/receiver.js', ['receiver.js','text/javascript']],
   ['/style.css', ['style.css', 'text/css']],
   ['/tapes.json', ['tapes.json', 'application/json']],
   ['/moon.svg', ['moon.svg', 'image/svg+xml']],
@@ -51,7 +52,7 @@ async function openRoom(t, entries = {}, viewport = { width: 1280, height: 900 }
   t.after(() => assert.deepEqual(errors, [], 'no uncaught errors in the room'));
   await page.route('**/*', route => route.request().url().startsWith(origin) ? route.continue() : route.abort());
   await page.clock.install({ time: new Date('2026-10-05T20:00:00+03:00') });
-  await page.goto(origin);
+  await page.goto(origin + '#night-journal');
   await page.evaluate(({ key, value }) => localStorage.setItem(key, value), {
     key: KEY, value: typeof entries === 'string' ? entries : JSON.stringify(entries),
   });
