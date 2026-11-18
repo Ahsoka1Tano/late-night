@@ -407,7 +407,14 @@ test('uncluttered arrival and opened settings fit phones, tablets and desktop wi
     await page.evaluate(() => window.scrollTo(0,0));
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth<=innerWidth),true,`arrival ${width}`);
     const windowBox=await page.locator('#window-view').boundingBox();
-    assert.ok(windowBox.width>width*.8,JSON.stringify({width,windowBox}));
+    const sleeve = await page.locator('.record-sleeve').boundingBox();
+    if (width >= 980) {
+      assert.ok(sleeve.x + sleeve.width <= windowBox.x);
+      assert.ok(windowBox.width > sleeve.width * 2);
+    } else {
+      assert.ok(sleeve.y + sleeve.height <= windowBox.y);
+      assert.ok(windowBox.width > width * .8);
+    }
     await page.locator('#evening-toggle').scrollIntoViewIfNeeded();
     assert.equal(await page.locator('#evening-toggle').evaluate(el=>{
       const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));

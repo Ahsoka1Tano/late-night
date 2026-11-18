@@ -3435,5 +3435,57 @@ body.is-quiet .record-column { display: none; }
   .evening-layout > .quiet-toolbar { margin: 10px 0 0; }
   .record-column .mood { flex: 1 0 44px; padding-inline: 2px; }
 }
-body.is-quiet .evening-layout { display: flex; flex-direction: column; }
+body.is-quiet .evening-layout { display: flex; flex-direction: column; align-items: stretch; }
 body.is-quiet .quiet-toolbar { order: -1; margin: 0 0 10px; }
+
+/* Printed miniatures on the three drawer tabs. */
+.room-drawer > summary {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 16px;
+  min-height: 92px;
+  padding: 16px 20px;
+  border-radius: inherit;
+  transition: background .25s;
+}
+.room-drawer > summary:hover { background: #f6dec508; }
+.room-drawer > summary::before {
+  content: "";
+  width: 48px;
+  height: 58px;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1px #ffe6dc2b, 0 3px 10px #0003;
+}
+#sound-options > summary::before {
+  background:
+    radial-gradient(circle at 70% 42%, #edbea1 0 7%, #362936 8% 12%, transparent 13%),
+    repeating-radial-gradient(circle at 70% 42%, #292533 0 3px, #514553 4px, #292533 5px) 0 0 / 100% 76% no-repeat,
+    #c39892;
+}
+#room-options > summary::before {
+  background:
+    linear-gradient(90deg, transparent 63%, #6b5869 64% 68%, transparent 69%),
+    linear-gradient(transparent 67%, #695768 68% 70%, transparent 71%),
+    radial-gradient(circle at 75% 30%, #f6dfaf 0 8%, transparent 9%),
+    linear-gradient(155deg, transparent 66%, #293645 67%),
+    linear-gradient(28deg, #444557 0 34%, transparent 35%),
+    linear-gradient(#5e5a79, #cfa59f);
+}
+#ritual-options > summary::before {
+  background:
+    radial-gradient(ellipse at 48% 69%, #64454a 0 7%, transparent 8%),
+    radial-gradient(ellipse at 48% 49%, #f9cc91 0 17%, #d88f76 23%, transparent 24%),
+    radial-gradient(ellipse at 48% 50%, #a66d6b, #614658 51%, #343044);
+}
+.room-drawer > summary::after { font-size: 18px; font-weight: 300; }
+.room-drawer > summary small { color: #b6aeba; }
+@media (min-width: 980px) {
+  body:not(.is-quiet) .room-desk:not(:has(.room-drawer[open])) {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .room-desk > .focus { grid-column: 1 / -1; width: min(100%, 480px); }
+  .room-drawer { margin-top: 0; }
+  .room-desk:has(.room-drawer[open]) .room-drawer + .room-drawer { margin-top: 12px; }
+}
