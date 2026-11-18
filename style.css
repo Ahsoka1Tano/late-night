@@ -2060,14 +2060,42 @@ button[data-lantern-tone="moon"] i { background: #b0c6e0; }
 .window-focus { position: absolute; top: 4%; left: 6%; width: 53%; z-index: 7; text-align: center; color: #eeedf5; pointer-events: none; }
 .window-focus-label { font-size: 8px; letter-spacing: .2em; margin-bottom: 6px; }
 .focus-orbit { position: relative; width: clamp(100px, 16vw, 180px); aspect-ratio: 1; margin: auto; display: grid; place-items: center; }
+.window-focus { --focus-light: #edd0ad; }
+.window-focus[data-phase='break'] { --focus-light: #b4dbd7; }
+.focus-orbit { isolation: isolate; }
+.focus-orbit::before {
+  content: "";
+  position: absolute;
+  inset: 7%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 24%,color-mix(in srgb,var(--focus-light) 18%,transparent),#14162369 58%,#11152133);
+  box-shadow: inset 0 1px 1px #fff2,0 0 36px color-mix(in srgb,var(--focus-light) 12%,transparent);
+  opacity: .55;
+  animation: focus-halo 8s ease-in-out infinite;
+  animation-play-state: paused;
+  transition: opacity .6s;
+}
+.window-focus[data-running='true'] .focus-orbit::before { opacity: 1; }
+body:not(.city-is-hidden) .window-focus[data-running='true'] .focus-orbit::before { animation-play-state: running; }
+@keyframes focus-halo { 0%,100% { transform: scale(.94); } 50% { transform: scale(1.04); } }
 .focus-orbit svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); fill: none; stroke-width: .6; }
-.orbit-track { stroke: #ffffff24; }
-.orbit-progress { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--session-progress, 0)); stroke-linecap: round; }
+.orbit-track { stroke: #ffffff20; }
+.orbit-progress { stroke: var(--focus-light); stroke-width: 1.5; stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--session-progress, 0)); stroke-linecap: round; filter: drop-shadow(0 0 2px color-mix(in srgb,var(--focus-light) 55%,transparent)); transition: stroke-dashoffset .3s linear,stroke .6s; }
 .focus-orbit span { font-size: clamp(25px, 4.5vw, 52px); font-weight: 300; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
 .window-focus-task { margin: 8px auto; max-width: 95%; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.window-focus button { min-height: 44px; padding: 6px 12px; border: 1px solid #ffffff26; border-radius: 999px; background: #111422b3; color: #eeedf5; font: inherit; font-size: 10px; cursor: pointer; pointer-events: auto; }
+.window-focus button { min-height: 44px; padding: 6px 12px; border: 1px solid #ffffff26; border-radius: 999px; background: #111422b3; color: #eeedf5; font: inherit; font-size: 10px; cursor: pointer; pointer-events: auto; transition: background .3s,border-color .3s,transform .3s; }
+.window-focus button:hover { background: #302d3bdd; border-color: #e4d2ea66; }
+.window-focus button:active { transform: scale(.96); }
+.window-focus #window-focus-toggle { border-color: #e4d2ea40; background: linear-gradient(135deg,#e7dce624,#b4a0c316); box-shadow: inset 0 1px #ffffff0d; backdrop-filter: blur(8px); }
+.window-focus #window-focus-toggle:hover { background: #65536d66; }
 .window-focus button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .window-focus[data-phase='break'] .orbit-progress { stroke: #a9d2ce; }
+@media (prefers-reduced-motion: reduce) {
+  .focus-orbit::before { animation: none; }
+  .orbit-progress { transition: none; }
+  .window-focus button:active { transform: none; }
+}
 .focus [data-focus-break] { margin-top: 12px; color: var(--text); }
 .window-focus [data-focus-break] { display: block; margin: 6px auto 0; }
 @media (max-width: 760px) { .focus-orbit { width: clamp(90px, 22vw, 140px); } .window-focus-task { font-size: 10px; margin: 5px auto; } .window-focus-label { font-size: 7px; } }

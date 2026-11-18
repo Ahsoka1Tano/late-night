@@ -570,6 +570,7 @@ function paintWindowFocus() {
   document.body.classList.toggle("has-window-focus", shown);
   windowFocusTime.textContent = focusTime.textContent;
   windowFocus.dataset.phase = focusPhase;
+  windowFocus.dataset.running = String(Boolean(focusEndsAt));
   windowFocus.style.setProperty("--session-progress", focusProgress.style.getPropertyValue("--progress") || 0);
   const done = focusBlock.classList.contains("is-done");
   document.getElementById("window-focus-task").textContent = focusPhase === "break" ? "Look outside. Let your shoulders drop." : focusIntention.value.trim() || "Nothing else needs doing.";

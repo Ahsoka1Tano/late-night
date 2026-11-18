@@ -3116,15 +3116,18 @@ test('coastal views and all five evening cards fit phones and desktop', async t=
 test('window focus mirrors an intention and keeps a session across moods', async t => {
   const page = await openRoom(t);
   await page.locator('.mood[data-mood="focus"]').click();
+  assert.equal(await page.locator('#window-focus').getAttribute('data-running'), 'false');
   await page.locator('#focus-intention').fill('Read a chapter <quietly>');
   assert.equal(await page.locator('#window-focus-task').textContent(), 'Read a chapter <quietly>');
   await page.locator('#window-focus-toggle').click();
   await page.clock.runFor(10000);
+  assert.equal(await page.locator('#window-focus').getAttribute('data-running'), 'true');
   assert.equal(await page.locator('#window-focus-time').textContent(), '24:50');
   await page.locator('.mood[data-mood="music"]').click();
   assert.equal(await page.locator('#window-focus').isVisible(), true);
   await page.locator('#window-focus-toggle').click();
   await page.clock.runFor(5000);
+  assert.equal(await page.locator('#window-focus').getAttribute('data-running'), 'false');
   assert.equal(await page.locator('#window-focus-time').textContent(), '24:50');
   await page.reload();
   assert.equal(await page.locator('#focus-intention').inputValue(), 'Read a chapter <quietly>');
