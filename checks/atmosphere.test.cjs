@@ -2327,7 +2327,7 @@ test('the desk lamp remembers its position and the clock stays live', async t =>
   const oldTime = await page.locator('#window-clock').textContent();
   await page.clock.fastForward(60000);
   assert.notEqual(await page.locator('#window-clock').textContent(), oldTime);
-  assert.equal(await page.locator('#window-clock').textContent(), await page.locator('#clock').textContent());
+  assert.equal(await page.locator('#window-clock').textContent(), await page.locator('#window-clock').getAttribute('datetime'));
   await page.reload();
   assert.equal(await page.locator('#desk-lamp').getAttribute('aria-pressed'), 'false');
 });

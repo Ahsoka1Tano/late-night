@@ -9,7 +9,7 @@
   <link rel="icon" href="moon.svg" type="image/svg+xml" />
   <link rel="preload" href="assets/fonts/instrument-serif-italic.ttf" as="font" type="font/ttf" crossorigin />
   <link rel="preload" href="assets/fonts/manrope-variable.ttf" as="font" type="font/ttf" crossorigin />
-  <link rel="stylesheet" href="style.css?v=81e21c0c44a8" />
+  <link rel="stylesheet" href="style.css?v=63fc80cbaf03" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -19,12 +19,15 @@
   <div class="window-fog" aria-hidden="true"></div>
 
   <main class="room">
-    <header class="intro">
-      <div><p class="intro-eyebrow">YOUR AFTER-HOURS SPACE</p><h1 class="title">late night</h1>
-        <p class="tagline">Lo-fi, real rain, and a little room to breathe</p></div>
-      <p class="clock" id="clock">--:--</p>
-    </header>
-
+    <div class="evening-layout">
+      <div class="record-column">
+        <header class="intro record-sleeve">
+          <div class="sleeve-disc" aria-hidden="true"></div>
+          <div class="sleeve-type">
+            <h1 class="title">late night</h1>
+            <p class="tagline">Lo-fi &amp; real rain</p>
+          </div>
+        </header>
     <section class="moods" aria-label="Choose a mood">
       <span class="selection-glider mood-glider" aria-hidden="true"></span>
       <button class="mood" data-mood="calm" type="button" aria-pressed="false"><span class="mood-name">Calm</span></button>
@@ -38,8 +41,7 @@
 
 
 
-    <div class="quiet-toolbar"><p>AN EVENING AT YOUR OWN PACE</p><div class="journey-pocket" id="journey-pocket" hidden><span id="journey-pocket-label"></span><button id="journey-pocket-toggle" type="button">pause</button><button id="journey-pocket-next" type="button" aria-label="Next journey view">↗</button><button id="journey-pocket-stop" type="button" aria-label="Stay at this view and end journey">stay</button></div><div class="quiet-toolbar-actions"><details class="window-extras" id="window-extras"><summary>little extras</summary><div class="window-extras-actions"><button id="postcard-open" type="button" aria-haspopup="dialog">✉ postcard</button><button id="room-finish" type="button" aria-expanded="false" aria-controls="room-finish-panel">◇ room finish</button><button id="breath-arrive" type="button">◯ take a breath</button></div></details><button id="quiet-room" type="button" aria-pressed="false">quiet room ↗</button></div></div>
-    <div class="evening-layout">
+      </div>
       <section class="window-view" id="window-view" aria-label="Your night window" tabindex="-1">
         <div class="window-light" aria-hidden="true"></div>
         <section class="room-finish-panel" id="room-finish-panel" role="dialog" aria-labelledby="room-finish-title" hidden>
@@ -520,7 +522,7 @@
       <div class="sky-lanterns" id="sky-lanterns" aria-hidden="true"></div>
       <canvas class="glass-sketch" id="glass-sketch" aria-hidden="true" hidden></canvas>
       <div class="window-curtains" aria-hidden="true"><div class="curtain-panel curtain-left"><i></i></div><div class="curtain-panel curtain-right"><i></i></div><div class="curtain-rail"></div></div>
-      <div class="window-time"><p>A MOMENT ALL YOUR OWN</p>
+      <div class="window-time"><p>LOCAL TIME</p>
         <time id="window-clock">--:--</time><p id="window-whisper">let the city carry on.</p></div>
       <section class="window-focus" id="window-focus" aria-label="Session at the window" hidden>
         <p class="window-focus-label" id="window-focus-label">ONE SMALL THING</p>
@@ -594,6 +596,8 @@
         </div>
       </section>
 
+    <div class="quiet-toolbar"><div class="journey-pocket" id="journey-pocket" hidden><span id="journey-pocket-label"></span><button id="journey-pocket-toggle" type="button">pause</button><button id="journey-pocket-next" type="button" aria-label="Next journey view">↗</button><button id="journey-pocket-stop" type="button" aria-label="Stay at this view and end journey">stay</button></div><div class="quiet-toolbar-actions"><details class="window-extras" id="window-extras"><summary>little extras</summary><div class="window-extras-actions"><button id="postcard-open" type="button" aria-haspopup="dialog">✉ postcard</button><button id="room-finish" type="button" aria-expanded="false" aria-controls="room-finish-panel">◇ room finish</button><button id="breath-arrive" type="button">◯ take a breath</button></div></details><button id="quiet-room" type="button" aria-pressed="false">quiet room ↗</button></div></div>
+    </div>
       <aside class="room-desk" aria-label="In your room">
         <header class="desk-heading"><p class="desk-kicker">MAKE YOURSELF AT HOME</p>
           <h2 id="desk-title">Slow evenings.</h2><p class="mood-line" id="mood-line"></p></header>
@@ -813,7 +817,6 @@
 
         </div></details>
       </aside>
-    </div>
     <div class="evening-explore" aria-label="More ways to spend the evening">
       <details class="explore-drawer" id="evening-options"><summary><span>Choose a ready-made evening<small>Lo-fi, rain and a room already set for you</small></span></summary>
     <section class="evening-scenes" aria-label="Ready-made evenings">
@@ -971,6 +974,6 @@
       <p id="postcard-note" role="status">Made here. Kept on your device.</p>
     </div></div>
   </dialog>
-  <script src="app.js?v=ecb072d94831"></script>
+  <script src="app.js?v=3e7c60b196d8"></script>
 </body>
 </html>

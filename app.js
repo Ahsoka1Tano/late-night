@@ -2,15 +2,13 @@
 let eveningSoundGain = 1;
 let pocketPlayerReady = false;
 
-const clockEl = document.getElementById("clock");
 const windowClock = document.getElementById("window-clock");
 
 function tick() {
   const now = new Date();
   const hh = String(now.getHours()).padStart(2, "0");
   const mm = String(now.getMinutes()).padStart(2, "0");
-  clockEl.textContent = `${hh}:${mm}`;
-  windowClock.textContent = clockEl.textContent;
+  windowClock.textContent = `${hh}:${mm}`;
   windowClock.dateTime = `${hh}:${mm}`;
 }
 
