@@ -2,57 +2,22 @@
 
 A tiny digital room for quiet evenings.
 
-An italic Instrument Serif wordmark, Manrope controls and soft glass lighting
-set the room's tone. Mood and view selections glide into place, the window settles in
-with a gentle entrance, and the glass catches a little light from the pointer.
-Motion follows the device's reduced-motion preference.
+**[Open Late Night](https://ahsoka1tano.github.io/late-night/)**
 
-**[Open it →](https://ahsoka1tano.github.io/late-night/)**
+Press **lo-fi + rain** in the listening room to start a tape with a real rain recording. The panorama and all six moods are available as soon as the page opens. The player appears after you start listening.
 
-Open it late, pick a mood, sit for a bit, close it.
-No accounts, no backend, no notifications — just a dark little corner of the internet.
+| Before | Now |
+| --- | --- |
+| ![The earlier record sleeve beside the illustrated window](assets/listening-room-before.webp) | ![The listening loft with playback, atmosphere controls and the three desk sections](assets/listening-room-after.webp) |
 
-## Just settle in
+**Sound library** holds tapes, radio and the mixer. **Room settings** changes the scene. **Evening rituals** opens breathing, glass sketches and lanterns.
 
-1. Press **lo-fi + rain** at the bottom of the window. One click starts both; **pause sounds** pauses both.
-2. Change **City / Mountains / Coast / Café / Garden** above the glass if you like.
-3. Choose **quiet room** to leave the window and music in view. Escape brings you back.
-
-Everything else starts folded below the window:
-
-- **Sound & music** — tapes, official Lofi Girl radio, rain, volumes and sleep timer.
-- **Make the room yours** — lamp, curtains, sky and the cat.
-- **Little things for tonight** — breathing, glass sketches and lanterns.
-- **Choose a ready-made evening** — presets and your collected rooms.
-- **Let the view wander** — optional slow window journeys.
-
-**Little extras** above the window holds postcards, room finishes and the quick
-breathing action. **Focus** mood reveals its timer directly. The Pocket player's
-recording title opens the appropriate sound controls, even when folded.
-Folding a section leaves music, timers, drafts and room objects in place. Sections
-start closed on the next visit; your actual room and sound preferences remain.
-
-The first visit has one play button. The bottom player appears after you start
-listening or open **Sound & music**; browsing views and moods alone leaves it
-out of the way. After a pause it stays available for the rest of this visit.
-
-In **City**, rooftop water tanks, small penthouses and ventilation stacks break up
-the skyline above the softly lit apartments. Window postcards keep those details too.
-
-The window's existing signature becomes a listening line: the current tape and
-background, loading, a quiet pause, or an unavailable recording. **Retry sounds**
-retries a failed start. Zero volume gets its own message, so silence is explained
-without changing your chosen levels.
-
-A small four-bar wave accompanies the recording title while sound is playing.
-It rests in hidden tabs and stays still with reduced motion.
-
-![One play action at the window, with the listening controls tucked away](assets/simple-arrival.png)
+Use **Window** to visit the illustrated landscapes. **Quiet room** brings the current playback controls to the window, and Escape returns them to the listening room. **Journal** takes you to your private notes. Notes, playback preferences and saved evenings stay in this browser.
 
 ## Rain on the glass
 
 Press **lo-fi + rain**, or choose **Rain** mood for the weather alone. The existing
-**drizzle / steady / downpour** choices in **Sound & music** control its density.
+**drizzle / steady / downpour** choices in **Sound library** control its density.
 
 Tiny beads cling to the pane, larger drops catch pale highlights and slide down
 soft, uneven water trails. The texture fits the actual window in all five views,
@@ -67,7 +32,7 @@ These visual changes keep using the existing real rain recordings and music.
 
 ## Choose an evening
 
-Open **Choose a ready-made evening** below the window. The illustrated cards set up a whole evening with one click:
+Open **Saved evenings** below the window. The illustrated cards set up a whole evening with one click:
 
 - **Rainy records**: a lo-fi tape, real steady rain, the city and amber light.
 - **Mountain hideaway**: a lo-fi tape, clear mountain skies and moon-coloured light.
@@ -142,7 +107,7 @@ new look works for this visit.
 
 ## A player within reach
 
-After you start listening or open **Sound & music**, the **Pocket player** stays
+After you start listening or open **Sound library**, the **Pocket player** stays
 at the bottom of the screen, including in **Quiet room**. It follows the current tape, official radio or room recording, so you
 can keep listening without scrolling back to the desk.
 
@@ -180,7 +145,7 @@ the player. No recording is restarted when you adjust either level.
 
 ## Let the window wander
 
-Below the room settings, open **Let the view wander** and choose a route. The illustrated routes move
+Below the room settings, open **Window journeys** and choose a route. The illustrated routes move
 only the view, keeping your current tape or radio, rain, light and desk objects.
 
 - **After hours**: City → Café → Garden.
@@ -237,7 +202,7 @@ Choose **Garden** above the window for a glasshouse among layered trees.
 Its iron frames surround plant benches, terracotta pots and warm pendant lights.
 A stone path leads to the arched door, past a lily pond with uneven banks.
 Changing the view keeps your current
-music, rain, focus session and journal. **Midnight garden** in **Choose a ready-made evening** sets up a
+music, rain, focus session and journal. **Midnight garden** in **Saved evenings** sets up a
 whole evening with a lo-fi tape, real recorded drizzle, tea and a low amber lamp.
 
 Touch **GLASSHOUSE · LIT** in the window to let the greenhouse rest. The same
@@ -437,7 +402,7 @@ Choose **little extras → take a breath** above the window for a short rhythm o
 It works with any mood: your lo-fi, rain, radio and focus timer keep going. The
 same controls remain at the window in **Quiet room**. Pause or leave whenever you like.
 
-In **Calm**, **Little things for tonight** offers **1, 3 or 5 minutes** and two rhythms: **gentle**
+In **Calm**, **Evening rituals** offers **1, 3 or 5 minutes** and two rhythms: **gentle**
 (four seconds in, six out) or **even** (four in, four out). Duration and pace stay
 on this device. Reset the current ritual before changing them. Refreshing the
 page starts no ritual automatically; there are no streaks or focus points for this.
@@ -467,7 +432,7 @@ lights back. The same switch is in **Outside sky** when Café is selected.
 This changes the shop, leaving your desk light and playback alone. Its state is
 remembered and can be included in **Your evening**; older saved rooms still work.
 
-**The last café** in **Choose a ready-made evening** sets up the scene with a real light-rain recording,
+**The last café** in **Saved evenings** sets up the scene with a real light-rain recording,
 your selected lo-fi tape and a cup of coffee. You can also change just the view
 without touching your music, focus session or notes.
 
@@ -578,7 +543,7 @@ motion keeps the scene still, and movement pauses while the tab is hidden.
 ![Snowy peaks, a lit cabin and moonlight on the lake through the mountain window](assets/mountain-window.png)
 
 The window is the home screen. Pick a mood above it: the city, lamp, clock and
-weather share the page with your music controls. **Sound & music** below the
+weather share the page with your music controls. **Sound library** below the
 window opens the full player; the Pocket player appears after a listening action.
 Click the lamp to change its warm light. Your last mood and lamp choice are remembered.
 In **Desk light**, choose **amber**, **moon** or **dim**, then adjust brightness.
