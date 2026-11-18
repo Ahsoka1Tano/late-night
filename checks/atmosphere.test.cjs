@@ -9,7 +9,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const ROOT = path.resolve(__dirname, '..');
 const files = new Map([
   ['/', ['index.html', 'text/html']],
-  ...['listening-loft','desk-cassette','desk-glass','desk-notebook'].map(name => [
+  ...['city-after-dark','listening-loft','desk-cassette','desk-glass','desk-notebook'].map(name => [
     '/assets/' + name + '.webp', ['assets/' + name + '.webp','image/webp']
   ]),
   ['/app.js', ['app.js', 'text/javascript']],
@@ -187,7 +187,7 @@ test('listening feedback, retry and mix stay readable and reachable in small and
     await page.clock.runFor(1800);
     if(height<700) await page.locator('#evening-toggle').evaluate(el=>el.scrollIntoView({block:'center'}));
     assert.equal(await page.locator('#evening-toggle').evaluate(el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}),true,`pause ${width}x${height}`);
-    const hero=await page.locator('#listen').boundingBox(),footer=await page.locator('.scene-footer').boundingBox();
+    const hero=await page.locator('#listening-room').boundingBox(),footer=await page.locator('.scene-footer').boundingBox();
     assert.ok(footer.y>=hero.y && footer.y+footer.height<=hero.y+hero.height,JSON.stringify({width,height,hero,footer}));
     if(width<=600) {
       const clock=await page.locator('#window-clock').boundingBox(),lamp=await page.locator('#desk-lamp').boundingBox();
@@ -337,7 +337,7 @@ test('arrival puts the listening room ahead of optional features with no automat
   assert.equal(await page.locator('[data-journey="afterhours"]').isVisible(),false);
   assert.equal(await page.evaluate(() => window.media.some(a => !a.paused)),false);
   assert.equal(await page.evaluate(() => {
-    const windowTop=document.getElementById('listen').getBoundingClientRect().top;
+    const windowTop=document.getElementById('listening-room').getBoundingClientRect().top;
     return windowTop < document.getElementById('evening-options').getBoundingClientRect().top && windowTop < 300;
   }),true);
   await page.locator('#evening-toggle').click();
@@ -410,7 +410,7 @@ test('uncluttered arrival and opened settings fit phones, tablets and desktop wi
     await page.evaluate(() => window.scrollTo(0,0));
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth<=innerWidth),true,`arrival ${width}`);
     const windowBox=await page.locator('#window-view').boundingBox();
-    const hero = await page.locator('#listen').boundingBox();
+    const hero = await page.locator('#listening-room').boundingBox();
     assert.ok(hero.y + hero.height <= windowBox.y);
     assert.ok(windowBox.width > width * .8);
     await page.locator('#evening-toggle').scrollIntoViewIfNeeded();
@@ -976,7 +976,7 @@ test('pocket player fits phones, tablets and landscape with reachable controls a
     assert.ok(bar.x >= 0 && bar.x + bar.width <= width && bar.y + bar.height <= height);
     if (height >= 900) {
       const footer = await page.locator('#evening-toggle').boundingBox();
-      assert.ok(footer.y + footer.height <= bar.y);
+      assert.ok(footer.y + footer.height <= bar.y, JSON.stringify({width,height,footer,bar}));
     }
     if (process.env.ATMOSPHERE_PREVIEW_DIR) await page.screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`pocket-window-${width}.png`)});
     await page.locator('#pocket-mix-toggle').click();

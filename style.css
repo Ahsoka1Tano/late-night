@@ -3427,7 +3427,7 @@ body.is-quiet .evening-layout { display: flex; flex-direction: column; align-ite
 body.is-quiet .quiet-toolbar { order: -1; margin-top: 0; }
 body.is-quiet .window-section-heading { display: none; }
 @media(min-width:980px) {
-  .room-desk:not(:has(.room-drawer[open])) { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
+  body:not(.is-quiet) .room-desk:not(:has(.room-drawer[open])) { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
   .room-desk:not(:has(.room-drawer[open])) .room-drawer { margin: 0; }
   .room-desk > .focus { width: min(100%,480px); grid-column: 1/-1; }
 }
@@ -3451,3 +3451,58 @@ body.is-quiet .window-section-heading { display: none; }
   .room-drawer > summary { grid-template-columns: 58px 1fr auto; gap: 12px; min-height: 80px; padding: 10px; }
   .room-drawer > summary::before { width: 58px; height: 58px; }
 }
+/* Ambient light follows the selected mood across the listening panorama. */
+.loft-photo { transition: filter 1.4s ease; }
+body[data-mood="rain"] .loft-photo { filter: saturate(.72) brightness(.87); }
+body[data-mood="space"] .loft-photo { filter: hue-rotate(327deg) saturate(.76); }
+body[data-mood="focus"] .loft-photo { filter: sepia(.26) saturate(.75); }
+body[data-mood="sleep"] .loft-photo { filter: brightness(.62) saturate(.58); }
+body[data-mood="aurora"] .loft-photo { filter: hue-rotate(30deg); }
+.loft-focus-link { display: none; }
+body[data-mood="focus"] .loft-focus-link {
+  display: inline-flex; align-items: center; min-height: 44px; margin-top: 4px;
+  color: var(--paper); text-underline-offset: 4px; font-size: 13px;
+}
+.evening-notes {
+  gap: clamp(24px,6vw,100px); grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr);
+  border-top-color: var(--rule); padding: clamp(24px,4vw,58px) 0;
+}
+.journal-heading { margin: 0; }
+.night-thought .tonight { font-size: clamp(19px,2.1vw,32px); color: #c9c9b8; line-height: 1.35; }
+.night-thought .traces { color: #a9afa1; }
+.evening-notes .journal { padding: clamp(18px,2.5vw,38px); border: 1px solid #72806f55; border-radius: 10px; background: #202923; }
+.journal .journal-ask { color: var(--paper); font-size: 17px; text-transform: none; letter-spacing: normal; }
+.journal .chip { min-height: 44px; border-color: #a1ac974d; border-radius: 6px; color: #d9dfcf; }
+.journal .chip[aria-pressed=true] { background: #dfdfc9; color: #222e26; }
+.journal .journal-note { padding: 16px; background: #f1ecdd; color: #26322b; border: 1px solid #cfcbb9; border-radius: 5px; line-height: 1.65; caret-color: #35503b; }
+.journal .journal-note::placeholder { color: #646d60; }
+.journal .journal-note:focus-visible { outline: 2px solid var(--copper); outline-offset: 3px; }
+.journal-history summary { color: var(--paper); }
+.pocket-player { background: #16231ff5; border-color: #83937b80; border-radius: 12px; box-shadow: 0 12px 48px #0008; }
+.pocket-strip { gap: 12px; }
+.pocket-player .pocket-art { border-color: #c4b7a559; background: #a17d55 url("assets/desk-cassette.webp") center / cover; box-shadow: none; }
+.pocket-player .pocket-art i { background: #292420; border-color: #c6a98c; }
+.pocket-copy small,.pocket-channel output { color: var(--copper); }
+.pocket-copy strong { color: var(--paper); }
+.pocket-transport button,.pocket-mix button { background: #d4dcca11; color: var(--paper); border-color: var(--rule); }
+.pocket-transport #pocket-play { color: #233026; background: #e9e6cb; }
+.pocket-channel input { accent-color: var(--copper); }
+.pocket-mix h2,.collection-heading h2,.scenes-heading h2,.journey-heading h2 { font: var(--display); font-size: clamp(27px,3vw,46px); }
+.room-drawer-body :is(.tape-shelf,.breathing-ritual,.sound-timer,.tape-queue,.room-light,.room-curtains),
+.tape-collection,.scene-card,.journey-card,.evening-library { border-color: var(--rule); background-color: #19221c; }
+.scene-card-copy small { display: none; }
+.scene-card-copy strong,.journey-card strong { color: var(--paper); }
+.evening-explore .explore-drawer { background: transparent; border-width: 1px 0; border-radius: 0; }
+.evening-explore .explore-drawer > summary { padding-inline: 4px; }
+@media(max-width:760px) { .evening-notes { grid-template-columns: minmax(0,1fr); } }
+.city-distance {
+  position: absolute; inset: 0; height: 100%; width: 100%; object-fit: cover;
+  object-position: 58% 68%; pointer-events: none;
+  mask-image: linear-gradient(transparent, #000 57%);
+  opacity: 0; transition: opacity 1.2s ease;
+}
+body[data-view="city"] .city-distance { opacity: .94; }
+body[data-view="city"][data-mood="sleep"] .city-distance { opacity: .35; }
+body[data-view="city"]:is([data-mood="space"],[data-mood="aurora"]) .city-distance { opacity: .12; }
+body[data-view="city"] .skyline { height: 29%; }
+body.has-pocket-player.is-quiet .scene-footer { bottom: max(8%,36px); }
