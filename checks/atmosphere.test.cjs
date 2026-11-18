@@ -9,6 +9,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const ROOT = path.resolve(__dirname, '..');
 const files = new Map([
   ['/', ['index.html', 'text/html']],
+  ['/assets/rain-room.webp', ['assets/rain-room.webp', 'image/webp']],
   ['/app.js', ['app.js', 'text/javascript']],
   ['/style.css', ['style.css', 'text/css']],
   ['/tapes.json', ['tapes.json', 'application/json']],
@@ -410,7 +411,7 @@ test('uncluttered arrival and opened settings fit phones, tablets and desktop wi
     const sleeve = await page.locator('.record-sleeve').boundingBox();
     if (width >= 980) {
       assert.ok(sleeve.x + sleeve.width <= windowBox.x);
-      assert.ok(windowBox.width > sleeve.width * 2);
+      assert.ok(windowBox.width > sleeve.width * 1.5);
     } else {
       assert.ok(sleeve.y + sleeve.height <= windowBox.y);
       assert.ok(windowBox.width > width * .8);
