@@ -30,8 +30,7 @@ const moodLine = document.getElementById("mood-line");
 const moodButtons = document.querySelectorAll(".mood");
 const moodRail = document.querySelector(".moods");
 const viewRail = document.querySelector(".view-switch > div");
-function placeSelection(rail) {
-  const selected = rail.querySelector('[aria-pressed="true"]');
+function placeSelection(rail, selected = rail.querySelector('[aria-pressed="true"]')) {
   if (!selected) return;
   const glider = rail.querySelector(".selection-glider");
   glider.style.width = selected.offsetWidth + "px";
@@ -153,6 +152,62 @@ function setMood(mood, { save = true } = {}) {
 
 moodButtons.forEach((btn) => {
   btn.addEventListener("click", () => setMood(btn.dataset.mood));
+});
+
+// Scrub the dial freely. Commit only on release so crossing a station
+// does not interrupt a tape or repeatedly restart the weather.
+let tuning = null;
+const availableStations = () => [...moodButtons].filter(button => button.offsetWidth > 0);
+moodRail.addEventListener("pointerdown", event => {
+  if (!event.isPrimary || event.button !== 0) return;
+  tuning = { id: event.pointerId, start: event.clientX, picked: null };
+});
+moodRail.addEventListener("pointermove", event => {
+  if (!tuning || event.pointerId !== tuning.id) return;
+  if (!tuning.picked && Math.abs(event.clientX - tuning.start) < 6) return;
+  if (!tuning.picked) moodRail.setPointerCapture(event.pointerId);
+  const stations = availableStations();
+  if (!stations.length) return;
+  let nearest = Infinity;
+  for (const button of stations) {
+    const rect = button.getBoundingClientRect();
+    const distance = Math.hypot(rect.x + rect.width / 2 - event.clientX, rect.y + rect.height / 2 - event.clientY);
+    if (distance < nearest) {
+      tuning.picked = button;
+      nearest = distance;
+    }
+  }
+  placeSelection(moodRail, tuning.picked);
+  moodRail.classList.add("is-tuning");
+});
+window.addEventListener("pointerup", event => {
+  if (!tuning || event.pointerId !== tuning.id) return;
+  const picked = tuning.picked;
+  tuning = null;
+  moodRail.classList.remove("is-tuning");
+  if (picked) {
+    if (picked.dataset.mood !== document.body.dataset.mood) setMood(picked.dataset.mood);
+    picked.focus({ preventScroll: true });
+  }
+});
+window.addEventListener("pointercancel", event => {
+  if (tuning?.id !== event.pointerId) return;
+  tuning = null;
+  moodRail.classList.remove("is-tuning");
+  placeSelection(moodRail);
+});
+moodRail.addEventListener("keydown", event => {
+  if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+  const stations = availableStations();
+  const index = stations.indexOf(event.target);
+  if (index < 0) return;
+  event.preventDefault();
+  event.stopPropagation();
+  let next = (index + (event.key === "ArrowLeft" ? -1 : 1) + stations.length) % stations.length;
+  if (event.key === "Home") next = 0;
+  if (event.key === "End") next = stations.length - 1;
+  stations[next].focus();
+  stations[next].click();
 });
 
 /* --- rain --- */

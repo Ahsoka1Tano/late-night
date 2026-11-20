@@ -83,6 +83,27 @@ async function openRoom(t, width = 1280, motion = 'reduce', expanded = true, vir
   return page;
 }
 
+test('mood tuner previews a drag, settles on release and skips hidden stations by keyboard', async t => {
+  const page = await openRoom(t, 390, 'reduce', false, false);
+  const music = page.locator('.mood[data-mood="music"]');
+  const rain = page.locator('.mood[data-mood="rain"]');
+  await music.scrollIntoViewIfNeeded();
+  const start = await music.boundingBox();
+  const end = await rain.boundingBox();
+  await page.mouse.move(start.x + start.width / 2, start.y + start.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(end.x + end.width / 2, end.y + end.height / 2, { steps: 8 });
+  assert.equal(await page.locator('.moods.is-tuning').count(), 1);
+  assert.equal(await music.getAttribute('aria-pressed'), 'true');
+  await page.mouse.up();
+  assert.equal(await rain.getAttribute('aria-pressed'), 'true');
+  assert.equal(await page.locator('.mood:focus').getAttribute('data-mood'), 'rain');
+  for (const [key, mood] of [['ArrowRight', 'space'], ['End', 'sleep'], ['ArrowRight', 'calm'], ['ArrowLeft', 'sleep'], ['Home', 'calm']]) {
+    await page.keyboard.press(key);
+    assert.equal(await page.locator('.mood:focus[aria-pressed="true"]').getAttribute('data-mood'), mood);
+  }
+});
+
 test('wet glass stays still with reduced motion, follows rain strength and survives a quick weather return', async t => {
   const page=await openRoom(t,1280,'reduce',false);
   await page.locator('.mood[data-mood="rain"]').click();

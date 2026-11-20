@@ -4,15 +4,11 @@ A tiny digital room for quiet evenings.
 
 **[Open Late Night](https://ahsoka1tano.github.io/late-night/)**
 
-Press **lo-fi + rain** in the listening room to start a tape with a real rain recording. The panorama and all six moods are available as soon as the page opens. The player appears after you start listening.
+Press **lo-fi + rain** on the record deck to start a tape with a real rain recording. The sky above the window drifts with the mood. With reduced motion enabled, it rests.
 
-| Before | Now |
-| --- | --- |
-| ![The earlier record sleeve beside the illustrated window](assets/listening-room-before.webp) | ![The listening loft with playback, atmosphere controls and the three desk sections](assets/listening-room-after.webp) |
+Click a mood on the tuner, or slide the needle and release to settle on a station. With a station focused, the arrow keys move one step and Home or End goes to either end of the scale.
 
-**Sound library** holds tapes, radio and the mixer. **Room settings** changes the scene. **Evening rituals** opens breathing, glass sketches and lanterns.
-
-Use **Window** to visit the illustrated landscapes. **Quiet room** brings the current playback controls to the window, and Escape returns them to the listening room. **Journal** takes you to your private notes. Notes, playback preferences and saved evenings stay in this browser.
+Open **Sound & room** for tapes, radio and window settings. **Night journal** holds your notes in this browser.
 
 ## Rain on the glass
 

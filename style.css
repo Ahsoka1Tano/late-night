@@ -3514,6 +3514,7 @@ body:not(.city-is-hidden) .transport-deck .scene-footer[data-listening="playing"
   border-radius: 0 0 13px 13px; color: #3b3b35;
 }
 .room .station-scale .moods {
+  touch-action: pan-y pinch-zoom; user-select: none;
   flex: 1; display: flex; width: auto; margin: 0; padding: 0; gap: 0; border: 0;
   border-radius: 5px; background: #24282a; box-shadow: inset 0 2px 5px #000a,0 1px #fff9; animation: none;
 }
@@ -3522,6 +3523,9 @@ body:not(.city-is-hidden) .transport-deck .scene-footer[data-listening="playing"
   color: #b5bdb6; background: repeating-linear-gradient(90deg,#b9b5a855 0 1px,transparent 1px 6px) top center/100% 6px no-repeat;
 }
 .room .station-scale .mood[aria-pressed=true] { color: #fff0cc; }
+@media (prefers-reduced-motion: no-preference) {
+  .station-scale .is-tuning .mood-glider { transition-duration: 80ms; }
+}
 .station-scale .mood-glider { border: none; border-radius: 0; background: linear-gradient(90deg,transparent calc(50% - 1px),#f69560 calc(50% - 1px) calc(50% + 1px),transparent 0) top/100% 14px no-repeat,linear-gradient(0deg,#f59b6022,transparent); box-shadow: none; }
 .workbench { display: grid; grid-template-columns: 1fr 1fr; gap: 1px 16px; margin-top: 18px; }
 .instrument-tray { min-width: 0; border-top: 1px solid #dbd2bd48; }
