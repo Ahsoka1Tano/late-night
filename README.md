@@ -508,8 +508,9 @@ motion keep that control quiet; music continues throughout.
 Stars fill the actual window, including on phones and in Quiet room. Reduced
 motion leaves them visible and still. With motion enabled, their slow drift
 keeps the same pace across display refresh rates.
-In **Space**, a pale violet cloud adds depth behind the stars. Its blue edges and
-dark dust lane also appear on window postcards.
+In **Space**, a ringed planet drifts above the skyline. Its bands and rings stay
+still with reduced motion, and a window postcard captures its position against
+the violet nebula.
 
 ![Violet sky with a crescent moon](assets/night-sky.png)
 

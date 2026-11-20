@@ -4166,6 +4166,18 @@ function capturePostcard() {
     art.append(capturedCloud);
   }
   if (hasStarSky()) for (let i=0;i<48;i++) art.append(postcardElement("circle",{cx:(i*137+41)%1200,cy:(i*53+17)%350,r:i%4===0?1.8:1,fill:"#d3dce8",opacity:.3+(i%3)*.15}));
+  if (document.body.dataset.mood === "space") {
+    const planet = document.querySelector(".ringed-world");
+    const pane = planet.parentElement;
+    const bounds = pane.getBoundingClientRect();
+    const box = planet.getBoundingClientRect();
+    art.append(postcardVector(planet, {
+      x: (box.left - bounds.left - pane.clientLeft) / pane.clientWidth * 1200,
+      y: (box.top - bounds.top - pane.clientTop) / pane.clientHeight * 600,
+      width: box.width / pane.clientWidth * 1200,
+      height: box.height / pane.clientHeight * 600,
+    }));
+  }
   const moon = postcardElement("g", {opacity:getComputedStyle(document.querySelector(".window-moon")).opacity});
   moon.append(postcardVector(document.querySelector(".moon-disc"),{x:920,y:75,width:80,height:80}));
   art.append(moon);

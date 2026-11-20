@@ -1795,6 +1795,20 @@ body.is-listening .room-volume {
 }
 body[data-mood='space'] .space-nebula { opacity: .9; }
 body[data-mood='aurora'] .space-nebula { opacity: .4; }
+.ringed-world {
+  position: absolute; width: 34%; height: auto; right: 6%; top: 23%;
+  display: none; pointer-events: none;
+}
+body[data-mood='space'] .ringed-world { display: block; }
+body[data-mood='space'] .window-view .stars-layer { z-index: auto; }
+@keyframes world-drift {
+  from { transform: translate(-2%, 2%); }
+  to { transform: translate(3%, -3%); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ringed-world { animation: world-drift 23s ease-in-out infinite alternate; }
+  body.city-is-hidden .ringed-world { animation-play-state: paused; }
+}
 @media (prefers-reduced-motion: reduce) { .space-nebula { transition: none; } }
 body[data-mood="rain"] .window-outside { filter: saturate(.65); }
 body[data-mood="space"] .window-outside, body[data-mood="aurora"] .window-outside {

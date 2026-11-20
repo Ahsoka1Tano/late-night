@@ -9,7 +9,7 @@
   <link rel="icon" href="moon.svg" type="image/svg+xml" />
   <link rel="preload" href="assets/fonts/instrument-serif-italic.ttf" as="font" type="font/ttf" crossorigin />
   <link rel="preload" href="assets/fonts/manrope-variable.ttf" as="font" type="font/ttf" crossorigin />
-  <link rel="stylesheet" href="style.css?v=cf7b726ae3d5" />
+  <link rel="stylesheet" href="style.css?v=1d70d2472d41" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -70,6 +70,44 @@
         </g>
       </svg>
       <canvas class="stars-layer" id="stars" aria-hidden="true"></canvas>
+      <svg class="ringed-world" viewBox="0 0 300 180" aria-hidden="true">
+        <defs>
+          <radialGradient id="world-rings" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="132">
+            <stop offset=".48" stop-color="#b590b1" stop-opacity="0"/>
+            <stop offset=".55" stop-color="#b590b1" stop-opacity=".23"/>
+            <stop offset=".65" stop-color="#95869c" stop-opacity=".48"/>
+            <stop offset=".66" stop-color="#ead2b6"/><stop offset=".74" stop-color="#ae8e91"/>
+            <stop offset=".75" stop-color="#eadac5"/><stop offset=".82" stop-color="#ba999b"/>
+            <stop offset=".83" stop-color="#302b44"/><stop offset=".85" stop-color="#302b44"/>
+            <stop offset=".86" stop-color="#ddd0bb"/><stop offset=".94" stop-color="#a6a1b5"/>
+            <stop offset=".95" stop-color="#585572"/><stop offset=".96" stop-color="#c3b9b3"/>
+            <stop offset="1" stop-color="#9a87a4" stop-opacity=".2"/>
+          </radialGradient>
+          <linearGradient id="world-clouds" x2=".18" y2="1">
+            <stop stop-color="#d2bfd1"/><stop offset=".27" stop-color="#b8a9be"/>
+            <stop offset=".4" stop-color="#e9cbb8"/><stop offset=".46" stop-color="#bf9495"/>
+            <stop offset=".53" stop-color="#ead2b9"/><stop offset=".63" stop-color="#cbaba9"/>
+            <stop offset=".7" stop-color="#a99caf"/><stop offset="1" stop-color="#91849f"/>
+          </linearGradient>
+          <radialGradient id="world-shadow" cx=".2" cy=".24" r=".87">
+            <stop stop-color="#fff1da" stop-opacity=".35"/><stop offset=".44" stop-color="#363045" stop-opacity="0"/>
+            <stop offset=".76" stop-color="#211c38" stop-opacity=".65"/><stop offset=".96" stop-color="#17152c"/>
+            <stop offset="1" stop-color="#5c5674"/>
+          </radialGradient>
+          <clipPath id="world-limb"><circle r="54"/></clipPath>
+        </defs>
+        <g transform="translate(150 90) rotate(-18)">
+          <ellipse rx="132" ry="132" transform="scale(1 .22)" fill="url(#world-rings)"/>
+          <circle r="54" fill="url(#world-clouds)"/>
+          <g clip-path="url(#world-limb)" fill="none">
+            <path d="M-60 -29 Q-9 -10 58 -24 M-60 -20 Q6 -4 59 -17 M-57 22 Q-5 38 60 27" stroke="#f6ddbf" stroke-opacity=".4" stroke-width="2"/>
+            <path d="M-60 -13 Q-14 6 58 -7 M-60 18 Q0 32 59 18" stroke="#956f85" stroke-opacity=".55" stroke-width="3"/>
+            <path d="M-55 -3 Q-8 25 56 11" stroke="#47415b" stroke-opacity=".45" stroke-width="4"/>
+          </g>
+          <circle r="54" fill="url(#world-shadow)"/>
+          <path d="M132 0 A132 132 0 0 1 -132 0 Z" transform="scale(1 .22)" fill="url(#world-rings)"/>
+        </g>
+      </svg>
       <canvas class="rain-layer" id="rain" aria-hidden="true"></canvas>
       <div class="journey-ticket" id="journey-ticket" aria-hidden="true" hidden><small id="journey-ticket-route">AFTER HOURS</small><strong id="journey-ticket-view">City</strong><span id="journey-ticket-stop">01 / 03</span><div class="journey-wait"><i id="journey-progress"></i></div></div>
       <svg class="garden-view" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
@@ -983,6 +1021,6 @@
     </div></div>
   </dialog>
   <script src="receiver.js?v=842335f3a6e1"></script>
-  <script src="app.js?v=90802517ed3d"></script>
+  <script src="app.js?v=b764919b7e16"></script>
 </body>
 </html>

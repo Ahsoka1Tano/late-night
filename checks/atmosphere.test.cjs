@@ -2685,6 +2685,22 @@ test('both window views fit narrow phones and desktop without covering the clock
 });
 
 
+test('Space frames a ringed planet on the glass and on its postcard', async t => {
+  const page = await openRoom(t, 390, 'reduce');
+  const planet = page.locator('.ringed-world');
+  assert.equal(await planet.isVisible(), false);
+  await page.locator('.mood[data-mood="space"]').click();
+  assert.equal(await planet.isVisible(), true);
+  assert.equal(await planet.evaluate(el => el.getAnimations().length), 0);
+  await page.locator('#postcard-open').click();
+  assert.equal(await page.locator('#postcard-preview svg[viewBox="0 0 300 180"]').count(), 1);
+  await page.locator('#postcard-close').click();
+  await page.locator('.mood[data-mood="music"]').click();
+  assert.equal(await planet.isVisible(), false);
+  await page.locator('#postcard-open').click();
+  assert.equal(await page.locator('#postcard-preview svg[viewBox="0 0 300 180"]').count(), 0);
+});
+
 test('still stars fit the glass, resize with Quiet room and survive a quick weather return', async t => {
  for (const width of [320,1440]) {
   const page = await openRoom(t,width,'reduce',false);
