@@ -3502,25 +3502,43 @@ body[data-mood="sleep"] #sky-ribbons { opacity: .52; }
   background: linear-gradient(130deg,#cbc9b9,#aaa99b); color: #242824;
   box-shadow: inset 0 1px #fff9,0 2px 0 #87867d; max-width: none; font-weight: 700; font-size: 15px;
 }
-.transport-deck .evening-toggle::before {
-  content: ""; width: var(--record-size); aspect-ratio: 1; border-radius: 50%;
+#turntable { display: none; }
+.transport-deck #turntable {
+  display: block; position: relative; width: var(--record-size); aspect-ratio: 1; border-radius: 50%;
   background:
-    radial-gradient(circle,#312827 0 1.8%,transparent 2%),
-    linear-gradient(25deg,transparent 45%,#32302b 45% 49%,transparent 49%) center/26% 26% no-repeat,
-    radial-gradient(circle,#e98860 0 18%,#bf6446 18.5% 20%,transparent 20.6%),
     repeating-radial-gradient(circle,transparent 0 2px,#b3acaa30 2.6px 3px),
+    radial-gradient(circle,transparent 36%,#0c0d15aa 37%,transparent 38% 49%,#0c0d1588 50%,transparent 51%),
     conic-gradient(from 26deg,#1c1e23,#494c56 45deg,#15171b 85deg,#2b2c34 164deg,#636169 205deg,#17181d 252deg,#1c1e23);
   box-shadow: 0 0 0 3px #363731,0 0 0 5px #bebeb1,0 4px 9px 4px #0005;
-  animation: record-turn 7s linear infinite paused;
 }
-.transport-deck .evening-toggle::after {
-  content: ""; position: absolute; right: 10%; top: 11%; width: 7px; height: 38%; border-radius: 6px 6px 3px 3px;
-  transform-origin: 50% 4%; transform: rotate(-9deg);
-  background: linear-gradient(90deg,#4b4d4c,#dddccf 45%,#656965);
-  box-shadow: 3px 4px 4px #0006; transition: transform .8s ease;
+.record-label {
+  position: absolute; inset: 34%; border-radius: 50%;
+  background:
+    radial-gradient(circle,#e1dfd9 0 3%,#332e30 4% 7%,transparent 8%),
+    repeating-linear-gradient(0deg,#302932 0 1px,transparent 1px 3px) 50% 77% / 36% 13% no-repeat,
+    linear-gradient(152deg,transparent 27%,#f6e6ca 28% 35%,transparent 36% 40%,#f6e6ca 41% 44%,transparent 45%),
+    hsl(var(--label-hue,28) 42% 67%);
+  box-shadow: inset 0 0 0 1px #0004,0 0 0 3px #0e0f13;
+  animation: record-turn 4s linear infinite paused;
 }
-.transport-deck .scene-footer[data-listening="playing"] .evening-toggle::after { transform: rotate(23deg); }
-body:not(.city-is-hidden) .transport-deck .scene-footer[data-listening="playing"] .evening-toggle::before { animation-play-state: running; }
+.pickup-arm {
+  position: absolute; right: 2%; top: 6%; width: 3%; height: 56%;
+  transform-origin: 50% 0; transform: rotate(-6deg);
+  border-radius: 3px; background: linear-gradient(90deg,#494b49,#f5ead6 42%,#a09e96 72%,#545653);
+  box-shadow: 3px 4px 4px #0006; transition: transform .65s ease;
+}
+.pickup-arm::before {
+  content: ""; position: absolute; width: 350%; aspect-ratio: 1; left: 50%; top: 0;
+  transform: translate(-50%,-50%); border-radius: 50%;
+  background: radial-gradient(circle,#403e3e 0 18%,#9e9b90 20% 39%,#dbd7c7 42% 49%,#605e59 54% 66%,#343633 70%);
+}
+.pickup-arm::after {
+  content: ""; position: absolute; width: 185%; height: 17%; bottom: -4%; right: -5%;
+  transform: rotate(14deg); border-radius: 2px;
+  background: linear-gradient(#343936 0 71%,#d59b73 72%); box-shadow: 1px 2px 2px #0006;
+}
+#turntable[data-playback="playing"] .pickup-arm { transform: rotate(var(--groove-angle,13deg)); }
+body:not(.city-is-hidden) #turntable[data-playback="playing"] .record-label { animation-play-state: running; }
 @keyframes record-turn { to { transform: rotate(1turn); } }
 .station-scale {
   grid-column: 1/-1; display: flex; align-items: center; gap: clamp(16px,3vw,46px);
@@ -3566,14 +3584,13 @@ body.is-quiet .receiver .quiet-toolbar { order: -1; }
   .transport-deck h2 { display: none; }
   .transport-deck #listen-controls .scene-footer { display: grid; grid-template-columns: minmax(0,1.25fr) minmax(0,1fr); gap: 8px; align-items: stretch; }
   .transport-deck .scene-footer .evening-toggle { --record-size: 38px; display: flex; justify-content: flex-start; gap: 9px; padding: 8px; font-size: 12px; }
-  .transport-deck .evening-toggle::before { flex: 0 0 38px; height: 38px; }
-  .transport-deck .evening-toggle::after { display: none; }
+  .transport-deck #turntable { flex: 0 0 38px; height: 38px; }
   .transport-deck #listen-controls .scene-signature { padding: 6px; font-size: 8px; }
   .station-scale { padding: 6px; display: block; }
   .station-scale > span { display: none; }
   .room .station-scale .mood { min-height: 46px; }
 }
 @media(prefers-reduced-motion:reduce) {
-  .transport-deck .evening-toggle::before { animation: none; }
-  .transport-deck .evening-toggle::after { transition: none; }
+  .record-label { animation: none; }
+  .pickup-arm { transition: none; }
 }

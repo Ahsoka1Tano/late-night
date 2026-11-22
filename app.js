@@ -1563,6 +1563,8 @@ function stirRoom() {
 
 /* --- the tape deck --- */
 const player = document.getElementById("player");
+const turntable = document.getElementById("turntable");
+const sleeveHues = [272, 193, 28, 340, 150, 225];
 const playerPlay = document.getElementById("player-play");
 const playerNext = document.getElementById("player-next");
 const playerTitle = document.getElementById("player-title");
@@ -1769,7 +1771,7 @@ function paintTapeCollection() {
     card.type = "button";
     card.className = "cassette-card";
     card.dataset.tapeSrc = tape.src;
-    card.style.setProperty("--cassette-hue",String([272,193,28,340,150,225][index % 6]));
+    card.style.setProperty("--cassette-hue", String(sleeveHues[index % sleeveHues.length]));
     const selected = index === tapeIndex;
     card.setAttribute("aria-pressed",String(selected));
     card.classList.toggle("is-spinning",selected && tapeState === "playing");
@@ -1917,6 +1919,8 @@ paintTapeShelf();
 function paintTape() {
   const tape = TAPES[tapeIndex];
   playerTitle.textContent = document.body.dataset.station === "radio" ? `lofi girl / ${currentRadio().name}` : `${tape.title} / ${tape.licence}`;
+  turntable.dataset.playback = tapeState;
+  turntable.style.setProperty("--label-hue", sleeveHues[tapeIndex % sleeveHues.length]);
   player.dataset.playback = tapeState;
   player.classList.toggle("is-playing",tapeState === "playing");
   playerPlay.textContent = tapeState === "loading" ? "loading" : tapeRunning ? "pause" : tapeError ? "retry" : "play";
@@ -1946,6 +1950,7 @@ function paintTapePosition() {
   const seek = document.getElementById("tape-seek");
   seek.disabled = !seekable;
   seek.value = seekable ? String(Math.min(1000,elapsed / duration * 1000)) : "0";
+  turntable.style.setProperty("--groove-angle", (13 + 24 * Number(seek.value) / 1000) + "deg");
   seek.setAttribute("aria-valuetext",seekable ? `${tapeTime(elapsed)} of ${tapeTime(duration)}` : "Duration available when the recording loads");
   if (pocketPlayerReady) paintPocketPosition();
 }
@@ -3116,7 +3121,7 @@ function paintEveningToggle() {
   const radio = document.body.dataset.mood === "music" && station === "radio";
   eveningToggle.hidden = false;
   const background = { ocean: "ocean", fire: "fireplace", space: "space" }[ambientChoice] || "rain";
-  eveningToggle.textContent = radio ? "radio controls ↗" : (tapeError || ambienceError) ? "↻ retry sounds" : playing ? "Ⅱ pause sounds" : `▶ lo-fi + ${background}`;
+  document.getElementById("evening-action").textContent = radio ? "radio controls ↗" : (tapeError || ambienceError) ? "↻ retry sounds" : playing ? "Ⅱ pause sounds" : `▶ lo-fi + ${background}`;
   eveningToggle.setAttribute("aria-pressed", String(playing));
   eveningToggle.setAttribute("aria-label", radio ? "Open the YouTube radio controls" : (tapeError || ambienceError) ? "Retry the tape and background together" : playing ? "Pause the tape and background together" : `Play a lo-fi tape and ${background} together`);
 }

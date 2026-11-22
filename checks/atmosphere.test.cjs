@@ -971,6 +971,35 @@ test('pocket player folds without stopping audio and restores its layout quietly
   assert.match(await page.locator('#pocket-note').textContent(),/Couldn't save/);
 });
 
+test('record deck follows the tape groove, parks for rain alone and cues a fresh side', async t => {
+  const page = await openRoom(t, 1280);
+  const deck = page.locator('#turntable');
+  const arm = deck.locator('.pickup-arm');
+  const angle = () => arm.evaluate(el => getComputedStyle(el).transform);
+  const parked = await angle();
+  await page.locator('#evening-toggle').click();
+  await page.waitForFunction(() => tapeState === 'playing');
+  const outer = await angle();
+  assert.notEqual(outer, parked);
+  await page.evaluate(() => {
+    tapeAudio.duration = 200;
+    tapeAudio.dispatchEvent(new Event('loadedmetadata'));
+  });
+  await page.locator('#tape-seek').fill('750');
+  assert.equal(await page.evaluate(() => tapeAudio.currentTime), 150);
+  assert.equal(await deck.evaluate(el => el.style.getPropertyValue('--groove-angle')), '31deg');
+  assert.notEqual(await angle(), outer);
+  await page.locator('#player-play').click();
+  assert.equal(await page.evaluate(() => listening), true);
+  assert.equal(await angle(), parked);
+  assert.equal(await deck.locator('.record-label').evaluate(el => el.getAnimations().length), 0);
+  await page.locator('#player-play').click();
+  await page.waitForFunction(() => tapeState === 'playing');
+  await page.locator('#pocket-next').click();
+  await page.waitForFunction(() => tapeState === 'playing');
+  assert.equal(await angle(), outer);
+});
+
 test('pocket player seeks a paused recording through shared controls and reflects muting and stale events', async t => {
   const page = await openRoom(t);
   await page.locator('#pocket-play').click();
