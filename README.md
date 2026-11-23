@@ -454,9 +454,9 @@ to sleep rather than replaying an old reaction.
 
 ## One small thing, by the window
 
-Choose **Focus**, write one small intention and pick 15, 25, 45 or 60 minutes.
-The window becomes a quiet clock with a circular progress trace. Start and pause
-from the glass or the desk; Space still works outside text fields and buttons.
+Choose **Focus** and tap the time on the window dial to pick 15, 25, 45 or 60
+minutes. Press **start session** below it. The dial keeps your place on pause.
+You can also write a short intention at the desk.
 A warm halo gently expands during a session; breaks turn it cool. It rests on
 pause and in hidden tabs, and stays still with reduced motion.
 An active or paused session stays on the glass when you change moods, so you can

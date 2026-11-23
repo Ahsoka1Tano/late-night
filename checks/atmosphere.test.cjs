@@ -3191,6 +3191,33 @@ test('coastal views and all five evening cards fit phones and desktop', async t=
  }
 });
 
+test('choose a duration at the window and resume the same focus session after reload', async t => {
+  const page = await openRoom(t, 320, 'reduce', false);
+  await page.locator('.mood[data-mood="focus"]').click();
+  const length = page.getByRole('combobox', { name: 'Focus session length' });
+  const toggle = page.locator('#window-focus-toggle');
+  const time = page.locator('#window-focus-time');
+  await length.focus();
+  await page.keyboard.press('End');
+  assert.equal(await time.textContent(), '60:00');
+  assert.equal(await page.locator('.focus-preset[data-minutes="60"]').getAttribute('aria-pressed'), 'true');
+  await page.locator('#quiet-room').click();
+  await length.selectOption('15');
+  await toggle.click();
+  assert.equal(await length.isVisible(), false);
+  await page.clock.runFor(5000);
+  await toggle.click();
+  assert.equal(await toggle.textContent(), 'resume');
+  assert.equal(await time.textContent(), '14:55');
+  await page.reload();
+  assert.equal(await length.isVisible(), false);
+  assert.equal(await toggle.textContent(), 'resume');
+  await toggle.click();
+  await page.clock.runFor(2000);
+  assert.equal(await time.textContent(), '14:53');
+  assert.equal(await page.locator('#desktop-tray').evaluate(el => el.open), false);
+});
+
 test('window focus mirrors an intention and keeps a session across moods', async t => {
   const page = await openRoom(t);
   await page.locator('.mood[data-mood="focus"]').click();

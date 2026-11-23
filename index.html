@@ -9,7 +9,7 @@
   <link rel="icon" href="moon.svg" type="image/svg+xml" />
   <link rel="preload" href="assets/fonts/instrument-serif-italic.ttf" as="font" type="font/ttf" crossorigin />
   <link rel="preload" href="assets/fonts/manrope-variable.ttf" as="font" type="font/ttf" crossorigin />
-  <link rel="stylesheet" href="style.css?v=db0bb0567f05" />
+  <link rel="stylesheet" href="style.css?v=ec94ec62af42" />
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -545,7 +545,14 @@
         <time id="window-clock">--:--</time><p id="window-whisper">let the city carry on.</p></div>
       <section class="window-focus" id="window-focus" aria-label="Session at the window" hidden>
         <p class="window-focus-label" id="window-focus-label">ONE SMALL THING</p>
-        <div class="focus-orbit"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="orbit-track" cx="60" cy="60" r="55"/><circle class="orbit-progress" cx="60" cy="60" r="55" pathLength="1"/></svg><span id="window-focus-time">25:00</span></div>
+        <div class="focus-orbit">
+          <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="orbit-track" cx="60" cy="60" r="55"/><circle class="orbit-progress" cx="60" cy="60" r="55" pathLength="1"/></svg>
+          <span id="window-focus-time">25:00</span>
+          <label class="dial-duration" hidden>
+            <small aria-hidden="true">Duration ⌄</small>
+            <select id="window-focus-length" aria-label="Focus session length"></select>
+          </label>
+        </div>
         <p class="window-focus-task" id="window-focus-task">Nothing else needs doing.</p>
         <button id="window-focus-toggle" type="button">start session</button>
         <button data-focus-break type="button" hidden>take five minutes</button>
@@ -1021,6 +1028,6 @@
     </div></div>
   </dialog>
   <script src="receiver.js?v=842335f3a6e1"></script>
-  <script src="app.js?v=fbb37762cc44"></script>
+  <script src="app.js?v=42bc997a1f0a"></script>
 </body>
 </html>
