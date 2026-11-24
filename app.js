@@ -232,6 +232,7 @@ let rainFrame = null;
 let rainWidth = 1, rainHeight = 1, rainLastAt = null;
 const rainBeadLayer = document.createElement("canvas");
 let glassBeads = [];
+let beadLayerChanged = false;
 
 function sizeRain() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -254,16 +255,49 @@ function seedDrops() {
   glassDrops = Array.from({ length: clinging }, () => spawnGlassDrop(true));
   const wetness = { drizzle: .6, steady: 1, downpour: 1.5 }[rainLevel];
   const beads = Math.min(220, Math.round(rainWidth * rainHeight / 2800 * wetness));
-  glassBeads = Array.from({ length: beads }, () => ({
-    x: Math.random() * rainWidth, y: Math.random() * rainHeight,
-    r: .65 + Math.pow(Math.random(), 2) * 1.8, speed: 0,
-  }));
-  // Tiny clinging beads do not move: cache their optical detail once per size.
+  glassBeads = Array.from({ length: beads }, spawnBead);
   rainBeadLayer.width = rainCanvas.width;
   rainBeadLayer.height = rainCanvas.height;
+  beadLayerChanged = true;
+}
+
+function spawnBead() {
+  return {
+    x: Math.random() * rainWidth, y: Math.random() * rainHeight,
+    r: .65 + Math.pow(Math.random(), 2) * 1.8, speed: 0, rest: 0,
+  };
+}
+
+function paintBeadLayer(delta) {
+  for (const bead of glassBeads) {
+    if (bead.rest <= 0) continue;
+    bead.rest -= delta;
+    if (bead.rest <= 0) {
+      Object.assign(bead, spawnBead());
+      beadLayerChanged = true;
+    }
+  }
+  if (!beadLayerChanged) return;
   const ctx = rainBeadLayer.getContext("2d");
   ctx.setTransform(rainCtx.getTransform());
-  glassBeads.forEach(bead => paintWaterDrop(ctx, bead));
+  ctx.clearRect(0, 0, rainWidth, rainHeight);
+  for (const bead of glassBeads) {
+    if (bead.rest <= 0) paintWaterDrop(ctx, bead);
+  }
+  beadLayerChanged = false;
+}
+
+function collectGlassBeads(drop, previousY) {
+  for (const bead of glassBeads) {
+    if (bead.rest > 0) continue;
+    // Test the whole descent so quick drops also collect beads between frames.
+    const nearestY = Math.max(previousY, Math.min(drop.y, bead.y));
+    const reach = drop.r + bead.r;
+    if ((bead.x - drop.x) ** 2 + (bead.y - nearestY) ** 2 > reach ** 2) continue;
+    drop.r = Math.min(8, Math.sqrt(drop.r ** 2 + bead.r ** 2));
+    bead.rest = 120 + Math.random() * 300;
+    beadLayerChanged = true;
+  }
 }
 
 function paintWaterDrop(ctx, drop) {
@@ -279,6 +313,12 @@ function paintWaterDrop(ctx, drop) {
   ctx.beginPath(); ctx.ellipse(x, y, r * .83, r * stretch * .88, 0, .1, Math.PI * .85); ctx.stroke();
   ctx.fillStyle = "rgba(240,248,255,.65)";
   ctx.beginPath(); ctx.ellipse(x - r * .3, y - r * stretch * .43, r * .18, r * .1, -.5, 0, Math.PI * 2); ctx.fill();
+  if (r > 2.5) {
+    const warm = x < rainWidth * .5;
+    ctx.strokeStyle = warm ? "rgba(255,199,144,.63)" : "rgba(168,206,255,.68)";
+    ctx.lineWidth = r * .21;
+    ctx.beginPath(); ctx.ellipse(x, y, r * .74, r * stretch * .68, 0, .58, 1.65); ctx.stroke();
+  }
 }
 
 function spawnDrop(scattered = false) {
@@ -329,6 +369,7 @@ function drawGlassDrop(d, delta) {
     rainCtx.stroke();
   }
   paintWaterDrop(rainCtx, d);
+  if (delta <= 0) return;
 
   if (d.hold > 0) {
     d.hold -= delta;
@@ -340,6 +381,7 @@ function drawGlassDrop(d, delta) {
   d.y += d.speed * delta + acceleration * delta * delta / 2;
   d.speed += acceleration * delta;
   d.x += Math.sin(d.y * .025 + d.sway) * .12 * delta;
+  collectGlassBeads(d, before);
 
   // leave a thin, uneven line of water behind
   for (let y = before; y < d.y; y += 3) {
@@ -367,6 +409,7 @@ function drawGlassDrop(d, delta) {
 function paintRainFrame(delta = 1) {
   rainCtx.clearRect(0, 0, rainWidth, rainHeight);
   rainCtx.lineCap = "round";
+  paintBeadLayer(delta);
   if (rainBeadLayer.width > 0 && rainBeadLayer.height > 0) rainCtx.drawImage(rainBeadLayer, 0, 0, rainWidth, rainHeight);
 
   for (let i = 0; !rainStill && i < drops.length; i++) {

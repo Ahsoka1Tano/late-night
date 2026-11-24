@@ -104,6 +104,30 @@ test('mood tuner previews a drag, settles on release and skips hidden stations b
   }
 });
 
+test('a moving raindrop gathers beads along its path and the glass slowly fills back in', async t => {
+  const page = await openRoom(t, 390, 'reduce', false);
+  await page.locator('.mood[data-mood="rain"]').click();
+  const result = await page.evaluate(() => {
+    glassBeads = [{ x: 100, y: 54, r: 2, speed: 0, rest: 0 }, { x: 130, y: 54, r: 2, speed: 0, rest: 0 }];
+    const drop = { x: 100, y: 40, r: 4, speed: 14, hold: 0, sway: 0, trail: [] };
+    drawGlassDrop(drop, 0);
+    const still = drop.r === 4 && drop.y === 40 && glassBeads.every(bead => bead.rest === 0);
+    drawGlassDrop(drop, 2);
+    const merged = drop.r > 4 && glassBeads[0].rest > 0 && glassBeads[1].rest === 0;
+    const radius = drop.r;
+    collectGlassBeads(drop, 40);
+    const countedOnce = drop.r === radius;
+    paintBeadLayer(0);
+    const ctx = rainBeadLayer.getContext('2d');
+    const scale = ctx.getTransform().a;
+    const at = x => ctx.getImageData(Math.round(x * scale), Math.round(54 * scale), 1, 1).data[3];
+    const cleared = at(100) === 0 && at(130) > 0;
+    paintBeadLayer(421);
+    return { still, merged, countedOnce, cleared, renewed: glassBeads.every(bead => bead.rest === 0) };
+  });
+  assert.deepEqual(result, { still: true, merged: true, countedOnce: true, cleared: true, renewed: true });
+});
+
 test('wet glass stays still with reduced motion, follows rain strength and survives a quick weather return', async t => {
   const page=await openRoom(t,1280,'reduce',false);
   await page.locator('.mood[data-mood="rain"]').click();

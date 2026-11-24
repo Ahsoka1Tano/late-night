@@ -15,9 +15,9 @@ Open **Sound & room** for tapes, radio and window settings. **Night journal** ho
 Press **lo-fi + rain**, or choose **Rain** mood for the weather alone. The existing
 **drizzle / steady / downpour** choices in **Sound library** control its density.
 
-Tiny beads cling to the pane, larger drops catch pale highlights and slide down
-soft, uneven water trails. The texture fits the actual window in all five views,
-on a phone and in Quiet room; high-refresh displays keep the same falling pace.
+Tiny beads cling to the pane. A sliding drop picks them up along its path,
+grows heavier and leaves a clear trail until fresh beads gather elsewhere.
+Look for amber and blue glints along the lower edges of the larger drops.
 
 With your system's **reduced motion** setting, the window keeps a still wet-glass
 texture. Changing that setting while the room is open stops or resumes the
