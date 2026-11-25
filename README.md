@@ -53,7 +53,8 @@ The selected tape is still managed separately by the tape shelf.
 Open **little extras → ✉ postcard** above the window, including in Quiet room. A small workshop
 captures an illustration of the current view using the room's own vectors:
 city lights, mountains, the coast, the café or the midnight garden, with the
-current sky, moon, rain and frame finish. Drops bead on the glass, and the
+current sky, moon, rain and frame finish. The light ribbons keep their colour
+and shape at the instant of capture, even halfway between moods. Drops bead on the glass, and the
 streaks get denser from drizzle to downpour.
 
 Add an optional caption of up to 80 characters, choose **night ink** or **moon

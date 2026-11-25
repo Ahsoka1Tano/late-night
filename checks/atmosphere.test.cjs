@@ -525,6 +525,24 @@ test('returning from a shelf, journey or rhythm reveals a folded keyboard destin
   assert.equal(await page.locator('#breath-arrive').evaluate(el=>el===document.activeElement),true);
 });
 
+test('postcard ribbons keep their captured light until the next exposure', async t => {
+  const page = await openRoom(t, 390, 'reduce');
+  await page.locator('#postcard-open').click();
+  const ink = page.locator('#postcard-ribbon-ink stop').nth(1);
+  const strand = page.locator('#postcard-preview polyline').first();
+  const path = await strand.getAttribute('points');
+  const colour = await ink.getAttribute('stop-color');
+  await page.evaluate(() => setMood('space'));
+  await page.locator('[data-postcard-paper="moon"]').click();
+  await page.locator('#postcard-caption').fill('Over the rooftops');
+  assert.equal(await strand.getAttribute('points'), path);
+  assert.equal(await ink.getAttribute('stop-color'), colour);
+  await page.locator('#postcard-refresh').click();
+  assert.notEqual(await strand.getAttribute('points'), path);
+  assert.notEqual(await ink.getAttribute('stop-color'), colour);
+  assert.equal(await page.locator('#postcard-caption').inputValue(), 'Over the rooftops');
+});
+
 test('window postcards illustrate all five views and keep caption text literal without changing the room', async t => {
   const page = await openRoom(t);
   for (const view of ['city','mountains','coast','cafe','garden']) {

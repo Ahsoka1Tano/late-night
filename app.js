@@ -4217,6 +4217,8 @@ function capturePostcard() {
   const defs = postcardElement("defs"), gradient = postcardElement("linearGradient",{id:"postcard-sky",x2:0,y2:1});
   gradient.append(postcardElement("stop",{offset:0,"stop-color":sky.getPropertyValue("--sky-top").trim()}),postcardElement("stop",{offset:1,"stop-color":sky.getPropertyValue("--sky-bottom").trim()}));
   defs.append(gradient); art.append(defs,postcardElement("rect",{width:1200,height:600,fill:"url(#postcard-sky)"}));
+  const ribbons = captureRibbonSky();
+  if (ribbons) art.append(ribbons);
   if (["space","aurora"].includes(document.body.dataset.mood)) {
     const cloud = document.querySelector(".space-nebula");
     const capturedCloud = postcardVector(cloud,{x:0,y:0,width:1200,height:600});
