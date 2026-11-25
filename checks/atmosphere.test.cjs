@@ -104,6 +104,29 @@ test('mood tuner previews a drag, settles on release and skips hidden stations b
   }
 });
 
+test('the sky changes height mid-transition and repaints still Music when rain returns', async t => {
+  const page = await openRoom(t, 1280, 'no-preference', false, false);
+  const sky = page.locator('#sky-ribbons');
+  const level = () => sky.evaluate(el => Number(getComputedStyle(el).getPropertyValue('--ribbon-level')));
+  const image = () => sky.evaluate(el => el.toDataURL());
+  await page.locator('.mood[data-mood="rain"]').click();
+  await page.waitForFunction(() => {
+    const value = Number(getComputedStyle(document.querySelector('#sky-ribbons')).getPropertyValue('--ribbon-level'));
+    return value > .42 && value < .62;
+  });
+  await page.locator('.mood[data-mood="space"]').click();
+  await page.waitForFunction(() => getComputedStyle(document.querySelector('#sky-ribbons')).getPropertyValue('--ribbon-level').trim() === '0.33');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.locator('.mood[data-mood="music"]').click();
+  const dry = await image();
+  await page.locator('#evening-toggle').click();
+  assert.equal(await level(), .65);
+  const wet = await image();
+  assert.notEqual(wet, dry);
+  await page.waitForTimeout(150);
+  assert.equal(await image(), wet);
+});
+
 test('a moving raindrop gathers beads along its path and the glass slowly fills back in', async t => {
   const page = await openRoom(t, 390, 'reduce', false);
   await page.locator('.mood[data-mood="rain"]').click();

@@ -4,7 +4,7 @@ A tiny digital room for quiet evenings.
 
 **[Open Late Night](https://ahsoka1tano.github.io/late-night/)**
 
-Press **lo-fi + rain** on the record deck to start a tape with a real rain recording. The sky above the window drifts with the mood. With reduced motion enabled, it rests.
+Press **lo-fi + rain** on the record deck to start a tape with a real rain recording. A warm band of light settles near the rooftops. Tune to **Space** to see it rise into a violet arc, or **Sleep** for a slow, dim glow. With reduced motion enabled, each sky appears still.
 
 Click a mood on the tuner, or slide the needle and release to settle on a station. With a station focused, the arrow keys move one step and Home or End goes to either end of the scale.
 

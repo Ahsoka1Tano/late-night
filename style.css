@@ -3489,9 +3489,53 @@ body:not(.is-quiet) .receiver .window-view { border: 0; border-radius: 13px 0 0 
 .receiver .window-view::after { display: none; }
 .receiver .quiet-toolbar { justify-content: flex-end; padding: 0 4% 8px; margin: 0; }
 .receiver .quiet-toolbar button,.receiver .window-extras > summary { color: #ddd6cd; }
-#sky-ribbons { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+@property --ribbon-edge { syntax: "<color>"; inherits: false; initial-value: #584e93; }
+@property --ribbon-core { syntax: "<color>"; inherits: false; initial-value: #ef8a70; }
+@property --ribbon-light { syntax: "<color>"; inherits: false; initial-value: #f6c295; }
+@property --ribbon-level { syntax: "<number>"; inherits: false; initial-value: .37; }
+@property --ribbon-swell { syntax: "<number>"; inherits: false; initial-value: .15; }
+@property --ribbon-spread { syntax: "<number>"; inherits: false; initial-value: .19; }
+@property --ribbon-pace { syntax: "<number>"; inherits: false; initial-value: 1; }
+#sky-ribbons {
+  position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
+  --ribbon-edge: #584e93; --ribbon-core: #ef8a70; --ribbon-light: #f6c295;
+  --ribbon-level: .37; --ribbon-swell: .15; --ribbon-spread: .19; --ribbon-pace: 1;
+}
+body[data-mood="calm"] #sky-ribbons {
+  --ribbon-edge: #478a9f; --ribbon-core: #abc6ac; --ribbon-light: #7e94ad;
+  --ribbon-level: .48; --ribbon-swell: .08; --ribbon-spread: .12; --ribbon-pace: .55;
+}
+body[data-mood="focus"] #sky-ribbons {
+  --ribbon-edge: #664a75; --ribbon-core: #e79568; --ribbon-light: #e2bb89;
+  --ribbon-level: .52; --ribbon-swell: .045; --ribbon-spread: .09; --ribbon-pace: .5;
+}
+body[data-mood="rain"] #sky-ribbons {
+  --ribbon-edge: #344a81; --ribbon-core: #83b3bd; --ribbon-light: #9a92c4;
+}
+body.has-rain #sky-ribbons {
+  --ribbon-level: .65; --ribbon-swell: .045; --ribbon-spread: .12; --ribbon-pace: .65;
+}
+body[data-mood="space"] #sky-ribbons {
+  --ribbon-edge: #443384; --ribbon-core: #9267d6; --ribbon-light: #729ced;
+  --ribbon-level: .33; --ribbon-swell: .23; --ribbon-spread: .31; --ribbon-pace: .72;
+}
+body[data-mood="aurora"] #sky-ribbons {
+  --ribbon-edge: #326584; --ribbon-core: #63d5b8; --ribbon-light: #c3b8f0;
+  --ribbon-level: .35; --ribbon-swell: .21; --ribbon-spread: .4; --ribbon-pace: 1.1;
+}
+@media (prefers-reduced-motion: no-preference) {
+  #sky-ribbons {
+    transition-property: --ribbon-edge, --ribbon-core, --ribbon-light, --ribbon-level, --ribbon-swell, --ribbon-spread, --ribbon-pace, opacity;
+    transition-duration: 1.8s;
+    transition-timing-function: ease-in-out;
+  }
+}
 body[data-mood="music"] .receiver .window-view[data-sky="mood"] { --sky-top: #101932; --sky-bottom: #90596c; --horizon: #ef977663; }
-body[data-mood="sleep"] #sky-ribbons { opacity: .52; }
+body[data-mood="sleep"] #sky-ribbons {
+  --ribbon-edge: #313c69; --ribbon-core: #676891; --ribbon-light: #a092ac;
+  --ribbon-level: .59; --ribbon-swell: .035; --ribbon-spread: .07; --ribbon-pace: .18;
+  opacity: .52;
+}
 .receiver .window-time time { font-weight: 450; letter-spacing: -.08em; }
 .transport-deck {
   display: flex; flex-direction: column; justify-content: center; gap: 15px;

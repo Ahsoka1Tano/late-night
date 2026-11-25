@@ -5,26 +5,22 @@
   if (!context) return;
   const glass = canvas.parentElement;
   const motion = matchMedia("(prefers-reduced-motion: reduce)");
-  const colours = {
-    calm: ["#478a9f", "#abc6ac", "#7e94ad"],
-    music: ["#584e93", "#ef8a70", "#f6c295"],
-    focus: ["#664a75", "#e79568", "#e2bb89"],
-    rain: ["#344a81", "#83b3bd", "#9a92c4"],
-    space: ["#443384", "#9267d6", "#729ced"],
-    sleep: ["#313c69", "#676891", "#a092ac"],
-    aurora: ["#326584", "#63d5b8", "#c3b8f0"]
-  };
+  // The same interpolated CSS values drive both the still and moving sky.
+  const style = getComputedStyle(canvas);
   let width = 0, height = 0, phase = 0, last = 0, frame = 0;
   let pointer = 0, drift = 0, visible = false;
 
   function draw() {
     context.clearRect(0, 0, width, height);
-    const palette = colours[document.body.dataset.mood] || colours.music;
+    const edge = style.getPropertyValue("--ribbon-edge");
+    const level = Number(style.getPropertyValue("--ribbon-level"));
+    const swell = Number(style.getPropertyValue("--ribbon-swell"));
+    const spread = Number(style.getPropertyValue("--ribbon-spread"));
     const gradient = context.createLinearGradient(0, height * .4, width, height * .1);
-    gradient.addColorStop(0, palette[0]);
-    gradient.addColorStop(.54, palette[1]);
-    gradient.addColorStop(.82, palette[2]);
-    gradient.addColorStop(1, palette[0]);
+    gradient.addColorStop(0, edge);
+    gradient.addColorStop(.54, style.getPropertyValue("--ribbon-core"));
+    gradient.addColorStop(.82, style.getPropertyValue("--ribbon-light"));
+    gradient.addColorStop(1, edge);
     context.strokeStyle = gradient;
     // Each strand follows the same curve with a changing offset, like folded silk.
     for (let strand = 0; strand < 46; strand++) {
@@ -36,7 +32,7 @@
         const x = step / 80;
         const crest = Math.sin(x * 6.1 - phase * .29 + fold * 1.6 + drift);
         const ripple = Math.sin(x * 9.8 + phase * .21 - fold * 2.3);
-        const y = height * (.37 + crest * .15 + ripple * .055 + fold * .19 - x * .19);
+        const y = height * (level + swell * (crest + ripple * .36) + spread * (fold - x));
         if (!step) context.moveTo(0, y);
         else context.lineTo(x * width, y);
       }
@@ -47,7 +43,8 @@
 
   function animate(now) {
     if (!last || now - last >= 42) {
-      phase += last ? Math.min(now - last, 100) / 1000 : 0;
+      const elapsed = last ? Math.min(now - last, 100) / 1000 : 0;
+      phase += elapsed * Number(style.getPropertyValue("--ribbon-pace"));
       last = now;
       drift += (pointer - drift) * .07;
       draw();
@@ -70,7 +67,11 @@
     sync();
   }).observe(canvas);
   new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; sync(); }).observe(canvas);
-  new MutationObserver(sync).observe(document.body, {attributes:true, attributeFilter:["data-mood"]});
+  // Moving skies sample the palette on each frame. Still skies also need a
+  // fresh frame when rain is switched on without leaving the Music mood.
+  new MutationObserver(() => {
+    if (motion.matches && visible && !document.hidden) draw();
+  }).observe(document.body, { attributes: true, attributeFilter: ["data-mood", "class"] });
   motion.addEventListener("change", sync);
   document.addEventListener("visibilitychange", sync);
   glass.addEventListener("pointermove", event => {
