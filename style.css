@@ -1914,7 +1914,7 @@ body[data-mood="space"] .window-outside, body[data-mood="aurora"] .window-outsid
   width: var(--train-width);
   margin-left: calc(-1 * (var(--train-width) + var(--train-clearance)));
 }
-.night-train img { display: block; width: 100%; height: auto; }
+.night-train object { display: block; width: 100%; height: auto; aspect-ratio: 660 / 80; pointer-events: none; }
 .railway-bridge {
   position: absolute;
   bottom: calc(var(--rail-line) - 33px);

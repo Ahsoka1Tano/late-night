@@ -4242,10 +4242,16 @@ function capturePostcard() {
   moon.append(postcardVector(document.querySelector(".moon-disc"),{x:920,y:75,width:80,height:80}));
   art.append(moon);
   if (windowScene === "city") {
-    const bounds = document.getElementById("window-outside").getBoundingClientRect();
+    const pane = document.getElementById("window-outside");
+    const bounds = pane.getBoundingClientRect();
     const rect = element => {
       const box = element.getBoundingClientRect();
-      return {x:(box.x-bounds.x)/bounds.width*1200,y:(box.y-bounds.y)/bounds.height*600,width:box.width/bounds.width*1200,height:box.height/bounds.height*600};
+      return {
+        x: (box.left - bounds.left - pane.clientLeft) / pane.clientWidth * 1200,
+        y: (box.top - bounds.top - pane.clientTop) / pane.clientHeight * 600,
+        width: box.width / pane.clientWidth * 1200,
+        height: box.height / pane.clientHeight * 600,
+      };
     };
     for (const skyline of document.querySelectorAll(".skyline")) {
       const layer = postcardElement("g",{opacity:getComputedStyle(skyline).opacity});
@@ -4261,6 +4267,21 @@ function capturePostcard() {
     const bridgeArt = postcardVector(bridge, rect(bridge));
     bridgeArt.style.opacity = getComputedStyle(bridge.parentElement).opacity;
     art.append(bridgeArt);
+    const train = document.querySelector(".night-train");
+    const carriage = train.querySelector("object");
+    const box = rect(carriage);
+    const opacity = Number(getComputedStyle(train).opacity);
+    if (opacity > 0 && box.width > 0 && box.x < 1200 && box.x + box.width > 0) {
+      const drawing = carriage.contentDocument?.documentElement;
+      if (drawing?.localName === "svg") {
+        // Keep the train's local gradients and coach references in the PNG source.
+        const express = drawing.cloneNode(true);
+        for (const [key, value] of Object.entries(box)) express.setAttribute(key, value);
+        express.setAttribute("preserveAspectRatio", "none");
+        express.setAttribute("opacity", opacity);
+        art.append(express);
+      }
+    }
   } else if (windowScene === "mountains") {
     art.append(postcardVector(document.querySelector(".mountain-view svg"),{x:0,y:258,width:1200,height:342}));
     art.append(postcardVector(document.querySelector(".mountain-lake svg"),{x:0,y:498,width:1200,height:102}));

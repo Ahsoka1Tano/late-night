@@ -2597,7 +2597,7 @@ test('the night express clears the glass between passes and stays on the rail on
       const { delay, duration } = pass.effect.getTiming();
       const glass = train.parentElement.getBoundingClientRect();
       const beam = train.querySelector('.train-beam');
-      const image = train.querySelector('img');
+      const image = train.querySelector('object');
       pass.currentTime = delay + duration * .03;
       const clearsEntrance = beam.getBoundingClientRect().right <= glass.left;
       pass.currentTime = delay + duration * .42;
@@ -2624,6 +2624,36 @@ test('the night express clears the glass between passes and stays on the rail on
       await page.locator('#window-view').screenshot({path:path.join(process.env.ATMOSPHERE_PREVIEW_DIR,`city-train-${width}.png`)});
     }
   }
+});
+
+test('a City postcard catches the passing express and keeps it after the tracks clear', async t => {
+  const page = await openRoom(t, 390, 'no-preference', false, false);
+  const train = page.locator('.night-train');
+  const positionTrain = progress => train.evaluate(async (el, fraction) => {
+    const pass = el.getAnimations().find(animation => animation.animationName === 'last-train');
+    pass.pause();
+    await pass.ready;
+    const { delay, duration } = pass.effect.getTiming();
+    pass.currentTime = delay + duration * fraction;
+  }, progress);
+  await positionTrain(.23);
+  await page.locator('#window-extras > summary').click();
+  await page.locator('#postcard-open').click();
+  const express = page.locator('#postcard-preview svg[viewBox="0 0 660 80"]');
+  assert.equal(await express.locator('use[href="#coach"]').count(), 3);
+  const capturedX = await express.getAttribute('x');
+  await positionTrain(.6);
+  await page.locator('[data-postcard-paper="moon"]').click();
+  assert.equal(await express.getAttribute('x'), capturedX);
+  const pending = page.waitForEvent('download');
+  await page.locator('#postcard-download').click();
+  const download = await pending;
+  assert.equal(await download.failure(), null);
+  if (process.env.ATMOSPHERE_PREVIEW_DIR) {
+    await download.saveAs(path.join(process.env.ATMOSPHERE_PREVIEW_DIR, 'postcard-express.png'));
+  }
+  await page.locator('#postcard-refresh').click();
+  assert.equal(await express.count(), 0);
 });
 
 test('the city changes one apartment at a time and Sleep only turns lights off', async t => {

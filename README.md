@@ -566,7 +566,8 @@ company. Those details rest with the city; aircraft disappear from the space and
 The night express has four carriages, warm compartment windows and a headlight
 that follows its cab. It crosses a steel viaduct in front of the skyline and waits
 beyond the glass between passes. Its first pass begins shortly after opening the
-room. City postcards include the viaduct beneath the rooftops.
+room. Open a City postcard as the express crosses the viaduct to catch its
+lit carriages in the frame. Capturing again after it passes leaves the tracks empty.
 
 ## Right now
 
