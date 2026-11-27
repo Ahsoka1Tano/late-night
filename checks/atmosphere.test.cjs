@@ -602,6 +602,35 @@ test('window postcards download real PNG images for every view and keep long cap
   }
 });
 
+test('window postcards keep the captured moon framing until the view is captured again', async t => {
+  const page = await openRoom(t, 390);
+  await page.locator('.view-switch [data-view="mountains"]').click();
+  const liveMoon = () => page.locator('.moon-disc').evaluate(el => {
+    const pane = document.getElementById('window-outside');
+    const bounds = pane.getBoundingClientRect();
+    const moon = el.getBoundingClientRect();
+    return [
+      (moon.left - bounds.left - pane.clientLeft) / pane.clientWidth * 1200,
+      (moon.top - bounds.top - pane.clientTop) / pane.clientHeight * 600,
+      moon.width / pane.clientWidth * 1200,
+      moon.height / pane.clientHeight * 600,
+    ];
+  });
+  const postcardMoon = () => page.locator('#postcard-preview svg[viewBox="0 0 24 24"]').evaluate(el =>
+    ['x', 'y', 'width', 'height'].map(attr => Number(el.getAttribute(attr)))
+  );
+
+  await page.locator('#postcard-open').click();
+  const phone = await liveMoon();
+  assert.deepEqual(await postcardMoon(), phone);
+  await page.setViewportSize({ width: 1280, height: 900 });
+  assert.deepEqual(await postcardMoon(), phone);
+  await page.locator('#postcard-refresh').click();
+  const desktop = await liveMoon();
+  assert.notEqual(desktop[0], phone[0]);
+  assert.deepEqual(await postcardMoon(), desktop);
+});
+
 test('window postcards keep their captured rain strength until the view is captured again', async t => {
   const page = await openRoom(t);
   await page.locator('.mood[data-mood="rain"]').click();

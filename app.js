@@ -4213,6 +4213,17 @@ function makePostcardRain() {
 }
 function capturePostcard() {
   const sky = getComputedStyle(windowView);
+  const pane = document.getElementById("window-outside");
+  const bounds = pane.getBoundingClientRect();
+  const rect = element => {
+    const box = element.getBoundingClientRect();
+    return {
+      x: (box.left - bounds.left - pane.clientLeft) / pane.clientWidth * 1200,
+      y: (box.top - bounds.top - pane.clientTop) / pane.clientHeight * 600,
+      width: box.width / pane.clientWidth * 1200,
+      height: box.height / pane.clientHeight * 600,
+    };
+  };
   const art = postcardElement("svg", {viewBox:"0 0 1200 600",width:1200,height:600,"data-view":windowScene});
   const defs = postcardElement("defs"), gradient = postcardElement("linearGradient",{id:"postcard-sky",x2:0,y2:1});
   gradient.append(postcardElement("stop",{offset:0,"stop-color":sky.getPropertyValue("--sky-top").trim()}),postcardElement("stop",{offset:1,"stop-color":sky.getPropertyValue("--sky-bottom").trim()}));
@@ -4228,31 +4239,13 @@ function capturePostcard() {
   if (hasStarSky()) for (let i=0;i<48;i++) art.append(postcardElement("circle",{cx:(i*137+41)%1200,cy:(i*53+17)%350,r:i%4===0?1.8:1,fill:"#d3dce8",opacity:.3+(i%3)*.15}));
   if (document.body.dataset.mood === "space") {
     const planet = document.querySelector(".ringed-world");
-    const pane = planet.parentElement;
-    const bounds = pane.getBoundingClientRect();
-    const box = planet.getBoundingClientRect();
-    art.append(postcardVector(planet, {
-      x: (box.left - bounds.left - pane.clientLeft) / pane.clientWidth * 1200,
-      y: (box.top - bounds.top - pane.clientTop) / pane.clientHeight * 600,
-      width: box.width / pane.clientWidth * 1200,
-      height: box.height / pane.clientHeight * 600,
-    }));
+    art.append(postcardVector(planet, rect(planet)));
   }
   const moon = postcardElement("g", {opacity:getComputedStyle(document.querySelector(".window-moon")).opacity});
-  moon.append(postcardVector(document.querySelector(".moon-disc"),{x:920,y:75,width:80,height:80}));
+  const disc = document.querySelector(".moon-disc");
+  moon.append(postcardVector(disc, rect(disc)));
   art.append(moon);
   if (windowScene === "city") {
-    const pane = document.getElementById("window-outside");
-    const bounds = pane.getBoundingClientRect();
-    const rect = element => {
-      const box = element.getBoundingClientRect();
-      return {
-        x: (box.left - bounds.left - pane.clientLeft) / pane.clientWidth * 1200,
-        y: (box.top - bounds.top - pane.clientTop) / pane.clientHeight * 600,
-        width: box.width / pane.clientWidth * 1200,
-        height: box.height / pane.clientHeight * 600,
-      };
-    };
     for (const skyline of document.querySelectorAll(".skyline")) {
       const layer = postcardElement("g",{opacity:getComputedStyle(skyline).opacity});
       for (const building of skyline.children) {
