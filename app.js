@@ -4302,9 +4302,20 @@ function paintPostcard() {
   const caption = postcardCaption.value.trim() || "A quiet place to come back to.";
   const measure = document.createElement("canvas").getContext("2d"); measure.font = "26px Arial";
   const lines = [""];
-  for (const character of caption.replace(/\s+/g," ")) {
-    if (measure.measureText(lines.at(-1)+character).width > 1164) lines.push(character.trimStart());
-    else lines[lines.length-1] += character;
+  for (const character of caption.replace(/\s+/g, " ")) {
+    const lineIndex = lines.length - 1;
+    const next = lines[lineIndex] + character;
+    if (measure.measureText(next).width <= 1164) {
+      lines[lineIndex] = next;
+      continue;
+    }
+    const space = next.lastIndexOf(" ");
+    if (space === -1) {
+      lines.push(character);
+    } else {
+      lines[lineIndex] = next.slice(0, space);
+      lines.push(next.slice(space + 1));
+    }
   }
   lines.slice(0,3).forEach((line,index) => card.append(postcardElement("text",{x:58,y:748+index*34,fill:ink,"font-size":26,"font-family":"Arial, sans-serif"},line.trim())));
   const date = postcardScene.date.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});

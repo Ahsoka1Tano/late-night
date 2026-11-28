@@ -582,10 +582,17 @@ test('window postcards keep playing audio and Quiet room intact, freeze their ca
 
 test('window postcards download real PNG images for every view and keep long captions inside the paper', async t => {
   const page = await openRoom(t);
+  const caption = page.locator('#postcard-caption');
+  const captionLines = page.locator('#postcard-preview > svg > text[font-size="26"]');
+  const wideWord = 'W'.repeat(46);
+  const unbrokenCaption = 'W'.repeat(80);
   for (const view of ['city','mountains','coast','cafe','garden']) {
     await page.locator(`.view-switch button[data-view="${view}"]`).click();
     await page.locator('#postcard-open').click();
-    await page.locator('#postcard-caption').fill('W'.repeat(80));
+    await caption.fill(`${wideWord} moonlight`);
+    assert.deepEqual(await captionLines.allTextContents(), [wideWord, 'moonlight']);
+    await caption.fill(unbrokenCaption);
+    assert.equal((await captionLines.allTextContents()).join(''), unbrokenCaption);
     const textBounds = await page.locator('#postcard-preview > svg > text').evaluateAll(els => els.map(el => { const b = el.getBBox(); return {x:b.x,right:b.x+b.width}; }));
     assert.equal(textBounds.every(b => b.x >= 0 && b.right <= 1280),true);
     const downloadEvent = page.waitForEvent('download');
